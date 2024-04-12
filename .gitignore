@@ -117,3 +117,7 @@ dist
 **/out
 **/bin
 **/build
+
+### ts folders ###
+**/ts/node_modules
+**/ts/dist
