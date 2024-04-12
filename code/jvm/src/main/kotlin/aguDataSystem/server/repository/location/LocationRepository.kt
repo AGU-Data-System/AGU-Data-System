@@ -1,0 +1,3 @@
+package aguDataSystem.server.repository.location
+
+interface LocationRepository

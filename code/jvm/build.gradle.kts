@@ -22,7 +22,21 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+	// for coroutines
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+
+	// for JDBI
+	implementation("org.jdbi:jdbi3-core:3.37.1")
+	implementation("org.jdbi:jdbi3-kotlin:3.37.1")
+	implementation("org.jdbi:jdbi3-postgres:3.37.1")
+	implementation("org.postgresql:postgresql:42.7.3")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	// To use WebTestClient on tests
+	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+	testImplementation(kotlin("test"))
 }
 
 tasks.withType<KotlinCompile> {
