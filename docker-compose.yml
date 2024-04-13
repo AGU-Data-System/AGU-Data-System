@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  # postgres database
+  db:
+    container_name: db
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+  # Spring Application
+  aguDataSystem:
+    container_name: aguDataSystem
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-spring
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/postgres?user=postgres&password=postgres
+    ports:
+      - "8080:8080"
