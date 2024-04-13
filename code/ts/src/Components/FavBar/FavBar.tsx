@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
-import { Grid, List, ListItem, ListItemText } from "@mui/material";
+import {CircularProgress, Grid, List, ListItem, ListItemText} from "@mui/material";
 import StarRateIcon from '@mui/icons-material/StarRate';
 
 interface UAGDetails {
@@ -42,24 +42,56 @@ export default function FavBar() {
     }, []);
 
     if (state.type === 'loading') {
-        return <p>Loading...</p>;
+        return (
+            <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
+                <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
+                    <StarRateIcon /> Favorite UAGs
+                </Grid>
+                <Grid item sx={{ margin: 2 }}>
+                    <CircularProgress />
+                </Grid>
+            </Grid>
+            );
     }
 
     if (state.type === 'error') {
-        return <p>Error: {state.message}</p>;
+        return (
+            <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
+                <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
+                    <StarRateIcon />
+                </Grid>
+                <Grid item sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                    Error: {state.message}
+                </Grid>
+            </Grid>
+        );
     }
 
     return (
-        <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
-            {/* Start Icon */}
-            <Grid item>
-                <StarRateIcon />
+        <Grid container alignItems="right" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
+            <Grid item sx={{paddingTop: 2, paddingLeft: 2, width: '100%'}}>
+                <StarRateIcon /> Favorite UAGs
             </Grid>
-            {/* UAG List */}
             <Grid item sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
                 <List sx={{ display: 'flex', flexDirection: 'row' }}>
                     {state.uagsDetails.map((uag, index) => (
-                        <ListItem key={index} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <ListItem
+                            key={index}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                border: 1,
+                                borderColor: 'rgb(255, 165, 0)',
+                                borderRadius: '16px',
+                                borderWidth: '6px',
+                                margin: 2,
+                                '&:hover': {
+                                    backgroundColor: 'rgba(255,165,0,0.71)',
+                                    color: 'white',
+                                }
+                            }}
+                            onClick={() => console.log(`UAG ${uag.name} clicked`)}
+                        >
                             <ListItemText primary={`Name: ${uag.name}`} />
                             <ListItemText primary={`Curr Level: ${uag.currLvl}`} />
                             <ListItemText primary={`Next Level: ${uag.nextLvl}`} />

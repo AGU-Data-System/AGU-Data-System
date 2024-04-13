@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NavBar from './Components/Layouts/NavBar';
 import NotFoundPage from './Components/NotFoundPage';
-import FavBar from "./Components/FavBar/FavBar";
+import Home from './Components/Home';
 
 const router = createBrowserRouter([
     {
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
       'children': [
         {
           'path': '/',
-          'element': <FavBar />,
+          'element': <Home />,
         },
       ]
     },
