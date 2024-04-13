@@ -96,6 +96,29 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 		return temperature
 	}
 
+	/**
+	 * Get all locations with temperature data.
+	 *
+	 * @return List of all locations with temperature data.
+	 */
+	override fun getTemperatureLocations(): List<Location> {
+
+		logger.info("Getting all locations with temperature data")
+
+		val locations = handle.createQuery(
+			"""
+			SELECT DISTINCT latitude, longitude
+			FROM temperature
+		""".trimIndent()
+		)
+			.mapTo<Location>()
+			.list()
+
+		logger.info("Got ${locations.size} locations with temperature data")
+
+		return locations
+	}
+
 	companion object {
 		private val logger = LoggerFactory.getLogger(JDBITemperatureRepository::class.java)
 	}

@@ -33,4 +33,11 @@ interface TemperatureRepository {
 	 * @return the temperature for the location and given day
 	 */
 	fun getTemperatureForLocationAndDay(localDateTime: LocalDateTime, location: Location): Temperature
+
+	/**
+	 * Get all locations with temperature data.
+	 *
+	 * @return List of all locations with temperature data.
+	 */
+	fun getTemperatureLocations(): List<Location>
 }

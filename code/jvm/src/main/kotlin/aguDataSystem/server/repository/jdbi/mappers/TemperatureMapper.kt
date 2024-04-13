@@ -9,6 +9,10 @@ import org.jdbi.v3.core.statement.StatementContext
 class TemperatureMapper : RowMapper<Temperature> {
 	/**
 	 * Map the current row of the result set.
+	 *
+	 * @param rs the result set being iterated
+	 * @param ctx the statement context
+	 * @return the value to produce for this row
 	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): Temperature {
 		return Temperature(
