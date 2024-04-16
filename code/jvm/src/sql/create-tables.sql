@@ -123,7 +123,6 @@ create table if not exists contacts
     primary key (dno_id, agu_id)
 );
 
-
 create table if not exists agu_readings
 (
     id          int generated always as identity,

@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.4"
 	kotlin("jvm") version "1.9.22"
 	kotlin("plugin.spring") version "1.9.22"
+	kotlin("plugin.serialization") version "1.9.22"
 }
 
 group = "AGUDataSystem"
@@ -27,10 +28,16 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
 	// for JDBI
-	implementation("org.jdbi:jdbi3-core:3.37.1")
-	implementation("org.jdbi:jdbi3-kotlin:3.37.1")
-	implementation("org.jdbi:jdbi3-postgres:3.37.1")
+	implementation("org.jdbi:jdbi3-core:3.45.1")
+	implementation("org.jdbi:jdbi3-kotlin:3.45.1")
+	implementation("org.jdbi:jdbi3-postgres:3.45.1")
 	implementation("org.postgresql:postgresql:42.7.3")
+
+	// for Web-Scraping
+	implementation("org.jsoup:jsoup:1.17.2")
+
+	// for JSON serialization
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
