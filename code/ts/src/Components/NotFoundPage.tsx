@@ -1,6 +1,6 @@
 import { Box, Button, } from '@mui/material';
 import * as React from 'react';
-//import Astronaut from '../assets/confusedAstronaut.png';
+import Astronaut from '../assets/confusedAstronaut.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function NotFoundPage() {
@@ -12,7 +12,7 @@ export default function NotFoundPage() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        //backgroundImage: `url(${Astronaut})`,
+        backgroundImage: `url(${Astronaut})`,
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',

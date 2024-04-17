@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
-import {CircularProgress, Grid, List, ListItem, ListItemText} from "@mui/material";
+import { CircularProgress, Grid, List, ListItem, ListItemText } from "@mui/material";
 import StarRateIcon from '@mui/icons-material/StarRate';
+import { useNavigate } from "react-router-dom";
 
 interface UAGDetails {
     name: string
@@ -17,6 +18,7 @@ type FavBarState =
 
 export default function FavBar() {
     const [state, setState] = useState<FavBarState>({ type: 'loading' });
+    const navigate = useNavigate()
 
     useEffect(() => {
         setState({ type: 'loading' });
@@ -58,10 +60,7 @@ export default function FavBar() {
         return (
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
                 <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
-                    <StarRateIcon />
-                </Grid>
-                <Grid item sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
-                    Error: {state.message}
+                    <StarRateIcon /> Error while trying to get the favorite UAGs: {state.message}
                 </Grid>
             </Grid>
         );
@@ -86,11 +85,10 @@ export default function FavBar() {
                                 borderWidth: '6px',
                                 margin: 2,
                                 '&:hover': {
-                                    backgroundColor: 'rgba(255,165,0,0.71)',
-                                    color: 'white',
+                                    backgroundColor: 'rgba(255,165,0,0.49)'
                                 }
                             }}
-                            onClick={() => console.log(`UAG ${uag.name} clicked`)}
+                            onClick={() => navigate(`/uag/${uag.name}`)}
                         >
                             <ListItemText primary={`Name: ${uag.name}`} />
                             <ListItemText primary={`Curr Level: ${uag.currLvl}`} />
