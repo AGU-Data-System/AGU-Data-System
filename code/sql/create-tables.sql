@@ -43,7 +43,7 @@ create table if not exists loads
     amount        numeric(6, 3),
     distance      numeric(6, 3),
 
-    constraint check_scheduled_arrival_time check (time_of_day in ('morning', 'afternoon', 'evening')),
+    constraint check_scheduled_arrival_time check (time_of_day in ('morning', 'afternoon', 'night')),
 
     foreign key (company_name) references transport_company(name),
 
@@ -91,9 +91,9 @@ create table if not exists agu
     isFavorite     boolean,
     notes          json,
     training       json,
-    min_level      integer, -- percentage
-    critical_level integer, -- percentage
-    max_level      integer, -- percentage
+    min_level      integer,
+    critical_level integer,
+    max_level      integer,
     load_volume    numeric(6, 3),
     capacity       numeric(6, 3),
     image          bytea,
@@ -104,6 +104,9 @@ create table if not exists agu
     unique (cui),
 
     constraint critical_level_check check (critical_level >= 0 and critical_level <= 100),
+    constraint min_level_check check (min_level >= 0 and min_level <= 100),
+    constraint max_level_check check (max_level >= 0 and max_level <= 100),
+
 
     foreign key (latitude, longitude) references location (latitude, longitude),
     foreign key (dno_id) references dno (id),
