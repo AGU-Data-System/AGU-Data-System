@@ -5,45 +5,47 @@ create table if not exists transport_company
     name varchar primary key
 );
 
-create table if not exists driver
-(
-    company_name varchar,
-    name         varchar,
-
-    unique (name),
-
-    foreign key (company_name) references transport_company (name),
-
-    primary key (company_name, name)
-);
-
-create table if not exists car
-(
-    company_name  varchar,
-    driver_name   varchar,
-    tank_capacity numeric(6, 3),
-    licence_plate varchar,
-
-    foreign key (company_name) references transport_company (name),
-    foreign key (driver_name) references driver (name),
-
-    primary key (company_name, licence_plate)
-);
+-- use for a rainy day
+-- create table if not exists driver
+-- (
+--     company_name varchar,
+--     name         varchar,
+--
+--     unique (name),
+--
+--     foreign key (company_name) references transport_company (name),
+--
+--     primary key (company_name, name)
+-- );
+--
+-- create table if not exists car
+-- (
+--     company_name  varchar,
+--     driver_name   varchar,
+--     tank_capacity numeric(6, 3),
+--     licence_plate varchar,
+--
+--     foreign key (company_name) references transport_company (name),
+--     foreign key (driver_name) references driver (name),
+--
+--     primary key (company_name, licence_plate)
+-- );
 
 create table if not exists loads
 (
-    reference     varchar,
-    company_name  varchar,
-    licence_plate varchar,
-    time_of_day   varchar,
-    timestamp     bigint,
+    reference        varchar,
+    company_name     varchar,
+    licence_plate    varchar,
+    time_of_day      varchar,
+    load_timestamp   bigint,
+    unload_timestamp bigint,
     isCompleted   boolean,
     amount        numeric(6, 3),
     distance      numeric(6, 3),
 
     constraint check_scheduled_arrival_time check (time_of_day in ('morning', 'afternoon', 'evening')),
 
-    foreign key (company_name, licence_plate) references car (company_name, licence_plate),
+    foreign key (company_name) references transport_company(name),
 
     primary key (reference)
 );
@@ -60,6 +62,7 @@ create table if not exists location
 (
     latitude  numeric(6, 3),
     longitude numeric(6, 3),
+    name      varchar default null,
 
     constraint check_latitude check (latitude >= -180 and latitude <= 180),
     constraint check_longitude check (longitude >= -180 and longitude <= 180),
