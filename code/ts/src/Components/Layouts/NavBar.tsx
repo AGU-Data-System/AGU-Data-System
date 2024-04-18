@@ -21,7 +21,7 @@ export default function NavBar() {
 
     return (
         <div>
-            <AppBar position="static" sx={{ backgroundColor: 'rgb(255, 165, 0)' }}>
+            <AppBar position="static" sx={{ backgroundColor: 'rgb(255, 165, 0)', color: 'black' }}>
                 <Toolbar>
                     <Typography variant="h4">
                         Data: {formattedDate}

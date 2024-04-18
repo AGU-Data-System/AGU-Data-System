@@ -1,0 +1,66 @@
+::selection {
+    background-color: rgba(255, 217, 0, 0.6);
+}
+
+.portugalMap {
+    width: 100%;
+    height: 100%;
+}
+
+.portugalMap path {
+    fill: #f2f2f2;
+    stroke: #000;
+    stroke-width: 1;
+}
+
+.portugalMap path:hover {
+    fill: rgba(142, 142, 142, 0.73);
+}
+
+.portugalMap .ord_beiragas {
+    fill: rgba(9, 133, 207, 0.62);
+}
+
+.portugalMap .ord_beiragas:hover {
+    fill: rgba(8, 118, 182, 0.94);
+}
+
+.portugalMap .ord_dianagas {
+    fill: rgba(187, 9, 207, 0.62);
+}
+
+.portugalMap .ord_dianagas:hover {
+    fill: rgba(187, 9, 207, 0.94);
+}
+
+.portugalMap .ord_duriensegas {
+    fill: rgba(207, 9, 26, 0.62);
+}
+
+.portugalMap .ord_duriensegas:hover {
+    fill: rgba(207, 9, 26, 0.94);
+}
+
+.portugalMap .ord_lusitaniagas {
+    fill: rgba(244, 224, 8, 0.62);
+}
+
+.portugalMap .ord_lusitaniagas:hover {
+    fill: rgba(209, 193, 34, 0.94);
+}
+
+.portugalMap .ord_medigas {
+    fill: rgba(73, 214, 19, 0.62);
+}
+
+.portugalMap .ord_medigas:hover {
+    fill: rgba(55, 145, 19, 0.94);
+}
+
+.portugalMap .ord_paxgas {
+    fill: rgba(8, 37, 156, 0.62);
+}
+
+.portugalMap .ord_paxgas:hover {
+    fill: rgba(8, 37, 156, 0.94);
+}
