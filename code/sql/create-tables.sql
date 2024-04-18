@@ -39,11 +39,11 @@ create table if not exists loads
     time_of_day      varchar,
     load_timestamp   bigint,
     unload_timestamp bigint,
-    isCompleted   boolean,
-    amount        numeric(6, 3),
-    distance      numeric(6, 3),
+    isCompleted      boolean, -- will be true when unload_timestamp is not null
+    amount           numeric(6, 3),
+    distance         numeric(6, 3),
 
-    constraint check_scheduled_arrival_time check (time_of_day in ('morning', 'afternoon', 'night')),
+    constraint check_scheduled_arrival_time check (time_of_day in ('morning', 'afternoon', 'evening')),
 
     foreign key (company_name) references transport_company(name),
 
@@ -70,19 +70,19 @@ create table if not exists location
     primary key (latitude, longitude)
 );
 
-create table if not exists temperature
-(
-    id        int generated always as identity,
-    date      varchar,
-    min       numeric(6, 3),
-    max       numeric(6, 3),
-    timestamp bigint,
-    latitude  numeric(6, 3),
-    longitude numeric(6, 3),
-
-    foreign key (latitude, longitude) references location (latitude, longitude)
-
-);
+-- create table if not exists temperature
+-- (
+--     id        int generated always as identity,
+--     date      varchar,
+--     min       numeric(6, 3),
+--     max       numeric(6, 3),
+--     timestamp bigint,
+--     latitude  numeric(6, 3),
+--     longitude numeric(6, 3),
+--
+--     foreign key (latitude, longitude) references location (latitude, longitude)
+--
+-- );
 
 create table if not exists agu
 (
@@ -129,18 +129,72 @@ create table if not exists contacts
     primary key (dno_id, agu_id)
 );
 
-create table if not exists agu_readings
+create table if not exists levels
 (
-    id          int generated always as identity,
-    agu_id      int,
-    dno_id      int,
-    timestamp   bigint,
-    gas_level   numeric(6, 3),
-    temperature numeric(6, 3),
+    timestamp bigint,
+    data     jsonb,
+    type     varchar,
+    provider_id int,
+    agu_id int,
+    dno_id int,
 
-    foreign key (dno_id, agu_id) references agu (dno_id, id),
+    constraint check_type check (type in ('temperature', 'gas')),
 
-    primary key (dno_id, id)
+    foreign key (agu_id, dno_id) references agu (id, dno_id),
+
+    primary key (timestamp, agu_id, dno_id)
 );
+
+create table if not exists readings(
+    timestamp bigint,
+    agu_id int,
+    dno_id int,
+
+    foreign key (timestamp, agu_id, dno_id) references levels (timestamp, agu_id, dno_id),
+
+    primary key (timestamp, agu_id, dno_id)
+);
+
+create table if not exists predictions
+(
+    timestamp bigint,
+    agu_id int,
+    dno_id int,
+    prediction_date bigint,
+    model jsonb,
+    days_ahead int, -- calculated from prediction_date and timestamp
+
+    foreign key (timestamp, agu_id, dno_id) references levels (timestamp, agu_id, dno_id),
+
+    primary key (timestamp, agu_id, dno_id, prediction_date)
+);
+
+-- view for temperature and gas
+create or replace view temperature_view as
+    select levels.agu_id,
+           levels.provider_id,
+           levels.timestamp as fetch_timestamp,
+           levels.data as temperature,
+           predictions.prediction_date as date,
+           predictions.days_ahead
+    from levels join predictions
+        on predictions.agu_id = levels.agu_id and
+           predictions.timestamp = levels.timestamp and
+              predictions.dno_id = levels.dno_id
+           where levels.type = 'temperature';
+
+create or replace view gas_view as
+    select levels.agu_id,
+           levels.provider_id,
+           levels.timestamp as fetch_timestamp,
+           levels.data as level,
+           predictions.prediction_date as date,
+           predictions.days_ahead,
+           predictions.model
+    from levels join predictions
+        on predictions.agu_id = levels.agu_id and
+           predictions.timestamp = levels.timestamp and
+              predictions.dno_id = levels.dno_id
+           where levels.type = 'gas';
 
 commit;
