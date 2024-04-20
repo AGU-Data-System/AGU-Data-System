@@ -9,7 +9,7 @@ create table if not exists loads
 (
     reference        varchar primary key,
     company_name     varchar,
-    time_of_day      varchar check (time_of_day in ('morning', 'evening')) not null,
+    time_of_day      varchar check (time_of_day in ('morning', 'afternoon')) not null,
     amount           numeric(6, 3) not null,
     distance         numeric(6, 3) not null,
     load_timestamp   bigint,
