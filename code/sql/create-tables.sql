@@ -1,5 +1,10 @@
 begin transaction;
 
+-- Domains
+DROP DOMAIN IF EXISTS CUI;
+CREATE DOMAIN CUI as varchar check (value ~ '^PT[0-9]{16}[A-Z]{2}$');
+
+-- Tables
 create table if not exists transport_company
 (
     name varchar primary key
@@ -12,8 +17,8 @@ create table if not exists loads
     time_of_day      varchar check (time_of_day in ('morning', 'afternoon')) not null,
     amount           numeric(6, 3) not null,
     distance         numeric(6, 3) not null,
-    load_timestamp   bigint,
-    unload_timestamp bigint,
+    load_timestamp   timestamp with time zone,
+    unload_timestamp timestamp with time zone,
 
     foreign key (company_name) references transport_company(name)
 );
@@ -30,7 +35,7 @@ create table if not exists agu
 (
     id             int generated always as identity primary key,
     name           varchar unique not null,
-    cui            varchar unique not null, --TODO: Make CUI regex check (PT----XX)
+    cui            CUI unique not null,
     isFavorite     boolean default false not null,
     min_level      integer check (min_level >= 0 and min_level <= 100) not null,
     critical_level integer check (critical_level >= 0 and critical_level <= 100) not null,
@@ -58,12 +63,12 @@ create table if not exists provider
 );
 
 create table if not exists readings(
-    timestamp       bigint,
+    timestamp       timestamp with time zone,
     agu_id          int,
     dno_id          int,
     provider_id     int,
     data            jsonb not null,
-    prediction_for  bigint, -- Timestamp for which this prediction applies, NULL if not a prediction
+    prediction_for  timestamp with time zone, -- NULL if not a prediction
 
     foreign key (agu_id) references agu (id),
     foreign key (provider_id) references provider (id),
@@ -83,6 +88,34 @@ create table if not exists contacts
     primary key (agu_id, name, type)
 );
 
+-- Views
+
+create or replace view temperature_readings as
+    select
+        readings.agu_id,
+        readings.provider_id,
+        readings.timestamp as fetch_timestamp,
+        readings.prediction_for as date,
+        readings.data ->> 'min' as min,
+        readings.data ->> 'max' as max,
+        (readings.timestamp - readings.prediction_for) as days_ahead
+    from readings
+         join provider on readings.provider_id = provider.id
+    where provider.provider_type = 'temperature';
+
+-- view for gas readings
+create or replace view gas_readings as
+    select
+        readings.agu_id,
+        readings.provider_id,
+        readings.timestamp as fetch_timestamp,
+        readings.prediction_for as date,
+        readings.data ->> 'level' as level,
+        -- readings.model as prediction_model,
+        (readings.timestamp - readings.prediction_for) as days_ahead
+    from readings
+         join provider on readings.provider_id = provider.id
+    where provider.provider_type = 'gas';
 commit;
 
 -- use for a rainy day
