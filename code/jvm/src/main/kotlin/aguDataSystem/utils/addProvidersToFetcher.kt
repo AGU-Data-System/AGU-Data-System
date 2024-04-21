@@ -12,7 +12,7 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 
 @Serializable
-data class Provider(
+data class ProviderInput(
     val name: String,
     val url: String,
     val frequency: String,
@@ -21,13 +21,13 @@ data class Provider(
 
 fun main() {
     runBlocking {
-        val scraper = DataScraper()
+        val scraper = GasAndTempScraper()
         scraper.fetchAndPostGasSynoptics()
         scraper.fetchAndPostTemperatureSynoptics("code/jvm/src/main/kotlin/aguDataSystem/utils/12042024_UAGs Route Map.csv")
     }
 }
 
-class DataScraper {
+class GasAndTempScraper {
     private val sonorgasUrl = "https://dourogas.thinkdigital.pt/dashboards/ca824027-c206-44b9-af54-cba5dc6edde7/viewer"
     private val fetcherUrl = "http://10.64.13.59:8080/api/provider"
     private val client = HttpClient.newHttpClient()
@@ -43,8 +43,8 @@ class DataScraper {
             val name = "gas - " + row.select("td[data-synoptic]").text()
 
             val providerUrl = "$sonorgasUrl/$id/sensors"
-            val provider = Provider(name, providerUrl, "PT1H", true)
-            sendPostRequest(provider)
+            val providerInput = ProviderInput(name, providerUrl, "PT1H", true)
+            sendPostRequest(providerInput)
         }
     }
 
@@ -60,22 +60,22 @@ class DataScraper {
 
             val url = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
             val providerName = "temperature - $aguName"
-            val provider = Provider(providerName, url, "P1D", true)
+            val providerInput = ProviderInput(providerName, url, "P1D", true)
 
-            sendPostRequest(provider)
+            sendPostRequest(providerInput)
         }
     }
 
-    private fun sendPostRequest(provider: Provider) {
+    private fun sendPostRequest(providerInput: ProviderInput) {
         val request = HttpRequest.newBuilder()
             .uri(URI.create(fetcherUrl))
             .header("Content-Type", "application/json")
-            .POST(BodyPublishers.ofString(jsonFormatter.encodeToString(provider)))
+            .POST(BodyPublishers.ofString(jsonFormatter.encodeToString(providerInput)))
             .build()
 
         try {
             println("Sending POST request to $fetcherUrl")
-            println("Request body: ${jsonFormatter.encodeToString(provider)}")
+            println("Request body: ${jsonFormatter.encodeToString(providerInput)}")
             val response = client.send(request, BodyHandlers.ofString())
             println("Response status code: ${response.statusCode()}")
             println("Response body: ${response.body()}")
