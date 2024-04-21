@@ -36,16 +36,16 @@ create table if not exists agu
     id             int generated always as identity primary key,
     name           varchar unique                                                not null,
     cui            CUI unique                                                    not null,
-    isFavorite     boolean default false                                         not null,
     min_level      integer check (min_level >= 0 and min_level <= 100)           not null,
-    critical_level integer check (critical_level >= 0 and critical_level <= 100) not null,
     max_level      integer check (max_level >= 0 and max_level <= 100)           not null,
+    critical_level integer check (critical_level >= 0 and critical_level <= 100) not null,
     load_volume    numeric(6, 3) check (load_volume >= 0)                        not null,
     capacity       numeric(6, 3) check (capacity >= 0)                           not null,
-    latitude       numeric(6, 3) check (latitude >= -90 and latitude <= 90)      not null,
-    longitude      numeric(6, 3) check (longitude >= -180 and longitude <= 180)  not null,
+    latitude       numeric check (latitude >= -90 and latitude <= 90)      not null,
+    longitude      numeric check (longitude >= -180 and longitude <= 180)  not null,
     location_name  varchar                                                       not null,
     dno_id         int                                                           not null,
+    isFavorite     boolean default false                                         not null,
     notes          json,
     training       json,
     image          bytea,
@@ -60,8 +60,8 @@ create table if not exists tank
     agu_id         int,
     number         int                                                           not null,
     min_level      integer check (min_level >= 0 and min_level <= 100)           not null,
-    critical_level integer check (critical_level >= 0 and critical_level <= 100) not null,
     max_level      integer check (max_level >= 0 and max_level <= 100)           not null,
+    critical_level integer check (critical_level >= 0 and critical_level <= 100) not null,
     load_volume    numeric(6, 3),
     capacity       numeric(6, 3) check (capacity >= 0)                           not null,
 
@@ -73,7 +73,7 @@ create table if not exists tank
 
 create table if not exists provider
 (
-    id            int generated always as identity primary key,
+    id            int primary key,
     agu_id        int,
     provider_type varchar check (provider_type in ('gas', 'temperature')),
 
