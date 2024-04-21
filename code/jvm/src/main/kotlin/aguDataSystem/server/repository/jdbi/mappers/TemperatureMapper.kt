@@ -1,7 +1,5 @@
 package aguDataSystem.server.repository.jdbi.mappers
 
-import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Temperature
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext

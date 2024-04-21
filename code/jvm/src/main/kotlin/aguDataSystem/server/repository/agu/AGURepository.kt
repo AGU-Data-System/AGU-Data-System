@@ -1,7 +1,6 @@
 package aguDataSystem.server.repository.agu
 
 import aguDataSystem.server.domain.AGU
-import aguDataSystem.server.domain.Location
 
 /**
  * Interface for the AGU repository
@@ -27,10 +26,10 @@ interface AGURepository{
 	/**
 	 * Get AGU by location
 	 *
-	 * @param location Location of AGU
+	 * @param locationName name of the location of the AGU
 	 * @return AGU
 	 */
-	fun getAguByLocation(location: Location): AGU?
+	fun getAguByLocation(locationName: String): AGU?
 
 	/**
 	 * Add AGU
