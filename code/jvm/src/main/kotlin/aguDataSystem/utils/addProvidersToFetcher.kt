@@ -40,10 +40,11 @@ class GasAndTempScraper {
 
         rows.forEach { row ->
             val id = row.select("td[data-synoptic]").attr("data-synoptic")
-            val name = "gas - " + row.select("td[data-synoptic]").text()
+            val name = row.select("td[data-synoptic]").text().substringAfterLast("-").trim()
+            val fullName = "gas - $name"
 
             val providerUrl = "$sonorgasUrl/$id/sensors"
-            val providerInput = ProviderInput(name, providerUrl, "PT1H", true)
+            val providerInput = ProviderInput(fullName, providerUrl, "PT1H", true)
             sendPostRequest(providerInput)
         }
     }
