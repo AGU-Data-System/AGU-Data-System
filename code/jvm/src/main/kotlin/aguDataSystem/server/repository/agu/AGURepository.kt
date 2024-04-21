@@ -16,20 +16,20 @@ interface AGURepository{
 	fun getAGUs(): List<AGU>
 
 	/**
-	 * Get AGU by ID
+	 * Get AGU by CUI
 	 *
-	 * @param id ID of AGU
+	 * @param cui CUI of AGU
 	 * @return AGU
 	 */
-	fun getAGUById(id: Int): AGU
+	fun getAGUByCUI(cui: Int): AGU
 
 	/**
 	 * Get AGU by location
 	 *
-	 * @param locationName name of the location of the AGU
-	 * @return AGU
+	 * @param name name of the AGU
+	 * @return AGU's CUI code
 	 */
-	fun getAguByLocation(locationName: String): AGU?
+	fun getCUIByName(name: String): String
 
 	/**
 	 * Add AGU

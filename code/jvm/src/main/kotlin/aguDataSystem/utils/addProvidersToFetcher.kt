@@ -22,7 +22,7 @@ data class Provider(
 fun main() {
     runBlocking {
         val scraper = DataScraper()
-        //scraper.fetchAndPostGasSynoptics()
+        scraper.fetchAndPostGasSynoptics()
         scraper.fetchAndPostTemperatureSynoptics("code/jvm/src/main/kotlin/aguDataSystem/utils/12042024_UAGs Route Map.csv")
     }
 }
