@@ -22,7 +22,6 @@ import java.awt.Image
  * @property training training of the AGU
  * @property image image of the AGU
  * @property contacts contacts of the AGU
- * @property readings readings of the AGU
  */
 data class AGU(
 	val id: Int,
@@ -42,5 +41,4 @@ data class AGU(
 	val training: String,
 	val image: Image,
 	val contacts: List<Contact>,
-	val readings: List<Reading>,
 )
