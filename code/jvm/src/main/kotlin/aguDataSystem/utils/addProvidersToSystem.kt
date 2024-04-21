@@ -12,6 +12,7 @@ import java.net.http.HttpResponse.BodyHandlers
 
 //TODO: Not too comfortable about this script.
 //Should work but it's smelly
+//Alternative would be to use a stored procedure and simply make the get for the providers and then call the procedure
 
 @Serializable
 data class Provider(

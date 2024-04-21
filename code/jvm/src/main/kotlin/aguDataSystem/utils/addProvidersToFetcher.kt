@@ -29,7 +29,7 @@ fun main() {
 
 class GasAndTempScraper {
     private val sonorgasUrl = "https://dourogas.thinkdigital.pt/dashboards/ca824027-c206-44b9-af54-cba5dc6edde7/viewer"
-    private val fetcherUrl = "http://10.64.13.59:8080/api/provider"
+    private val fetcherUrl = "http://localhost:8080/api/provider"
     private val client = HttpClient.newHttpClient()
     private val jsonFormatter = Json { prettyPrint = true }
 
@@ -54,17 +54,27 @@ class GasAndTempScraper {
         }.readAllWithHeader(File(csvPath))
 
         rows.forEach { row ->
-            val latitude = row["Latitude"] ?: error("Latitude not found")
-            val longitude = row["Longitude"] ?: error("Longitude not found")
-            val aguName = row["UAG"] ?: error("AGU name not found")
+            val latitude = row["Latitude"]
+            val longitude = row["Longitude"]
+            val aguName = row["UAG"]
 
-            val url = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
-            val providerName = "temperature - $aguName"
-            val providerInput = ProviderInput(providerName, url, "P1D", true)
+            if (latitude.isNullOrEmpty() && longitude.isNullOrEmpty() && aguName.isNullOrEmpty()) {
+                println("Encountered the first empty row; stopping processing.")
+                return
+            }
 
-            sendPostRequest(providerInput)
+            if (!latitude.isNullOrEmpty() && !longitude.isNullOrEmpty() && !aguName.isNullOrEmpty()) {
+                val url = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
+                val providerName = "temperature - $aguName"
+                val providerInput = ProviderInput(providerName, url, "P1D", true)
+
+                sendPostRequest(providerInput)
+            } else {
+                println("Skipping incomplete data for AGU: $aguName")
+            }
         }
     }
+
 
     private fun sendPostRequest(providerInput: ProviderInput) {
         val request = HttpRequest.newBuilder()
