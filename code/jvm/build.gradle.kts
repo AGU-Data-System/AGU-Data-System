@@ -36,6 +36,9 @@ dependencies {
 	// for Web-Scraping
 	implementation("org.jsoup:jsoup:1.17.2")
 
+	// for csv parsing
+	implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.3")
+
 	// for JSON serialization
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
