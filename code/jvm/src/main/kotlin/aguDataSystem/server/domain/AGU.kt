@@ -5,30 +5,40 @@ import java.awt.Image
 /**
  * Represents the Autonomous Gas Unit (AGU) in the system.
  *
- * @property id The unique identifier of the AGU.
- * @property cui The CUI of the AGU.
- * @property capacity The max capacity of the AGU in Tons.
- * @property image The image of the AGU.
- * @property isFavorite Indicates if the AGU is a favorite.
- * @property notes The notes of the AGU.
- * @property contacts The contacts of the AGU.
- * @property readings The readings of the AGU.
- * @property minLevel The minimum accepted gas level of the AGU.
- * @property maxLevel The maximum accepted gas level of the AGU.
- * @property criticalLevel The critical gas level of the AGU.
- * @property location The location of the AGU.
+ * @property id unique identifier of the AGU
+ * @property name name of the AGU
+ * @property cui CUI of the AGU
+ * @property isFavorite whether the AGU is a favorite
+ * @property minLevel minimum level of the AGU
+ * @property maxLevel maximum level of the AGU
+ * @property criticalLevel critical level of the AGU
+ * @property loadVolume load volume of the AGU
+ * @property capacity capacity of the AGU
+ * @property latitude latitude of the AGU
+ * @property longitude longitude of the AGU
+ * @property locationName name of the location of the AGU
+ * @property dnoId DNO id of the AGU
+ * @property notes notes of the AGU
+ * @property training training of the AGU
+ * @property image image of the AGU
+ * @property contacts contacts of the AGU
  */
-class AGU(
+data class AGU(
 	val id: Int,
+	val name: String,
 	val cui: String,
-	val capacity: Int,
-	val image: Image,
-	val isFavorite: Boolean,
-	val notes: List<String>,
-	val contacts: List<Contact>,
-	val readings: List<Reading>,
+	val isFavorite: Boolean = false,
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
-	val location: Location,
+	val loadVolume: Int,
+	val capacity: Int,
+	val latitude: Double,
+	val longitude: Double,
+	val locationName: String,
+	val dnoId: Int,
+	val notes: String,
+	val training: String,
+	val image: Image,
+	val contacts: List<Contact>,
 )
