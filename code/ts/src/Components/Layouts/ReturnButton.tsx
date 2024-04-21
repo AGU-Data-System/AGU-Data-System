@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import ArrowBack from '@mui/icons-material/ArrowBack';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
 
 export default function ReturnButton(){
@@ -12,6 +12,7 @@ export default function ReturnButton(){
             variant="contained"
             sx={{
                 backgroundColor: 'rgb(255, 165, 0)',
+                height: '100%',
                 color: 'black',
                 '&:hover': {
                     backgroundColor: 'rgba(255,165,0,0.49)',
@@ -19,7 +20,7 @@ export default function ReturnButton(){
             }}
             onClick={() => navigate("/")}
         >
-            <ArrowBack />
+            <KeyboardArrowLeftIcon />
             Menu Inicial
         </Button>
     )

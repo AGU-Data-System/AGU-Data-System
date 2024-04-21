@@ -1,48 +1,47 @@
 import * as React from "react";
-import {List, ListItem, ListItemText, Paper} from "@mui/material";
+import {Button, Card, CardContent, Divider} from "@mui/material";
+import Typography from "@mui/material/Typography";
+import {useNavigate} from "react-router-dom";
 
 export function ControlMenuLeft() {
     return (
-        <Paper sx={{ maxHeight: 800, overflow: 'auto' }}>
-            <List>
-                {/* Your list items */}
-                <ListItem>
-                    <ListItemText primary="Item 1" />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Item 2" />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Item 3" />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Item 4" />
-                </ListItem>
-                {/* Add more list items as needed */}
-            </List>
-        </Paper>
+        <Card>
+            <CardContent>
+                <Typography variant="h5" component="div">
+                    Menu de Controlo
+                </Typography>
+                <br/>
+                <Divider orientation="horizontal" flexItem/>
+            </CardContent>
+        </Card>
     );
 }
 
 export function ControlMenuRight() {
+    const navigate = useNavigate();
+
     return (
-        <Paper sx={{ maxHeight: 800, overflow: 'auto' }}>
-            <List>
-                {/* Your list items */}
-                <ListItem>
-                    <ListItemText primary="Item 1" />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Item 2" />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Item 3" />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Item 4" />
-                </ListItem>
-                {/* Add more list items as needed */}
-            </List>
-        </Paper>
+        <Card>
+            <CardContent>
+                <Typography variant="h5" component="div">
+                    Menu de Acessibilidade
+                </Typography>
+                <br />
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "flex-start",
+                    }}
+                >
+                    <Button variant="contained" style={{ margin: "8px" }} onClick={() => {navigate('/uag/create')}}>
+                        Adicionar UAG
+                    </Button>
+                </div>
+                <br />
+                <Divider orientation="horizontal" flexItem />
+            </CardContent>
+        </Card>
     );
 }

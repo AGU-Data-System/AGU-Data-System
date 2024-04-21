@@ -20,7 +20,7 @@ export default function NavBar() {
     const formattedTime = `${currentDate.getHours()}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
 
     return (
-        <div>
+        <div style={{minHeight:'100%'}}>
             <AppBar position="static" sx={{ backgroundColor: 'rgb(255, 165, 0)', color: 'black' }}>
                 <Toolbar>
                     <Typography variant="h4">
