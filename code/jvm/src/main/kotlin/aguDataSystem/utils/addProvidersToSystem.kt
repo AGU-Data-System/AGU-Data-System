@@ -24,6 +24,12 @@ data class Provider(
     val lastFetch: String
 )
 
+@Serializable
+data class ProvidersResponse(
+    val providers: List<Provider>,
+    val size: Int
+)
+
 interface TransactionManager {
     fun <R> run(block: (Transaction) -> R): R
 }
@@ -60,7 +66,7 @@ fun main() {
 }
 
 class ProviderScraper(private val transactionManager: TransactionManager) {
-    private val fetcherUrl = "http://10.64.13.59:8080/api/providers"
+    private val fetcherUrl = "http://localhost:8080/api/providers"
     private val client = HttpClient.newHttpClient()
     private val jsonFormatter = Json { ignoreUnknownKeys = true; prettyPrint = true }
 
@@ -71,7 +77,8 @@ class ProviderScraper(private val transactionManager: TransactionManager) {
             .build()
 
         val response = client.send(request, BodyHandlers.ofString())
-        val providersList = jsonFormatter.decodeFromString<List<Provider>>(response.body())
+        val providersResponse = jsonFormatter.decodeFromString<ProvidersResponse>(response.body())
+        val providersList = providersResponse.providers
 
         transactionManager.run { tx ->
             providersList.filter { it.name.startsWith("temperature") || it.name.startsWith("gas") }.forEach { provider ->
@@ -79,6 +86,9 @@ class ProviderScraper(private val transactionManager: TransactionManager) {
                 val cui = fetchCuiFromAguName(tx.handle, aguName)
                 if (cui != null) {
                     insertProvider(tx.handle, provider, cui)
+                    println("Provider $provider inserted successfully")
+                } else {
+                    println("AGU $aguName not found in the database")
                 }
             }
         }
