@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 import {TextField, Typography, Grid, Card, CardContent, CardMedia, Button, Box} from '@mui/material';
+import PieGraph from '../Graphs/PieGraph';
+import LineGraph from '../Graphs/LineGraph';
 
 export default function AguBody(
     { aguNotes, lvlMin, lvlMax, lvlMinHist, latitude, longitude }: { aguNotes: string; lvlMin: number; lvlMax: number; lvlMinHist: number; latitude: number; longitude: number}
@@ -65,9 +67,8 @@ export default function AguBody(
             <Grid item xs={6}>
                 <Card>
                     <CardContent>
-                        <Typography variant="h5" component="div">
-                            Graphs/Charts
-                        </Typography>
+                        <PieGraph data={[{ value: 10, label: 'A' }, { value: 20, label: 'B' }, { value: 30, label: 'C' }]}/>
+                        <LineGraph data={[[1,2,3],[1,2,3]]} scale={'day'}/>
                     </CardContent>
                 </Card>
             </Grid>
