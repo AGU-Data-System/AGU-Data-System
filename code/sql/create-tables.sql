@@ -38,13 +38,12 @@ create table if not exists agu
     min_level      integer check (min_level >= 0 and min_level <= 100)           not null,
     max_level      integer check (max_level >= 0 and max_level <= 100)           not null,
     critical_level integer check (critical_level >= 0 and critical_level <= 100) not null,
-    load_volume    numeric(6, 3) check (load_volume >= 0)                        not null,
     capacity       numeric(6, 3) check (capacity >= 0)                           not null,
     latitude       numeric check (latitude >= -90 and latitude <= 90)            not null,
     longitude      numeric check (longitude >= -180 and longitude <= 180)        not null,
     location_name  varchar                                                       not null,
     dno_id         int                                                           not null,
-    isFavorite     boolean default false                                         not null,
+    is_favorite    boolean default false                                         not null,
     notes          json,
     training       json,
     image          bytea,
@@ -99,6 +98,8 @@ create table if not exists contacts
     phone   varchar                                           not null,
     type    varchar check (type in ('emergency', 'logistic')) not null,
     agu_cui CUI,
+
+    constraint phone_check check (phone ~ '^[0-9]{9}$'), -- needs to be 9 digits
 
     foreign key (agu_cui) references agu (cui),
 

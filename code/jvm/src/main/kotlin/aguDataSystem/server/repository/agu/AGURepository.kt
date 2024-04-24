@@ -21,7 +21,7 @@ interface AGURepository{
 	 * @param cui CUI of AGU
 	 * @return AGU
 	 */
-	fun getAGUByCUI(cui: Int): AGU
+	fun getAGUByCUI(cui: String): AGU?
 
 	/**
 	 * Get AGU by location
@@ -29,7 +29,7 @@ interface AGURepository{
 	 * @param name name of the AGU
 	 * @return AGU's CUI code
 	 */
-	fun getCUIByName(name: String): String
+	fun getCUIByName(name: String): String?
 
 	/**
 	 * Add AGU

@@ -16,4 +16,13 @@ values ('PT1701000000000006JQ', 1, 20, 85, 20, 50, 90),
        ('PT1701000000000009JL', 1, 30, 85, 20, 20, 120),
        ('PT1701000000000012JE', 1, 25, 85, 20, 52, 90);
 
+-- for test purposes
+Insert into contacts
+values ('ze-alfandega da fe', '123456789', 'emergency', 'PT1701000000000006JQ'),
+       ('ze-alijo', '123456789', 'emergency', 'PT1701000000000009JL'),
+       ('ze-carrazeda', '123456789', 'emergency', 'PT1701000000000012JE'),
+        ('ana-alfandega da fe', '123456789', 'logistic', 'PT1701000000000006JQ'),
+        ('ana-alijo', '123456789', 'logistic', 'PT1701000000000009JL'),
+        ('ana-carrazeda', '123456789', 'logistic', 'PT1701000000000012JE');
+
 COMMIT;

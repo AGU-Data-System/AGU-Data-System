@@ -1,3 +1,5 @@
+package aguDataSystem.utils
+
 import aguDataSystem.server.Environment
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable

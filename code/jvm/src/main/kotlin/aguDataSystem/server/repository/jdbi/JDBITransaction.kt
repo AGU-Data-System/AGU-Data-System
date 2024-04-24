@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository.jdbi
 
 import aguDataSystem.server.repository.Transaction
+import aguDataSystem.server.repository.agu.JDBIAGURepository
 import org.jdbi.v3.core.Handle
 
 /**
@@ -9,6 +10,8 @@ import org.jdbi.v3.core.Handle
  * @see Handle
  */
 class JDBITransaction(private val handle: Handle) : Transaction {
+
+	override val aguRepository = JDBIAGURepository(handle)
 
 	/**
 	 * Rolls back the transaction
