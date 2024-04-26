@@ -2,7 +2,9 @@ package aguDataSystem.server.repository.jdbi.mappers
 
 import aguDataSystem.server.domain.AGU
 import aguDataSystem.server.domain.Contact
-import aguDataSystem.server.domain.toContactType
+import aguDataSystem.server.domain.DNO
+import aguDataSystem.server.domain.Location
+import aguDataSystem.server.domain.createContact
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -16,15 +18,14 @@ class AGUMapper :RowMapper<AGU> {
 			minLevel = rs.getInt("min_level"),
 			maxLevel = rs.getInt("max_level"),
 			criticalLevel = rs.getInt("critical_level"),
-			capacity = rs.getDouble("capacity"),
-			latitude = rs.getDouble("latitude"),
-			longitude = rs.getDouble("longitude"),
-			locationName = rs.getString("location_name"),
-			dnoId = rs.getInt("dno_id"),
+			location = mapToLocation(rs),
+			dnoId = DNO(1,"a") , //TODO() //rs.getInt("dno_id"),
 			notes = rs.getString("notes"),
 			training = rs.getString("training"),
 			image = rs.getBytes("image"),
-			contacts = mapToContact(rs)
+			contacts = mapToContact(rs),
+			tanks = emptyList(),
+			providers = emptyList()
 		)
 	}
 
@@ -32,13 +33,21 @@ class AGUMapper :RowMapper<AGU> {
 		val contacts = mutableListOf<Contact>()
 		while (rs.next()) {
 			contacts.add(
-				Contact(
+				createContact(
 					name = rs.getString("name"),
 					phone = rs.getString("phone"),
-					type = rs.getString("type").toContactType(),
+					type = rs.getString("type").uppercase(),
 				)
 			)
 		}
 		return contacts
+	}
+
+	private fun mapToLocation(rs: ResultSet): Location {
+		return Location(
+			latitude = rs.getDouble("latitude"),
+			longitude = rs.getDouble("longitude"),
+			name = rs.getString("location_name")
+		)
 	}
 }

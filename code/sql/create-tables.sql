@@ -3,6 +3,7 @@ begin transaction;
 -- Domains
 DROP DOMAIN IF EXISTS CUI;
 CREATE DOMAIN CUI as varchar check (value ~ '^PT[0-9]{16}[A-Z]{2}$');
+CREATE DOMAIN PHONE as varchar check (value ~ '^[0-9]{9}$');
 
 -- Tables
 create table if not exists transport_company
@@ -95,11 +96,10 @@ create table if not exists readings
 create table if not exists contacts
 (
     name    varchar                                           not null,
-    phone   varchar                                           not null,
+    phone   PHONE                                             not null,
     type    varchar check (type in ('emergency', 'logistic')) not null,
     agu_cui CUI,
 
-    constraint phone_check check (phone ~ '^[0-9]{9}$'), -- needs to be 9 digits
 
     foreign key (agu_cui) references agu (cui),
 

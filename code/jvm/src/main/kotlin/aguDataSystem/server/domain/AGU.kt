@@ -12,9 +12,7 @@ package aguDataSystem.server.domain
  * @property maxLevel maximum level of the AGU
  * @property criticalLevel critical level of the AGU
  * @property capacity capacity of the AGU
- * @property latitude latitude of the AGU
- * @property longitude longitude of the AGU
- * @property locationName name of the location of the AGU
+ * @property location location of the AGU
  * @property dnoId DNO id of the AGU
  * @property notes notes of the AGU
  * @property training training of the AGU
@@ -28,17 +26,28 @@ data class AGU(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
-	val capacity: Double,
-	val latitude: Double,
-	val longitude: Double,
-	val locationName: String,
-	val dnoId: Int,
+	val location: Location,
+	val dnoId: DNO,
 	val notes: String,
 	val training: String,
 	val image: ByteArray, //change later to an Image object
 	val contacts: List<Contact>,
-	// val tanks : List<Tank> // add tanks to the AGU
-	// transform location parameters to a Location object
+	val tanks : List<Tank>, // add tanks to the AGU
 	// create an AGU domain object
 	// TODO needs revision
-)
+	val providers: List<Provider>
+) {
+
+	// calculate the total capacity of the AGU
+	val capacity = tanks.sumOf { it.capacity }
+
+	// check if the AGU is full
+	fun isAnyTankCritical(): Boolean {
+		return tanks.any { it.loadVolume >= it.criticalLevel }
+	}
+
+	// check if the AGU is empty
+	fun isAnyTankMinimal(): Boolean {
+		return tanks.any { it.loadVolume <= it.minLevel }
+	}
+}

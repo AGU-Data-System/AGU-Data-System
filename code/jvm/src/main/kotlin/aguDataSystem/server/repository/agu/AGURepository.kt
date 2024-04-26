@@ -46,4 +46,12 @@ interface AGURepository{
 	 * @return AGU
 	 */
 	fun updateAGU(agu: AGU): AGU
+
+	/**
+	 * Checks whether an AGU exists
+	 *
+	 * @param cui CUI of AGU
+	 * @return True if AGU exists, false otherwise
+	 */
+	fun isAGUStored(cui: String): Boolean
 }

@@ -76,7 +76,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             """.trimIndent()
         )
             .bind("name", name)
-            .mapTo(String::class.java)
+            .mapTo<String>()
             .one()
 
         if (cui == null) {
@@ -111,9 +111,9 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             .bind("maxLevel", agu.maxLevel)
             .bind("criticalLevel", agu.criticalLevel)
             .bind("capacity", agu.capacity)
-            .bind("latitude", agu.latitude)
-            .bind("longitude", agu.longitude)
-            .bind("locationName", agu.locationName)
+            .bind("latitude", agu.location.latitude)
+            .bind("longitude", agu.location.longitude)
+            .bind("locationName", agu.location.name)
             .bind("dnoId", agu.dnoId)
             .bind("notes", agu.notes)
             .bind("training", agu.training)
@@ -147,9 +147,9 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             .bind("maxLevel", agu.maxLevel)
             .bind("criticalLevel", agu.criticalLevel)
             .bind("capacity", agu.capacity)
-            .bind("latitude", agu.latitude)
-            .bind("longitude", agu.longitude)
-            .bind("locationName", agu.locationName)
+            .bind("latitude", agu.location.latitude)
+            .bind("longitude", agu.location.longitude)
+            .bind("locationName", agu.location.name)
             .bind("dnoId", agu.dnoId)
             .bind("notes", agu.notes)
             .bind("training", agu.training)
@@ -158,6 +158,29 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
         logger.info("AGU with CUI: {}, updated in the database", agu.cui)
         return agu
+    }
+
+    /**
+     * Checks whether an AGU exists
+     *
+     * @param cui CUI of AGU
+     * @return True if AGU exists, false otherwise
+     */
+    override fun isAGUStored(cui: String): Boolean {
+        logger.info("Checking if AGU with CUI: {} exists in the database", cui)
+
+        val isStored = handle.createQuery(
+            """
+            SELECT cui FROM agu 
+            WHERE cui = :cui
+            """.trimIndent()
+        )
+            .bind("cui", cui)
+            .mapTo<String>()
+            .singleOrNull() != null
+
+        logger.info("AGU with CUI: {} exists in the database: {}", cui, isStored)
+        return isStored
     }
 
     companion object {
