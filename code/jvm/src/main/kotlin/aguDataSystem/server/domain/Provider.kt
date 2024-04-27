@@ -27,12 +27,28 @@ data class GasProvider(
 ) : Provider()
 
 /**
- * Represents a weather Provider
+ * Represents a temperature Provider
  *
- * @property id the id of the weather Provider
- * @property readings the readings of the weather Provider
+ * @property id the id of the temperature Provider
+ * @property readings the readings of the temperature Provider
  */
-data class WeatherProvider(
+data class TemperatureProvider(
 	override val id: Int,
 	override val readings: List<Reading>
 ) : Provider()
+
+/**
+ * Creates a Provider based on a type.
+ * @param id The id of the Provider.
+ * @param readings The readings of the Provider.
+ * @param type The type of the Provider.
+ * @return The created Provider.
+ * @throws IllegalArgumentException If the type is invalid.
+ */
+fun createProvider(id: Int, readings: List<Reading>, type: String): Provider {
+	return when(type) {
+		"GAS" -> GasProvider(id, readings)
+		"TEMPERATURE" -> TemperatureProvider(id, readings)
+		else -> throw IllegalArgumentException("Invalid provider type")
+	}
+}

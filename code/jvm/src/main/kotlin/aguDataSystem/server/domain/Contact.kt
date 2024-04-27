@@ -39,6 +39,7 @@ class Emergency(
  * @param name The name of the contact.
  * @param phone The phone number of the contact.
  * @return The created contact.
+ * @throws IllegalArgumentException If the type is invalid.
  */
 fun createContact(name: String, phone: String, type: String): Contact {
 	return when(type) {

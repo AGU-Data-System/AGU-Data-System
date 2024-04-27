@@ -1,5 +1,6 @@
 begin transaction;
 
+-- todo: this should be in a separate script
 -- Drop views
 DROP VIEW IF EXISTS temperature_readings;
 DROP VIEW IF EXISTS gas_readings;
@@ -24,7 +25,7 @@ DROP DOMAIN IF EXISTS LATITUDE;
 -- Domains
 CREATE DOMAIN CUI as varchar check (value ~ '^PT[0-9]{16}[A-Z]{2}$');
 CREATE DOMAIN PHONE as varchar check (value ~ '^[0-9]{9}$');
-CREATE DOMAIN PERCENTAGE as numeric(6, 3) check (value >= 0 and value <= 100);
+CREATE DOMAIN PERCENTAGE as integer check (value >= 0 and value <= 100);
 CREATE DOMAIN LONGITUDE as numeric(6, 3) check (value >= -180 and value <= 180);
 CREATE DOMAIN LATITUDE as numeric(6, 3) check (value >= -90 and value <= 90);
 
@@ -107,8 +108,8 @@ create table if not exists measure
     timestamp      timestamp with time zone,
     agu_cui        CUI,
     provider_id    int,
-    tag            varchar not null,         -- 'min', 'max', 'level' aka the key in the data
-    data           int     not null,         -- the value
+    tag            varchar not null,
+    data           int     not null,
     prediction_for timestamp with time zone, -- NULL if not a prediction
 
     foreign key (agu_cui) references agu (cui),

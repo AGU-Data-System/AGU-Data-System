@@ -14,5 +14,5 @@ import java.time.ZonedDateTime
 data class Reading(
 	val timeStamp : LocalDateTime,
 	val predictionFor : ZonedDateTime?,
-	val data : String // maybe change to json
+	val data : String
 )
