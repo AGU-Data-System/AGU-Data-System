@@ -1,5 +1,6 @@
 package aguDataSystem.server.domain
 
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 /**
@@ -11,7 +12,7 @@ import java.time.ZonedDateTime
  * @property data The data of the reading.
  */
 data class Reading(
-	val timeStamp : ZonedDateTime,
+	val timeStamp : LocalDateTime,
 	val predictionFor : ZonedDateTime?,
 	val data : String // maybe change to json
 )

@@ -11,11 +11,7 @@ enum class DataProviders(val providerUrl: String) {
 	AGUFloeno("http://localhost:8080/aguFloeno"),
 	Location("http://localhost:8080/location");
 
-	/**
-	 * Create the URL for the [Temperature] data provider
-	 *
-	 * @param location the location to get the Temperature data for
-	 * @return the URL for the Temperature data provider
-	 */
-	fun createTemperatureURL(location: String) = "${Temperature.providerUrl}/$location"
+	private val baseURL = "http://localhost:8080/api/provider"
+
+	fun buildURL(id: Int) = "$baseURL/$id"
 }

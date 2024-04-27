@@ -11,16 +11,19 @@ import org.springframework.stereotype.Service
 @Service
 class FetchService {
 
+	private val baseURL = "http://localhost:8080/api/provider"
+
 	/**
 	 * Makes a request to the given URL.
 	 *
-	 * @param url The URL to make the request to
+	 * @param id the id of the provider to fetch from
 	 * @return The response body
 	 */
-	private fun fetch(url: String): Response {
+	fun fetch(id: Int): Response {
+		val url = "$baseURL/$id"
 		val client = HttpClient.newHttpClient()
 		val request = HttpRequest.newBuilder()
-			.uri(URI.create(url))
+			.uri(URI.create(url)) // TODO needs begin date
 			.GET()
 			.build()
 		try {
@@ -38,7 +41,7 @@ class FetchService {
 	 * @property statusCode The status code of the response
 	 * @property body The body of the response
 	 */
-	private data class Response(val statusCode: Int, val body: String)
+	data class Response(val statusCode: Int, val body: String)
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(FetchService::class.java)

@@ -6,6 +6,13 @@ package aguDataSystem.server.domain
 sealed class Provider {
 	abstract val id: Int
 	abstract val readings: List<Reading>
+
+	/**
+	 * Returns the last reading
+	 */
+	fun getLastReading(): Reading {
+		return readings.last()
+	}
 }
 
 /**
