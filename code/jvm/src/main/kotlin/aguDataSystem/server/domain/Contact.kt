@@ -1,10 +1,10 @@
 package aguDataSystem.server.domain
 
 /**
- * Represents a contact.
+ * Represents a contact
  *
- * @property name The name of the contact.
- * @property phone The phone number of the contact.
+ * @property name The name of the contact
+ * @property phone The phone number of the contact
  */
 sealed class Contact {
 	abstract val name: String
@@ -12,37 +12,38 @@ sealed class Contact {
 }
 
 /**
- * Represents a logistic contact.
+ * Represents a logistic contact
  *
- * @property name The name of the contact.
- * @property phone The phone number of the contact.
+ * @property name The name of the contact
+ * @property phone The phone number of the contact
  */
 class Logistic(
 	override val name: String,
 	override val phone: String,
-): Contact()
+) : Contact()
 
 /**
- * Represents an emergency contact.
+ * Represents an emergency contact
  *
- * @property name The name of the contact.
- * @property phone The phone number of the contact.
+ * @property name The name of the contact
+ * @property phone The phone number of the contact
  */
 class Emergency(
 	override val name: String,
 	override val phone: String,
-): Contact()
+) : Contact()
 
 /**
- * Creates a contact based on a type.
+ * Creates a contact based on a type
  *
- * @param name The name of the contact.
- * @param phone The phone number of the contact.
- * @return The created contact.
- * @throws IllegalArgumentException If the type is invalid.
+ * @receiver The type of the contact
+ * @param name The name of the contact
+ * @param phone The phone number of the contact
+ * @return The created contact
+ * @throws IllegalArgumentException If the type is invalid
  */
-fun createContact(name: String, phone: String, type: String): Contact {
-	return when(type) {
+fun String.createContact(name: String, phone: String): Contact {
+	return when (this.uppercase()) {
 		"LOGISTIC" -> Logistic(name, phone)
 		"EMERGENCY" -> Emergency(name, phone)
 		else -> throw IllegalArgumentException("Invalid contact type")

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
  * @see ProviderRepository
  * @see Handle
  */
-class JDBIProviderRepository(private val handle: Handle): ProviderRepository {
+class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	/**
 	 * Gets a provider by its id
 	 *

@@ -13,7 +13,7 @@ import java.time.ZonedDateTime
  * @property unloadTimestamp The timestamp when the load was unloaded if it was unloaded.
  */
 data class Load(
-	val reference : String,
+	val reference: String,
 	val timeOfTheDay: String,
 	val amount: Double,
 	val distance: Double,

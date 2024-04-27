@@ -1,6 +1,5 @@
 begin transaction;
 
--- todo: this should be in a separate script
 -- Drop views
 DROP VIEW IF EXISTS temperature_readings;
 DROP VIEW IF EXISTS gas_readings;
@@ -81,12 +80,12 @@ create table if not exists agu
 create table if not exists tank
 (
     agu_cui        CUI,
-    number         int        not null,
-    min_level      PERCENTAGE not null,
-    max_level      PERCENTAGE not null,
-    critical_level PERCENTAGE not null,
+    number         int           not null,
+    min_level      PERCENTAGE    not null,
+    max_level      PERCENTAGE    not null,
+    critical_level PERCENTAGE    not null,
     load_volume    numeric(6, 3) not null,
-    capacity       PERCENTAGE not null,
+    capacity       int           not null,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
@@ -136,8 +135,8 @@ create table if not exists contacts
 create or replace view temperature_readings as
 select measure.agu_cui,
        measure.provider_id,
-       measure.timestamp                             as fetch_timestamp,
-       measure.prediction_for                        as date,
+       measure.timestamp                            as fetch_timestamp,
+       measure.prediction_for                       as date,
        measure.data, -- ->> 'min'                        as min, -- Wrong due to tag
        -- measure.data ->> 'max'                        as max, -- Wrong due to tag
        (measure.timestamp - measure.prediction_for) as days_ahead
@@ -149,9 +148,9 @@ where provider.provider_type = 'temperature';
 create or replace view gas_readings as
 select measure.agu_cui,
        measure.provider_id,
-       measure.timestamp                             as fetch_timestamp,
-       measure.prediction_for                        as date,
-       measure.data                                  as level,
+       measure.timestamp                            as fetch_timestamp,
+       measure.prediction_for                       as date,
+       measure.data                                 as level,
        -- readings.model as prediction_model,
        (measure.timestamp - measure.prediction_for) as days_ahead
 from measure

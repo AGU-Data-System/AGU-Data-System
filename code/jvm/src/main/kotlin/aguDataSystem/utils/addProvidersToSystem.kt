@@ -1,16 +1,16 @@
 package aguDataSystem.utils
 
 import aguDataSystem.server.Environment
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.Handle
-import org.postgresql.ds.PGSimpleDataSource
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.Jdbi
+import org.postgresql.ds.PGSimpleDataSource
 
 //TODO: Not too comfortable about this script.
 //Should work but it's smelly
@@ -18,92 +18,95 @@ import java.net.http.HttpResponse.BodyHandlers
 
 @Serializable
 data class Provider(
-    val id: Int,
-    val name: String,
-    val url: String,
-    val frequency: String,
-    val isActive: Boolean,
-    val lastFetch: String
+	val id: Int,
+	val name: String,
+	val url: String,
+	val frequency: String,
+	val isActive: Boolean,
+	val lastFetch: String
 )
 
 @Serializable
 data class ProvidersResponse(
-    val providers: List<Provider>,
-    val size: Int
+	val providers: List<Provider>,
+	val size: Int
 )
 
 interface TransactionManager {
-    fun <R> run(block: (Transaction) -> R): R
+	fun <R> run(block: (Transaction) -> R): R
 }
 
 class JDBITransactionManager(private val jdbi: Jdbi) : TransactionManager {
-    override fun <R> run(block: (Transaction) -> R): R =
-        jdbi.inTransaction<R, Exception> { handle ->
-            block(JDBITransaction(handle))
-        }
+	override fun <R> run(block: (Transaction) -> R): R =
+		jdbi.inTransaction<R, Exception> { handle ->
+			block(JDBITransaction(handle))
+		}
 }
 
 interface Transaction {
-    fun rollback()
-    val handle: Handle
+	fun rollback()
+	val handle: Handle
 }
 
 class JDBITransaction(override val handle: Handle) : Transaction {
-    override fun rollback() {
-        handle.rollback()
-    }
+	override fun rollback() {
+		handle.rollback()
+	}
 }
 
 fun main() {
-    runBlocking {
-        val dataSource = PGSimpleDataSource().apply {
-            setURL(Environment.getDbUrl())
-        }
-        val jdbi = Jdbi.create(dataSource)
-        val transactionManager = JDBITransactionManager(jdbi)
+	runBlocking {
+		val dataSource = PGSimpleDataSource().apply {
+			setURL(Environment.getDbUrl())
+		}
+		val jdbi = Jdbi.create(dataSource)
+		val transactionManager = JDBITransactionManager(jdbi)
 
-        val scraper = ProviderScraper(transactionManager)
-        scraper.fetchProviders()
-    }
+		val scraper = ProviderScraper(transactionManager)
+		scraper.fetchProviders()
+	}
 }
 
 class ProviderScraper(private val transactionManager: TransactionManager) {
-    private val fetcherUrl = "http://localhost:8080/api/providers"
-    private val client = HttpClient.newHttpClient()
-    private val jsonFormatter = Json { ignoreUnknownKeys = true; prettyPrint = true }
+	private val fetcherUrl = "http://localhost:8080/api/providers"
+	private val client = HttpClient.newHttpClient()
+	private val jsonFormatter = Json { ignoreUnknownKeys = true; prettyPrint = true }
 
-    fun fetchProviders() {
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create(fetcherUrl))
-            .GET()
-            .build()
+	fun fetchProviders() {
+		val request = HttpRequest.newBuilder()
+			.uri(URI.create(fetcherUrl))
+			.GET()
+			.build()
 
-        val response = client.send(request, BodyHandlers.ofString())
-        val providersResponse = jsonFormatter.decodeFromString<ProvidersResponse>(response.body())
-        val providersList = providersResponse.providers
+		val response = client.send(request, BodyHandlers.ofString())
+		val providersResponse = jsonFormatter.decodeFromString<ProvidersResponse>(response.body())
+		val providersList = providersResponse.providers
 
-        transactionManager.run { tx ->
-            providersList.filter { it.name.startsWith("temperature") || it.name.startsWith("gas") }.forEach { provider ->
-                val aguName = provider.name.substringAfterLast(" - ")
-                val cui = fetchCuiFromAguName(tx.handle, aguName)
-                if (cui != null) {
-                    insertProvider(tx.handle, provider, cui)
-                    println("Provider $provider inserted successfully")
-                } else {
-                    println("AGU $aguName not found in the database")
-                }
-            }
-        }
-    }
+		transactionManager.run { tx ->
+			providersList.filter { it.name.startsWith("temperature") || it.name.startsWith("gas") }
+				.forEach { provider ->
+					val aguName = provider.name.substringAfterLast(" - ")
+					val cui = fetchCuiFromAguName(tx.handle, aguName)
+					if (cui != null) {
+						insertProvider(tx.handle, provider, cui)
+						println("Provider $provider inserted successfully")
+					} else {
+						println("AGU $aguName not found in the database")
+					}
+				}
+		}
+	}
 
-    private fun fetchCuiFromAguName(handle: Handle, aguName: String): String? =
-        handle.createQuery("SELECT cui FROM agu WHERE name = :name")
-            .bind("name", aguName)
-            .mapTo(String::class.java)
-            .firstOrNull()
+	private fun fetchCuiFromAguName(handle: Handle, aguName: String): String? =
+		handle.createQuery("SELECT cui FROM agu WHERE name = :name")
+			.bind("name", aguName)
+			.mapTo(String::class.java)
+			.firstOrNull()
 
-    private fun insertProvider(handle: Handle, provider: Provider, cui: String) {
-        handle.execute("INSERT INTO provider (id, agu_cui, provider_type) VALUES (?, ?, ?)",
-            provider.id, cui, if (provider.name.startsWith("temperature")) "temperature" else "gas")
-    }
+	private fun insertProvider(handle: Handle, provider: Provider, cui: String) {
+		handle.execute(
+			"INSERT INTO provider (id, agu_cui, provider_type) VALUES (?, ?, ?)",
+			provider.id, cui, if (provider.name.startsWith("temperature")) "temperature" else "gas"
+		)
+	}
 }

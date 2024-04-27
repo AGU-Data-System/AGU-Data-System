@@ -28,7 +28,7 @@ class ChronService(
 ) {
 
 	private val chronPoolSize = 10
-	private val scheduledChron : MutableMap<Int, ScheduledFuture<*>> = ConcurrentHashMap()
+	private val scheduledChron: MutableMap<Int, ScheduledFuture<*>> = ConcurrentHashMap()
 	private val chronScheduler: ScheduledExecutorService =
 		Executors.newScheduledThreadPool(chronPoolSize)
 
@@ -50,7 +50,7 @@ class ChronService(
 			val activeChron = it.providerRepository.getAllProviders()
 			activeChron.forEach { provider ->
 				logger.info("Scheduling chron task for provider: {}", provider)
-				if (provider.getLastReading().timeStamp.plusHours(1) < LocalDateTime.now()) {
+				if (provider.getLastReading().timestamp.plusHours(1) < LocalDateTime.now()) {
 					scheduleChronTask(provider)
 				}
 			}
@@ -62,8 +62,8 @@ class ChronService(
 	 *
 	 * @param provider The provider to schedule
 	 */
-	fun scheduleChronTask(provider : Provider) {
-		val delay = calculateInitialDelay(provider.getLastReading().timeStamp)
+	fun scheduleChronTask(provider: Provider) {
+		val delay = calculateInitialDelay(provider.getLastReading().timestamp)
 
 		logger.info("Scheduling chron task for provider: {} with delay: {}", provider, delay)
 

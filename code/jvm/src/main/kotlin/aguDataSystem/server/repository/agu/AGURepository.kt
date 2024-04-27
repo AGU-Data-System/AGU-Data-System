@@ -6,7 +6,7 @@ import aguDataSystem.server.domain.AGU
  * Interface for the AGU repository
 
  */
-interface AGURepository{
+interface AGURepository {
 
 	/**
 	 * Get all AGUs

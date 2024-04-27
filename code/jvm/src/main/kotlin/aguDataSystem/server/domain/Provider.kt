@@ -38,15 +38,16 @@ data class TemperatureProvider(
 ) : Provider()
 
 /**
- * Creates a Provider based on a type.
- * @param id The id of the Provider.
- * @param readings The readings of the Provider.
- * @param type The type of the Provider.
- * @return The created Provider.
- * @throws IllegalArgumentException If the type is invalid.
+ * Creates a Provider based on a type
+ *
+ * @receiver The type of the Provider
+ * @param id The id of the Provider
+ * @param readings The readings of the Provider
+ * @return The created Provider
+ * @throws IllegalArgumentException If the type is invalid
  */
-fun createProvider(id: Int, readings: List<Reading>, type: String): Provider {
-	return when(type) {
+fun String.createProvider(id: Int, readings: List<Reading>): Provider {
+	return when (this.uppercase()) {
 		"GAS" -> GasProvider(id, readings)
 		"TEMPERATURE" -> TemperatureProvider(id, readings)
 		else -> throw IllegalArgumentException("Invalid provider type")
