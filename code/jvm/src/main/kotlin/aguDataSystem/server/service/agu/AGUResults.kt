@@ -1,6 +1,6 @@
 package aguDataSystem.server.service.agu
 
-import aguDataSystem.server.domain.AGU
+import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.utils.Either
 

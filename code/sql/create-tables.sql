@@ -114,7 +114,7 @@ create table if not exists measure
     foreign key (agu_cui) references agu (cui),
     foreign key (provider_id) references provider (id),
 
-    primary key (timestamp, agu_cui, provider_id)
+    primary key (timestamp, agu_cui, provider_id, tag, prediction_for)
 );
 
 create table if not exists contacts

@@ -25,4 +25,28 @@ values ('ze-alfandega da fe', '123456789', 'emergency', 'PT1701000000000006JQ'),
        ('ana-alijo', '123456789', 'logistic', 'PT1701000000000009JL'),
        ('ana-carrazeda', '123456789', 'logistic', 'PT1701000000000012JE');
 
+-- Gas
+insert into provider
+values (1, 'PT1701000000000006JQ', 'gas'),
+       (2, 'PT1701000000000009JL', 'gas'),
+       (3, 'PT1701000000000012JE', 'gas');
+
+insert into measure
+values (now(), 'PT1701000000000006JQ', 1, 'level', 70, now()),
+       (now(), 'PT1701000000000006JQ', 1, 'level', 80, now() + interval '1 day'),
+       (now(), 'PT1701000000000006JQ', 1, 'level', 60, now() + interval '2 day');
+
+-- Temperature
+insert into provider
+values (4, 'PT1701000000000006JQ', 'temperature'),
+       (5, 'PT1701000000000009JL', 'temperature'),
+       (6, 'PT1701000000000012JE', 'temperature');
+
+insert into measure
+values (now(), 'PT1701000000000006JQ', 4, 'min', 20, now()),
+       (now(), 'PT1701000000000006JQ', 4, 'max', 25, now()),
+       (now(), 'PT1701000000000006JQ', 4, 'min', 30, now() + interval '1 day'),
+       (now(), 'PT1701000000000006JQ', 4, 'max', 35, now() + interval '1 day');
+
+
 COMMIT;

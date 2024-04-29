@@ -1,6 +1,6 @@
 package aguDataSystem.server.http.controllers.agu.models.addAgu
 
-import aguDataSystem.server.domain.ContactDTO
+import aguDataSystem.server.domain.contact.ContactDTO
 
 /**
  * The input model for creating a contact

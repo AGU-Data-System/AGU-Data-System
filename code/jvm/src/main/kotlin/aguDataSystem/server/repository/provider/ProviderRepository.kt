@@ -1,8 +1,8 @@
 package aguDataSystem.server.repository.provider
 
-import aguDataSystem.server.domain.AGU
-import aguDataSystem.server.domain.Provider
-import aguDataSystem.server.domain.Reading
+import aguDataSystem.server.domain.agu.AGU
+import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.reading.Reading
 
 /**
  * A repository for the providers

@@ -1,4 +1,9 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.agu
+
+import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.Location
+import aguDataSystem.server.domain.contact.ContactDTO
+import aguDataSystem.server.domain.tank.TankDTO
 
 /**
  * Data Transfer Object for creating an AGU

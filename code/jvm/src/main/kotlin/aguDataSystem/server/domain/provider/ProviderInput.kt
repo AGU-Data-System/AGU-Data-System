@@ -1,4 +1,4 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.provider
 
 import kotlinx.serialization.Serializable
 

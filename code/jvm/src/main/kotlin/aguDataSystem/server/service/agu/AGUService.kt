@@ -1,10 +1,10 @@
 package aguDataSystem.server.service.agu
 
-import aguDataSystem.server.domain.AGUCreationDTO
-import aguDataSystem.server.domain.AGUDomain
 import aguDataSystem.server.domain.GasLevels
-import aguDataSystem.server.domain.GasProviderInput
-import aguDataSystem.server.domain.TemperatureProviderInput
+import aguDataSystem.server.domain.agu.AGUCreationDTO
+import aguDataSystem.server.domain.agu.AGUDomain
+import aguDataSystem.server.domain.provider.GasProviderInput
+import aguDataSystem.server.domain.provider.TemperatureProviderInput
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.utils.failure

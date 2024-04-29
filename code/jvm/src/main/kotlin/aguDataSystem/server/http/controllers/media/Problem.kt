@@ -1,6 +1,6 @@
 package aguDataSystem.server.http.controllers.media
 
-import aguDataSystem.server.domain.AGUDomain
+import aguDataSystem.server.domain.agu.AGUDomain
 import java.net.URI
 import org.springframework.http.ResponseEntity
 
@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity
  * @param typeUri The type of the problem
  * @param title The title of the problem
  */
-class Problem(typeUri: URI, val title: String, val details : String? = null) {
+class Problem(typeUri: URI, val title: String, val details: String? = null) {
 
 	val type: String = typeUri.toASCIIString()
 

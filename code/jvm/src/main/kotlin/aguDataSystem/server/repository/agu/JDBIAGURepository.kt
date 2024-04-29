@@ -1,6 +1,6 @@
 package aguDataSystem.server.repository.agu
 
-import aguDataSystem.server.domain.AGU
+import aguDataSystem.server.domain.agu.AGU
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory

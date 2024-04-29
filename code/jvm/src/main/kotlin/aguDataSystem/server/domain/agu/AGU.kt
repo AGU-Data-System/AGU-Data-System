@@ -1,4 +1,11 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.agu
+
+import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.Location
+import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.contact.Contact
+import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.tank.Tank
 
 /**
  * Represents the Autonomous Gas Unit (AGU) in the system.

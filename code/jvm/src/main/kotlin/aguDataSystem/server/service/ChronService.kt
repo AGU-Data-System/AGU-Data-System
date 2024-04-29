@@ -1,6 +1,6 @@
 package aguDataSystem.server.service
 
-import aguDataSystem.server.domain.Provider
+import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.repository.TransactionManager
 import jakarta.annotation.PostConstruct
 import java.time.Duration

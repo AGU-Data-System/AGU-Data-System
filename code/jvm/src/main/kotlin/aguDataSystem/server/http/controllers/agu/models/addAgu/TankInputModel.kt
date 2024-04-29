@@ -1,7 +1,7 @@
 package aguDataSystem.server.http.controllers.agu.models.addAgu
 
 import aguDataSystem.server.domain.GasLevels
-import aguDataSystem.server.domain.TankDTO
+import aguDataSystem.server.domain.tank.TankDTO
 
 /**
  * The input model for creating a tank

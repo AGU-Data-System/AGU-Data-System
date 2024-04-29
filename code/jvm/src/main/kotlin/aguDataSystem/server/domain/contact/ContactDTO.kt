@@ -1,4 +1,4 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.contact
 
 /**
  * Data Transfer Object for creating a contact

@@ -1,6 +1,6 @@
 package aguDataSystem.server.repository.agu
 
-import aguDataSystem.server.domain.AGU
+import aguDataSystem.server.domain.agu.AGU
 
 /**
  * Interface for the AGU repository

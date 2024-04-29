@@ -1,11 +1,12 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.agu
 
+import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.utils.Either
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpRequest.BodyPublishers
-import java.net.http.HttpResponse.BodyHandlers
+import java.net.http.HttpResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.springframework.stereotype.Component
@@ -34,7 +35,8 @@ class AGUDomain {
 	 * @return the generated URL
 	 */
 	fun generateTemperatureUrl(latitude: Double, longitude: Double): String {
-		return TEMPERATURE_URI_TEMPLATE.replace("{latitude}", latitude.toString())
+		return TEMPERATURE_URI_TEMPLATE
+			.replace("{latitude}", latitude.toString())
 			.replace("{longitude}", longitude.toString())
 	}
 
@@ -97,13 +99,13 @@ class AGUDomain {
 		val request = HttpRequest.newBuilder()
 			.uri(URI.create(FETCHER_URL))
 			.header("Content-Type", "application/json")
-			.POST(BodyPublishers.ofString(jsonFormatter.encodeToString(providerInput)))
+			.POST(HttpRequest.BodyPublishers.ofString(jsonFormatter.encodeToString(providerInput)))
 			.build()
 
 		return try {
 			println("Sending POST request to $FETCHER_URL")
 			println("Request body: ${jsonFormatter.encodeToString(providerInput)}")
-			val response = client.send(request, BodyHandlers.ofString())
+			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
 			println("Response status code: ${response.statusCode()}")
 			println("Response body: ${response.body()}")
@@ -119,6 +121,7 @@ class AGUDomain {
 			Either.Left(500)
 		}
 	}
+
 }
 
 /**

@@ -38,7 +38,7 @@ class AguController(private val service: AGUService) {
 	 */
 	@PostMapping(URIs.Agu.CREATE)
 	fun create(@RequestBody aguInput: AGUCreationInputModel): ResponseEntity<*> {
-        return when (val res = service.createAGU(aguInput.toAGUCreationDTO())) {
+		return when (val res = service.createAGU(aguInput.toAGUCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
 			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value.cui)).body(res.value)
 		}
@@ -51,17 +51,41 @@ class AguController(private val service: AGUService) {
 	 * @return the response entity to return
 	 */
 	private fun AGUCreationError.resolveProblem(): ResponseEntity<*> =
-        when(this) {
-            AGUCreationError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
-            AGUCreationError.InvalidContact -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidContact)
-            AGUCreationError.InvalidContactType -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidContactType)
-            AGUCreationError.InvalidCoordinates -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCoordinates)
-            AGUCreationError.InvalidCriticalLevel -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCriticalLevel)
-            AGUCreationError.InvalidDNO -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidDNO)
-            AGUCreationError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
-            AGUCreationError.InvalidLoadVolume -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLoadVolume)
-            AGUCreationError.InvalidMaxLevel -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidMaxLevel)
-            AGUCreationError.InvalidMinLevel -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidMinLevel)
-            AGUCreationError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
-        }
+		when (this) {
+			AGUCreationError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
+			AGUCreationError.InvalidContact -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidContact)
+			AGUCreationError.InvalidContactType -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidContactType
+			)
+
+			AGUCreationError.InvalidCoordinates -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidCoordinates
+			)
+
+			AGUCreationError.InvalidCriticalLevel -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidCriticalLevel
+			)
+
+			AGUCreationError.InvalidDNO -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidDNO)
+			AGUCreationError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+			AGUCreationError.InvalidLoadVolume -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidLoadVolume
+			)
+
+			AGUCreationError.InvalidMaxLevel -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidMaxLevel
+			)
+
+			AGUCreationError.InvalidMinLevel -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidMinLevel
+			)
+
+			AGUCreationError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
+		}
 }

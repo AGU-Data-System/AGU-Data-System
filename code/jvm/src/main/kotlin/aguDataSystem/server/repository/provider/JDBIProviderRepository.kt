@@ -1,9 +1,10 @@
 package aguDataSystem.server.repository.provider
 
-import aguDataSystem.server.domain.AGU
-import aguDataSystem.server.domain.Provider
-import aguDataSystem.server.domain.Reading
+import aguDataSystem.server.domain.agu.AGU
+import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.reading.Reading
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
 
 /**
@@ -25,7 +26,22 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	 * Gets all the providers
 	 */
 	override fun getAllProviders(): List<Provider> {
-		TODO("Not yet implemented")
+
+		logger.info("Getting all providers")
+
+		val providers = handle.createQuery(
+			"""
+			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
+			join measure on provider.id = measure.provider_id
+			GROUP BY provider.id
+			""".trimIndent()
+		)
+			.mapTo<Provider>()
+			.list()
+
+		logger.info("Fetched {} providers", providers.size)
+
+		return providers
 	}
 
 	/**
