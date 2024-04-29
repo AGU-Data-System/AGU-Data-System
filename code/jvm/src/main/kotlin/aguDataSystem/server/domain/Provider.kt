@@ -10,8 +10,16 @@ sealed class Provider {
 	/**
 	 * Returns the last reading
 	 */
-	fun getLastReading(): Reading {
-		return readings.last()
+	fun getLatestReading(): Reading {
+		return getLatestReadingOrNull() ?: throw IllegalArgumentException("No readings found")
+		// TODO: find a way to take out the exception on the case of no readings is empty
+	}
+
+	/**
+	 * Returns the last reading or null
+	 */
+	private fun getLatestReadingOrNull(): Reading? {
+		return readings.maxByOrNull { it.timestamp }
 	}
 }
 
@@ -48,8 +56,8 @@ data class TemperatureProvider(
  */
 fun String.createProvider(id: Int, readings: List<Reading>): Provider {
 	return when (this.uppercase()) {
-		"GAS" -> GasProvider(id, readings)
-		"TEMPERATURE" -> TemperatureProvider(id, readings)
+		"GAS" -> GasProvider(id = id, readings = readings)
+		"TEMPERATURE" -> TemperatureProvider(id = id, readings = readings)
 		else -> throw IllegalArgumentException("Invalid provider type")
 	}
 }

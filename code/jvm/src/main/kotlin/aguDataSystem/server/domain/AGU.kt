@@ -5,9 +5,7 @@ package aguDataSystem.server.domain
  *
  * @property name name of the AGU
  * @property cui CUI of the AGU
- * @property minLevel minimum level of the AGU
- * @property maxLevel maximum level of the AGU
- * @property criticalLevel critical level of the AGU
+ * @property levels gas levels of the AGU
  * @property capacity capacity of the AGU
  * @property location location of the AGU
  * @property dno DNO of the AGU
@@ -22,9 +20,7 @@ package aguDataSystem.server.domain
 data class AGU(
 	val cui: String,
 	val name: String,
-	val minLevel: Int,
-	val maxLevel: Int,
-	val criticalLevel: Int,
+	val levels: GasLevels,
 	val loadVolume: Int,
 	val location: Location,
 	val dno: DNO,

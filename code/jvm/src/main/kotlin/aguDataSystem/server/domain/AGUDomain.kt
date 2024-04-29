@@ -1,29 +1,32 @@
 package aguDataSystem.server.domain
 
 import aguDataSystem.utils.Either
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.springframework.stereotype.Component
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.springframework.stereotype.Component
 
 @Component
 class AGUDomain {
 
 	companion object {
 
-		private val cuiRegex = Regex("^PT[0-9]{16}[A-Z]{2}$")
-		private val phoneRegex = Regex("^[0-9]{9}$")
-		private val contactTypeRegex = Regex("^(LOGISTIC|EMERGENCY)$")
-		private const val TEMPERATURE_URI_TEMPLATE = "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
-		private const val FETCHER_URL = "http://localhost:8080/api/provider" //TODO: Maybe add this dinamically from ENV variables and from docker
+		val cuiRegex = Regex("^PT[0-9]{16}[A-Z]{2}$")
+		val phoneRegex = Regex("^[0-9]{9}$")
+		val contactTypeRegex = Regex("^(LOGISTIC|EMERGENCY)$")
+		private const val TEMPERATURE_URI_TEMPLATE =
+			"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
+		private const val FETCHER_URL =
+			"http://localhost:8080/api/provider" //TODO: Add this dynamically from ENV variables and from docker
 	}
 
 	private val client = HttpClient.newHttpClient()
 	private val jsonFormatter = Json { prettyPrint = true }
+
 	/**
 	 * Generates the temperature URL for the given coordinates
 	 * @param latitude the latitude
@@ -31,7 +34,8 @@ class AGUDomain {
 	 * @return the generated URL
 	 */
 	fun generateTemperatureUrl(latitude: Double, longitude: Double): String {
-		return TEMPERATURE_URI_TEMPLATE.replace("{latitude}", latitude.toString()).replace("{longitude}", longitude.toString())
+		return TEMPERATURE_URI_TEMPLATE.replace("{latitude}", latitude.toString())
+			.replace("{longitude}", longitude.toString())
 	}
 
 	/**
@@ -78,19 +82,18 @@ class AGUDomain {
 
 	/**
 	 * Checks if the levels are valid
-	 * @param minLevel the minimum level
-	 * @param maxLevel the maximum level
-	 * @param criticalLevel the critical level
+	 *
+	 * @param levels the levels to check
 	 * @return true if the levels are valid, false otherwise
 	 */
-	fun areLevelsValid(minLevel: Int, maxLevel: Int, criticalLevel: Int): Boolean = minLevel in criticalLevel..maxLevel
+	fun areLevelsValid(levels: GasLevels): Boolean = levels.min in levels.critical..levels.max
 
 	/**
 	 * Sends a POST request to the fetcher to add a provider
 	 * @param providerInput the provider input
 	 * @return the result of the request (Left is the status code of the error in case of failure, Right is the ID of the created provider in case of success)
 	 */
-	fun addProviderRequest(providerInput: ProviderInput) : AddProviderResult {
+	fun addProviderRequest(providerInput: ProviderInput): AddProviderResult {
 		val request = HttpRequest.newBuilder()
 			.uri(URI.create(FETCHER_URL))
 			.header("Content-Type", "application/json")
@@ -105,7 +108,7 @@ class AGUDomain {
 			println("Response status code: ${response.statusCode()}")
 			println("Response body: ${response.body()}")
 
-			if (response.statusCode() == 201){ // Created the provider
+			if (response.statusCode() == 201) { // Created the provider
 				val providerId = response.body().toInt()
 				Either.Right(providerId)
 			} else {

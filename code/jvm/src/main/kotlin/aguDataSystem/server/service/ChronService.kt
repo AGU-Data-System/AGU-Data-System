@@ -5,7 +5,6 @@ import aguDataSystem.server.repository.TransactionManager
 import jakarta.annotation.PostConstruct
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -50,7 +49,7 @@ class ChronService(
 			val activeChron = it.providerRepository.getAllProviders()
 			activeChron.forEach { provider ->
 				logger.info("Scheduling chron task for provider: {}", provider)
-				if (provider.getLastReading().timestamp.plusHours(1) < LocalDateTime.now()) {
+				if (provider.getLatestReading().timestamp.plusHours(1) < LocalDateTime.now()) {
 					scheduleChronTask(provider)
 				}
 			}
@@ -63,7 +62,7 @@ class ChronService(
 	 * @param provider The provider to schedule
 	 */
 	fun scheduleChronTask(provider: Provider) {
-		val delay = calculateInitialDelay(provider.getLastReading().timestamp)
+		val delay = calculateInitialDelay(provider.getLatestReading().timestamp)
 
 		logger.info("Scheduling chron task for provider: {} with delay: {}", provider, delay)
 
@@ -82,7 +81,7 @@ class ChronService(
 	 * @return The initial delay
 	 */
 	private fun calculateInitialDelay(lastReading: LocalDateTime): Long {
-		val timeSinceLastReading = Duration.between(lastReading, ZonedDateTime.now())
+		val timeSinceLastReading = Duration.between(lastReading, LocalDateTime.now())
 		return if (timeSinceLastReading <= Duration.ofHours(1)) 0 else timeSinceLastReading.toMillis()
 	}
 

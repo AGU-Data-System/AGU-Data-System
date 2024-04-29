@@ -2,6 +2,10 @@ package aguDataSystem.server.domain
 
 /**
  * Represents a location
+ *
+ * @property name name of the location
+ * @property latitude latitude of the location
+ * @property longitude longitude of the location
  */
 data class Location(
 	val name: String,

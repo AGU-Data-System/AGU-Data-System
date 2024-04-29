@@ -3,7 +3,7 @@ package aguDataSystem.server.domain
 import java.time.LocalDateTime
 
 /**
- * Represents a reading
+ * Represents a reading of a sensor.
  *
  * @property timestamp The time when the reading was taken.
  * @property predictionFor The time for which the reading is

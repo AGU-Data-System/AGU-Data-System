@@ -1,6 +1,6 @@
 package aguDataSystem.server.domain
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 /**
  * Represents a Gas Load.
@@ -17,6 +17,6 @@ data class Load(
 	val timeOfTheDay: String,
 	val amount: Double,
 	val distance: Double,
-	val loadTimestamp: ZonedDateTime,
-	val unloadTimestamp: ZonedDateTime?
+	val loadTimestamp: LocalDateTime,
+	val unloadTimestamp: LocalDateTime?
 )

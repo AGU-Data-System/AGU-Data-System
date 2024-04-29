@@ -9,7 +9,7 @@ sealed class Company {
 }
 
 /**
- * Represents the Transport Companies
+ * Represents a Transport Company
  *
  * @property id the id of the Transport Company
  * @property name the name of the Transport Company
@@ -21,8 +21,7 @@ data class TransportCompany(
 
 
 /**
- * Represents the Distribution Network Operators
- *
+ * Represents a Distribution Network Operator
  *
  * @property id the id of the Operator
  * @property name the name of the Operator

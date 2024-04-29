@@ -3,6 +3,7 @@ package aguDataSystem.server.repository.jdbi.mappers
 import aguDataSystem.server.domain.AGU
 import aguDataSystem.server.domain.Contact
 import aguDataSystem.server.domain.DNO
+import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.Provider
 import aguDataSystem.server.domain.Reading
