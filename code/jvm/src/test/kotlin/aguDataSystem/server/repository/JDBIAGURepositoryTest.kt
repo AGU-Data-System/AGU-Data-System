@@ -2,7 +2,6 @@ package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.AGU
 import aguDataSystem.server.domain.DNO
-import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.Reading
 import aguDataSystem.server.domain.Tank

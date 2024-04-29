@@ -13,6 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jsoup.Jsoup
 
+//TODO: Remove this later, as this is not going to production
 @Serializable
 data class ProviderInput(
 	val name: String,
@@ -78,7 +79,6 @@ class GasAndTempScraper {
 			}
 		}
 	}
-
 
 	private fun sendPostRequest(providerInput: ProviderInput) {
 		val request = HttpRequest.newBuilder()

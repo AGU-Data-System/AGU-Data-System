@@ -12,10 +12,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.postgresql.ds.PGSimpleDataSource
 
-//TODO: Not too comfortable about this script.
-//Should work but it's smelly
-//Alternative would be to use a stored procedure and simply make the get for the providers and then call the procedure
-
+//TODO: Remove this later, as this is not going to production
 @Serializable
 data class Provider(
 	val id: Int,

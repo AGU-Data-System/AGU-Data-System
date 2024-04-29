@@ -1,7 +1,7 @@
 package aguDataSystem.server.domain
 
 /**
- * Represents a tank
+ * Represents a tank data transfer object
  *
  * @property number The number of the tank
  * @property minLevel The minimum level of the tank
@@ -10,11 +10,11 @@ package aguDataSystem.server.domain
  * @property loadVolume The load volume of the tank
  * @property capacity The capacity of the tank
  */
-data class Tank(
-	val number: Int,
-	val minLevel: Int,
-	val maxLevel: Int,
-	val criticalLevel: Int,
-	val loadVolume: Int,
-	val capacity: Int,
+data class TankDTO(
+    val number: Int,
+    val minLevel: Int,
+    val maxLevel: Int,
+    val criticalLevel: Int,
+    val loadVolume: Int,
+    val capacity: Int,
 )
