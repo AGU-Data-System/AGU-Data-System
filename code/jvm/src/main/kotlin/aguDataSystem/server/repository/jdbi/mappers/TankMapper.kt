@@ -1,6 +1,6 @@
 package aguDataSystem.server.repository.jdbi.mappers
 
-import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.Tank
 import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToGasLevels
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper

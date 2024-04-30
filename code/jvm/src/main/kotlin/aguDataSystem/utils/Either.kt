@@ -33,3 +33,9 @@ typealias Success<S> = Either.Right<S>
  * Represents Failure
  */
 typealias Failure<F> = Either.Left<F>
+
+// Extension functions for Either
+fun <L, R> Either<L, R>.isSuccess(): Boolean = this is Either.Right
+fun <L, R> Either<L, R>.isFailure(): Boolean = this is Either.Left
+fun <L, R> Either<L, R>.getSuccessOrThrow(): R = (this as Either.Right).value
+fun <L, R> Either<L, R>.getFailureOrThrow(): L = (this as Either.Left).value

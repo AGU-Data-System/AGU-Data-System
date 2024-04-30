@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository.agu
 
 import aguDataSystem.server.domain.agu.AGU
+import aguDataSystem.server.domain.agu.AGUCreationDTO
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -92,10 +93,11 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	/**
 	 * Add AGU
 	 *
-	 * @param agu AGU to add
-	 * @return AGU
+	 * @param aguCreationDTO AGU parameters to create the AGU from
+	 * @param dnoID DNO ID
+	 * @return AGU's CUI code
 	 */
-	override fun addAGU(agu: AGU): AGU {
+	override fun addAGU(aguCreationDTO: AGUCreationDTO, dnoID: Int): String {
 		logger.info("Adding AGU to the database")
 
 		handle.createUpdate(
@@ -110,24 +112,24 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             )
             """.trimIndent()
 		)
-			.bind("cui", agu.cui)
-			.bind("name", agu.name)
-			.bind("isFavorite", agu.isFavorite)
-			.bind("minLevel", agu.levels.min)
-			.bind("maxLevel", agu.levels.max)
-			.bind("criticalLevel", agu.levels.critical)
-			.bind("loadVolume", agu.loadVolume)
-			.bind("latitude", agu.location.latitude)
-			.bind("longitude", agu.location.longitude)
-			.bind("locationName", agu.location.name)
-			.bind("dnoId", agu.dno.id)
-			.bind("notes", agu.notes)
-			.bind("training", agu.training)
-			.bind("image", agu.image)
+			.bind("cui", aguCreationDTO.cui)
+			.bind("name", aguCreationDTO.name)
+			.bind("isFavorite", aguCreationDTO.isFavorite)
+			.bind("minLevel", aguCreationDTO.levels.min)
+			.bind("maxLevel", aguCreationDTO.levels.max)
+			.bind("criticalLevel", aguCreationDTO.levels.critical)
+			.bind("loadVolume", aguCreationDTO.loadVolume)
+			.bind("latitude", aguCreationDTO.location.latitude)
+			.bind("longitude", aguCreationDTO.location.longitude)
+			.bind("locationName", aguCreationDTO.location.name)
+			.bind("dnoId", dnoID)
+			.bind("notes", aguCreationDTO.notes)
+			.bind("training", aguCreationDTO.training)
+			.bind("image", aguCreationDTO.image)
 			.execute()
 
-		logger.info("AGU with CUI: {}, added to the database", agu.cui)
-		return agu
+		logger.info("AGU with CUI: {}, added to the database", aguCreationDTO.cui)
+		return aguCreationDTO.cui
 	}
 
 	/**

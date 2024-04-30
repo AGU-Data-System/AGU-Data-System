@@ -16,4 +16,5 @@ sealed class AGUCreationError {
 	data object InvalidContact : AGUCreationError()
 	data object InvalidContactType : AGUCreationError()
 	data object InvalidTank : AGUCreationError()
+	data object ProviderError : AGUCreationError()
 }

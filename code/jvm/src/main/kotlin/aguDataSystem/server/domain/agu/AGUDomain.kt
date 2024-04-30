@@ -19,6 +19,8 @@ class AGUDomain {
 		val cuiRegex = Regex("^PT[0-9]{16}[A-Z]{2}$")
 		val phoneRegex = Regex("^[0-9]{9}$")
 		val contactTypeRegex = Regex("^(LOGISTIC|EMERGENCY)$")
+		const val TEMPERATURE_TYPE = "temperature"
+		const val GAS_TYPE = "gas"
 		private const val TEMPERATURE_URI_TEMPLATE =
 			"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
 		private const val FETCHER_URL =
@@ -122,6 +124,37 @@ class AGUDomain {
 		}
 	}
 
+	/**
+	 * Sends a DELETE request to the fetcher to delete a provider
+	 * @param providerId the ID of the provider to delete
+	 * @return the result of the request (Left is the status code of the error in case of failure, Right is true in case of success)
+	 */
+	fun deleteProviderRequest(providerId: Int): DeleteProviderResult {
+		val deleteUrl = "$FETCHER_URL/$providerId"
+
+		val request = HttpRequest.newBuilder()
+			.uri(URI.create(deleteUrl))
+			.header("Content-Type", "application/json")
+			.DELETE()
+			.build()
+
+		return try {
+			println("Sending DELETE request to $deleteUrl")
+			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+
+			println("Response status code: ${response.statusCode()}")
+			if (response.statusCode() == 200) {
+				Either.Right(true)
+			} else {
+				Either.Left(response.statusCode())
+			}
+		} catch (e: Exception) {
+			println("Error sending DELETE request: ${e.message}")
+			Either.Left(500)
+		}
+	}
+
+
 }
 
 /**
@@ -130,3 +163,10 @@ class AGUDomain {
  * Right is the ID of the created provider in case of success
  */
 typealias AddProviderResult = Either<Int, Int>
+
+/**
+ * The result of deleting a provider
+ * Left is the status code of the error in case of failure
+ * Right is true in case of success
+ */
+typealias DeleteProviderResult = Either<Int, Boolean>

@@ -24,10 +24,11 @@ interface ProviderRepository {
 	/**
 	 * Saves a provider for a given AGU
 	 *
-	 * @param provider the provider to save
-	 * @param agu the AGU to save the provider for
+	 * @param cui the cui of the AGU
+	 * @param providerId the id of the provider
+	 * @param providerType the type of the provider
 	 */
-	fun saveProvider(provider: Provider, agu: AGU)
+	fun addProvider(cui: String, providerId: Int, providerType: String)
 
 	/**
 	 * Deletes a provider by its id and all its readings from a given AGU

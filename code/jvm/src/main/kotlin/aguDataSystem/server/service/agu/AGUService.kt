@@ -8,6 +8,10 @@ import aguDataSystem.server.domain.provider.TemperatureProviderInput
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.utils.failure
+import aguDataSystem.utils.getSuccessOrThrow
+import aguDataSystem.utils.isFailure
+import aguDataSystem.utils.isSuccess
+import aguDataSystem.utils.success
 import org.springframework.stereotype.Service
 
 /**
@@ -25,33 +29,33 @@ class AGUService(
 	/**
 	 * Create a new AGU
 	 *
-	 * @param agu the AGU to create
+	 * @param creationAGU the AGU to create
 	 * @return the created AGU
 	 */
-	fun createAGU(agu: AGUCreationDTO): AGUCreationResult {
-		if (!aguDomain.isCUIValid(agu.cui)) {
+	fun createAGU(creationAGU: AGUCreationDTO): AGUCreationResult {
+		if (!aguDomain.isCUIValid(creationAGU.cui)) {
 			return failure(AGUCreationError.InvalidCUI)
 		}
 
-		if (!(aguDomain.isLatitudeValid(agu.location.latitude) && aguDomain.isLongitudeValid(agu.location.longitude))) {
+		if (!(aguDomain.isLatitudeValid(creationAGU.location.latitude) && aguDomain.isLongitudeValid(creationAGU.location.longitude))) {
 			return failure(AGUCreationError.InvalidCoordinates)
 		}
 
-		ensureLevels(agu.levels)?.let {
+		ensureLevels(creationAGU.levels)?.let {
 			return it
 		}
 
-		if (agu.tanks.isEmpty()) {
+		if (creationAGU.tanks.isEmpty()) {
 			return failure(AGUCreationError.InvalidTank)
 		}
 
-		agu.tanks.forEach { tank ->
+		creationAGU.tanks.forEach { tank ->
 			ensureLevels(tank.levels)?.let {
 				return it
 			}
 		}
 
-		agu.contacts.forEach {
+		creationAGU.contacts.forEach {
 			if (!aguDomain.isPhoneValid(it.phone) || it.name.isEmpty()) {
 				return failure(AGUCreationError.InvalidContact)
 			}
@@ -60,22 +64,37 @@ class AGUService(
 			}
 		}
 
-		val temperatureUrl = aguDomain.generateTemperatureUrl(agu.location.latitude, agu.location.longitude)
+		val temperatureUrl = aguDomain.generateTemperatureUrl(creationAGU.location.latitude, creationAGU.location.longitude)
 
-		val gasProviderInput = GasProviderInput(agu.name, agu.gasLevelUrl)
+		val gasProviderInput = GasProviderInput(creationAGU.name, creationAGU.gasLevelUrl)
+		val temperatureProviderInput = TemperatureProviderInput(creationAGU.name, temperatureUrl)
 		val gasRes = aguDomain.addProviderRequest(gasProviderInput)
-		val temperatureProviderInput = TemperatureProviderInput(agu.name, temperatureUrl)
 		val tempRes = aguDomain.addProviderRequest(temperatureProviderInput)
-		//TODO: Handle the result of the requests
-		return transactionManager.run {
-			//verify DNO exists in the database
-			//create AGU
-			//create tanks
-			//create contacts
 
-			//create providers with returned id from the fetcher
-			//TODO: return the ID (CUI) of the created AGU
-			TODO()
+		if (gasRes.isFailure() || tempRes.isFailure()) {
+			if (gasRes.isSuccess()) {
+				aguDomain.deleteProviderRequest(gasRes.getSuccessOrThrow())
+			}
+			if (tempRes.isSuccess()) {
+				aguDomain.deleteProviderRequest(tempRes.getSuccessOrThrow())
+			}
+			return failure(AGUCreationError.ProviderError)
+		}
+		// TODO: Não sei o que fazer no caso do delete não funcionar
+
+		return transactionManager.run {
+			val dno = it.dnoRepository.getByName(creationAGU.dnoName) ?: return@run failure(AGUCreationError.InvalidDNO)
+			it.aguRepository.addAGU(creationAGU, dno.id)
+			creationAGU.tanks.forEach { tank ->
+				it.tankRepository.addTank(creationAGU.cui, tank)
+			}
+			creationAGU.contacts.forEach { contact ->
+				it.contactRepository.addContact(creationAGU.cui, contact)
+			}
+			it.providerRepository.addProvider(creationAGU.cui, gasRes.getSuccessOrThrow(), AGUDomain.GAS_TYPE)
+			it.providerRepository.addProvider(creationAGU.cui, tempRes.getSuccessOrThrow(), AGUDomain.TEMPERATURE_TYPE)
+
+			success(creationAGU.cui)
 		}
 	}
 
