@@ -16,7 +16,7 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 	companion object {
 		private const val MEDIA_TYPE = "application/problem+json"
 		private const val PROBLEM_BASE_URL =
-			"https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/"
+			"https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/" //TODO: Make this page with the problems and the description
 
 		/**
 		 * Creates a response entity with the given status and problem
@@ -92,6 +92,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-dno"),
 			title = "Invalid DNO.",
 			details = "The DNO must have a name."
+		)
+
+		val ProviderError = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-provider"),
+			title = "Invalid Provider.",
+			details = "Couldn't add the provider to the periodic fetcher."
 		)
 	}
 }

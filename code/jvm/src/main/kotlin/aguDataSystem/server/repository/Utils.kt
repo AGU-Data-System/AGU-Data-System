@@ -1,6 +1,10 @@
 package aguDataSystem.server.repository
 
 import aguDataSystem.server.repository.jdbi.mappers.AGUMapper
+import aguDataSystem.server.repository.jdbi.mappers.ContactMapper
+import aguDataSystem.server.repository.jdbi.mappers.DNOMapper
+import aguDataSystem.server.repository.jdbi.mappers.ProviderMapper
+import aguDataSystem.server.repository.jdbi.mappers.TankMapper
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin
@@ -14,6 +18,10 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 	installPlugin(PostgresPlugin())
 
 	registerRowMapper(AGUMapper())
+	registerRowMapper(ContactMapper())
+	registerRowMapper(DNOMapper())
+	registerRowMapper(ProviderMapper())
+	registerRowMapper(TankMapper())
 
 	return this
 }
