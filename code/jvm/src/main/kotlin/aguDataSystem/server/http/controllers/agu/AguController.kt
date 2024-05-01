@@ -24,12 +24,12 @@ class AguController(private val service: AGUService) {
 	/**
 	 * Get an AGU by ID
 	 *
-	 * @param aguId the ID of the AGU to get
+	 * @param aguCui the CUI of the AGU to search for
 	 * @return the AGU with the given ID
 	 */
 	@GetMapping(URIs.Agu.GET_BY_ID)
-	fun getById(@PathVariable aguId: Int): ResponseEntity<*> {
-		return when (val res = service.getAGUById(aguId)) {
+	fun getById(@PathVariable aguCui: String): ResponseEntity<*> {
+		return when (val res = service.getAGUById(aguCui)) {
 			is Failure -> res.value.resolveProblem()
 			is Success -> ResponseEntity.ok(res.value)
 		}

@@ -28,11 +28,17 @@ class AGUService(
 ) {
 
 	/**
-	 * Get an AGU by ID
-	 * TODO: Implement this
+	 * Get an AGU by its CUI
+	 *
+	 * @param cui the CUI of the AGU
+	 * @return the AGU
 	 */
-	fun getAGUById(aguId: Int): GetAGUResult {
-		return failure(GetAGUError.AGUNotFound)
+	fun getAGUById(cui: String): GetAGUResult {
+		return transactionManager.run {
+			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
+
+			success(agu)
+		}
 	}
 
 	/**

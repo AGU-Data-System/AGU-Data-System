@@ -15,7 +15,7 @@ object URIs {
 	 */
 	object Agu {
 		const val ROOT = "$PREFIX/agus"
-		const val GET_BY_ID = "/{aguId}"
+		const val GET_BY_ID = "/{aguCui}"
 		const val CREATE = "/create"
 
 		fun byID(id: String) = UriTemplate(ROOT + GET_BY_ID).expand(id)
