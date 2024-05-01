@@ -1,10 +1,11 @@
 package aguDataSystem.server.repository.jdbi.mappers
 
-import aguDataSystem.server.domain.Contact
 import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.Tank
 import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.contact.Contact
+import aguDataSystem.server.domain.contact.toContactType
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.reading.GasReading
@@ -25,7 +26,7 @@ object MapperUtils {
                 Contact(
                     name = rs.getString("name"),
                     phone = rs.getString("phone"),
-                    type = rs.getString("type")
+					type = rs.getString("type").toContactType()
                 )
             )
         }

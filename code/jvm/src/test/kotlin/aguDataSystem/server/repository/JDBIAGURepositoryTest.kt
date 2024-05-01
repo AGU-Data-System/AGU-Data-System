@@ -1,6 +1,6 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.domain.Contact
+import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGU
@@ -8,6 +8,7 @@ import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.reading.GasReading
 import aguDataSystem.server.domain.Tank
+import aguDataSystem.server.domain.contact.toContactType
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
@@ -44,12 +45,12 @@ class JDBIAGURepositoryTest {
 			Contact(
 				name = "John Doe",
 				phone = "1234567890",
-				type = "LOGISTIC"
+				type = "LOGISTIC".toContactType()
 			),
 			Contact(
 				name = "Jane Doe",
 				phone = "0987654321",
-				type = "EMERGENCY"
+				type = "EMERGENCY".toContactType()
 			)
 		),
 		tanks = listOf(

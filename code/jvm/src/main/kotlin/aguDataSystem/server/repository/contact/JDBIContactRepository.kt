@@ -1,6 +1,6 @@
 package aguDataSystem.server.repository.contact
 
-import aguDataSystem.server.domain.Contact
+import aguDataSystem.server.domain.contact.Contact
 import org.jdbi.v3.core.Handle
 
 class JDBIContactRepository(private val handle: Handle): ContactRepository {

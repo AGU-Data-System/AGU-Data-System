@@ -99,5 +99,11 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			title = "Invalid Provider.",
 			details = "Couldn't add the provider to the periodic fetcher."
 		)
+
+		val AGUNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "agu-not-found"),
+			title = "AGU Not Found.",
+			details = "The AGU with the given ID was not found."
+		)
 	}
 }

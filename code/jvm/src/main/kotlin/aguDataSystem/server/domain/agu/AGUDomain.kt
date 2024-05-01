@@ -1,6 +1,7 @@
 package aguDataSystem.server.domain.agu
 
 import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.contact.ContactType
 import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.utils.Either
 import java.net.URI
@@ -9,6 +10,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,10 +23,17 @@ class AGUDomain {
 		val contactTypeRegex = Regex("^(LOGISTIC|EMERGENCY)$")
 		const val TEMPERATURE_TYPE = "temperature"
 		const val GAS_TYPE = "gas"
+		private const val PROVIDER_CONTENT_TYPE = "application/json"
 		private const val TEMPERATURE_URI_TEMPLATE =
 			"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
-		private const val FETCHER_URL =
-			"http://localhost:8080/api/provider" //TODO: Add this dynamically from ENV variables and from docker
+		private val FETCHER_URL: String
+			get() {
+				return if (System.getenv("FETCHER_URL") != null)
+					System.getenv("FETCHER_URL")
+				else
+					"http://fetcher:8080/api/provider" //TODO: Add this dynamically from ENV variables and from docker
+			}
+
 	}
 
 	private val client = HttpClient.newHttpClient()
@@ -61,7 +70,7 @@ class AGUDomain {
 	 * @param type the contact type to check
 	 * @return true if the contact type is valid, false otherwise
 	 */
-	fun isContactTypeValid(type: String): Boolean = contactTypeRegex.matches(type.uppercase())
+	fun isContactTypeValid(type: String): Boolean = ContactType.entries.any { it.name == type.uppercase() }
 
 	/**
 	 * Checks if a percentage is valid
@@ -75,14 +84,14 @@ class AGUDomain {
 	 * @param latitude the latitude to check
 	 * @return true if the latitude is valid, false otherwise
 	 */
-	fun isLatitudeValid(latitude: Double): Boolean = latitude in -90.0..90.0
+	private fun isLatitudeValid(latitude: Double): Boolean = latitude in -90.0..90.0
 
 	/**
 	 * Checks if a Longitude is valid
 	 * @param longitude the longitude to check
 	 * @return true if the longitude is valid, false otherwise
 	 */
-	fun isLongitudeValid(longitude: Double): Boolean = longitude in -180.0..180.0
+	private fun isLongitudeValid(longitude: Double): Boolean = longitude in -180.0..180.0
 
 	/**
 	 * Checks if the levels are valid
@@ -93,6 +102,16 @@ class AGUDomain {
 	fun areLevelsValid(levels: GasLevels): Boolean = levels.min in levels.critical..levels.max
 
 	/**
+	 * Checks if the coordinates are valid
+	 * @param latitude the latitude to check
+	 * @param longitude the longitude to check
+	 * @return true if the coordinates are valid, false otherwise
+	 */
+	fun areCoordinatesValid(latitude: Double, longitude: Double): Boolean {
+		return isLatitudeValid(latitude) && isLongitudeValid(longitude)
+	}
+
+	/**
 	 * Sends a POST request to the fetcher to add a provider
 	 * @param providerInput the provider input
 	 * @return the result of the request (Left is the status code of the error in case of failure, Right is the ID of the created provider in case of success)
@@ -100,7 +119,7 @@ class AGUDomain {
 	fun addProviderRequest(providerInput: ProviderInput): AddProviderResult {
 		val request = HttpRequest.newBuilder()
 			.uri(URI.create(FETCHER_URL))
-			.header("Content-Type", "application/json")
+			.header("Content-Type", PROVIDER_CONTENT_TYPE)
 			.POST(HttpRequest.BodyPublishers.ofString(jsonFormatter.encodeToString(providerInput)))
 			.build()
 
@@ -112,7 +131,7 @@ class AGUDomain {
 			println("Response status code: ${response.statusCode()}")
 			println("Response body: ${response.body()}")
 
-			if (response.statusCode() == 201) { // Created the provider
+			if (response.statusCode() == HttpStatus.CREATED.value()) { // Created the provider
 				val providerId = response.body().toInt()
 				Either.Right(providerId)
 			} else {
@@ -120,7 +139,7 @@ class AGUDomain {
 			}
 		} catch (e: Exception) {
 			println("Error sending POST request: ${e.message}")
-			Either.Left(500)
+			Either.Left(HttpStatus.INTERNAL_SERVER_ERROR.value())
 		}
 	}
 
@@ -134,7 +153,7 @@ class AGUDomain {
 
 		val request = HttpRequest.newBuilder()
 			.uri(URI.create(deleteUrl))
-			.header("Content-Type", "application/json")
+			.header("Content-Type", PROVIDER_CONTENT_TYPE)
 			.DELETE()
 			.build()
 
@@ -143,18 +162,16 @@ class AGUDomain {
 			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
 			println("Response status code: ${response.statusCode()}")
-			if (response.statusCode() == 200) {
+			if (response.statusCode() == HttpStatus.OK.value()) {
 				Either.Right(true)
 			} else {
 				Either.Left(response.statusCode())
 			}
 		} catch (e: Exception) {
 			println("Error sending DELETE request: ${e.message}")
-			Either.Left(500)
+			Either.Left(HttpStatus.INTERNAL_SERVER_ERROR.value())
 		}
 	}
-
-
 }
 
 /**

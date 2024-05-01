@@ -1,7 +1,7 @@
 package aguDataSystem.server.http.controllers.agu.models.addAgu
 
 import aguDataSystem.server.domain.GasLevels
-import aguDataSystem.server.domain.tank.TankDTO
+import aguDataSystem.server.domain.Tank
 
 /**
  * The input model for creating a tank
@@ -28,7 +28,7 @@ data class TankInputModel(
 	 * @receiver the tank input model
 	 * @return the tank data transfer object
 	 */
-	fun toTankDTO() = TankDTO(
+	fun toTank() = Tank(
 		number = this.number,
 		levels = GasLevels(
 			min = this.minLevel,

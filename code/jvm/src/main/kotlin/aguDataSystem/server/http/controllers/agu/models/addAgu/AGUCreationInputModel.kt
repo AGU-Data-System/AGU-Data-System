@@ -66,8 +66,8 @@ data class AGUCreationInputModel(
 		dnoName = this.dnoName,
 		gasLevelUrl = this.gasLevelUrl,
 		image = this.image,
-		contacts = this.contacts.map { contactInputModel -> contactInputModel.toContact() },
-		tanks = this.tanks.map { tankInputModel -> tankInputModel.toTankDTO() },
+		contacts = this.contacts.map { contactInputModel -> contactInputModel.toContactDTO() },
+		tanks = this.tanks.map { tankInputModel -> tankInputModel.toTank() },
 		isFavorite = this.isFavorite,
 		notes = this.notes,
 		training = null

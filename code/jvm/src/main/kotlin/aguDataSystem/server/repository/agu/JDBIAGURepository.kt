@@ -1,7 +1,7 @@
 package aguDataSystem.server.repository.agu
 
 import aguDataSystem.server.domain.agu.AGU
-import aguDataSystem.server.domain.agu.AGUCreationDTO
+import aguDataSystem.server.domain.agu.AGUBasicInfo
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -93,11 +93,11 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	/**
 	 * Add AGU
 	 *
-	 * @param aguCreationDTO AGU parameters to create the AGU from
+	 * @param aguBasicInfo AGU parameters to create the AGU from
 	 * @param dnoID DNO ID
 	 * @return AGU's CUI code
 	 */
-	override fun addAGU(aguCreationDTO: AGUCreationDTO, dnoID: Int): String {
+	override fun addAGU(aguBasicInfo: AGUBasicInfo, dnoID: Int): String {
 		logger.info("Adding AGU to the database")
 
 		handle.createUpdate(
@@ -112,24 +112,24 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             )
             """.trimIndent()
 		)
-			.bind("cui", aguCreationDTO.cui)
-			.bind("name", aguCreationDTO.name)
-			.bind("isFavorite", aguCreationDTO.isFavorite)
-			.bind("minLevel", aguCreationDTO.levels.min)
-			.bind("maxLevel", aguCreationDTO.levels.max)
-			.bind("criticalLevel", aguCreationDTO.levels.critical)
-			.bind("loadVolume", aguCreationDTO.loadVolume)
-			.bind("latitude", aguCreationDTO.location.latitude)
-			.bind("longitude", aguCreationDTO.location.longitude)
-			.bind("locationName", aguCreationDTO.location.name)
+			.bind("cui", aguBasicInfo.cui)
+			.bind("name", aguBasicInfo.name)
+			.bind("isFavorite", aguBasicInfo.isFavorite)
+			.bind("minLevel", aguBasicInfo.levels.min)
+			.bind("maxLevel", aguBasicInfo.levels.max)
+			.bind("criticalLevel", aguBasicInfo.levels.critical)
+			.bind("loadVolume", aguBasicInfo.loadVolume)
+			.bind("latitude", aguBasicInfo.location.latitude)
+			.bind("longitude", aguBasicInfo.location.longitude)
+			.bind("locationName", aguBasicInfo.location.name)
 			.bind("dnoId", dnoID)
-			.bind("notes", aguCreationDTO.notes)
-			.bind("training", aguCreationDTO.training)
-			.bind("image", aguCreationDTO.image)
+			.bind("notes", aguBasicInfo.notes)
+			.bind("training", aguBasicInfo.training)
+			.bind("image", aguBasicInfo.image)
 			.execute()
 
-		logger.info("AGU with CUI: {}, added to the database", aguCreationDTO.cui)
-		return aguCreationDTO.cui
+		logger.info("AGU with CUI: {}, added to the database", aguBasicInfo.cui)
+		return aguBasicInfo.cui
 	}
 
 	/**

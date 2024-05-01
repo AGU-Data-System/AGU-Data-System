@@ -1,4 +1,4 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.contact
 
 /**
  * Represents a contact
@@ -10,5 +10,5 @@ package aguDataSystem.server.domain
 data class Contact(
 	val name: String,
 	val phone: String,
-	val type: String
+	val type: ContactType
 )

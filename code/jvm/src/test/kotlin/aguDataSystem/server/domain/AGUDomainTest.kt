@@ -42,19 +42,15 @@ class AGUDomainTest {
 	}
 
 	@Test
-	fun `isLatitudeValid should validate latitude correctly`() {
+	fun `areCoordinatesValid should validate latitude correctly`() {
 		val validLatitude = 50.0
 		val invalidLatitude = 100.0
-		assertTrue(aguDomain.isLatitudeValid(validLatitude))
-		assertFalse(aguDomain.isLatitudeValid(invalidLatitude))
-	}
-
-	@Test
-	fun `isLongitudeValid should validate longitude correctly`() {
 		val validLongitude = 50.0
 		val invalidLongitude = 200.0
-		assertTrue(aguDomain.isLongitudeValid(validLongitude))
-		assertFalse(aguDomain.isLongitudeValid(invalidLongitude))
+		assertTrue(aguDomain.areCoordinatesValid(validLatitude, validLongitude))
+		assertFalse(aguDomain.areCoordinatesValid(invalidLatitude, validLongitude))
+		assertFalse(aguDomain.areCoordinatesValid(validLatitude, invalidLongitude))
+		assertFalse(aguDomain.areCoordinatesValid(invalidLatitude, invalidLongitude))
 	}
 
 	@Test

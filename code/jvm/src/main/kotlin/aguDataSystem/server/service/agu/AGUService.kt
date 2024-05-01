@@ -7,6 +7,7 @@ import aguDataSystem.server.domain.provider.GasProviderInput
 import aguDataSystem.server.domain.provider.TemperatureProviderInput
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
+import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.utils.failure
 import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure
@@ -27,47 +28,31 @@ class AGUService(
 ) {
 
 	/**
+	 * Get an AGU by ID
+	 * TODO: Implement this
+	 */
+	fun getAGUById(aguId: Int): GetAGUResult {
+		return failure(GetAGUError.AGUNotFound)
+	}
+
+	/**
 	 * Create a new AGU
 	 *
 	 * @param creationAGU the AGU to create
 	 * @return the created AGU
 	 */
 	fun createAGU(creationAGU: AGUCreationDTO): AGUCreationResult {
-		if (!aguDomain.isCUIValid(creationAGU.cui)) {
-			return failure(AGUCreationError.InvalidCUI)
-		}
-
-		if (!(aguDomain.isLatitudeValid(creationAGU.location.latitude) && aguDomain.isLongitudeValid(creationAGU.location.longitude))) {
-			return failure(AGUCreationError.InvalidCoordinates)
-		}
-
-		ensureLevels(creationAGU.levels)?.let {
+		isAGUDTOValid(creationAGU)?.let {
 			return it
 		}
 
-		if (creationAGU.tanks.isEmpty()) {
-			return failure(AGUCreationError.InvalidTank)
-		}
+		val aguBasicInfo = creationAGU.toAGUBasicInfo()
 
-		creationAGU.tanks.forEach { tank ->
-			ensureLevels(tank.levels)?.let {
-				return it
-			}
-		}
+		val temperatureUrl =
+			aguDomain.generateTemperatureUrl(aguBasicInfo.location.latitude, aguBasicInfo.location.longitude)
 
-		creationAGU.contacts.forEach {
-			if (!aguDomain.isPhoneValid(it.phone) || it.name.isEmpty()) {
-				return failure(AGUCreationError.InvalidContact)
-			}
-			if (!aguDomain.isContactTypeValid(it.type)) {
-				return failure(AGUCreationError.InvalidContactType)
-			}
-		}
-
-		val temperatureUrl = aguDomain.generateTemperatureUrl(creationAGU.location.latitude, creationAGU.location.longitude)
-
-		val gasProviderInput = GasProviderInput(creationAGU.name, creationAGU.gasLevelUrl)
-		val temperatureProviderInput = TemperatureProviderInput(creationAGU.name, temperatureUrl)
+		val gasProviderInput = GasProviderInput(aguBasicInfo.name, aguBasicInfo.gasLevelUrl)
+		val temperatureProviderInput = TemperatureProviderInput(aguBasicInfo.name, temperatureUrl)
 		val gasRes = aguDomain.addProviderRequest(gasProviderInput)
 		val tempRes = aguDomain.addProviderRequest(temperatureProviderInput)
 
@@ -80,22 +65,65 @@ class AGUService(
 			}
 			return failure(AGUCreationError.ProviderError)
 		}
+
 		// TODO: Não sei o que fazer no caso do delete não funcionar
 
 		return transactionManager.run {
-			val dno = it.dnoRepository.getByName(creationAGU.dnoName) ?: return@run failure(AGUCreationError.InvalidDNO)
-			it.aguRepository.addAGU(creationAGU, dno.id)
-			creationAGU.tanks.forEach { tank ->
-				it.tankRepository.addTank(creationAGU.cui, tank)
+			val dno =
+				it.dnoRepository.getByName(aguBasicInfo.dnoName) ?: return@run failure(AGUCreationError.InvalidDNO)
+			it.aguRepository.addAGU(aguBasicInfo, dno.id)
+			aguBasicInfo.tanks.forEach { tank ->
+				it.tankRepository.addTank(aguBasicInfo.cui, tank)
 			}
-			creationAGU.contacts.forEach { contact ->
-				it.contactRepository.addContact(creationAGU.cui, contact)
+			aguBasicInfo.contacts.forEach { contact ->
+				it.contactRepository.addContact(aguBasicInfo.cui, contact)
 			}
-			it.providerRepository.addProvider(creationAGU.cui, gasRes.getSuccessOrThrow(), AGUDomain.GAS_TYPE)
-			it.providerRepository.addProvider(creationAGU.cui, tempRes.getSuccessOrThrow(), AGUDomain.TEMPERATURE_TYPE)
+			it.providerRepository.addProvider(aguBasicInfo.cui, gasRes.getSuccessOrThrow(), AGUDomain.GAS_TYPE)
+			it.providerRepository.addProvider(aguBasicInfo.cui, tempRes.getSuccessOrThrow(), AGUDomain.TEMPERATURE_TYPE)
 
 			success(creationAGU.cui)
 		}
+	}
+
+	/**
+	 * Check if the AGU DTO is valid
+	 *
+	 * @param aguDTO the AGU DTO to check
+	 * @return the result of the check
+	 */
+	private fun isAGUDTOValid(aguDTO: AGUCreationDTO): AGUCreationResult? {
+		if (!aguDomain.isCUIValid(aguDTO.cui)) {
+			return failure(AGUCreationError.InvalidCUI)
+		}
+
+		if (!(aguDomain.areCoordinatesValid(aguDTO.location.latitude, aguDTO.location.longitude))) {
+			return failure(AGUCreationError.InvalidCoordinates)
+		}
+
+		ensureLevels(aguDTO.levels)?.let {
+			return it
+		}
+
+		if (aguDTO.tanks.isEmpty()) {
+			return failure(AGUCreationError.InvalidTank)
+		}
+
+		aguDTO.tanks.forEach { tank ->
+			ensureLevels(tank.levels)?.let {
+				return it
+			}
+		}
+
+		aguDTO.contacts.forEach {
+			if (!aguDomain.isPhoneValid(it.phone) || it.name.isEmpty()) {
+				return failure(AGUCreationError.InvalidContact)
+			}
+			if (!aguDomain.isContactTypeValid(it.type)) {
+				return failure(AGUCreationError.InvalidContactType)
+			}
+		}
+
+		return null
 	}
 
 	/**

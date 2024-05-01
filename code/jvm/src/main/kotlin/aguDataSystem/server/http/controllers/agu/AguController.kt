@@ -5,11 +5,13 @@ import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationInputM
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
+import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.utils.Failure
 import aguDataSystem.utils.Success
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,8 +28,11 @@ class AguController(private val service: AGUService) {
 	 * @return the AGU with the given ID
 	 */
 	@GetMapping(URIs.Agu.GET_BY_ID)
-	fun getById(aguId: Int) {
-		//TODO
+	fun getById(@PathVariable aguId: Int): ResponseEntity<*> {
+		return when (val res = service.getAGUById(aguId)) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
 	}
 
 	/**
@@ -88,5 +93,10 @@ class AguController(private val service: AGUService) {
 
 			AGUCreationError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
 			AGUCreationError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
+		}
+
+	private fun GetAGUError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			GetAGUError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
 		}
 }
