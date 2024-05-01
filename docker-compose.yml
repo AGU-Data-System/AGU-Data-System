@@ -22,6 +22,6 @@ services:
       dockerfile: dockerfiles/Dockerfile-spring
     environment:
       - DB_URL=jdbc:postgresql://system-db:5432/postgres?user=postgres&password=postgres
-      - FETCHER_URL=http://localhost:8080
+      - FETCHER_URL=http://fetcher:8080/api
     ports:
       - "8081:8080"
