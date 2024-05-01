@@ -38,22 +38,29 @@ enum class ProviderType {
 	 * @param values The list containing the reading data.
 	 * @return The reading.
 	 */
-	fun buildReading(timestamp: LocalDateTime, predictionFor: LocalDateTime, values: List<Int>): Reading {
+	fun buildReading(timestamp: LocalDateTime, predictionFor: LocalDateTime, vararg values: Int): Reading {
+		require(values.size in 1..2) { "Invalid number of values" }
 		return when (this) {
 			GAS -> GasReading(
 				timestamp = timestamp,
 				predictionFor = predictionFor,
-				level = values[0]
+				level = values.first()
 			)
 
 			TEMPERATURE -> TemperatureReading(
 				timestamp = timestamp,
 				predictionFor = predictionFor,
-				min = values[0],
-				max = values[1]
+				min = values.first(),
+				max = values.last()
 			)
 		}
 	}
 }
 
-
+/**
+ * Converts a string to a ProviderType
+ *
+ * @receiver The string to convert
+ * @return The ProviderType
+ */
+fun String.toProviderType(): ProviderType = ProviderType.valueOf(this.uppercase())

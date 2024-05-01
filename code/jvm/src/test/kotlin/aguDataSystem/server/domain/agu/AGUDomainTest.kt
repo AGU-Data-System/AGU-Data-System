@@ -1,6 +1,6 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.agu
 
-import aguDataSystem.server.domain.agu.AGUDomain
+import aguDataSystem.server.domain.GasLevels
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

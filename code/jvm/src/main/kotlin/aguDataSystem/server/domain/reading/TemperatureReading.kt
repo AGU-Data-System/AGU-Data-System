@@ -22,5 +22,9 @@ data class TemperatureReading(
  * @return The list of temperature readings.
  */
 fun List<Reading>.toTemperatureReadings(): List<TemperatureReading> {
-	return this.map { it as TemperatureReading }
+	if (this.all { it is TemperatureReading }) {
+		return this.map { it as TemperatureReading }
+	} else {
+		throw IllegalArgumentException("Not all readings are temperature readings")
+	}
 }

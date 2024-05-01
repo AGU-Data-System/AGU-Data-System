@@ -8,6 +8,7 @@ import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.toContactType
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
+import aguDataSystem.server.domain.provider.toProviderType
 import aguDataSystem.server.domain.reading.GasReading
 import aguDataSystem.server.domain.reading.Reading
 import aguDataSystem.server.domain.reading.TemperatureReading
@@ -67,8 +68,7 @@ object MapperUtils {
     fun mapToProvider(rs: ResultSet): List<Provider> {
         val providers = mutableListOf<Provider>()
         while (rs.next()) {
-            val type =
-                if (rs.getString("type") == ProviderType.TEMPERATURE.name) ProviderType.TEMPERATURE else ProviderType.GAS
+            val type = rs.getString("type").toProviderType()
             providers.add(
                 type.createProviderWithReadings(
                     id = rs.getInt("provider_id"),
@@ -111,7 +111,7 @@ object MapperUtils {
                 ProviderType.TEMPERATURE.buildReading(
                     timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
                     predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
-                    values = listOf(min, max)
+                    values = intArrayOf(min, max)
                 ) as TemperatureReading
             )
         }
@@ -125,7 +125,7 @@ object MapperUtils {
                 ProviderType.GAS.buildReading(
                     timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
                     predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
-                    values = listOf(
+                    values = intArrayOf(
                         rs.getInt("data")
                     )
                 ) as GasReading

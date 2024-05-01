@@ -20,5 +20,9 @@ data class GasReading(
  * @return The list of gas readings.
  */
 fun List<Reading>.toGasReadings(): List<GasReading> {
-	return this.map { it as GasReading }
+	if (this.all { it is GasReading }) {
+		return this.map { it as GasReading }
+	} else {
+		throw IllegalArgumentException("Not all readings are gas readings")
+	}
 }

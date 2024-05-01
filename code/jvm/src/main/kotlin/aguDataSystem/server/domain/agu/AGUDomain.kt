@@ -10,6 +10,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component
 class AGUDomain {
 
 	companion object {
+
+		private val logger = LoggerFactory.getLogger(AGUDomain::class.java)
 
 		val cuiRegex = Regex("^PT[0-9]{16}[A-Z]{2}$")
 		val phoneRegex = Regex("^[0-9]{9}$")
@@ -124,12 +127,13 @@ class AGUDomain {
 			.build()
 
 		return try {
-			println("Sending POST request to $FETCHER_URL")
-			println("Request body: ${jsonFormatter.encodeToString(providerInput)}")
+
+			logger.info("Sending POST request to {}", FETCHER_URL)
+			logger.info("Request body: {}", jsonFormatter.encodeToString(providerInput))
 			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
-			println("Response status code: ${response.statusCode()}")
-			println("Response body: ${response.body()}")
+			logger.info("Create response status code: {}", response.statusCode())
+			logger.info("Response body: {}", response.body())
 
 			if (response.statusCode() == HttpStatus.CREATED.value()) { // Created the provider
 				val providerId = response.body().toInt()
@@ -138,7 +142,7 @@ class AGUDomain {
 				Either.Left(response.statusCode())
 			}
 		} catch (e: Exception) {
-			println("Error sending POST request: ${e.message}")
+			logger.error("Error sending POST request: {}", e.message)
 			Either.Left(HttpStatus.INTERNAL_SERVER_ERROR.value())
 		}
 	}
@@ -158,17 +162,17 @@ class AGUDomain {
 			.build()
 
 		return try {
-			println("Sending DELETE request to $deleteUrl")
+			logger.info("Sending DELETE request to {}", deleteUrl)
 			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
-			println("Response status code: ${response.statusCode()}")
+			logger.info("Delete response status code: {}", response.statusCode())
 			if (response.statusCode() == HttpStatus.OK.value()) {
 				Either.Right(true)
 			} else {
 				Either.Left(response.statusCode())
 			}
 		} catch (e: Exception) {
-			println("Error sending DELETE request: ${e.message}")
+			logger.error("Error sending DELETE request: {}", e.message)
 			Either.Left(HttpStatus.INTERNAL_SERVER_ERROR.value())
 		}
 	}

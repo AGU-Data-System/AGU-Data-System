@@ -9,10 +9,11 @@ enum class ContactType {
 	LOGISTIC
 }
 
-fun String.toContactType(): ContactType {
-	return when (this.uppercase()) {
-		"EMERGENCY" -> ContactType.EMERGENCY
-		"LOGISTIC" -> ContactType.LOGISTIC
-		else -> throw IllegalArgumentException("Invalid contact type")
-	}
-}
+/**
+ * Converts a string to a contact type
+ *
+ * @receiver The string to convert
+ * @return The contact type
+ * @throws IllegalArgumentException If the string is not a valid contact type
+ */
+fun String.toContactType(): ContactType = ContactType.valueOf(this.uppercase())
