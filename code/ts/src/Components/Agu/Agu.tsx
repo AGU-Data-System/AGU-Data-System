@@ -41,7 +41,7 @@ export default function Agu(){
                     aguName: aguId,
                     aguMetres: 100,
                     aguCUI: aguId + " CUI",
-                    contacts: ['André: 931231232', 'Matos: 914563215'],
+                    contacts: ['Pedro: 93XXXXXXX', 'Ricardo: 91XXXXXXX'],
                     isFavorite: aguId.length % 2 == 0,
                     notes: aguId + " NOTES\nNext line note",
                     lvlMin: 30,

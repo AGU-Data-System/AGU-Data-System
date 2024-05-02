@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
 import { ControlMenuLeft, ControlMenuRight } from '../ControlMenu/ControlMenu';
-import Map from '../Map/Map';
+//import Map from '../Map/Map';
+import LeafletMap from "../Map/LeafletMap";
 
 export default function Menu() {
     return (
@@ -10,7 +11,7 @@ export default function Menu() {
                 <ControlMenuLeft />
             </Grid>
             <Grid item xs={4}>
-                <Map />
+                <LeafletMap />
             </Grid>
             <Grid item xs={4}>
                 <ControlMenuRight />
