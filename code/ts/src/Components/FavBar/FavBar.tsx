@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
 import { CircularProgress, Grid, List, ListItem, ListItemText } from "@mui/material";
-import StarRateIcon from '@mui/icons-material/StarRate';
 import { useNavigate } from "react-router-dom";
+import StarIcon from '@mui/icons-material/Star';
 
 interface UAGDetails {
     name: string
@@ -47,7 +47,7 @@ export default function FavBar() {
         return (
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
                 <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
-                    <StarRateIcon /> Favorite UAGs
+                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
                 </Grid>
                 <Grid item sx={{ margin: 2 }}>
                     <CircularProgress />
@@ -60,7 +60,7 @@ export default function FavBar() {
         return (
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
                 <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
-                    <StarRateIcon /> Error while trying to get the favorite UAGs: {state.message}
+                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Error while trying to get the favorite UAGs: {state.message}
                 </Grid>
             </Grid>
         );
@@ -69,7 +69,7 @@ export default function FavBar() {
     return (
         <Grid container alignItems="right" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
             <Grid item sx={{paddingTop: 2, paddingLeft: 2, width: '100%'}}>
-                <StarRateIcon /> Favorite UAGs
+                <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
             </Grid>
             <Grid item sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
                 <List sx={{ display: 'flex', flexDirection: 'row' }}>
