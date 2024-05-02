@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button, Container, Grid, TextField, Typography } from '@mui/material';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
+import ReturnButton from "../Layouts/ReturnButton";
 
 interface AGU {
     cui: string;
@@ -108,6 +109,9 @@ export default function AguCreate() {
 
     return (
         <Container style={{ marginTop: '40px' }}>
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <ReturnButton/>
+            </div>
             <Typography variant="h4" align="center" gutterBottom>
                 AGU Details
             </Typography>
