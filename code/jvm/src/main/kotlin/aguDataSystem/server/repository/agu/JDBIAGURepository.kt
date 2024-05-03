@@ -25,7 +25,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.mapTo<AGU>()
 			.list()
 
-		logger.info("Retrieved ${aGUs.size} AGUs from the database")
+		logger.info("Retrieved {} AGUs from the database", aGUs.size)
 
 		return aGUs
 	}
@@ -52,7 +52,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.one()
 
 		if (agu == null) {
-			logger.info("AGU not found for CUI: $cui")
+			logger.info("AGU not found for CUI: {}", cui)
 			return null
 		}
 
@@ -81,7 +81,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.one()
 
 		if (cui == null) {
-			logger.info("AGU CUI not found for name: $name")
+			logger.info("AGU not found for name: {}", name)
 			return null
 		}
 

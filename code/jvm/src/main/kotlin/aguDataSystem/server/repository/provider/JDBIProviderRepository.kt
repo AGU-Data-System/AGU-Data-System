@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory
  * @see Handle
  */
 class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
+
 	/**
 	 * Gets a provider by its id
 	 *
 	 * @param id the id of the provider
+	 * @return the provider with the given id or null if it doesn't exist
 	 */
 	override fun getProviderById(id: Int): Provider? {
 		logger.info("Getting provider with id {}", id)
@@ -40,6 +42,8 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 	/**
 	 * Gets all the providers
+	 *
+	 * @return a list of all the providers
 	 */
 	override fun getAllProviders(): List<Provider> {
 

@@ -24,8 +24,7 @@ class AGUDomain {
 		val cuiRegex = Regex("^PT[0-9]{16}[A-Z]{2}$")
 		val phoneRegex = Regex("^[0-9]{9}$")
 		val contactTypeRegex = Regex("^(LOGISTIC|EMERGENCY)$")
-		const val TEMPERATURE_TYPE = "temperature"
-		const val GAS_TYPE = "gas"
+
 		private const val PROVIDER_CONTENT_TYPE = "application/json"
 		private const val TEMPERATURE_URI_TEMPLATE =
 			"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
@@ -34,7 +33,7 @@ class AGUDomain {
 				return if (System.getenv("FETCHER_URL") != null)
 					System.getenv("FETCHER_URL")
 				else
-					"http://fetcher:8080/api/provider" //TODO: Add this dynamically from ENV variables and from docker
+					"http://fetcher:8080/api/provider" //TODO: Add this dynamically from ENV variables
 			}
 
 	}

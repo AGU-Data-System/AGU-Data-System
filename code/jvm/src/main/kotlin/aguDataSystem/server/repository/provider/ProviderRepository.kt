@@ -14,11 +14,14 @@ interface ProviderRepository {
 	 * Gets a provider by its id
 	 *
 	 * @param id the id of the provider
+	 * @return the provider with the given id or null if it doesn't exist
 	 */
 	fun getProviderById(id: Int): Provider?
 
 	/**
 	 * Gets all the providers
+	 *
+	 * @return a list of all the providers
 	 */
 	fun getAllProviders(): List<Provider>
 

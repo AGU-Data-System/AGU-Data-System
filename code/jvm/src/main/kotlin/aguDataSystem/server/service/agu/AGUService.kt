@@ -4,6 +4,7 @@ import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.domain.provider.GasProviderInput
+import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.provider.TemperatureProviderInput
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
@@ -84,8 +85,8 @@ class AGUService(
 			aguBasicInfo.contacts.forEach { contact ->
 				it.contactRepository.addContact(aguBasicInfo.cui, contact)
 			}
-			it.providerRepository.addProvider(aguBasicInfo.cui, gasRes.getSuccessOrThrow(), AGUDomain.GAS_TYPE)
-			it.providerRepository.addProvider(aguBasicInfo.cui, tempRes.getSuccessOrThrow(), AGUDomain.TEMPERATURE_TYPE)
+			it.providerRepository.addProvider(aguBasicInfo.cui, gasRes.getSuccessOrThrow(), ProviderType.GAS)
+			it.providerRepository.addProvider(aguBasicInfo.cui, tempRes.getSuccessOrThrow(), ProviderType.TEMPERATURE)
 
 			success(creationAGU.cui)
 		}
