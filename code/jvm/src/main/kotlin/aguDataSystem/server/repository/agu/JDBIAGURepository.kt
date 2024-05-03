@@ -108,7 +108,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             ) 
             VALUES (
             :cui, :name, :isFavorite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :latitude, :longitude, 
-            :locationName, :dnoId, :notes,:training, :image
+            :locationName, :dnoId, :notes::json, :training::json, :image
             )
             """.trimIndent()
 		)

@@ -19,7 +19,7 @@ import org.postgresql.ds.PGSimpleDataSource
 object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 
 	private const val SCHEMA_NAME = "test_schema"
-	private const val CRETE_TABLES_SQL_PATH = "../sql/create_tables.sql"
+	private const val CRETE_TABLES_SQL_PATH = "../sql/create-tables.sql"
 
 	/**
 	 * Creates and configures a [Jdbi] instance with the app requirements.

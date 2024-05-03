@@ -25,10 +25,13 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
             """
                 INSERT INTO dno (name)
                 VALUES (:name)
+                returning id
             """.trimIndent()
         )
             .bind("name", name)
             .executeAndReturnGeneratedKeys(DNO::id.name)
+            .mapTo<Int>()
+            .one()
 
         logger.info("Added DNO with name {} and it's id is {}", name, id)
     }
