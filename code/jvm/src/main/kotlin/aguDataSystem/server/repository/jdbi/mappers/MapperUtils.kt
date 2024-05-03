@@ -20,6 +20,12 @@ import java.sql.ResultSet
  */
 object MapperUtils {
 
+    /**
+     * Maps the result set to a list of contacts
+     *
+     * @param rs the result set
+     * @return the list of contacts
+     */
     fun mapToContact(rs: ResultSet): List<Contact> {
         val contacts = mutableListOf<Contact>()
         while (rs.next()) {
@@ -34,6 +40,12 @@ object MapperUtils {
         return contacts
     }
 
+    /**
+     * Maps the result set to a location
+     *
+     * @param rs the result set
+     * @return the location
+     */
     fun mapToLocation(rs: ResultSet): Location {
         return Location(
             latitude = rs.getDouble("latitude"),
@@ -42,6 +54,12 @@ object MapperUtils {
         )
     }
 
+    /**
+     * Maps the result set to a list of AGUs
+     *
+     * @param rs the result set
+     * @return the list of AGUs
+     */
     fun mapToGasLevels(rs: ResultSet): GasLevels {
         return GasLevels(
             min = rs.getInt("min_level"),
@@ -50,6 +68,12 @@ object MapperUtils {
         )
     }
 
+    /**
+     * Maps the result set to a list of tanks
+     *
+     * @param rs the result set
+     * @return the list of tanks
+     */
     fun mapToTank(rs: ResultSet): List<Tank> {
         val tanks = mutableListOf<Tank>()
         while (rs.next()) {
@@ -65,6 +89,12 @@ object MapperUtils {
         return tanks
     }
 
+    /**
+     * Maps the result set to a list of providers
+     *
+     * @param rs the result set
+     * @return the list of providers
+     */
     fun mapToProvider(rs: ResultSet): List<Provider> {
         val providers = mutableListOf<Provider>()
         while (rs.next()) {
@@ -79,6 +109,12 @@ object MapperUtils {
         return providers
     }
 
+    /**
+     * Maps the result set to a DNO
+     *
+     * @param rs the result set
+     * @return the DNO
+     */
     fun mapToDNO(rs: ResultSet): DNO {
         return DNO(
             id = rs.getInt("dno_id"),
@@ -86,6 +122,13 @@ object MapperUtils {
         )
     }
 
+    /**
+     * Maps the result set to a list of readings based on the provider type
+     *
+     * @param rs the result set
+     * @param type the provider type
+     * @return the list of readings
+     */
     fun mapToReadings(rs: ResultSet, type: ProviderType): List<Reading> {
         return when (type) {
             ProviderType.GAS -> mapGasReadings(rs)
@@ -93,6 +136,12 @@ object MapperUtils {
         }
     }
 
+    /**
+     * Maps the result set to a list of temperature readings
+     *
+     * @param rs the result set
+     * @return the list of temperature readings
+     */
     private fun mapTemperatureReadings(rs: ResultSet): List<TemperatureReading> {
         val readings = mutableListOf<TemperatureReading>()
         var min: Int = -1
@@ -104,8 +153,8 @@ object MapperUtils {
                 continue
             }
             when (rs.getString("tag")) {
-                "min" -> min = rs.getInt("data")
-                "max" -> max = rs.getInt("data")
+                TemperatureReading::min.name-> min = rs.getInt("data")
+                TemperatureReading::min.name -> max = rs.getInt("data")
             }
             readings.add(
                 ProviderType.TEMPERATURE.buildReading(
@@ -118,6 +167,12 @@ object MapperUtils {
         return readings
     }
 
+    /**
+     * Maps the result set to a list of gas readings
+     *
+     * @param rs the result set
+     * @return the list of gas readings
+     */
     private fun mapGasReadings(rs: ResultSet): List<GasReading> {
         val readings = mutableListOf<GasReading>()
         while (rs.next()) {
@@ -125,9 +180,7 @@ object MapperUtils {
                 ProviderType.GAS.buildReading(
                     timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
                     predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
-                    values = intArrayOf(
-                        rs.getInt("data")
-                    )
+                    values = intArrayOf(rs.getInt("data"))
                 ) as GasReading
             )
         }

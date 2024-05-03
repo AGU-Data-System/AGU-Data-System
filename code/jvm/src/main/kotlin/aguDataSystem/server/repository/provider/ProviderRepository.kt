@@ -2,6 +2,7 @@ package aguDataSystem.server.repository.provider
 
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.reading.Reading
 
 /**
@@ -28,7 +29,7 @@ interface ProviderRepository {
 	 * @param providerId the id of the provider
 	 * @param providerType the type of the provider
 	 */
-	fun addProvider(cui: String, providerId: Int, providerType: String)
+	fun addProvider(cui: String, providerId: Int, providerType: ProviderType)
 
 	/**
 	 * Deletes a provider by its id and all its readings from a given AGU
@@ -39,13 +40,13 @@ interface ProviderRepository {
 	fun deleteProviderById(id: Int, agu: AGU)
 
 	/**
-	 * Gets the last reading of a provider
+	 * Gets the latest reading of a provider
 	 *
 	 * @param provider the provider to get the last reading from
 	 * @param agu the AGU to get the last reading from
 	 * @return the last reading of the provider
 	 */
-	fun getLastReading(provider: Provider, agu: AGU): Reading
+	fun getLatestReading(provider: Provider, agu: AGU): Reading
 
 	/**
 	 * Gets all the readings of a provider
