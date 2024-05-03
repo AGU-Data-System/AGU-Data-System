@@ -4,6 +4,7 @@ import { Button, Container, Grid, TextField, Typography } from '@mui/material';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import ReturnButton from "../Layouts/ReturnButton";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 interface AGU {
     cui: string;
@@ -201,13 +202,47 @@ export default function AguCreate() {
                                 Tank {index + 1}
                                 <IndeterminateCheckBoxOutlinedIcon onClick={() => removeTank(index)} style={{ marginLeft: '8px' }}/>
                             </Typography>
-                            <TextField
-                                label="Min Level"
-                                value={tank.minLevel}
-                                onChange={handleTankChange('minLevel', index)}
-                                fullWidth
-                                style={{ marginBottom: '16px' }}
-                            />
+                            <Grid container spacing={3}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label="Min Level"
+                                        value={tank.minLevel}
+                                        onChange={handleTankChange('minLevel', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                    <TextField
+                                        label="Max Level"
+                                        value={tank.maxLevel}
+                                        onChange={handleTankChange('maxLevel', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                    <TextField
+                                        label="Critical Level"
+                                        value={tank.criticalLevel}
+                                        onChange={handleTankChange('criticalLevel', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label="Load Volume"
+                                        value={tank.loadVolume}
+                                        onChange={handleTankChange('loadVolume', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                    <TextField
+                                        label="Capacity"
+                                        value={tank.capacity}
+                                        onChange={handleTankChange('capacity', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                </Grid>
+                            </Grid>
                         </div>
                     ))}
                 </Grid>
@@ -222,33 +257,52 @@ export default function AguCreate() {
                                 Contact {index + 1}
                                 <IndeterminateCheckBoxOutlinedIcon onClick={() => removeContact(index)} style={{ marginLeft: '8px' }}/>
                             </Typography>
-                            <TextField
-                                label="Name"
-                                value={contact.name}
-                                onChange={handleContactChange('name', index)}
-                                fullWidth
-                                style={{ marginBottom: '16px' }}
-                            />
-                            <TextField
-                                label="Phone"
-                                value={contact.phone}
-                                onChange={handleContactChange('phone', index)}
-                                fullWidth
-                                style={{ marginBottom: '16px' }}
-                            />
-                            <TextField
-                                label="Tipo do contacto"
-                                value={aguData.locationName}
-                                onChange={handleContactChange('type', index)}
-                                fullWidth
-                                style={{ marginBottom: '16px' }}
-                            />
+                            <Grid container spacing={3}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label="Name"
+                                        value={contact.name}
+                                        onChange={handleContactChange('name', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                    <TextField
+                                        label="Phone"
+                                        value={contact.phone}
+                                        onChange={handleContactChange('phone', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label="Tipo do contacto"
+                                        value={aguData.locationName}
+                                        onChange={handleContactChange('type', index)}
+                                        fullWidth
+                                        style={{ marginBottom: '16px' }}
+                                    />
+                                </Grid>
+                            </Grid>
                         </div>
                     ))}
                 </Grid>
                 <Grid item xs={12} container justifyContent="center">
-                    <Button variant="contained" color="primary" onClick={handleSubmit}>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        sx={{
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={handleSubmit}
+                    >
                         Submit
+                        <KeyboardArrowRightIcon />
                     </Button>
                 </Grid>
             </Grid>
