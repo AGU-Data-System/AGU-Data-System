@@ -1,6 +1,6 @@
 package aguDataSystem.server.domain.provider
 
-import aguDataSystem.server.domain.reading.GasReading
+import aguDataSystem.server.domain.measure.GasMeasure
 import java.time.LocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -37,17 +37,17 @@ class ProviderTest {
 		// arrange
 		val sut = ProviderType.GAS
 		val readings = listOf(
-			GasReading(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10),
-			GasReading(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20)
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10),
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20)
 		)
 
 		// act
-		val provider = sut.createProviderWithReadings(id = 1, readings = readings)
+		val provider = sut.createProviderWithReadings(id = 1, measures = readings)
 
 		// assert
-		assertEquals(provider.readings, readings)
+		assertEquals(provider.measures, readings)
 		assertTrue(provider is GasProvider)
-		provider.readings.forEach { assertTrue(it is GasReading) }
+		provider.measures.forEach { assertTrue(it is GasMeasure) }
 	}
 
 	@Test
@@ -55,13 +55,13 @@ class ProviderTest {
 		// arrange
 		val sut = ProviderType.TEMPERATURE
 		val readings = listOf(
-			GasReading(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10),
-			GasReading(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20)
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10),
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20)
 		)
 
 		// act & assert
 		assertFailsWith<IllegalArgumentException> {
-			sut.createProviderWithReadings(id = 1, readings = readings)
+			sut.createProviderWithReadings(id = 1, measures = readings)
 		}
 	}
 }

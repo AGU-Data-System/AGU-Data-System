@@ -9,9 +9,9 @@ import aguDataSystem.server.domain.contact.toContactType
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.provider.toProviderType
-import aguDataSystem.server.domain.reading.GasReading
-import aguDataSystem.server.domain.reading.Reading
-import aguDataSystem.server.domain.reading.TemperatureReading
+import aguDataSystem.server.domain.measure.GasMeasure
+import aguDataSystem.server.domain.measure.Measure
+import aguDataSystem.server.domain.measure.TemperatureMeasure
 import java.sql.ResultSet
 
 /**
@@ -102,7 +102,7 @@ object MapperUtils {
             providers.add(
                 type.createProviderWithReadings(
                     id = rs.getInt("provider_id"),
-                    readings = mapToReadings(rs, type)
+                    measures = mapToMeasures(rs, type)
                 )
             )
         }
@@ -123,27 +123,27 @@ object MapperUtils {
     }
 
     /**
-     * Maps the result set to a list of readings based on the provider type
+     * Maps the result set to a list of measures based on the provider type
      *
      * @param rs the result set
      * @param type the provider type
-     * @return the list of readings
+     * @return the list of measures
      */
-    fun mapToReadings(rs: ResultSet, type: ProviderType): List<Reading> {
+    fun mapToMeasures(rs: ResultSet, type: ProviderType): List<Measure> {
         return when (type) {
-            ProviderType.GAS -> mapGasReadings(rs)
-            ProviderType.TEMPERATURE -> mapTemperatureReadings(rs)
+            ProviderType.GAS -> mapGasMeasures(rs)
+            ProviderType.TEMPERATURE -> mapTemperatureMeasures(rs)
         }
     }
 
     /**
-     * Maps the result set to a list of temperature readings
+     * Maps the result set to a list of temperature measures
      *
      * @param rs the result set
-     * @return the list of temperature readings
+     * @return the list of temperature measures
      */
-    private fun mapTemperatureReadings(rs: ResultSet): List<TemperatureReading> {
-        val readings = mutableListOf<TemperatureReading>()
+    private fun mapTemperatureMeasures(rs: ResultSet): List<TemperatureMeasure> {
+        val readings = mutableListOf<TemperatureMeasure>()
         var min: Int = -1
         var max: Int = -1
         var acc = 0
@@ -153,35 +153,35 @@ object MapperUtils {
                 continue
             }
             when (rs.getString("tag")) {
-                TemperatureReading::min.name-> min = rs.getInt("data")
-                TemperatureReading::min.name -> max = rs.getInt("data")
+                TemperatureMeasure::min.name-> min = rs.getInt("data")
+                TemperatureMeasure::min.name -> max = rs.getInt("data")
             }
             readings.add(
-                ProviderType.TEMPERATURE.buildReading(
+                ProviderType.TEMPERATURE.buildMeasure(
                     timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
                     predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
                     values = intArrayOf(min, max)
-                ) as TemperatureReading
+                ) as TemperatureMeasure
             )
         }
         return readings
     }
 
     /**
-     * Maps the result set to a list of gas readings
+     * Maps the result set to a list of gas measures
      *
      * @param rs the result set
-     * @return the list of gas readings
+     * @return the list of gas measures
      */
-    private fun mapGasReadings(rs: ResultSet): List<GasReading> {
-        val readings = mutableListOf<GasReading>()
+    private fun mapGasMeasures(rs: ResultSet): List<GasMeasure> {
+        val readings = mutableListOf<GasMeasure>()
         while (rs.next()) {
             readings.add(
-                ProviderType.GAS.buildReading(
+                ProviderType.GAS.buildMeasure(
                     timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
                     predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
                     values = intArrayOf(rs.getInt("data"))
-                ) as GasReading
+                ) as GasMeasure
             )
         }
         return readings

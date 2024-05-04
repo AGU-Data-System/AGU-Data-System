@@ -3,7 +3,7 @@ package aguDataSystem.server.repository.provider
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.domain.reading.Reading
+import aguDataSystem.server.domain.measure.Measure
 
 /**
  * A repository for the providers
@@ -17,6 +17,15 @@ interface ProviderRepository {
 	 * @return the provider with the given id or null if it doesn't exist
 	 */
 	fun getProviderById(id: Int): Provider?
+
+	/**
+	 * Gets a provider by the AGU it belongs to and its type
+	 *
+	 * @param aguCUI the CUI of the AGU
+	 * @param providerType the type of the provider
+	 * @return the provider with the given AGU and type or null if it doesn't exist
+	 */
+	fun getProviderByAGUAndType(aguCUI: String, providerType: ProviderType): Provider?
 
 	/**
 	 * Gets all the providers
@@ -49,7 +58,7 @@ interface ProviderRepository {
 	 * @param agu the AGU to get the last reading from
 	 * @return the last reading of the provider
 	 */
-	fun getLatestReading(provider: Provider, agu: AGU): Reading
+	fun getLatestReading(provider: Provider, agu: AGU): Measure
 
 	/**
 	 * Gets all the readings of a provider
@@ -58,5 +67,5 @@ interface ProviderRepository {
 	 * @param agu the AGU to get the readings from
 	 * @return the readings of the provider
 	 */
-	fun getReadings(provider: Provider, agu: AGU): List<Reading>
+	fun getReadings(provider: Provider, agu: AGU): List<Measure>
 }

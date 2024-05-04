@@ -2,7 +2,7 @@ package aguDataSystem.server.repository.jdbi.mappers
 
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.toProviderType
-import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToReadings
+import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToMeasures
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -16,7 +16,7 @@ class ProviderMapper : RowMapper<Provider> {
 
 		return type.createProviderWithReadings(
 			id = rs.getInt("id"),
-			readings = mapToReadings(rs, type)
+			measures = mapToMeasures(rs, type)
 		)
 	}
 

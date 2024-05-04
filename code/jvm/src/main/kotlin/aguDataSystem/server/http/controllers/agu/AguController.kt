@@ -6,6 +6,7 @@ import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
+import aguDataSystem.server.service.errors.agu.GetMeasuresError
 import aguDataSystem.utils.Failure
 import aguDataSystem.utils.Success
 import org.springframework.http.HttpStatus
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
+import java.time.LocalTime
 
 @RestController("AGUs")
 @RequestMapping(URIs.Agu.ROOT)
@@ -46,6 +50,52 @@ class AguController(private val service: AGUService) {
 		return when (val res = service.createAGU(aguInput.toAGUCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
 			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value)).body(res.value)
+		}
+	}
+
+	@GetMapping(URIs.Agu.GET_TEMPERATURE)
+	fun getTemperatureMeasures(
+		@PathVariable aguCui: String,
+		@RequestParam(required = false, defaultValue = "10") days: Int
+	): ResponseEntity<*> {
+		return when (val res = service.getTemperatureMeasures(aguCui, days)) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
+	}
+
+	@GetMapping(URIs.Agu.GET_DAILY_GAS_LEVELS)
+	fun getDailyGasMeasures(
+		@PathVariable aguCui: String,
+		@RequestParam(required = false, defaultValue = "10") days: Int,
+		@RequestParam(required = false, defaultValue = "09:00") time: LocalTime //todo: maybe don't put default values, and if not provided, put the default value in the service
+	): ResponseEntity<*> {
+		return when (val res = service.getDailyGasMeasures(aguCui, days, time)) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
+	}
+
+	@GetMapping(URIs.Agu.GET_HOURLY_GAS_LEVELS)
+	fun getHourlyGasMeasures(
+		@PathVariable aguCui: String,
+		@RequestParam(required = true) day: LocalDate
+	): ResponseEntity<*> {
+		return when (val res = service.getHourlyGasMeasures(aguCui, day)) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
+	}
+
+	@GetMapping(URIs.Agu.GET_PREDICTION_GAS_LEVELS)
+	fun getPredictionGasMeasures(
+		@PathVariable aguCui: String,
+		@RequestParam(required = false, defaultValue = "10") days: Int,
+		@RequestParam(required = false, defaultValue = "09:00") time: LocalTime
+	): ResponseEntity<*> {
+		return when (val res = service.getPredictionGasLevels(aguCui, days, time)) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
 		}
 	}
 
@@ -95,8 +145,26 @@ class AguController(private val service: AGUService) {
 			AGUCreationError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
 		}
 
+	/**
+	 * Resolve the problem of getting an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
 	private fun GetAGUError.resolveProblem(): ResponseEntity<*> =
 		when (this) {
 			GetAGUError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+		}
+
+	/**
+	 * Resolve the problem of getting measures
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun GetMeasuresError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			GetMeasuresError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+			GetMeasuresError.ProviderNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.ProviderNotFound)
 		}
 }

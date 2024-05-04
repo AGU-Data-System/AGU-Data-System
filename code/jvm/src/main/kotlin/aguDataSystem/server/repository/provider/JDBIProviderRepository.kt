@@ -3,7 +3,7 @@ package aguDataSystem.server.repository.provider
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.domain.reading.Reading
+import aguDataSystem.server.domain.measure.Measure
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -36,6 +36,32 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 			.one()
 
 		logger.info("Fetched provider with id: {}", id)
+
+		return provider
+	}
+
+	/**
+	 * Gets a provider by the AGU it belongs to and its type
+	 *
+	 * @param aguCUI the CUI of the AGU
+	 * @param providerType the type of the provider
+	 * @return the provider with the given AGU and type or null if it doesn't exist
+	 */
+	override fun getProviderByAGUAndType(aguCUI: String, providerType: ProviderType): Provider? {
+		logger.info("Getting provider with CUI {} and type {}", aguCUI, providerType)
+
+		val provider = handle.createQuery(
+			"""
+			SELECT provider.id, provider.agu_cui, provider.provider_type FROM provider
+			WHERE provider.agu_cui = :CUI AND provider.provider_type = :providerType
+			""".trimIndent()
+		)
+			.bind("CUI", aguCUI)
+			.bind("providerType", providerType.name)
+			.mapTo<Provider>() //TODO: This should check the type, and map directly to the subclass of Provider
+			.one()
+
+		logger.info("Fetched provider with CUI {} and type {}", aguCUI, providerType)
 
 		return provider
 	}
@@ -116,10 +142,10 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	 * @param agu the AGU to get the last reading from
 	 * @return the last reading of the provider
 	 */
-	override fun getLatestReading(provider: Provider, agu: AGU): Reading {
+	override fun getLatestReading(provider: Provider, agu: AGU): Measure {
 		logger.info("Getting last reading of provider with id {} from AGU with cui {}", provider.id, agu.cui)
 
-		val reading = handle.createQuery(
+		val measure = handle.createQuery(
 			"""
 			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
 			join measure on provider.id = measure.provider_id
@@ -129,12 +155,12 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 			""".trimIndent()
 		)
 			.bind("id", provider.id)
-			.mapTo<Reading>()
+			.mapTo<Measure>()
 			.one()
 
 		logger.info("Fetched last reading of provider with id {} from AGU with cui {}", provider.id, agu.cui)
 
-		return reading
+		return measure
 	}
 
 	/**
@@ -144,7 +170,7 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	 * @param agu the AGU to get the readings from
 	 * @return the readings of the provider
 	 */
-	override fun getReadings(provider: Provider, agu: AGU): List<Reading> {
+	override fun getReadings(provider: Provider, agu: AGU): List<Measure> {
 		logger.info("Getting readings of provider with id {} from AGU with cui {}", provider.id, agu.cui)
 
 		val readings = handle.createQuery(
@@ -155,7 +181,7 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 			""".trimIndent()
 		)
 			.bind("id", provider.id)
-			.mapTo<Reading>()
+			.mapTo<Measure>()
 			.list()
 
 		logger.info("Fetched readings of provider with id {} from AGU with cui {}", provider.id, agu.cui)

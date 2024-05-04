@@ -10,12 +10,15 @@ import aguDataSystem.server.domain.provider.TemperatureProviderInput
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
+import aguDataSystem.server.service.errors.agu.GetMeasuresError
 import aguDataSystem.utils.failure
 import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure
 import aguDataSystem.utils.isSuccess
 import aguDataSystem.utils.success
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * Service for managing the AGUs.
@@ -28,20 +31,6 @@ class AGUService(
     private val transactionManager: TransactionManager,
     val aguDomain: AGUDomain
 ) {
-
-    /**
-     * Get an AGU by its CUI
-     *
-     * @param cui the CUI of the AGU
-     * @return the AGU
-     */
-    fun getAGUById(cui: String): GetAGUResult {
-        return transactionManager.run {
-            val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
-
-            success(agu)
-        }
-    }
 
     /**
      * Create a new AGU
@@ -92,6 +81,98 @@ class AGUService(
             throw e
         }
 
+    }
+
+    /**
+     * Get an AGU by its CUI
+     *
+     * @param cui the CUI of the AGU
+     * @return the AGU
+     */
+    fun getAGUById(cui: String): GetAGUResult {
+        return transactionManager.run {
+            val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
+
+            success(agu)
+        }
+    }
+
+    /**
+     * Get the temperature measures of an AGU
+     *
+     * @param cui the CUI of the AGU
+     * @param days the number of days to get the temperature levels for
+     * @return the temperature levels
+     */
+    fun getTemperatureMeasures(cui: String, days: Int): GetTemperatureMeasuresResult {
+        return transactionManager.run {
+            val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.TEMPERATURE)
+                ?: return@run failure(GetMeasuresError.ProviderNotFound)
+
+            val levels = it.temperatureRepository.getTemperatureMeasures(provider.id, days)
+
+            success(levels)
+        }
+    }
+
+    /**
+     * Get the daily gas measures of an AGU
+     *
+     * @param cui the CUI of the AGU
+     * @param days the number of days to get the gas levels for
+     * @param time the time to get the gas levels for
+     * @return the gas levels
+     */
+    fun getDailyGasMeasures(cui: String, days: Int, time: LocalTime): GetGasMeasuresResult {
+        return transactionManager.run {
+            val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
+                ?: return@run failure(GetMeasuresError.ProviderNotFound)
+
+            val levels = it.gasRepository.getGasMeasures(provider.id, days, time)
+
+            success(levels)
+        }
+    }
+
+    /**
+     * Get the hourly gas measures of an AGU
+     *
+     * @param cui the CUI of the AGU
+     * @param day the day to get the gas levels for
+     * @return the gas levels
+     */
+    fun getHourlyGasMeasures(cui: String, day: LocalDate): GetGasMeasuresResult {
+        return transactionManager.run {
+            val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
+                ?: return@run failure(GetMeasuresError.ProviderNotFound)
+
+            val levels = it.gasRepository.getGasMeasures(provider.id, day)
+
+            success(levels)
+        }
+    }
+
+    /**
+     * Get the prediction gas levels of an AGU
+     *
+     * @param cui the CUI of the AGU
+     * @param days the number of days to get the gas levels for
+     * @param time the time to get the gas levels for
+     * @return the gas levels
+     */
+    fun getPredictionGasLevels(cui: String, days: Int, time: LocalTime): GetGasMeasuresResult {
+        return transactionManager.run {
+            val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
+                ?: return@run failure(GetMeasuresError.ProviderNotFound)
+
+            val levels = it.gasRepository.getPredictionGasMeasures(provider.id, days, time)
+
+            success(levels)
+        }
     }
 
 

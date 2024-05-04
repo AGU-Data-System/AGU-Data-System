@@ -1,10 +1,10 @@
 package aguDataSystem.server.domain.provider
 
-import aguDataSystem.server.domain.reading.GasReading
-import aguDataSystem.server.domain.reading.Reading
-import aguDataSystem.server.domain.reading.TemperatureReading
-import aguDataSystem.server.domain.reading.toGasReadings
-import aguDataSystem.server.domain.reading.toTemperatureReadings
+import aguDataSystem.server.domain.measure.GasMeasure
+import aguDataSystem.server.domain.measure.Measure
+import aguDataSystem.server.domain.measure.TemperatureMeasure
+import aguDataSystem.server.domain.measure.toGasReadings
+import aguDataSystem.server.domain.measure.toTemperatureReadings
 import java.time.LocalDateTime
 
 /**
@@ -19,35 +19,35 @@ enum class ProviderType {
 	 *
 	 * @receiver The type of the Provider
 	 * @param id The id of the Provider
-	 * @param readings The readings of the Provider
+	 * @param measures The readings of the Provider
 	 * @return The created Provider
 	 */
-	fun createProviderWithReadings(id: Int, readings: List<Reading>): Provider {
+	fun createProviderWithReadings(id: Int, measures: List<Measure>): Provider {
 		return when (this) {
-			GAS -> GasProvider(id = id, readings = readings.toGasReadings())
-			TEMPERATURE -> TemperatureProvider(id = id, readings = readings.toTemperatureReadings())
+			GAS -> GasProvider(id = id, measures = measures.toGasReadings())
+			TEMPERATURE -> TemperatureProvider(id = id, measures = measures.toTemperatureReadings())
 		}
 	}
 
 	/**
-	 * Builds a reading based on a map.
+	 * Builds a measures based on a map.
 	 *
 	 * @param timestamp The time when the reading was taken.
-	 * @param predictionFor The time for which the reading is
+	 * @param predictionFor The time for which the measure is
 	 * a prediction if its null it's not a prediction.
-	 * @param values The list containing the reading data.
+	 * @param values The list containing the measure data.
 	 * @return The reading.
 	 */
-	fun buildReading(timestamp: LocalDateTime, predictionFor: LocalDateTime, vararg values: Int): Reading {
+	fun buildMeasure(timestamp: LocalDateTime, predictionFor: LocalDateTime, vararg values: Int): Measure {
 		require(values.size in 1..2) { "Invalid number of values" }
 		return when (this) {
-			GAS -> GasReading(
+			GAS -> GasMeasure(
 				timestamp = timestamp,
 				predictionFor = predictionFor,
 				level = values.first()
 			)
 
-			TEMPERATURE -> TemperatureReading(
+			TEMPERATURE -> TemperatureMeasure(
 				timestamp = timestamp,
 				predictionFor = predictionFor,
 				min = values.first(),

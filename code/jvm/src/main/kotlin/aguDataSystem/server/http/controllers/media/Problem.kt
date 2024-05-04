@@ -105,5 +105,11 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			title = "AGU Not Found.",
 			details = "The AGU with the given ID was not found."
 		)
+
+		val ProviderNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "provider-not-found"),
+			title = "Provider Not Found.",
+			details = "The provider with the given ID was not found."
+		)
 	}
 }

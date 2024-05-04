@@ -1,11 +1,11 @@
-package aguDataSystem.server.domain.reading
+package aguDataSystem.server.domain.measure
 
 import aguDataSystem.server.domain.provider.toProviderType
 import java.time.LocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
-class ReadingTest {
+class MeasureTest {
 
 	@Test
 	fun `buildReading should return a valid gas Reading`() {
@@ -16,14 +16,14 @@ class ReadingTest {
 		val value = 10
 
 		// act
-		val reading = sut.buildReading(
+		val reading = sut.buildMeasure(
 			timestamp = curTime,
 			predictionFor = predictionTime,
 			values = intArrayOf(value)
 		)
 
 		// assert
-		assert(reading is GasReading)
+		assert(reading is GasMeasure)
 	}
 
 	@Test
@@ -36,14 +36,14 @@ class ReadingTest {
 		val max = 20
 
 		// act
-		val reading = sut.buildReading(
+		val reading = sut.buildMeasure(
 			timestamp = curTime,
 			predictionFor = predictionTime,
 			values = intArrayOf(min, max)
 		)
 
 		// assert
-		assert(reading is TemperatureReading)
+		assert(reading is TemperatureMeasure)
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class ReadingTest {
 
 		// act & assert
 		assertFailsWith<IllegalArgumentException> {
-			sut.buildReading(
+			sut.buildMeasure(
 				timestamp = curTime,
 				predictionFor = predictionTime,
 				values = invalidValues

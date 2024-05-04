@@ -1,8 +1,8 @@
 begin transaction;
 
 -- Drop views
-DROP VIEW IF EXISTS temperature_readings;
-DROP VIEW IF EXISTS gas_readings;
+DROP VIEW IF EXISTS temperature_measures;
+DROP VIEW IF EXISTS gas_measures;
 
 -- Drop tables
 DROP TABLE IF EXISTS contacts;
@@ -132,7 +132,7 @@ create table if not exists contacts
 
 -- Views
 
-create or replace view temperature_readings as
+create or replace view temperature_measures as
 select measure.agu_cui,
        measure.provider_id,
        measure.timestamp                            as fetch_timestamp,
@@ -145,7 +145,7 @@ from measure
 where provider.provider_type = 'temperature';
 
 -- view for gas readings
-create or replace view gas_readings as
+create or replace view gas_measures as
 select measure.agu_cui,
        measure.provider_id,
        measure.timestamp                            as fetch_timestamp,
