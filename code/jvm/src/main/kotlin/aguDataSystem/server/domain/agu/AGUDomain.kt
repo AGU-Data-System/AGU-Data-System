@@ -1,5 +1,6 @@
 package aguDataSystem.server.domain.agu
 
+import aguDataSystem.server.Environment
 import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.contact.ContactType
 import aguDataSystem.server.domain.provider.ProviderInput
@@ -28,14 +29,7 @@ class AGUDomain {
 		private const val PROVIDER_CONTENT_TYPE = "application/json"
 		private const val TEMPERATURE_URI_TEMPLATE =
 			"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLondon&forecast_days=10"
-		private val FETCHER_URL: String
-			get() {
-				return if (System.getenv("FETCHER_URL") != null)
-					System.getenv("FETCHER_URL")
-				else
-					"http://fetcher:8080/api/provider" //TODO: Add this dynamically from ENV variables
-			}
-
+		private val FETCHER_URL: String = Environment.getFetcherUrl()
 	}
 
 	private val client = HttpClient.newHttpClient()
@@ -119,15 +113,16 @@ class AGUDomain {
 	 * @return the result of the request (Left is the status code of the error in case of failure, Right is the ID of the created provider in case of success)
 	 */
 	fun addProviderRequest(providerInput: ProviderInput): AddProviderResult {
+		val createURL = "$FETCHER_URL/provider"
 		val request = HttpRequest.newBuilder()
-			.uri(URI.create(FETCHER_URL))
+			.uri(URI.create(createURL))
 			.header("Content-Type", PROVIDER_CONTENT_TYPE)
 			.POST(HttpRequest.BodyPublishers.ofString(jsonFormatter.encodeToString(providerInput)))
 			.build()
 
 		return try {
 
-			logger.info("Sending POST request to {}", FETCHER_URL)
+			logger.info("Sending POST request to {}", createURL)
 			logger.info("Request body: {}", jsonFormatter.encodeToString(providerInput))
 			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
@@ -142,6 +137,7 @@ class AGUDomain {
 			}
 		} catch (e: Exception) {
 			logger.error("Error sending POST request: {}", e.message)
+			logger.error("Error Stack Trace: {}", e.stackTraceToString())
 			Either.Left(HttpStatus.INTERNAL_SERVER_ERROR.value())
 		}
 	}
@@ -152,9 +148,10 @@ class AGUDomain {
 	 * @return the result of the request (Left is the status code of the error in case of failure, Right is true in case of success)
 	 */
 	fun deleteProviderRequest(providerId: Int): DeleteProviderResult {
-		val deleteUrl = "$FETCHER_URL/$providerId"
+		val deleteUrl = "/provider/$FETCHER_URL/$providerId"
 
-		val request = HttpRequest.newBuilder()
+		val request = HttpRequest
+			.newBuilder()
 			.uri(URI.create(deleteUrl))
 			.header("Content-Type", PROVIDER_CONTENT_TYPE)
 			.DELETE()

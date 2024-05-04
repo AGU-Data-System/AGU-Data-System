@@ -4,9 +4,8 @@ import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.domain.agu.AddProviderResult
-import aguDataSystem.server.domain.provider.GasProviderInput
+import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.domain.provider.TemperatureProviderInput
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
@@ -16,9 +15,10 @@ import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure
 import aguDataSystem.utils.isSuccess
 import aguDataSystem.utils.success
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
 /**
  * Service for managing the AGUs.
@@ -42,45 +42,69 @@ class AGUService(
         isAGUDTOValid(creationAGU)?.let {
             return it
         }
+        logger.info("Creation of AGU with CUI: {}, is valid", creationAGU.cui)
 
         val aguBasicInfo = creationAGU.toAGUBasicInfo()
 
         val temperatureUrl =
             aguDomain.generateTemperatureUrl(aguBasicInfo.location.latitude, aguBasicInfo.location.longitude)
 
-        val gasProviderInput = GasProviderInput(aguBasicInfo.name, aguBasicInfo.gasLevelUrl)
-        val temperatureProviderInput = TemperatureProviderInput(aguBasicInfo.name, temperatureUrl)
+        val gasProviderInput = ProviderInput(aguBasicInfo.name, aguBasicInfo.gasLevelUrl, ProviderType.GAS)
+        val temperatureProviderInput = ProviderInput(aguBasicInfo.name, temperatureUrl, ProviderType.TEMPERATURE)
+
+        logger.info("Adding Gas provider for AGU with CUI: {}", creationAGU.cui)
         val gasRes = aguDomain.addProviderRequest(gasProviderInput)
+
+//        if (gasRes.isFailure()) {
+//            logger.error("Failed to add provider for AGU with CUI: {}", creationAGU.cui)
+//            return failure(AGUCreationError.ProviderError)
+//        }
+//
+        logger.info("Adding Temperature provider for AGU with CUI: {}", creationAGU.cui)
         val tempRes = aguDomain.addProviderRequest(temperatureProviderInput)
 
         if (gasRes.isFailure() || tempRes.isFailure()) {
+            logger.error("Failed to add providers for AGU with CUI: {}", creationAGU.cui)
             return deleteSuccessProviders(gasRes, tempRes)
         }
+
         return try {
             transactionManager.run {
                 val dno =
                     it.dnoRepository.getByName(aguBasicInfo.dnoName) ?: return@run failure(AGUCreationError.InvalidDNO)
+
                 it.aguRepository.addAGU(aguBasicInfo, dno.id)
+                logger.info("AGU with CUI: {} added to the database", creationAGU.cui)
+
                 aguBasicInfo.tanks.forEach { tank ->
                     it.tankRepository.addTank(aguBasicInfo.cui, tank)
                 }
+                logger.info("Tanks added to AGU with CUI: {}", creationAGU.cui)
+
                 aguBasicInfo.contacts.forEach { contact ->
                     it.contactRepository.addContact(aguBasicInfo.cui, contact)
                 }
+                logger.info("Contacts added to AGU with CUI: {}", creationAGU.cui)
+
                 it.providerRepository.addProvider(aguBasicInfo.cui, gasRes.getSuccessOrThrow(), ProviderType.GAS)
+                logger.info("Gas provider added to AGU with CUI: {}", creationAGU.cui)
+
                 it.providerRepository.addProvider(
                     aguBasicInfo.cui,
                     tempRes.getSuccessOrThrow(),
                     ProviderType.TEMPERATURE
                 )
+                logger.info("Temperature provider added to AGU with CUI: {}", creationAGU.cui)
 
                 success(creationAGU.cui)
             }
         } catch (e: Exception) {
-            deleteSuccessProviders(gasRes, tempRes) //TODO: Add a log here that will log in case the deletion is not successful
+            logger.error("Failed to add AGU with CUI: {}", creationAGU.cui)
+            logger.error("Failed with message: {}", e.message)
+            logger.error("Failed with stack trace: {}", e.stackTrace)
+            deleteSuccessProviders(gasRes, tempRes)
             throw e
         }
-
     }
 
     /**
@@ -91,8 +115,10 @@ class AGUService(
      */
     fun getAGUById(cui: String): GetAGUResult {
         return transactionManager.run {
+            logger.info("Getting AGU by CUI: {} from the database", cui)
             val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
 
+            logger.info("Retrieved AGU by CUI from the database")
             success(agu)
         }
     }
@@ -106,9 +132,14 @@ class AGUService(
      */
     fun getTemperatureMeasures(cui: String, days: Int): GetTemperatureMeasuresResult {
         return transactionManager.run {
+            logger.info("Getting temperature measures for AGU with CUI: {} for the last {} days", cui, days)
+
             val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            logger.info("AGU with CUI: {} found", cui)
+
             val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.TEMPERATURE)
                 ?: return@run failure(GetMeasuresError.ProviderNotFound)
+            logger.info("Provider found for AGU with CUI: {}", cui)
 
             val levels = it.temperatureRepository.getTemperatureMeasures(provider.id, days)
 
@@ -126,9 +157,13 @@ class AGUService(
      */
     fun getDailyGasMeasures(cui: String, days: Int, time: LocalTime): GetGasMeasuresResult {
         return transactionManager.run {
+            logger.info("Getting daily gas measures for AGU with CUI: {} for the last {} days", cui, days)
             val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            logger.info("AGU with CUI: {} found", cui)
+
             val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
                 ?: return@run failure(GetMeasuresError.ProviderNotFound)
+            logger.info("Provider found for AGU with CUI: {}", cui)
 
             val levels = it.gasRepository.getGasMeasures(provider.id, days, time)
 
@@ -145,9 +180,13 @@ class AGUService(
      */
     fun getHourlyGasMeasures(cui: String, day: LocalDate): GetGasMeasuresResult {
         return transactionManager.run {
+            logger.info("Getting hourly gas measures for AGU with CUI: {} for the day: {}", cui, day)
             val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            logger.info("AGU with CUI: {} found", cui)
+
             val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
                 ?: return@run failure(GetMeasuresError.ProviderNotFound)
+            logger.info("Provider found for AGU with CUI: {}", cui)
 
             val levels = it.gasRepository.getGasMeasures(provider.id, day)
 
@@ -165,9 +204,13 @@ class AGUService(
      */
     fun getPredictionGasLevels(cui: String, days: Int, time: LocalTime): GetGasMeasuresResult {
         return transactionManager.run {
+            logger.info("Getting prediction gas levels for AGU with CUI: {} for the next {} days", cui, days)
             val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
+            logger.info("AGU with CUI: {} found", cui)
+
             val provider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
                 ?: return@run failure(GetMeasuresError.ProviderNotFound)
+            logger.info("Provider found for AGU with CUI: {}", cui)
 
             val levels = it.gasRepository.getPredictionGasMeasures(provider.id, days, time)
 
@@ -250,6 +293,7 @@ class AGUService(
      * @param tempRes the result of the temperature provider
      */
     private fun deleteSuccessProviders(gasRes: AddProviderResult, tempRes: AddProviderResult): AGUCreationResult {
+        logger.info("Deleting providers that were previously successfully added")
         if (gasRes.isSuccess()) {
             aguDomain.deleteProviderRequest(gasRes.getSuccessOrThrow())
         }
@@ -258,5 +302,9 @@ class AGUService(
         }
 
         return failure(AGUCreationError.ProviderError)
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(AGUService::class.java)
     }
 }

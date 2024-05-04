@@ -22,7 +22,7 @@ import aguDataSystem.server.domain.contact.Contact
  * @property notes The notes of the AGU.
  * @property training The training of the AGU.
  */
-class AGUBasicInfo(
+data class AGUBasicInfo(
 	val cui: String,
 	val name: String,
 	val levels: GasLevels,

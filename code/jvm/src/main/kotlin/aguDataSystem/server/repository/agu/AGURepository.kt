@@ -25,7 +25,7 @@ interface AGURepository {
 	fun getAGUByCUI(cui: String): AGU?
 
 	/**
-	 * Get AGU by location
+	 * Get AGU CUI by name
 	 *
 	 * @param name name of the AGU
 	 * @return AGU's CUI code

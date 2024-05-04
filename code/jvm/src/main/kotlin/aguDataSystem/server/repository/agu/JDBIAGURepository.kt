@@ -37,26 +37,32 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	 * @return AGU
 	 */
 	override fun getAGUByCUI(cui: String): AGU? {
-		logger.info("Getting AGU by CUI {}, from the database", cui)
+		logger.info("Getting AGU by CUI: {} from the database", cui)
 
 		val agu = handle.createQuery(
 			"""
-            SELECT * FROM agu join contacts 
+            SELECT agu.cui, agu.name, agu.min_level, agu.max_level, agu.critical_level, agu.load_volume, agu.latitude, 
+			agu.longitude, agu.location_name, agu.notes, agu.training, agu.image, agu.is_favorite,
+			contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
+			dno.id as dno_id, dno.name as dno_name
+			FROM agu join contacts 
             on agu.cui = contacts.agu_cui 
+			join dno 
+			on agu.dno_id = dno.id
             WHERE agu.cui = :cui 
-            group by agu.cui
+            group by dno.id, agu.cui, contacts.name, contacts.phone, contacts.type
             """.trimIndent()
 		)
 			.bind("cui", cui)
 			.mapTo<AGU>()
-			.one()
+			.singleOrNull()
 
 		if (agu == null) {
 			logger.info("AGU not found for CUI: {}", cui)
-			return null
+		} else {
+			logger.info("Retrieved AGU by CUI from the database")
 		}
 
-		logger.info("Retrieved AGU by CUI from the database")
 		return agu
 	}
 
@@ -78,14 +84,14 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		)
 			.bind("name", name)
 			.mapTo<String>()
-			.one()
+			.singleOrNull()
 
 		if (cui == null) {
 			logger.info("AGU not found for name: {}", name)
-			return null
+		} else {
+			logger.info("Retrieved CUI by AGU name from the database")
 		}
 
-		logger.info("Retrieved CUI by AGU name from the database")
 		return cui
 	}
 
@@ -100,7 +106,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	override fun addAGU(aguBasicInfo: AGUBasicInfo, dnoID: Int): String {
 		logger.info("Adding AGU to the database")
 
-		handle.createUpdate(
+		val addedAGUCUI = handle.createUpdate(
 			"""
             INSERT INTO agu (
             cui, name, is_favorite, min_level, max_level, critical_level, load_volume, latitude, longitude, 
@@ -109,7 +115,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             VALUES (
             :cui, :name, :isFavorite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :latitude, :longitude, 
             :locationName, :dnoId, :notes::json, :training::json, :image
-            )
+            ) returning cui
             """.trimIndent()
 		)
 			.bind("cui", aguBasicInfo.cui)
@@ -126,10 +132,12 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.bind("notes", aguBasicInfo.notes)
 			.bind("training", aguBasicInfo.training)
 			.bind("image", aguBasicInfo.image)
-			.execute()
+			.executeAndReturnGeneratedKeys(AGUBasicInfo::cui.name)
+			.mapTo<String>()
+			.one()
 
-		logger.info("AGU with CUI: {}, added to the database", aguBasicInfo.cui)
-		return aguBasicInfo.cui
+		logger.info("AGU with CUI: {} added to the database", addedAGUCUI)
+		return addedAGUCUI
 	}
 
 	/**

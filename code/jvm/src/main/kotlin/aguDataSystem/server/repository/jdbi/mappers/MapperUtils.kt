@@ -6,12 +6,12 @@ import aguDataSystem.server.domain.Tank
 import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.toContactType
-import aguDataSystem.server.domain.provider.Provider
-import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.domain.provider.toProviderType
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.Measure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
+import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.provider.ProviderType
+import aguDataSystem.server.domain.provider.toProviderType
 import java.sql.ResultSet
 
 /**
@@ -31,9 +31,9 @@ object MapperUtils {
         while (rs.next()) {
             contacts.add(
                 Contact(
-                    name = rs.getString("name"),
-                    phone = rs.getString("phone"),
-					type = rs.getString("type").toContactType()
+                    name = rs.getString("contact_name"),
+                    phone = rs.getString("contact_phone"),
+                    type = rs.getString("contact_type").toContactType()
                 )
             )
         }
