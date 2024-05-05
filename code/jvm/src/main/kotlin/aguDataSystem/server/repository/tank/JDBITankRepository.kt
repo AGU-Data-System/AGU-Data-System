@@ -18,11 +18,11 @@ class JDBITankRepository(private val handle: Handle) : TankRepository{
      * @param cui CUI of the AGU
      * @param tank Tank to add
      */
-    override fun addTank(cui: String, tank: Tank) {
+    override fun addTank(cui: String, tank: Tank): Int {
 
         logger.info("Adding tank with number {}, to AGU with CUI {}", tank.number, cui)
 
-        handle.createUpdate(
+        val tankNumber = handle.createUpdate(
             """
                 INSERT INTO tank (agu_cui, number, min_level, max_level, critical_level, load_volume, capacity)
                 VALUES (:agu_cui, :number, :min_level, :max_level, :critical_level, :load_volume, :capacity)
@@ -35,9 +35,16 @@ class JDBITankRepository(private val handle: Handle) : TankRepository{
             .bind("critical_level", tank.levels.critical)
             .bind("load_volume", tank.loadVolume)
             .bind("capacity", tank.capacity)
-            .execute()
+            .executeAndReturnGeneratedKeys(Tank::number.name)
+            .mapTo<Int>()
+            .one()
 
-        logger.info("Added tank with number {}, to AGU with CUI {}", tank.number, cui)
+        if (tank.number == tankNumber)
+            logger.info("Added tank with number {}, to AGU with CUI {}", tankNumber, cui)
+        else
+            logger.info("Added tank has number {} instead of  {} ,and AGU with CUI {}", tankNumber, tank.number, cui)
+
+        return tankNumber
     }
 
     /**

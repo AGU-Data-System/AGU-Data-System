@@ -6,7 +6,13 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
 
+/**
+ * JDBI implementation of [AGURepository]
+ * @see AGURepository
+ * @see Handle
+ */
 class JDBIAGURepository(private val handle: Handle) : AGURepository {
+
 	/**
 	 * Get all AGUs
 	 *
@@ -45,19 +51,18 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val agu = handle.createQuery(
 			"""
-            SELECT agu.cui, agu.name, agu.min_level, agu.max_level, agu.critical_level, agu.load_volume, agu.latitude, 
-			agu.longitude, agu.location_name, agu.notes, agu.training, agu.image, agu.is_favorite,
+			SELECT agu.*, 
 			contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
 			dno.id as dno_id, dno.name as dno_name
 			FROM agu join contacts 
             on agu.cui = contacts.agu_cui 
 			join dno 
 			on agu.dno_id = dno.id
-            WHERE agu.cui = :cui 
+            WHERE agu.cui = :agu_cui 
             group by dno.id, agu.cui, contacts.name, contacts.phone, contacts.type
             """.trimIndent()
 		)
-			.bind("cui", cui)
+			.bind("agu_cui", cui)
 			.mapTo<AGU>()
 			.singleOrNull()
 
@@ -158,7 +163,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             UPDATE agu 
             SET name = :name, is_favorite = :isFavorite, min_level = :minLevel, max_level = :maxLevel, 
             critical_level = :criticalLevel, load_volume = :loadVolume, latitude = :latitude, longitude = :longitude, 
-            location_name = :locationName, dno_id = :dnoId, notes = :notes, training = :training, image = :image
+            location_name = :locationName, dno_id = :dnoId, notes = :notes::json, training = :training::json, image = :image
             WHERE cui = :cui
             """.trimIndent()
 		)
@@ -193,13 +198,13 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val isStored = handle.createQuery(
 			"""
-            SELECT cui FROM agu 
+            SELECT count(cui) FROM agu 
             WHERE cui = :cui
             """.trimIndent()
 		)
 			.bind("cui", cui)
-			.mapTo<String>()
-			.singleOrNull() != null
+			.mapTo<Int>()
+			.one() == 1
 
 		logger.info("AGU with CUI: {} exists in the database: {}", cui, isStored)
 		return isStored

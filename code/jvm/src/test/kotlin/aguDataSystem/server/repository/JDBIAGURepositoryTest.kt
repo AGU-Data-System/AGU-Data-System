@@ -3,6 +3,7 @@ package aguDataSystem.server.repository
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.agu.JDBIAGURepository
+import aguDataSystem.server.repository.contact.JDBIContactRepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
@@ -13,6 +14,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -42,20 +45,13 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		aguRepo.addAGU(agu, dnoId)
 
-		// act
-		aguRepo.addAGU(agu, dno.id)
-
-		// assert
+		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.addAGU(agu, dno.id)
+			aguRepo.addAGU(agu, dnoId)
 		}
 	}
 
@@ -77,11 +73,13 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
 		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
 		val aguFromDb = aguRepo.getAGUByCUI(result)
@@ -97,9 +95,7 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.isFavorite, aguFromDb.isFavorite)
 		assertEquals(agu.notes, aguFromDb.notes)
 		assertEquals(agu.training, aguFromDb.training)
-		assertEquals(agu.image, aguFromDb.image)
 		assertEquals(agu.contacts, aguFromDb.contacts)
-		assertEquals(agu.tanks, aguFromDb.tanks)
 	}
 
 	@Test
@@ -149,20 +145,20 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
 		val sut1 = dummyAGU
 		val sut2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
+		aguRepo.addAGU(sut1, dnoId)
+		sut1.contacts.forEach { contactRepo.addContact(sut1.cui, it) }
+		aguRepo.addAGU(sut2, dnoId)
+		sut2.contacts.forEach { contactRepo.addContact(sut2.cui, it) }
 
 		// act
-		aguRepo.addAGU(sut1, dno.id)
-		aguRepo.addAGU(sut2, dno.id)
-		val aguList = aguRepo.getAGUs()
+		val aguList = aguRepo.getAGUs().onEach(::println)
 
 		// assert
 		assertEquals(2, aguList.size)
@@ -188,16 +184,11 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val isStored = aguRepo.isAGUStored(result)
 
 		// assert
@@ -221,17 +212,14 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(name = "Updated Name")
@@ -246,19 +234,18 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
 		val agu1 = dummyAGU
 		val agu2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		aguRepo.addAGU(agu1, dnoId)
+		agu1.contacts.forEach { contactRepo.addContact(agu1.cui, it) }
+		val result = aguRepo.addAGU(agu2, dnoId)
+		agu2.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		aguRepo.addAGU(agu1, dno.id)
-		val result = aguRepo.addAGU(agu2, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(name = agu1.name)
@@ -274,20 +261,17 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
-		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(min = 10, max = 90, critical = 30))
+		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(min = 30, max = 90, critical = 10))
 
 		// assert
 		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
@@ -295,27 +279,24 @@ class JDBIAGURepositoryTest {
 	}
 
 	@Test
-	fun `update AGU should fail if critical level under min level`() = testWithHandleAndRollback { handle ->
+	fun `update AGU should fail if min level under critical level`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
-		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(critical = 10))
+		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(min = 0))
 
 		// assert
-		assertFailsWith<IllegalStateException> {
+		assertFailsWith<UnableToExecuteStatementException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
 	}
@@ -325,23 +306,20 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(critical = 90))
 
 		// assert
-		assertFailsWith<IllegalStateException> {
+		assertFailsWith<UnableToExecuteStatementException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
 	}
@@ -351,20 +329,21 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		val agu = dummyAGU
+		val dnoId1 = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId2 = dnoRepo.addDNO("DNO 2")
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-		dnoRepo.addDNO("DNO 2")
-
-		val dno1 = dnoRepo.getByName(dummyAGU.dnoName)
-		val dno2 = dnoRepo.getByName("DNO 2")
+		val dno1 = dnoRepo.getById(dnoId1)
+		val dno2 = dnoRepo.getById(dnoId2)
 		requireNotNull(dno1)
 		requireNotNull(dno2)
 
+		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId1)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
+
 		// act
-		val result = aguRepo.addAGU(agu, dno1.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(dno = dno2)
@@ -379,23 +358,23 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dno = dnoRepo.getById(dnoId)
 		requireNotNull(dno)
 
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dno.id)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(dno = dno.copy(id = Int.MAX_VALUE))
 
 		// assert
-		assertFailsWith<IllegalStateException> {
+		assertFailsWith<UnableToExecuteStatementException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
 	}
@@ -405,17 +384,14 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(location = aguFromDb.location.copy(latitude = 50.0, longitude = 50.0))
@@ -430,23 +406,20 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(location = aguFromDb.location.copy(latitude = 91.0))
 
 		// assert
-		assertFailsWith<IllegalStateException> {
+		assertFailsWith<UnableToExecuteStatementException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
 	}
@@ -456,23 +429,20 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(location = aguFromDb.location.copy(longitude = 181.0))
 
 		// assert
-		assertFailsWith<IllegalStateException> {
+		assertFailsWith<UnableToExecuteStatementException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
 	}
@@ -482,17 +452,14 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(loadVolume = 70)
@@ -507,23 +474,20 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(loadVolume = -1)
 
 		// assert
-		assertFailsWith<IllegalStateException> {
+		assertFailsWith<UnableToExecuteStatementException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
 	}
@@ -533,17 +497,14 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(isFavorite = true)
@@ -558,20 +519,17 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
-		val updatedAGU = aguFromDb.copy(notes = "Updated notes")
+		val updatedAGU = aguFromDb.copy(notes = Json.encodeToString("Updated notes"))
 
 		// assert
 		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
@@ -583,20 +541,17 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
-		val updatedAGU = aguFromDb.copy(training = "Updated training")
+		val updatedAGU = aguFromDb.copy(training = Json.encodeToString("Updated training"))
 
 		// assert
 		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
@@ -608,17 +563,14 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
+		val contactRepo = JDBIContactRepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(DUMMY_DNO_NAME)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+		agu.contacts.forEach { contactRepo.addContact(result, it) }
 
 		// act
-		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
 		requireNotNull(aguFromDb)
 		val updatedAGU = aguFromDb.copy(image = ByteArray(1) { 1.toByte() })

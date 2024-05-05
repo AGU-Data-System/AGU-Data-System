@@ -12,8 +12,9 @@ interface TankRepository {
      *
      * @param cui CUI of the AGU
      * @param tank Tank to add
+     * @return the number of the tank
      */
-    fun addTank(cui: String, tank: Tank)
+    fun addTank(cui: String, tank: Tank): Int
 
     /**
      * Gets all the tanks of an AGU
@@ -54,5 +55,4 @@ interface TankRepository {
      * @return the number of tanks in the AGU
      */
     fun getNumberOfTanks(cui: String): Int
-
 }

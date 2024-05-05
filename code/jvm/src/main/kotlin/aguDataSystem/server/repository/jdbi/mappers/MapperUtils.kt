@@ -27,7 +27,8 @@ object MapperUtils {
      */
     fun mapToContact(rs: ResultSet): List<Contact> {
         val contacts = mutableListOf<Contact>()
-        while (rs.next()) {
+        val cui = rs.getString("cui")
+        do {
             contacts.add(
                 Contact(
                     name = rs.getString("contact_name"),
@@ -35,8 +36,8 @@ object MapperUtils {
                     type = rs.getString("contact_type").toContactType()
                 )
             )
-        }
-        return contacts
+        } while (rs.next() && rs.getString("cui") == cui)
+        return contacts.reversed()
     }
 
     /**
@@ -60,7 +61,6 @@ object MapperUtils {
      * @return the list of AGUs
      */
     fun mapToGasLevels(rs: ResultSet): GasLevels {
-		println(rs.getInt("min_level"))
         return GasLevels(
             min = rs.getInt("min_level"),
             max = rs.getInt("max_level"),

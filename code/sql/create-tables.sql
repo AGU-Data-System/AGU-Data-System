@@ -25,8 +25,8 @@ DROP DOMAIN IF EXISTS LATITUDE;
 CREATE DOMAIN CUI as varchar check (value ~ '^PT[0-9]{16}[A-Z]{2}$');
 CREATE DOMAIN PHONE as varchar check (value ~ '^[0-9]{9}$');
 CREATE DOMAIN PERCENTAGE as integer check (value >= 0 and value <= 100);
-CREATE DOMAIN LONGITUDE as numeric(6, 3) check (value >= -180 and value <= 180);
-CREATE DOMAIN LATITUDE as numeric(6, 3) check (value >= -90 and value <= 90);
+CREATE DOMAIN LONGITUDE as numeric(9, 6) check (value >= -180 and value <= 180);
+CREATE DOMAIN LATITUDE as numeric(9, 6) check (value >= -90 and value <= 90);
 
 -- Tables
 create table if not exists transport_company
