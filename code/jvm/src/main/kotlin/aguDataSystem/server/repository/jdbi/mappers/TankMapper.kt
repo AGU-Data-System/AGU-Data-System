@@ -8,8 +8,18 @@ import org.jdbi.v3.core.statement.StatementContext
 
 /**
  * Maps a row from the database to a [Tank]
+ * @see RowMapper
+ * @see Tank
  */
 class TankMapper : RowMapper<Tank> {
+
+	/**
+	 * Maps a row from the database to a [Tank]
+	 *
+	 * @param rs the result set
+	 * @param ctx the statement context
+	 * @return the [Tank] from the result set
+	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): Tank {
 		return Tank(
 			number = rs.getInt("number"),

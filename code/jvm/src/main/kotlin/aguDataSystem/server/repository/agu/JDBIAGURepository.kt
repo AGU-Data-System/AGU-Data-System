@@ -17,8 +17,12 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val aGUs = handle.createQuery(
 			"""
-            SELECT * FROM agu join contacts 
-            on agu.cui = contacts.agu_cui 
+            SELECT agu.*, 
+			contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
+			dno.id as dno_id, dno.name as dno_name
+			FROM agu join contacts 
+            on agu.cui = contacts.agu_cui
+			join dno on dno.id = agu.dno_id
             order by agu.cui
             """.trimIndent()
 		)

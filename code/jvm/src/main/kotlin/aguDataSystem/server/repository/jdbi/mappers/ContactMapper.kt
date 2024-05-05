@@ -8,13 +8,17 @@ import org.jdbi.v3.core.statement.StatementContext
 
 /**
  * Maps a row from the database to a [Contact]
+ * @see RowMapper
+ * @see Contact
  */
 class ContactMapper : RowMapper<Contact> {
+
 	/**
 	 * Maps a row from the database to a [Contact]
 	 *
 	 * @param rs the result set
 	 * @param ctx the statement context
+	 * @return the [Contact] from the result set
 	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): Contact {
 		return Contact(

@@ -9,8 +9,18 @@ import org.jdbi.v3.core.statement.StatementContext
 
 /**
  * Maps a row from the database to a [Provider]
+ * @see RowMapper
+ * @see Provider
  */
 class ProviderMapper : RowMapper<Provider> {
+
+	/**
+	 * Maps a row from the database to a [Provider]
+	 *
+	 * @param rs the result set
+	 * @param ctx the statement context
+	 * @return the [Provider] from the result set
+	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): Provider {
 		val type = rs.getString("type").toProviderType()
 
@@ -19,5 +29,4 @@ class ProviderMapper : RowMapper<Provider> {
 			measures = mapToMeasures(rs, type)
 		)
 	}
-
 }

@@ -16,7 +16,6 @@ import java.sql.ResultSet
 
 /**
  * Utility class for mapping database results to domain objects.
- * TODO needs revision
  */
 object MapperUtils {
 
@@ -61,6 +60,7 @@ object MapperUtils {
      * @return the list of AGUs
      */
     fun mapToGasLevels(rs: ResultSet): GasLevels {
+		println(rs.getInt("min_level"))
         return GasLevels(
             min = rs.getInt("min_level"),
             max = rs.getInt("max_level"),

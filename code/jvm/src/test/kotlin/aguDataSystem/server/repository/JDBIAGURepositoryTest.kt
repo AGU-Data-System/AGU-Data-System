@@ -223,7 +223,6 @@ class JDBIAGURepositoryTest {
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
 
-
 		// act
 		aguRepo.addAGU(sut1, dno.id)
 		aguRepo.addAGU(sut2, dno.id)
@@ -282,6 +281,84 @@ class JDBIAGURepositoryTest {
 	}
 
 	@Test
+	fun `update AGU name correctly should update name`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(name = "Updated Name")
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.name, updatedAGUFromDb.name)
+	}
+
+	@Test
+	fun `update AGU name for an already used name should fail`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val agu1 = dummyAGU
+		val agu2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		// act
+		aguRepo.addAGU(agu1, dno.id)
+		val result = aguRepo.addAGU(agu2, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(name = agu1.name)
+
+		// assert
+		assertFailsWith<UnableToExecuteStatementException> {
+			aguRepo.updateAGU(updatedAGU)
+		}
+	}
+
+	@Test
+	fun `update AGU levels correctly should update levels`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(min = 10, max = 90, critical = 30))
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.levels, updatedAGUFromDb.levels)
+	}
+
+	@Test
 	fun `update AGU should fail if critical level under min level`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
@@ -298,7 +375,8 @@ class JDBIAGURepositoryTest {
 		// act
 		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
-		val updatedAGU = aguFromDb!!.copy(levels = aguFromDb.levels.copy(critical = 10))
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(critical = 10))
 
 		// assert
 		assertFailsWith<IllegalStateException> {
@@ -323,12 +401,41 @@ class JDBIAGURepositoryTest {
 		// act
 		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
-		val updatedAGU = aguFromDb!!.copy(levels = aguFromDb.levels.copy(critical = 90))
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(levels = aguFromDb.levels.copy(critical = 90))
 
 		// assert
 		assertFailsWith<IllegalStateException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
+	}
+
+	@Test
+	fun `update AGU DNO for a valid DNO should update DNO`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val agu = dummyAGU
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO("DNO 2")
+
+		val dno1 = dnoRepo.getByName(dummyAGU.dnoName)
+		val dno2 = dnoRepo.getByName("DNO 2")
+		requireNotNull(dno1)
+		requireNotNull(dno2)
+
+		// act
+		val result = aguRepo.addAGU(agu, dno1.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(dno = dno2)
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.dno, updatedAGUFromDb.dno)
 	}
 
 	@Test
@@ -348,12 +455,38 @@ class JDBIAGURepositoryTest {
 		// act
 		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
-		val updatedAGU = aguFromDb!!.copy(dno = dno.copy(id = Int.MAX_VALUE))
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(dno = dno.copy(id = Int.MAX_VALUE))
 
 		// assert
 		assertFailsWith<IllegalStateException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
+	}
+
+	@Test
+	fun `updating AGU location correctly should update location`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(location = aguFromDb.location.copy(latitude = 50.0, longitude = 50.0))
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.location, updatedAGUFromDb.location)
 	}
 
 	@Test
@@ -373,7 +506,8 @@ class JDBIAGURepositoryTest {
 		// act
 		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
-		val updatedAGU = aguFromDb!!.copy(location = aguFromDb.location.copy(latitude = 91.0))
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(location = aguFromDb.location.copy(latitude = 91.0))
 
 		// assert
 		assertFailsWith<IllegalStateException> {
@@ -398,12 +532,38 @@ class JDBIAGURepositoryTest {
 		// act
 		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
-		val updatedAGU = aguFromDb!!.copy(location = aguFromDb.location.copy(longitude = 181.0))
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(location = aguFromDb.location.copy(longitude = 181.0))
 
 		// assert
 		assertFailsWith<IllegalStateException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
+	}
+
+	@Test
+	fun `update AGU load volume correctly should update load volume`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(loadVolume = 70)
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.loadVolume, updatedAGUFromDb.loadVolume)
 	}
 
 	@Test
@@ -423,11 +583,112 @@ class JDBIAGURepositoryTest {
 		// act
 		val result = aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getAGUByCUI(result)
-		val updatedAGU = aguFromDb!!.copy(loadVolume = -1)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(loadVolume = -1)
 
 		// assert
 		assertFailsWith<IllegalStateException> {
 			aguRepo.updateAGU(updatedAGU)
 		}
+	}
+
+	@Test
+	fun `update isFavorite AGU should update isFavorite`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(isFavorite = true)
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.isFavorite, updatedAGUFromDb.isFavorite)
+	}
+
+	@Test
+	fun `update AGU notes correctly should update notes`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(notes = "Updated notes")
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.notes, updatedAGUFromDb.notes)
+	}
+
+	@Test
+	fun `update AGU training correctly should update training`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(training = "Updated training")
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.training, updatedAGUFromDb.training)
+	}
+
+	@Test
+	fun `update AGU image correctly should update image`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		// add DNO
+		dnoRepo.addDNO(dummyAGU.dnoName)
+
+		val dno = dnoRepo.getByName(dummyAGU.dnoName)
+		requireNotNull(dno)
+
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dno.id)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+		requireNotNull(aguFromDb)
+		val updatedAGU = aguFromDb.copy(image = ByteArray(1) { 1.toByte() })
+
+		// assert
+		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
+		assertEquals(updatedAGU.image, updatedAGUFromDb.image)
 	}
 }

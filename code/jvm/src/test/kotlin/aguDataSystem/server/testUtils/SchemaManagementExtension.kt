@@ -22,7 +22,9 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 	private const val CRETE_TABLES_SQL_PATH = "../sql/create-tables.sql"
 
 	/**
-	 * Creates and configures a [Jdbi] instance with the app requirements.
+	 * Creates and configures a [Jdbi] instance with the app requirements
+	 *
+	 * @return The configured [Jdbi] instance
 	 */
 	private fun jdbiTest() =
 		Jdbi.create(
@@ -32,7 +34,8 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 		).configureWithAppRequirements()
 
 	/**
-	 * Executes the given block with a [Handle] and rolls back the transaction.
+	 * Executes the given block with a [Handle] and rolls back the transaction
+	 *
 	 * @param block The block to execute
 	 * @return The result of the block
 	 */
@@ -44,7 +47,8 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 		}
 
 	/**
-	 * Executes the given block with a [TransactionManager] that never commits.
+	 * Executes the given block with a [TransactionManager] that never commits
+	 *
 	 * @param block The block to execute
 	 * @return The result of the block
 	 */
@@ -53,7 +57,6 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 			handle.execute("SET Schema '$SCHEMA_NAME'") // To ensure that the schema is set
 			val transaction = JDBITransaction(handle)
 
-			// a test TransactionManager that never commits
 			val transactionManager = object : TransactionManager {
 				override fun <R> run(block: (Transaction) -> R): R {
 					return block(transaction)
@@ -67,7 +70,9 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 		}
 
 	/**
-	 * Creates the schema and tables before all tests.
+	 * Creates the schema and tables before all tests
+	 *
+	 * @param context The extension context
 	 */
 	override fun beforeAll(context: ExtensionContext) {
 		jdbiTest().useHandle<Exception> { handle ->
@@ -79,7 +84,9 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 	}
 
 	/**
-	 * Drops the schema after all tests.
+	 * Drops the schema after all tests
+	 *
+	 * @param context The extension context
 	 */
 	override fun afterAll(context: ExtensionContext) {
 		jdbiTest().useHandle<Exception> { handle ->
@@ -88,13 +95,14 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 	}
 
 	/**
-	 * Executes the SQL statements from the file.
+	 * Executes the SQL statements from the file
+	 *
+	 * @param handle The handle to execute the SQL statements
 	 */
 	private fun executeSqlFromFile(handle: Handle) {
 		val path = Paths.get(CRETE_TABLES_SQL_PATH)
 		val sql = Files.readString(path)
-		// Assuming your SQL statements are separated by semicolons,
-		// Adjust this logic if your SQL script has a different format
+		// Assuming your SQL statements are separated by semicolons
 		sql.split(";").forEach { statement ->
 			val trimmedStatement = statement.trim()
 			if (trimmedStatement.isNotEmpty()) {
