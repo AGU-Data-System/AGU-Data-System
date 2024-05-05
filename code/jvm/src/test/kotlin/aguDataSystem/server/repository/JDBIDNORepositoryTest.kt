@@ -1,5 +1,6 @@
 package aguDataSystem.server.repository
 
+import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
@@ -15,13 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(SchemaManagementExtension::class)
 class JDBIDNORepositoryTest {
 
-	private val dummyDNO = "TEST_DNO"
-
 	@Test
 	fun `addDNO Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = dummyDNO
+		val sut = DUMMY_DNO_NAME
 
 		// act
 		dnoRepository.addDNO(sut)
@@ -36,7 +35,7 @@ class JDBIDNORepositoryTest {
 	fun `addDNO with an existing DNO`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = dummyDNO
+		val sut = DUMMY_DNO_NAME
 
 		// act
 		dnoRepository.addDNO(sut)
@@ -51,7 +50,7 @@ class JDBIDNORepositoryTest {
 	fun `getByName Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = dummyDNO
+		val sut = DUMMY_DNO_NAME
 
 		// act
 		dnoRepository.addDNO(sut)
@@ -79,7 +78,7 @@ class JDBIDNORepositoryTest {
 	fun `getById Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = dummyDNO
+		val sut = DUMMY_DNO_NAME
 
 		// act
 		dnoRepository.addDNO(sut)
@@ -110,7 +109,7 @@ class JDBIDNORepositoryTest {
 	fun `isDNOStored Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = dummyDNO
+		val sut = DUMMY_DNO_NAME
 
 		// act
 		dnoRepository.addDNO(sut)

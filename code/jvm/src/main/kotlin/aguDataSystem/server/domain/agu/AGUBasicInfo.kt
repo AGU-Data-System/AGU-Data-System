@@ -31,7 +31,7 @@ data class AGUBasicInfo(
 	val dnoName: String,
 	val gasLevelUrl: String,
 	val image: ByteArray, //TODO: change later to an Image object
-	val contacts: List<Contact>,
+	val contacts: List<Contact>, // TODO: Study if AGU basic info only has agu table content
 	val tanks: List<Tank>,
 	val isFavorite: Boolean = false,
 	val notes: String?,

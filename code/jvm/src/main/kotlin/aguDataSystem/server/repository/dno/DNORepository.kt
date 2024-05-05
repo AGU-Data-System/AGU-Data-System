@@ -12,7 +12,7 @@ interface DNORepository {
 	 *
 	 * @param name the name of the DNO
 	 */
-    fun addDNO(name: String)
+	fun addDNO(name: String): Int
 
 	/**
 	 * Gets DNO by its name

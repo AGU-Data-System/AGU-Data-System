@@ -17,7 +17,7 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
      *
      * @param name the name of the DNO
      */
-    override fun addDNO(name: String) {
+    override fun addDNO(name: String): Int {
 
         logger.info("Adding DNO with name {}", name)
 
@@ -34,6 +34,8 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
             .one()
 
         logger.info("Added DNO with name {} and it's id is {}", name, id)
+
+        return id
     }
 
     /**

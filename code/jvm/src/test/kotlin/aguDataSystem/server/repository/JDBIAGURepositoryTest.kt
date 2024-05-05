@@ -1,11 +1,7 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.domain.GasLevels
-import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Tank
-import aguDataSystem.server.domain.agu.AGUBasicInfo
-import aguDataSystem.server.domain.contact.Contact
-import aguDataSystem.server.domain.contact.toContactType
+import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
+import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
@@ -23,68 +19,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(SchemaManagementExtension::class)
 class JDBIAGURepositoryTest {
 
-	private val dummyAGU = AGUBasicInfo(
-		cui = "PT1234567890123456XX",
-		name = "Test AGU",
-		levels = GasLevels(
-			min = 20,
-			max = 85,
-			critical = 20
-		),
-		loadVolume = 50,
-		location = Location(
-			latitude = 40.7128,
-			longitude = 74.0060,
-			name = "New York"
-		),
-		dnoName = "DNO",
-		isFavorite = false,
-		notes = null,
-		training = null,
-		image = ByteArray(1) { 0.toByte() },
-		contacts = listOf(
-			Contact(
-				name = "John Doe",
-				phone = "1234567890",
-				type = "LOGISTIC".toContactType()
-			),
-			Contact(
-				name = "Jane Doe",
-				phone = "0987654321",
-				type = "EMERGENCY".toContactType()
-			)
-		),
-		tanks = listOf(
-			Tank(
-				number = 0,
-				levels = GasLevels(
-					min = 20,
-					max = 85,
-					critical = 20
-				),
-				loadVolume = 50,
-				capacity = 100,
-			)
-		),
-		gasLevelUrl = "http://localhost:8081/api/agu/PT1234567890123456XX/gasLevel",
-	)
-
 	@Test
 	fun `add AGU correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
 
 		// act
-		 val result = aguRepo.addAGU(agu, dno.id)
+		val result = aguRepo.addAGU(agu, dnoId)
 
 		// assert
 		 assertNotNull(result)
@@ -133,14 +78,10 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dno.id)
+		val result = aguRepo.addAGU(agu, dnoId)
 
 		// act
 		val aguFromDb = aguRepo.getAGUByCUI(result)
@@ -179,16 +120,11 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
-
-		val dno = dnoRepo.getByName(dummyAGU.dnoName)
-		requireNotNull(dno)
-
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
 		val agu = dummyAGU
+		aguRepo.addAGU(agu, dnoId)
 
 		// act
-		aguRepo.addAGU(agu, dno.id)
 		val aguFromDb = aguRepo.getCUIByName(agu.name)
 
 		// assert
@@ -218,7 +154,7 @@ class JDBIAGURepositoryTest {
 		val sut2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -253,7 +189,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -287,7 +223,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -315,7 +251,7 @@ class JDBIAGURepositoryTest {
 		val agu2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -340,7 +276,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -365,7 +301,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -391,7 +327,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -419,7 +355,7 @@ class JDBIAGURepositoryTest {
 		val agu = dummyAGU
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 		dnoRepo.addDNO("DNO 2")
 
 		val dno1 = dnoRepo.getByName(dummyAGU.dnoName)
@@ -445,7 +381,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -471,7 +407,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -496,7 +432,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -522,7 +458,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -548,7 +484,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -573,7 +509,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -599,7 +535,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -624,7 +560,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -649,7 +585,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)
@@ -674,7 +610,7 @@ class JDBIAGURepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		// add DNO
-		dnoRepo.addDNO(dummyAGU.dnoName)
+		dnoRepo.addDNO(DUMMY_DNO_NAME)
 
 		val dno = dnoRepo.getByName(dummyAGU.dnoName)
 		requireNotNull(dno)

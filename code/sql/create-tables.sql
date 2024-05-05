@@ -121,7 +121,7 @@ create table if not exists contacts
 (
     name    varchar                                           not null,
     phone   PHONE                                             not null,
-    type    varchar check (type in ('emergency', 'logistic')) not null,
+    type    varchar check (type ~* '^(emergency|logistic)$')   not null,
     agu_cui CUI,
 
 

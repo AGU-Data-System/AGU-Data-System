@@ -55,11 +55,6 @@ class AGUService(
         logger.info("Adding Gas provider for AGU with CUI: {}", creationAGU.cui)
         val gasRes = aguDomain.addProviderRequest(gasProviderInput)
 
-//        if (gasRes.isFailure()) {
-//            logger.error("Failed to add provider for AGU with CUI: {}", creationAGU.cui)
-//            return failure(AGUCreationError.ProviderError)
-//        }
-//
         logger.info("Adding Temperature provider for AGU with CUI: {}", creationAGU.cui)
         val tempRes = aguDomain.addProviderRequest(temperatureProviderInput)
 
