@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 class JDBIGasRepository(private val handle: Handle): GasRepository {
 
     /**
-     * Gets the gas measures of a provider for a set number of days
+     * Gets the latest gas measures of a provider for a set number of days
      *
      * @param providerId the id of the provider
      * @param days the number of days to get the measures from
@@ -23,7 +23,25 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
      * @return a list of gas measures
      */
     override fun getGasMeasures(providerId: Int, days: Int, time: LocalTime): List<GasMeasure> {
-        TODO("Not yet implemented")
+        logger.info("Getting gas measures for provider with id {} for the last {} days", providerId, days)
+
+        val measures = handle.createQuery(
+            """
+            SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
+            WHERE measure.provider_id = :providerId AND measure.timestamp >= :timestamp
+            ORDER BY measure.timestamp DESC
+            LIMIT :days
+            """.trimIndent()
+        )
+            .bind("providerId", providerId)
+            .bind("timestamp", LocalDate.now().atTime(time))
+            .bind("days", days)
+            .mapTo<GasMeasure>()
+            .list()
+
+        logger.info("Fetched gas measures for provider with id: {} for the last {} days", providerId, days)
+
+        return measures
     }
 
     /**
@@ -34,11 +52,27 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
      * @return a list of gas measures
      */
     override fun getGasMeasures(providerId: Int, day: LocalDate): List<GasMeasure> {
-        TODO("Not yet implemented")
+        logger.info("Getting gas measures for provider with id {} for the day {}", providerId, day)
+
+        val measures = handle.createQuery(
+            """
+            SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
+            WHERE measure.provider_id = :providerId AND measure.timestamp >= :day AND measure.timestamp < :nextDay
+            """.trimIndent()
+        )
+            .bind("providerId", providerId)
+            .bind("day", day)
+            .bind("nextDay", day.plusDays(1))
+            .mapTo<GasMeasure>()
+            .list()
+
+        logger.info("Fetched gas measures for provider with id: {} for the day {}", providerId, day)
+
+        return measures
     }
 
     /**
-     * Gets the gas measures of a provider for a set number of days
+     * Gets the gas prediction measures of a provider for a set number of days
      *
      * @param providerId the id of the provider
      * @param days the number of days to get the measures from
@@ -46,7 +80,25 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
      * @return a list of gas measures
      */
     override fun getPredictionGasMeasures(providerId: Int, days: Int, time: LocalTime): List<GasMeasure> {
-        TODO("Not yet implemented")
+        logger.info("Getting gas prediction measures for provider with id {} for the last {} days", providerId, days)
+
+        val measures = handle.createQuery(
+            """
+            SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
+            WHERE measure.provider_id = :providerId AND measure.prediction_for >= :timestamp
+            ORDER BY measure.prediction_for DESC
+            LIMIT :days
+            """.trimIndent()
+        )
+            .bind("providerId", providerId)
+            .bind("timestamp", LocalDate.now().atTime(time))
+            .bind("days", days)
+            .mapTo<GasMeasure>()
+            .list()
+
+        logger.info("Fetched gas prediction measures for provider with id: {} for the last {} days", providerId, days)
+
+        return measures
     }
 
     companion object {

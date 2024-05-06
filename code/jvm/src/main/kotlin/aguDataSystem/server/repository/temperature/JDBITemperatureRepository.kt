@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 class JDBITemperatureRepository(private val handle: Handle): TemperatureRepository {
 
     /**
-     * Gets the temperature measures of a provider for a set number of days
+     * Gets the latest temperature measures of a provider for a set number of days
      *
      * @param providerId the id of the provider
      * @param days the number of days to get the measures from

@@ -10,7 +10,7 @@ import java.time.LocalTime
 interface GasRepository {
 
     /**
-     * Gets the gas measures of a provider for a set number of days
+     * Gets the latest gas measures of a provider for a set number of days
      *
      * @param providerId the id of the provider
      * @param days the number of days to get the measures from
