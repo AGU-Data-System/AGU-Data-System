@@ -1,9 +1,7 @@
 package aguDataSystem.server.repository.provider
 
-import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.domain.measure.Measure
 
 /**
  * A repository for the providers
@@ -47,25 +45,7 @@ interface ProviderRepository {
 	 * Deletes a provider by its id and all its readings from a given AGU
 	 *
 	 * @param id the id of the provider
-	 * @param agu the AGU to delete the provider from
+	 * @param cui the CUI of the AGU
 	 */
-	fun deleteProviderById(id: Int, agu: AGU)
-
-	/**
-	 * Gets the latest reading of a provider
-	 *
-	 * @param provider the provider to get the last reading from
-	 * @param agu the AGU to get the last reading from
-	 * @return the last reading of the provider
-	 */
-	fun getLatestReading(provider: Provider, agu: AGU): Measure
-
-	/**
-	 * Gets all the readings of a provider
-	 *
-	 * @param provider the provider to get the readings from
-	 * @param agu the AGU to get the readings from
-	 * @return the readings of the provider
-	 */
-	fun getReadings(provider: Provider, agu: AGU): List<Measure>
+	fun deleteProviderById(id: Int, cui: String)
 }

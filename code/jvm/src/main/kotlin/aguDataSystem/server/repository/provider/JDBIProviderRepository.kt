@@ -1,9 +1,7 @@
 package aguDataSystem.server.repository.provider
 
-import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.domain.measure.Measure
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -27,15 +25,19 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 		val provider = handle.createQuery(
 			"""
 			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
-			join measure on provider.id = measure.provider_id
+			left join measure on provider.id = measure.provider_id
 			WHERE provider.id = :id
 			""".trimIndent()
 		)
 			.bind("id", id)
 			.mapTo<Provider>()
-			.one()
+			.singleOrNull()
 
-		logger.info("Fetched provider with id: {}", id)
+		if (provider != null) {
+			logger.info("Fetched provider with id: {}", id)
+		} else {
+			logger.info("Provider with id {} not found", id)
+		}
 
 		return provider
 	}
@@ -59,9 +61,13 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 			.bind("CUI", aguCUI)
 			.bind("providerType", providerType.name)
 			.mapTo<Provider>() //TODO: This should check the type, and map directly to the subclass of Provider
-			.one()
+			.singleOrNull()
 
-		logger.info("Fetched provider with CUI {} and type {}", aguCUI, providerType)
+		if (provider != null) {
+			logger.info("Fetched provider with CUI {} and type {}", aguCUI, providerType)
+		} else {
+			logger.info("Provider with CUI {} and type {} not found", aguCUI, providerType)
+		}
 
 		return provider
 	}
@@ -77,9 +83,10 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 		val providers = handle.createQuery(
 			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
-			join measure on provider.id = measure.provider_id
-			GROUP BY provider.id
+			SELECT provider.id, provider.agu_cui, provider.provider_type, 
+			measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
+			left join measure on provider.id = measure.provider_id
+			Order BY provider.id, measure.timestamp, measure.prediction_for, measure.tag, measure.data
 			""".trimIndent()
 		)
 			.mapTo<Provider>()
@@ -100,93 +107,44 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	override fun addProvider(cui: String, providerId: Int, providerType: ProviderType) {
 		logger.info("Adding provider with id {} to AGU with cui {}", providerId, cui)
 
-		handle.createUpdate(
+		val pId = handle.createUpdate(
 			"""
-			INSERT INTO provider (agu_cui, id, provider_type) VALUES (:cui, :providerId, :providerType)
+			INSERT INTO provider (id, agu_cui, provider_type) VALUES (:providerId, :cui, :providerType)
 			""".trimIndent()
 		)
 			.bind("cui", cui)
 			.bind("providerId", providerId)
 			.bind("providerType", providerType.name)
-			.execute()
+			.executeAndReturnGeneratedKeys(Provider::id.name)
+			.mapTo<Int>()
+			.one()
 
-		logger.info("Added provider with id {} to AGU with cui {}", providerId, cui)
+		logger.info("Added provider with id {} to AGU with cui {}", pId, cui)
 	}
 
 	/**
 	 * Deletes a provider by its id and all its readings from a given AGU
 	 *
 	 * @param id the id of the provider
-	 * @param agu the AGU to delete the provider from
+	 * @param cui the AGU to delete the provider from
 	 */
-	override fun deleteProviderById(id: Int, agu: AGU) {
-		logger.info("Deleting provider with id {} from AGU with cui {}", id, agu.cui)
+	override fun deleteProviderById(id: Int, cui: String) {
+		logger.info("Deleting provider with id {} from AGU with cui {}", id, cui)
 
-		handle.createUpdate(
+		val deletions = handle.createUpdate(
 			"""
 			DELETE FROM provider WHERE id = :id AND agu_cui = :cui
 			""".trimIndent()
 		)
 			.bind("id", id)
-			.bind("cui", agu.cui)
+			.bind("cui", cui)
 			.execute()
 
-		logger.info("Deleted provider with id {} from AGU with cui {}", id, agu.cui)
-	}
-
-	/**
-	 * Gets the last reading of a provider
-	 * TODO needs rethinking because provider already has readings
-	 * TODO cant use limit cause of temp(2providers) and gas(1provider)
-	 * @param provider the provider to get the last reading from
-	 * @param agu the AGU to get the last reading from
-	 * @return the last reading of the provider
-	 */
-	override fun getLatestReading(provider: Provider, agu: AGU): Measure {
-		logger.info("Getting last reading of provider with id {} from AGU with cui {}", provider.id, agu.cui)
-
-		val measure = handle.createQuery(
-			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
-			join measure on provider.id = measure.provider_id
-			WHERE provider.id = :id
-			ORDER BY measure.timestamp DESC
-			LIMIT 1
-			""".trimIndent()
-		)
-			.bind("id", provider.id)
-			.mapTo<Measure>()
-			.one()
-
-		logger.info("Fetched last reading of provider with id {} from AGU with cui {}", provider.id, agu.cui)
-
-		return measure
-	}
-
-	/**
-	 * Gets all the readings of a provider
-	 * TODO needs rethinking because provider already has readings
-	 * @param provider the provider to get the readings from
-	 * @param agu the AGU to get the readings from
-	 * @return the readings of the provider
-	 */
-	override fun getReadings(provider: Provider, agu: AGU): List<Measure> {
-		logger.info("Getting readings of provider with id {} from AGU with cui {}", provider.id, agu.cui)
-
-		val readings = handle.createQuery(
-			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
-			join measure on provider.id = measure.provider_id
-			WHERE provider.id = :id
-			""".trimIndent()
-		)
-			.bind("id", provider.id)
-			.mapTo<Measure>()
-			.list()
-
-		logger.info("Fetched readings of provider with id {} from AGU with cui {}", provider.id, agu.cui)
-
-		return readings
+		if (deletions == 0) {
+			logger.info("Provider with id {} not found in AGU with cui {}", id, cui)
+		} else {
+			logger.info("Deleted provider with id {} from AGU with cui {}", id, cui)
+		}
 	}
 
 	companion object {

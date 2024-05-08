@@ -99,10 +99,11 @@ object MapperUtils {
         val providers = mutableListOf<Provider>()
         while (rs.next()) {
             val type = rs.getString("type").toProviderType()
+            val id = rs.getInt("provider_id")
             providers.add(
                 type.createProviderWithReadings(
-                    id = rs.getInt("provider_id"),
-                    measures = mapToMeasures(rs, type)
+                    id = id,
+                    measures = mapToMeasures(rs, id, type)
                 )
             )
         }
@@ -126,13 +127,14 @@ object MapperUtils {
      * Maps the result set to a list of measures based on the provider type
      *
      * @param rs the result set
+     * @param providerId the provider id
      * @param type the provider type
      * @return the list of measures
      */
-    fun mapToMeasures(rs: ResultSet, type: ProviderType): List<Measure> {
+    fun mapToMeasures(rs: ResultSet, providerId :Int, type: ProviderType): List<Measure> {
         return when (type) {
-            ProviderType.GAS -> mapGasMeasures(rs)
-            ProviderType.TEMPERATURE -> mapTemperatureMeasures(rs)
+            ProviderType.GAS -> mapGasMeasures(rs, providerId)
+            ProviderType.TEMPERATURE -> mapTemperatureMeasures(rs, providerId)
         }
     }
 
@@ -142,12 +144,17 @@ object MapperUtils {
      * @param rs the result set
      * @return the list of temperature measures
      */
-    private fun mapTemperatureMeasures(rs: ResultSet): List<TemperatureMeasure> {
+    private fun mapTemperatureMeasures(rs: ResultSet, providerId: Int): List<TemperatureMeasure> {
         val readings = mutableListOf<TemperatureMeasure>()
         var min: Int = -1
         var max: Int = -1
         var acc = 0
-        while (rs.next()) {
+        while (rs.next() &&
+            rs.getString("tag") != null &&
+            rs.getInt(Provider::id.name) == providerId &&
+            rs.getString("type").toProviderType() == ProviderType.TEMPERATURE
+        ){
+            println(rs)
             if (++acc == 2) {
                 acc = 0
                 continue
@@ -158,7 +165,7 @@ object MapperUtils {
             }
             readings.add(
                 ProviderType.TEMPERATURE.buildMeasure(
-                    timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
+                    timestamp = rs.getTimestamp("timestamp").toLocalDateTime() ,
                     predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
                     values = intArrayOf(min, max)
                 ) as TemperatureMeasure
@@ -173,9 +180,13 @@ object MapperUtils {
      * @param rs the result set
      * @return the list of gas measures
      */
-    private fun mapGasMeasures(rs: ResultSet): List<GasMeasure> {
+    private fun mapGasMeasures(rs: ResultSet, providerId: Int): List<GasMeasure> {
         val readings = mutableListOf<GasMeasure>()
-        while (rs.next()) {
+        while (rs.next() &&
+            rs.getString("tag") != null &&
+            rs.getInt("id") == providerId &&
+            rs.getString("type").toProviderType() == ProviderType.GAS
+        ){
             readings.add(
                 ProviderType.GAS.buildMeasure(
                     timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),

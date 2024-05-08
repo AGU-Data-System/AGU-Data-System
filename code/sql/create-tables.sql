@@ -79,13 +79,14 @@ create table if not exists agu
 
 create table if not exists tank
 (
-    agu_cui        CUI,
-    number         int           not null,
-    min_level      PERCENTAGE    not null,
-    max_level      PERCENTAGE    not null,
-    critical_level PERCENTAGE    not null,
-    load_volume    numeric(6, 3) not null,
-    capacity       int           not null,
+    agu_cui           CUI,
+    number            int           not null,
+    min_level         PERCENTAGE    not null,
+    max_level         PERCENTAGE    not null,
+    critical_level    PERCENTAGE    not null,
+    load_volume       numeric(6, 3) not null, -- using 20tons as reference is a percentage of that can be higher than 100%
+    correction_factor numeric(6, 3) not null,
+    capacity          int           not null,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
@@ -97,7 +98,7 @@ create table if not exists provider
 (
     id            int primary key,
     agu_cui       CUI,
-    provider_type varchar check (provider_type in ('gas', 'temperature')),
+    provider_type varchar check (provider_type ~* '^(gas|temperature)$'),
 
     foreign key (agu_cui) references agu (cui)
 );
@@ -119,11 +120,10 @@ create table if not exists measure
 
 create table if not exists contacts
 (
-    name    varchar                                           not null,
-    phone   PHONE                                             not null,
-    type    varchar check (type ~* '^(emergency|logistic)$')   not null,
+    name    varchar                                          not null,
+    phone   PHONE                                            not null,
+    type    varchar check (type ~* '^(emergency|logistic)$') not null,
     agu_cui CUI,
-
 
     foreign key (agu_cui) references agu (cui),
 

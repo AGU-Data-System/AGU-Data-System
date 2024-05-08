@@ -22,11 +22,11 @@ class ProviderMapper : RowMapper<Provider> {
 	 * @return the [Provider] from the result set
 	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): Provider {
-		val type = rs.getString("type").toProviderType()
-
+		val type = rs.getString("provider_type").toProviderType()
+		val id = rs.getInt("id")
 		return type.createProviderWithReadings(
-			id = rs.getInt("id"),
-			measures = mapToMeasures(rs, type)
+			id = id,
+			measures = mapToMeasures(rs = rs, providerId = id, type = type)
 		)
 	}
 }
