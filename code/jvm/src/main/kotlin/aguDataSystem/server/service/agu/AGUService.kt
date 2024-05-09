@@ -1,6 +1,7 @@
 package aguDataSystem.server.service.agu
 
 import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.domain.agu.AddProviderResult
@@ -31,6 +32,23 @@ class AGUService(
     private val transactionManager: TransactionManager,
     val aguDomain: AGUDomain
 ) {
+
+    /**
+     * Get all AGUs
+     *
+     * @return List of the basic information of all AGUs
+     */
+    fun getAGUsBasicInfo(): List<AGUBasicInfo> {
+        return transactionManager.run {
+            logger.info("Getting all AGUs from the database")
+
+            val agus = it.aguRepository.getAGUsBasicInfo()
+
+            logger.info("Retrieved {} AGUs from the database", agus.size)
+
+            agus
+        }
+    }
 
     /**
      * Create a new AGU

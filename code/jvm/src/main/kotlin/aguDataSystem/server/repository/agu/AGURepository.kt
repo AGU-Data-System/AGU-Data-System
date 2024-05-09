@@ -2,6 +2,7 @@ package aguDataSystem.server.repository.agu
 
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.domain.agu.AGUCreationInfo
 
 /**
  * Interface for the AGU repository
@@ -12,9 +13,9 @@ interface AGURepository {
 	/**
 	 * Get all AGUs
 	 *
-	 * @return List of AGUs
+	 * @return List of AGUs basic info
 	 */
-	fun getAGUs(): List<AGU>
+	fun getAGUsBasicInfo(): List<AGUBasicInfo>
 
 	/**
 	 * Get AGU by CUI
@@ -35,11 +36,11 @@ interface AGURepository {
 	/**
 	 * Add AGU
 	 *
-	 * @param aguBasicInfo AGU parameters to create the AGU from
+	 * @param aguCreationInfo AGU parameters to create the AGU from
 	 * @param dnoID DNO ID
 	 * @return AGU's CUI code
 	 */
-	fun addAGU(aguBasicInfo: AGUBasicInfo, dnoID: Int): String
+	fun addAGU(aguCreationInfo: AGUCreationInfo, dnoID: Int): String
 
 	/**
 	 * Update AGU

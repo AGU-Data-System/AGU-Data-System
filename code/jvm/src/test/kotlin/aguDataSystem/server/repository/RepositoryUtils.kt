@@ -3,7 +3,7 @@ package aguDataSystem.server.repository
 import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.Tank
-import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.domain.agu.AGUCreationInfo
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.ContactType
 
@@ -45,7 +45,7 @@ object RepositoryUtils {
 
 	const val DUMMY_DNO_NAME = "TEST_DNO"
 
-	val dummyAGU = AGUBasicInfo(
+	val dummyAGU = AGUCreationInfo(
 		cui = "PT1234567890123456XX",
 		name = "Test AGU",
 		levels = dummyGasLevels,

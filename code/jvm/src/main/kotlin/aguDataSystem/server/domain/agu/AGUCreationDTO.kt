@@ -43,7 +43,7 @@ data class AGUCreationDTO(
 	 * @receiver the creation DTO
 	 * @return the AGU
 	 */
-	fun toAGUBasicInfo() = AGUBasicInfo(
+	fun toAGUBasicInfo() = AGUCreationInfo(
 		cui = this.cui,
 		name = this.name,
 		levels = this.levels,

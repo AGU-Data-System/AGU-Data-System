@@ -2,6 +2,7 @@ package aguDataSystem.server.repository.agu
 
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.domain.agu.AGUCreationInfo
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -16,23 +17,18 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	/**
 	 * Get all AGUs
 	 *
-	 * @return List of AGUs
+	 * @return List of AGUs basic info
 	 */
-	override fun getAGUs(): List<AGU> {
+	override fun getAGUsBasicInfo(): List<AGUBasicInfo> {
 		logger.info("Getting all AGUs from the database")
 
 		val aGUs = handle.createQuery(
 			"""
-            SELECT agu.*, 
-			contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
-			dno.id as dno_id, dno.name as dno_name
-			FROM agu join contacts 
-            on agu.cui = contacts.agu_cui
-			join dno on dno.id = agu.dno_id
-            order by agu.cui
-            """.trimIndent()
+			SELECT agu.cui, agu.name, dno.id as dno_id, dno.name as dno_name, latitude, longitude, location_nameu
+			FROM agu join dno on agu.dno_id = dno.id
+			""".trimIndent()
 		)
-			.mapTo<AGU>()
+			.mapTo<AGUBasicInfo>()
 			.list()
 
 		logger.info("Retrieved {} AGUs from the database", aGUs.size)
@@ -108,11 +104,11 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	/**
 	 * Add AGU
 	 *
-	 * @param aguBasicInfo AGU parameters to create the AGU from
+	 * @param aguCreationInfo AGU parameters to create the AGU from
 	 * @param dnoID DNO ID
 	 * @return AGU's CUI code
 	 */
-	override fun addAGU(aguBasicInfo: AGUBasicInfo, dnoID: Int): String {
+	override fun addAGU(aguCreationInfo: AGUCreationInfo, dnoID: Int): String {
 		logger.info("Adding AGU to the database")
 
 		val addedAGUCUI = handle.createUpdate(
@@ -127,21 +123,21 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             ) returning cui
             """.trimIndent()
 		)
-			.bind("cui", aguBasicInfo.cui)
-			.bind("name", aguBasicInfo.name)
-			.bind("isFavorite", aguBasicInfo.isFavorite)
-			.bind("minLevel", aguBasicInfo.levels.min)
-			.bind("maxLevel", aguBasicInfo.levels.max)
-			.bind("criticalLevel", aguBasicInfo.levels.critical)
-			.bind("loadVolume", aguBasicInfo.loadVolume)
-			.bind("latitude", aguBasicInfo.location.latitude)
-			.bind("longitude", aguBasicInfo.location.longitude)
-			.bind("locationName", aguBasicInfo.location.name)
+			.bind("cui", aguCreationInfo.cui)
+			.bind("name", aguCreationInfo.name)
+			.bind("isFavorite", aguCreationInfo.isFavorite)
+			.bind("minLevel", aguCreationInfo.levels.min)
+			.bind("maxLevel", aguCreationInfo.levels.max)
+			.bind("criticalLevel", aguCreationInfo.levels.critical)
+			.bind("loadVolume", aguCreationInfo.loadVolume)
+			.bind("latitude", aguCreationInfo.location.latitude)
+			.bind("longitude", aguCreationInfo.location.longitude)
+			.bind("locationName", aguCreationInfo.location.name)
 			.bind("dnoId", dnoID)
-			.bind("notes", aguBasicInfo.notes)
-			.bind("training", aguBasicInfo.training)
-			.bind("image", aguBasicInfo.image)
-			.executeAndReturnGeneratedKeys(AGUBasicInfo::cui.name)
+			.bind("notes", aguCreationInfo.notes)
+			.bind("training", aguCreationInfo.training)
+			.bind("image", aguCreationInfo.image)
+			.executeAndReturnGeneratedKeys(AGUCreationInfo::cui.name)
 			.mapTo<String>()
 			.one()
 
