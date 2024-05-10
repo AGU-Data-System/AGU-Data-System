@@ -60,7 +60,7 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 		)
 			.bind("CUI", aguCUI)
 			.bind("providerType", providerType.name)
-			.mapTo<Provider>() //TODO: This should check the type, and map directly to the subclass of Provider
+			.mapTo<Provider>()
 			.singleOrNull()
 
 		if (provider != null) {
@@ -77,25 +77,26 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	 *
 	 * @return a list of all the providers
 	 */
-	override fun getAllProviders(): List<Provider> {
-
-		logger.info("Getting all providers")
-
-		val providers = handle.createQuery(
-			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type, 
-			measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
-			left join measure on provider.id = measure.provider_id
-			Order BY provider.id, measure.timestamp, measure.prediction_for, measure.tag, measure.data
-			""".trimIndent()
-		)
-			.mapTo<Provider>()
-			.list()
-
-		logger.info("Fetched {} providers", providers.size)
-
-		return providers
-	}
+//	override fun getAllProviders(): List<Provider> {
+//
+//		logger.info("Getting all providers")
+//
+//		val providers = handle.createQuery(
+//			"""
+//			SELECT provider.id, provider.agu_cui, provider.provider_type,
+//			measure.timestamp, measure.prediction_for, measure.tag, measure.data
+//			FROM provider
+//			left join measure on provider.id = measure.provider_id
+//			Order BY provider.id, measure.timestamp, measure.prediction_for, measure.tag, measure.data
+//			""".trimIndent()
+//		)
+//			.mapTo<Provider>()
+//			.list()
+//
+//		logger.info("Fetched {} providers", providers.size)
+//
+//		return providers
+//	}
 
 	/**
 	 * Saves a provider for a given AGU

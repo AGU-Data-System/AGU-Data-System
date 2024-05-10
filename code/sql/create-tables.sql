@@ -108,8 +108,8 @@ create table if not exists measure
     timestamp      timestamp with time zone,
     agu_cui        CUI,
     provider_id    int,
-    tag            varchar not null,
-    data           int     not null,
+    tag            varchar check (tag ~* '^(level|min|min)$'),
+    data           int not null,
     prediction_for timestamp with time zone, -- NULL if not a prediction
 
     foreign key (agu_cui) references agu (cui),

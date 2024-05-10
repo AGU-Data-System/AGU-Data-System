@@ -10,7 +10,7 @@ import aguDataSystem.server.domain.measure.Measure
  */
 sealed class Provider {
 	abstract val id: Int
-	abstract val measures: List<Measure>
+	open val measures: List<Measure> = emptyList()
 
 	/**
 	 * Returns the last reading based on the timestamp
