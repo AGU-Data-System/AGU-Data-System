@@ -1,5 +1,6 @@
 package aguDataSystem.server.repository
 
+import aguDataSystem.server.repository.jdbi.mappers.AGUBasicInfoMapper
 import aguDataSystem.server.repository.jdbi.mappers.AGUMapper
 import aguDataSystem.server.repository.jdbi.mappers.ContactMapper
 import aguDataSystem.server.repository.jdbi.mappers.DNOMapper
@@ -19,11 +20,17 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 	installPlugin(KotlinPlugin())
 	installPlugin(PostgresPlugin())
 
-	registerRowMapper(AGUMapper())
-	registerRowMapper(ContactMapper())
+	// dno
 	registerRowMapper(DNOMapper())
-	registerRowMapper(ProviderMapper())
+
+	//agu
+	registerRowMapper(AGUMapper())
+	registerRowMapper(AGUBasicInfoMapper())
 	registerRowMapper(TankMapper())
+	registerRowMapper(ContactMapper())
+
+	// provider & measures
+	registerRowMapper(ProviderMapper())
 	registerRowMapper(TemperatureMeasureMapper())
 	registerRowMapper(GasMeasureMapper())
 

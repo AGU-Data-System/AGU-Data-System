@@ -158,7 +158,7 @@ class JDBIAGURepositoryTest {
 		sut2.contacts.forEach { contactRepo.addContact(sut2.cui, it) }
 
 		// act
-		val aguList = aguRepo.getAGUs().onEach(::println)
+		val aguList = aguRepo.getAGUsBasicInfo()
 
 		// assert
 		assertEquals(2, aguList.size)
@@ -172,7 +172,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 
 		// act
-		val aguList = aguRepo.getAGUs()
+		val aguList = aguRepo.getAGUsBasicInfo()
 
 		// assert
 		assertEquals(0, aguList.size)

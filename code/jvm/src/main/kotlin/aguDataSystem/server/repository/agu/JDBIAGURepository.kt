@@ -24,8 +24,8 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val aGUs = handle.createQuery(
 			"""
-			SELECT agu.cui, agu.name, dno.id as dno_id, dno.name as dno_name, latitude, longitude, location_nameu
-			FROM agu join dno on agu.dno_id = dno.id
+			SELECT agu.cui, agu.name, dno.id as dno_id, dno.name as dno_name, latitude, longitude, location_name
+			FROM agu left join dno on agu.dno_id = dno.id
 			""".trimIndent()
 		)
 			.mapTo<AGUBasicInfo>()
