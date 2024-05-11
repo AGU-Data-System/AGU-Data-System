@@ -1,6 +1,7 @@
 package aguDataSystem.server.domain.provider
 
 import aguDataSystem.server.domain.measure.TemperatureMeasure
+import java.time.LocalDateTime
 
 /**
  * Represents a temperature Provider
@@ -10,5 +11,6 @@ import aguDataSystem.server.domain.measure.TemperatureMeasure
  */
 data class TemperatureProvider(
 	override val id: Int,
-	override val measures: List<TemperatureMeasure>
+	override val measures: List<TemperatureMeasure>,
+	override val lastFetch: LocalDateTime?
 ) : Provider()

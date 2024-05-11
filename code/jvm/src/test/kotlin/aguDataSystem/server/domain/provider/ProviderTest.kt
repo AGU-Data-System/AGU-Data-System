@@ -42,7 +42,7 @@ class ProviderTest {
 		)
 
 		// act
-		val provider = sut.createProviderWithReadings(id = 1, measures = readings)
+		val provider = sut.createProviderWithReadings(id = 1, measures = readings, lastFetch = LocalDateTime.now())
 
 		// assert
 		assertEquals(provider.measures, readings)
@@ -61,7 +61,7 @@ class ProviderTest {
 
 		// act & assert
 		assertFailsWith<IllegalArgumentException> {
-			sut.createProviderWithReadings(id = 1, measures = readings)
+			sut.createProviderWithReadings(id = 1, measures = readings, lastFetch = LocalDateTime.now())
 		}
 	}
 }

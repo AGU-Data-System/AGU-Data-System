@@ -1,4 +1,4 @@
-package aguDataSystem.server.repository.jdbi.mappers
+package aguDataSystem.server.repository.jdbi.mappers.measures
 
 import aguDataSystem.server.domain.measure.GasMeasure
 import java.sql.ResultSet

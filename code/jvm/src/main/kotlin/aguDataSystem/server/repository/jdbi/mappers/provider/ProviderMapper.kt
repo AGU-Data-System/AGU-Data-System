@@ -1,8 +1,7 @@
-package aguDataSystem.server.repository.jdbi.mappers
+package aguDataSystem.server.repository.jdbi.mappers.provider
 
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.toProviderType
-import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToMeasures
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -24,9 +23,11 @@ class ProviderMapper : RowMapper<Provider> {
 	override fun map(rs: ResultSet, ctx: StatementContext?): Provider {
 		val type = rs.getString("provider_type").toProviderType()
 		val id = rs.getInt("id")
+		val lastFetch = rs.getTimestamp("last_fetch")?.toLocalDateTime()
 		return type.createProviderWithReadings(
 			id = id,
-			measures = mapToMeasures(rs = rs, providerId = id, type = type)
+			measures = emptyList(),
+			lastFetch = lastFetch
 		)
 	}
 }

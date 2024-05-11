@@ -1,6 +1,7 @@
 package aguDataSystem.server.domain.provider
 
 import aguDataSystem.server.domain.measure.GasMeasure
+import java.time.LocalDateTime
 
 /**
  * Represents a Gas Provider
@@ -10,5 +11,6 @@ import aguDataSystem.server.domain.measure.GasMeasure
  */
 data class GasProvider(
 	override val id: Int,
-	override val measures: List<GasMeasure>
+	override val measures: List<GasMeasure>,
+	override val lastFetch: LocalDateTime?
 ) : Provider()

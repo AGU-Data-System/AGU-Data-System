@@ -20,12 +20,17 @@ enum class ProviderType {
 	 * @receiver The type of the Provider
 	 * @param id The id of the Provider
 	 * @param measures The readings of the Provider
+	 * @param lastFetch The time when the readings were last fetched
 	 * @return The created Provider
 	 */
-	fun createProviderWithReadings(id: Int, measures: List<Measure>): Provider {
+	fun createProviderWithReadings(id: Int, measures: List<Measure>, lastFetch: LocalDateTime?): Provider {
 		return when (this) {
-			GAS -> GasProvider(id = id, measures = measures.toGasReadings())
-			TEMPERATURE -> TemperatureProvider(id = id, measures = measures.toTemperatureReadings())
+			GAS -> GasProvider(id = id, measures = measures.toGasReadings(), lastFetch = lastFetch)
+			TEMPERATURE -> TemperatureProvider(
+				id = id,
+				measures = measures.toTemperatureReadings(),
+				lastFetch = lastFetch
+			)
 		}
 	}
 

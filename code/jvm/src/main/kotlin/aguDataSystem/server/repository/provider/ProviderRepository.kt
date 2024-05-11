@@ -30,7 +30,7 @@ interface ProviderRepository {
 	 *
 	 * @return a list of all the providers
 	 */
-	// fun getAllProviders(): List<Provider>
+	fun getAllProviders(): List<Provider>
 
 	/**
 	 * Saves a provider for a given AGU

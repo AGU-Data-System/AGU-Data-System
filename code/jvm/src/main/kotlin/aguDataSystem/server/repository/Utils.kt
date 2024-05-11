@@ -4,10 +4,12 @@ import aguDataSystem.server.repository.jdbi.mappers.AGUBasicInfoMapper
 import aguDataSystem.server.repository.jdbi.mappers.AGUMapper
 import aguDataSystem.server.repository.jdbi.mappers.ContactMapper
 import aguDataSystem.server.repository.jdbi.mappers.DNOMapper
-import aguDataSystem.server.repository.jdbi.mappers.GasMeasureMapper
-import aguDataSystem.server.repository.jdbi.mappers.ProviderMapper
 import aguDataSystem.server.repository.jdbi.mappers.TankMapper
-import aguDataSystem.server.repository.jdbi.mappers.TemperatureMeasureMapper
+import aguDataSystem.server.repository.jdbi.mappers.measures.GasMeasureMapper
+import aguDataSystem.server.repository.jdbi.mappers.measures.TemperatureMeasureMapper
+import aguDataSystem.server.repository.jdbi.mappers.provider.GasProviderMapper
+import aguDataSystem.server.repository.jdbi.mappers.provider.ProviderMapper
+import aguDataSystem.server.repository.jdbi.mappers.provider.TemperatureProviderMapper
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin
@@ -29,8 +31,12 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 	registerRowMapper(TankMapper())
 	registerRowMapper(ContactMapper())
 
-	// provider & measures
+	// provider
 	registerRowMapper(ProviderMapper())
+	registerRowMapper(TemperatureProviderMapper())
+	registerRowMapper(GasProviderMapper())
+
+	// measure
 	registerRowMapper(TemperatureMeasureMapper())
 	registerRowMapper(GasMeasureMapper())
 

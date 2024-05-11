@@ -1,7 +1,9 @@
 package aguDataSystem.server.repository.provider
 
+import aguDataSystem.server.domain.provider.GasProvider
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
+import aguDataSystem.server.domain.provider.TemperatureProvider
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -24,8 +26,8 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 		val provider = handle.createQuery(
 			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type, measure.timestamp, measure.prediction_for, measure.tag, measure.data FROM provider
-			left join measure on provider.id = measure.provider_id
+			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch
+			FROM provider
 			WHERE provider.id = :id
 			""".trimIndent()
 		)
@@ -54,7 +56,8 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 		val provider = handle.createQuery(
 			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type FROM provider
+			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch 
+			FROM provider
 			WHERE provider.agu_cui = :CUI AND provider.provider_type = :providerType
 			""".trimIndent()
 		)
@@ -77,26 +80,22 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	 *
 	 * @return a list of all the providers
 	 */
-//	override fun getAllProviders(): List<Provider> {
-//
-//		logger.info("Getting all providers")
-//
-//		val providers = handle.createQuery(
-//			"""
-//			SELECT provider.id, provider.agu_cui, provider.provider_type,
-//			measure.timestamp, measure.prediction_for, measure.tag, measure.data
-//			FROM provider
-//			left join measure on provider.id = measure.provider_id
-//			Order BY provider.id, measure.timestamp, measure.prediction_for, measure.tag, measure.data
-//			""".trimIndent()
-//		)
-//			.mapTo<Provider>()
-//			.list()
-//
-//		logger.info("Fetched {} providers", providers.size)
-//
-//		return providers
-//	}
+	override fun getAllProviders(): List<Provider> {
+
+		logger.info("Getting all providers")
+
+		val providers = mutableListOf<Provider>()
+		ProviderType.entries.forEach {
+			when (it) {
+				ProviderType.TEMPERATURE -> providers.plus(getAllTemperatureProviders())
+				ProviderType.GAS -> providers.plus(getAllGasProviders())
+			}
+		}
+
+		logger.info("Fetched {} total providers", providers.size)
+
+		return providers
+	}
 
 	/**
 	 * Saves a provider for a given AGU
@@ -146,6 +145,61 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 		} else {
 			logger.info("Deleted provider with id {} from AGU with cui {}", id, cui)
 		}
+	}
+
+	/**
+	 * Gets all the temperature providers with their measures.
+	 *
+	 * @return a list of all the temperature providers
+	 */
+	private fun getAllTemperatureProviders(): List<Provider> {
+		logger.info("Getting all temperature providers")
+
+		val providers = handle.createQuery(
+			"""
+			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch,
+			m1.timestamp, m1.prediction_for, m1.data as min, 
+			m2.data as max
+			FROM provider
+         	left join measure m1 on provider.id = m1.provider_id AND provider.agu_cui = m1.agu_cui AND m1.tag = 'MIN'
+         	join measure m2 on m1.provider_id = m2.provider_id AND m1.agu_cui = m2.agu_cui AND m2.tag = 'MAX'
+			WHERE provider.provider_type = 'TEMPERATURE'
+			Order BY provider.id, m1.timestamp, m1.prediction_for;
+			""".trimIndent()
+		)
+			.mapTo<TemperatureProvider>()
+			.list()
+
+		logger.info("Fetched {} temperature providers", providers.size)
+
+		return providers
+	}
+
+	/**
+	 * Gets all the gas providers with their measures.
+	 *
+	 * @return a list of all the gas providers
+	 */
+	private fun getAllGasProviders(): List<GasProvider> {
+		logger.info("Getting all gas providers")
+
+		val providers = handle.createQuery(
+			"""
+			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch,
+			measure.timestamp, measure.prediction_for, measure.data as level
+			FROM provider
+		 	left join measure on provider.id = measure.provider_id AND provider.agu_cui = measure.agu_cui AND measure.tag = 'level'
+			WHERE provider.provider_type = 'GAS'
+			Order BY provider.id, measure.timestamp, measure.prediction_for;
+			""".trimIndent()
+		)
+			.mapTo<GasProvider>()
+			.list()
+
+		logger.info("Fetched {} gas providers", providers.size)
+
+		return providers
+
 	}
 
 	companion object {

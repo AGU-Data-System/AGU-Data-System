@@ -23,9 +23,16 @@ class JDBITemperatureRepository(private val handle: Handle): TemperatureReposito
         logger.info("Getting temperature measures for provider {}, for {} days", providerId, days)
         val tempMeasures = handle.createQuery(
             """
-            SELECT * FROM measure
-            WHERE provider_id = :providerId
-            AND prediction_for >= CURRENT_DATE - :days
+            SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, m2.data as max 
+            FROM measure m1 join measure m2
+            ON m1.provider_id = m2.provider_id 
+            AND m1.prediction_for = m2.prediction_for 
+            AND m1.timestamp = m2.timestamp 
+            AND m1.agu_cui = m2.agu_cui
+            WHERE m1.tag = 'min' 
+            AND m2.tag = 'max' 
+            AND m1.provider_id = :providerId
+            AND m1.prediction_for >= CURRENT_DATE - :days
             ORDER BY prediction_for DESC
             """
         )

@@ -99,6 +99,7 @@ create table if not exists provider
     id            int primary key,
     agu_cui       CUI,
     provider_type varchar check (provider_type ~* '^(gas|temperature)$'),
+    last_fetch    timestamp with time zone,
 
     foreign key (agu_cui) references agu (cui)
 );

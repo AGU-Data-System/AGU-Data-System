@@ -1,6 +1,7 @@
 package aguDataSystem.server.domain.provider
 
 import aguDataSystem.server.domain.measure.Measure
+import java.time.LocalDateTime
 
 /**
  * Represents a Provider
@@ -11,6 +12,7 @@ import aguDataSystem.server.domain.measure.Measure
 sealed class Provider {
 	abstract val id: Int
 	open val measures: List<Measure> = emptyList()
+	abstract val lastFetch: LocalDateTime?
 
 	/**
 	 * Returns the last reading based on the timestamp
@@ -19,7 +21,7 @@ sealed class Provider {
 	 * @throws IllegalArgumentException if there are no readings
 	 */
 	fun getLatestReading(): Measure {
-		return getLatestReadingOrNull() ?: throw IllegalArgumentException("No readings found")
+		return getLatestReadingsOrEmpty().firstOrNull() ?: throw IllegalArgumentException("No readings found")
 	}
 
 	/**
@@ -28,7 +30,7 @@ sealed class Provider {
 	 *
 	 * @return The last reading or null
 	 */
-	private fun getLatestReadingOrNull(): Measure? {
-		return measures.maxByOrNull { it.timestamp }
+	private fun getLatestReadingsOrEmpty(): List<Measure> {
+		return this.measures.filter { it.timestamp == this.lastFetch }
 	}
 }
