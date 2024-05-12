@@ -50,7 +50,8 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			SELECT agu.*, 
 			contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
 			dno.id as dno_id, dno.name as dno_name
-			FROM agu join contacts 
+			FROM agu 
+			left join contacts 
             on agu.cui = contacts.agu_cui 
 			join dno 
 			on agu.dno_id = dno.id

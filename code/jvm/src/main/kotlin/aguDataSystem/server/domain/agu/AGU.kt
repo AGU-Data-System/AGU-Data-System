@@ -8,12 +8,13 @@ import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.provider.Provider
 
 /**
- * Represents the Autonomous Gas Unit (AGU) in the system.
+ * Represents an Autonomous Gas Unit (AGU) in the system.
  *
  * @property name name of the AGU
  * @property cui CUI of the AGU
  * @property levels gas levels of the AGU
- * @property capacity capacity of the AGU
+ * @property capacity capacity of the AGU based on the [Tank]s
+ * @property correctionFactor correction factor of the AGU based on the [Tank]s
  * @property location location of the AGU
  * @property dno DNO of the AGU
  * @property isFavorite whether the AGU is a favorite
@@ -42,4 +43,7 @@ data class AGU(
 
 	// calculate the total capacity of the AGU
 	val capacity = tanks.sumOf { it.capacity }
+
+	// calculate the total correction factor of the AGU
+	val correctionFactor = tanks.sumOf { it.correctionFactor * (it.loadVolume / capacity) }
 }

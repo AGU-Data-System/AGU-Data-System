@@ -30,11 +30,12 @@ object RepositoryUtils {
 		critical = 20
 	)
 
-	private val dummyTank = Tank(
+	val dummyTank = Tank(
 		number = 0,
 		levels = dummyGasLevels,
 		loadVolume = 50,
 		capacity = 100,
+		correctionFactor = 0.0
 	)
 
 	private val dummyLocation = Location(
@@ -55,9 +56,9 @@ object RepositoryUtils {
 		isFavorite = false,
 		notes = null,
 		training = null,
-		image = ByteArray(1) { 0.toByte() },
-		contacts = listOf(dummyLogisticContact, dummyEmergencyContact),
-		tanks = listOf(dummyTank),
+		image = ByteArray(0),
+		contacts = emptyList(),
+		tanks = emptyList(),
 		gasLevelUrl = "http://localhost:8081/api/agu/PT1234567890123456XX/gasLevel",
 	)
 }

@@ -73,9 +73,9 @@ class JDBIContactRepositoryTest {
 
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
-		agu.contacts.forEach {
-			contactRepo.addContact(agu.cui, it)
-		}
+		contactRepo.addContact(agu.cui, dummyLogisticContact)
+		contactRepo.addContact(agu.cui, dummyEmergencyContact)
+
 		//act
 		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
@@ -125,17 +125,14 @@ class JDBIContactRepositoryTest {
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
 
-		agu.contacts.forEach {
-			contactRepo.addContact(agu.cui, it)
-		}
+		contactRepo.addContact(agu.cui, dummyContact)
 
 		val contactsBeforeDeletion = contactRepo.getContactsByAGU(agu.cui)
 		require(contactsBeforeDeletion.isNotEmpty())
 		//act
 
-		agu.contacts.forEach {
-			contactRepo.deleteContact(agu.cui, it.phone)
-		}
+		contactRepo.deleteContact(agu.cui, dummyContact.phone)
+
 		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
 		//assert
@@ -192,9 +189,7 @@ class JDBIContactRepositoryTest {
 
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
-		agu.contacts.forEach {
-			contactRepo.addContact(agu.cui, it)
-		}
+		contactRepo.addContact(agu.cui, dummyLogisticContact)
 
 		//act
 		val isStored = contactRepo.isContactStored(agu.cui, dummyLogisticContact)

@@ -19,7 +19,8 @@ data class TankInputModel(
 	val maxLevel: Int,
 	val criticalLevel: Int,
 	val loadVolume: Double,
-	val capacity: Int
+	val capacity: Int,
+	val correctionFactor: Double
 ) {
 
 	/**
@@ -36,6 +37,7 @@ data class TankInputModel(
 			critical = this.criticalLevel
 		),
 		loadVolume = this.loadVolume.toInt(),
-		capacity = this.capacity
+		capacity = this.capacity,
+		correctionFactor = this.correctionFactor
 	)
 }

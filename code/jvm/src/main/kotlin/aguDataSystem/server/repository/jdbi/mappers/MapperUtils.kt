@@ -20,6 +20,7 @@ object MapperUtils {
      * @return the list of contacts
      */
     fun mapToContact(rs: ResultSet): List<Contact> {
+		if (rs.getString("contact_name") == null) return emptyList()
         val contacts = mutableListOf<Contact>()
         val cui = rs.getString("cui")
         do {
@@ -76,7 +77,8 @@ object MapperUtils {
                     number = rs.getInt("number"),
                     levels = mapToGasLevels(rs),
                     loadVolume = rs.getInt("load_volume"),
-                    capacity = rs.getInt("capacity")
+					capacity = rs.getInt("capacity"),
+					correctionFactor = rs.getDouble("correction_factor")
                 )
             )
         }

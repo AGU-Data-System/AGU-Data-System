@@ -13,4 +13,5 @@ data class Tank(
 	val levels: GasLevels,
 	val loadVolume: Int,
 	val capacity: Int,
+	val correctionFactor: Double
 )

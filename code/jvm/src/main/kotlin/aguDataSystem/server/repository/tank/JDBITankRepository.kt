@@ -24,8 +24,8 @@ class JDBITankRepository(private val handle: Handle) : TankRepository{
 
         val tankNumber = handle.createUpdate(
             """
-                INSERT INTO tank (agu_cui, number, min_level, max_level, critical_level, load_volume, capacity)
-                VALUES (:agu_cui, :number, :min_level, :max_level, :critical_level, :load_volume, :capacity)
+                INSERT INTO tank (agu_cui, number, min_level, max_level, critical_level, load_volume, capacity, correction_factor)
+                VALUES (:agu_cui, :number, :min_level, :max_level, :critical_level, :load_volume, :capacity, :correction_factor)
             """.trimIndent()
         )
             .bind("agu_cui", cui)
@@ -35,6 +35,7 @@ class JDBITankRepository(private val handle: Handle) : TankRepository{
             .bind("critical_level", tank.levels.critical)
             .bind("load_volume", tank.loadVolume)
             .bind("capacity", tank.capacity)
+            .bind("correction_factor", tank.correctionFactor)
             .executeAndReturnGeneratedKeys(Tank::number.name)
             .mapTo<Int>()
             .one()
@@ -138,7 +139,12 @@ class JDBITankRepository(private val handle: Handle) : TankRepository{
         val updated = handle.createUpdate(
             """
                 UPDATE tank
-                SET min_level = :min_level, max_level = :max_level, critical_level = :critical_level, load_volume = :load_volume, capacity = :capacity
+                SET min_level = :min_level, 
+                max_level = :max_level, 
+                critical_level = :critical_level,
+                load_volume = :load_volume, 
+                capacity = :capacity,
+                correction_factor = :correction_factor
                 WHERE agu_cui = :cui AND number = :number
             """.trimIndent()
         )
@@ -147,6 +153,7 @@ class JDBITankRepository(private val handle: Handle) : TankRepository{
             .bind("critical_level", tank.levels.critical)
             .bind("load_volume", tank.loadVolume)
             .bind("capacity", tank.capacity)
+            .bind("correction_factor", tank.correctionFactor)
             .bind("cui", cui)
             .bind("number", tank.number)
             .execute()
