@@ -101,6 +101,36 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
         return measures
     }
 
+    /**
+     * Adds gas measures to a provider
+     *
+     * @param providerId the id of the provider
+     * @param gasMeasures the gas measures to add
+     */
+    override fun addGasMeasuresToProvider(aguCui: String, providerId: Int, gasMeasures: List<GasMeasure>) {
+        logger.info("Adding gas measures to provider with id {}", providerId)
+
+        gasMeasures.forEachIndexed { index, it ->
+            handle.createUpdate(
+                """
+                INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data)
+                VALUES (:agu_cui, :providerId, :tag, :timestamp, :predictionFor, :data)
+                """.trimIndent()
+            )
+                .bind("agu_cui", aguCui)
+                .bind("providerId", providerId)
+                .bind("tag", it::level.name)
+                .bind("timestamp", it.timestamp)
+                .bind("predictionFor", it.predictionFor)
+                .bind("data", it.level)
+                .execute()
+
+            logger.info("Added gas measure {} to provider with id {}", index + 1, providerId)
+        }
+
+        logger.info("Added {} gas measures to provider with id {}", gasMeasures.size, providerId)
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(JDBIGasRepository::class.java)
     }
