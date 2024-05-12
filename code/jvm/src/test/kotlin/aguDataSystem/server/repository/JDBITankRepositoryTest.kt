@@ -180,18 +180,17 @@ class JDBITankRepositoryTest {
 	}
 
 	@Test
-	fun `delete tank with invalid CUI should fail`() = testWithHandleAndRollback { handle ->
+	fun `delete tank with invalid CUI does nothing`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val tankRepo = JDBITankRepository(handle)
 
 		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.deleteTank("", 1)
-		}
+		tankRepo.deleteTank("", 1)
+
 	}
 
 	@Test
-	fun `delete tank with invalid number should fail`() = testWithHandleAndRollback { handle ->
+	fun `delete tank with invalid number does nothing`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepo = JDBIDNORepository(handle)
 		val aguRepo = JDBIAGURepository(handle)
@@ -204,9 +203,7 @@ class JDBITankRepositoryTest {
 		tankRepo.addTank(agu.cui, tank)
 
 		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.deleteTank(agu.cui, Int.MAX_VALUE)
-		}
+		tankRepo.deleteTank(agu.cui, Int.MAX_VALUE)
 	}
 
 	@Test
@@ -233,28 +230,6 @@ class JDBITankRepositoryTest {
 	}
 
 	@Test
-	fun `update tank with invalid cui should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val tankRepo = JDBITankRepository(handle)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank("", dummyTank)
-		}
-	}
-
-	@Test
-	fun `update tank with invalid number should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val tankRepo = JDBITankRepository(handle)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(dummyAGU.cui, dummyTank)
-		}
-	}
-
-	@Test
 	fun `update tank with invalid number of correction factor should fail`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepo = JDBIDNORepository(handle)
@@ -267,6 +242,26 @@ class JDBITankRepositoryTest {
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, correctionFactor = -1.0)
+
+		// act & assert
+		assertFailsWith<UnableToExecuteStatementException> {
+			tankRepo.updateTank(agu.cui, updatedTank)
+		}
+	}
+
+	@Test
+	fun `update tank with invalid levels should fail`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepo = JDBIDNORepository(handle)
+		val aguRepo = JDBIAGURepository(handle)
+		val tankRepo = JDBITankRepository(handle)
+		val agu = dummyAGU
+		val tank = dummyTank
+
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		aguRepo.addAGU(agu, dnoId)
+		val tankNumber = tankRepo.addTank(agu.cui, tank)
+		val updatedTank = tank.copy(number = tankNumber, levels = tank.levels.copy(min = 100, max = 50, critical = 100))
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {

@@ -80,16 +80,15 @@ create table if not exists agu
 create table if not exists tank
 (
     agu_cui           CUI,
-    number            int           not null,
-    min_level         PERCENTAGE    not null,
-    max_level         PERCENTAGE    not null,
-    critical_level    PERCENTAGE    not null,
-    load_volume       numeric(6, 3) not null, -- using 20tons as reference is a percentage of that can be higher than 100%
-    correction_factor numeric(6, 3) not null,
-    capacity          int           not null,
+    number            int           check (number >= 0)            not null,
+    min_level         PERCENTAGE                                   not null,
+    max_level         PERCENTAGE                                   not null,
+    critical_level    PERCENTAGE                                   not null,
+    load_volume       numeric(6, 3) check (load_volume >= 0)       not null, -- using 20tons as reference is a percentage of that can be higher than 100%
+    correction_factor numeric(6, 3) check (correction_factor >= 0) not null,
+    capacity          int           check (capacity >= 0)          not null,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
-    constraint positive_correction_factor check (correction_factor >= 0),
 
     foreign key (agu_cui) references agu (cui),
     primary key (agu_cui, number)
