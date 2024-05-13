@@ -4,45 +4,85 @@ import 'leaflet/dist/leaflet.css';
 import markerIcon from '../../assets/location_pin.png';
 import * as L from 'leaflet';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { aguService } from "../../services/agu/aguService";
+import { AgusBasicInfoOutputModel } from "../../services/agu/models/aguOutputModel";
+import {Box, CircularProgress} from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Error from "../Layouts/Error";
+
+const centerOfPortugal = [39.483068778739025, -8.09333730633312];
+
+type MapState =
+    | { type: 'loading' }
+    | { type: 'error'; message: string }
+    | { type: 'success'; uagsDetails: AgusBasicInfoOutputModel[] };
 
 export default function LeafletMap() {
-    const markers: {geocode: [number, number], popUp: string}[] = [
-        {
-            geocode: [41.33134454715996, -6.968427934882252],
-            popUp: 'Alfândega da Fé',
-        },
-        {
-            geocode: [41.29741788010863, -7.477619913492303],
-            popUp: 'Alijó',
-        },
-        {
-            geocode: [41.24742767159777, -7.317666075364068],
-            popUp: 'Cazerrada de Ansiães',
-        },
-    ];
+    const [state, setState] = useState<MapState>({ type: 'loading' });
+
+    useEffect(() => {
+        const fetchGetAGUs = async () => {
+            const getAGUsResponse = await aguService.getAGUs();
+
+            if (getAGUsResponse.value instanceof Error) {
+                setState({
+                    type: 'error',
+                    message: getAGUsResponse.value.message,
+                });
+            }else{
+                setState({
+                    type: 'success',
+                    uagsDetails: getAGUsResponse.value,
+                });
+            }
+        }
+        fetchGetAGUs();
+    }, []);
 
     const icon = new L.Icon({
         iconUrl: markerIcon,
         iconSize: [25, 25],
     });
 
+    if (state.type === 'loading') {
+        return (
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+            }}>
+                <Typography variant="h5" gutterBottom>Loading...</Typography>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (state.type === 'error') {
+        return (
+            <Error message={state.message}/>
+        );
+    }
+
     return (
-        <MapContainer center={[39.483068778739025, -8.09333730633312]} zoom={7} scrollWheelZoom={true} sx={{}}>
+        <MapContainer center={centerOfPortugal} zoom={7} scrollWheelZoom={true}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {markers.map((marker, index) => (
-                <Marker key={index} position={marker.geocode as [number, number]} icon={icon}>
+            {state.uagsDetails.map((marker, index) => (
+                <Marker key={index} position={[marker.location.latitude, marker.location.longitude]} icon={icon}>
                     <Popup>
                         <div className="popup_tipologia">
-                            UAG
+                            ORD {marker.dno.name}
                         </div>
                         <div className="popup_name">
-                            {marker.popUp}
+                            {marker.name}
                         </div>
                         <br/>
                         <div className="popup_button">
-                            <Link to={`/uag/${encodeURIComponent(marker.popUp)}`}>
+                            <Link to={`/uag/${encodeURIComponent(marker.cui)}`}>
                                 Detalhes
                             </Link>
                         </div>

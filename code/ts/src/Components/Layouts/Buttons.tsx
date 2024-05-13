@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
 
-export default function ReturnButton(){
+function ReturnButton(){
     const navigate = useNavigate()
     return(
         <Button
@@ -25,3 +25,24 @@ export default function ReturnButton(){
         </Button>
     )
 }
+
+function ReloadButton(){
+    return(
+        <Button
+            size="small"
+            variant="contained"
+            sx={{
+                backgroundColor: 'rgb(255, 165, 0)',
+                color: 'black',
+                '&:hover': {
+                    backgroundColor: 'rgba(255,165,0,0.49)',
+                },
+            }}
+            onClick={() => window.location.reload()}
+        >
+            Reload
+        </Button>
+    )
+}
+
+export { ReturnButton, ReloadButton }

@@ -6,6 +6,12 @@ module.exports = {
     devServer: {
         port: 8000,
         historyApiFallback: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8080',
+                secure: false,
+            },
+        },
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx', '.css', '.ico', '.html'],
