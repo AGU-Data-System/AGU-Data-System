@@ -6,11 +6,21 @@ import aguDataSystem.server.domain.Tank
 import aguDataSystem.server.domain.agu.AGUCreationInfo
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.ContactType
+import aguDataSystem.server.domain.measure.GasMeasure
+import java.time.LocalDateTime
 
 /**
  * Utility object for repository tests double data
  */
 object RepositoryUtils {
+
+	val dummyGasMeasures = List(10) {
+		GasMeasure(
+			timestamp = LocalDateTime.now().truncateNanos(),
+			predictionFor = LocalDateTime.now().plusDays(it.toLong()).truncateNanos(),
+			level = 50 - (it*2)
+		)
+	}.reversed()
 
 	val dummyLogisticContact = Contact(
 		name = "John Doe",
@@ -61,4 +71,14 @@ object RepositoryUtils {
 		tanks = emptyList(),
 		gasLevelUrl = "http://localhost:8081/api/agu/PT1234567890123456XX/gasLevel",
 	)
+
+	/**
+	 * Truncates the nanoseconds of a [LocalDateTime] to 0
+	 *
+	 * @receiver The [LocalDateTime] to truncate
+	 * @return The truncated [LocalDateTime]
+	 */
+	private fun LocalDateTime.truncateNanos(): LocalDateTime {
+		return this.withNano(0)
+	}
 }

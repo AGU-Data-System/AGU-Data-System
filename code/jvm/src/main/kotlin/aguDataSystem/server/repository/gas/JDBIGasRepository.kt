@@ -27,14 +27,17 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
 
         val measures = handle.createQuery(
             """
-            SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
-            WHERE measure.provider_id = :providerId AND measure.timestamp >= :timestamp
+            SELECT measure.timestamp, measure.prediction_for, measure.data 
+            FROM measure
+            WHERE measure.provider_id = :providerId AND 
+            measure.timestamp::time >= :timestamp AND 
+            measure.prediction_for = measure.timestamp AND
+            measure.timestamp::date >= now()::date - :days
             ORDER BY measure.timestamp DESC
-            LIMIT :days
             """.trimIndent()
         )
             .bind("providerId", providerId)
-            .bind("timestamp", LocalDate.now().atTime(time))
+            .bind("timestamp", time)
             .bind("days", days)
             .mapTo<GasMeasure>()
             .list()
@@ -57,7 +60,9 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
         val measures = handle.createQuery(
             """
             SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
-            WHERE measure.provider_id = :providerId AND measure.timestamp >= :day AND measure.timestamp < :nextDay
+            WHERE measure.provider_id = :providerId AND 
+            measure.prediction_for >= :day AND 
+            measure.prediction_for < :nextDay
             """.trimIndent()
         )
             .bind("providerId", providerId)
@@ -72,7 +77,7 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
     }
 
     /**
-     * Gets the gas prediction measures of a provider for a set number of days
+     * Gets the gas prediction measures of a provider for a set number of days at a specific time
      *
      * @param providerId the id of the provider
      * @param days the number of days to get the measures from
@@ -84,8 +89,16 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
 
         val measures = handle.createQuery(
             """
-            SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
-            WHERE measure.provider_id = :providerId AND measure.prediction_for >= :timestamp
+            SELECT measure.timestamp, measure.prediction_for, measure.data 
+            FROM measure
+            WHERE measure.provider_id = :providerId AND 
+            extract (hours from (
+                Select inner_measure.prediction_for from measure as inner_measure
+                WHERE inner_measure.provider_id = :providerId 
+                Order by abs(extract(epoch from inner_measure.prediction_for) - extract(epoch from :timestamp)) 
+                limit 1
+            )) = extract(hours from measure.prediction_for)
+            AND measure.prediction_for <> now()::date
             ORDER BY measure.prediction_for DESC
             LIMIT :days
             """.trimIndent()
@@ -96,7 +109,7 @@ class JDBIGasRepository(private val handle: Handle): GasRepository {
             .mapTo<GasMeasure>()
             .list()
 
-        logger.info("Fetched gas prediction measures for provider with id: {} for the last {} days", providerId, days)
+        logger.info("Fetched: {} gas prediction measures for provider with id: {} for the last {} days", measures.size, providerId, days)
 
         return measures
     }
