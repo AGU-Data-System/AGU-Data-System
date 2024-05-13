@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.mapTo
 import org.postgresql.ds.PGSimpleDataSource
 
 //TODO: Remove this later, as this is not going to production
@@ -65,7 +66,7 @@ fun main() {
 }
 
 class ProviderScraper(private val transactionManager: TransactionManager) {
-	private val fetcherUrl = "http://localhost:8080/api/providers"
+	private val fetcherUrl = "http://localhost:8081/api/providers"
 	private val client = HttpClient.newHttpClient()
 	private val jsonFormatter = Json { ignoreUnknownKeys = true; prettyPrint = true }
 
@@ -97,7 +98,7 @@ class ProviderScraper(private val transactionManager: TransactionManager) {
 	private fun fetchCuiFromAguName(handle: Handle, aguName: String): String? =
 		handle.createQuery("SELECT cui FROM agu WHERE name = :name")
 			.bind("name", aguName)
-			.mapTo(String::class.java)
+			.mapTo<String>()
 			.firstOrNull()
 
 	private fun insertProvider(handle: Handle, provider: Provider, cui: String) {
