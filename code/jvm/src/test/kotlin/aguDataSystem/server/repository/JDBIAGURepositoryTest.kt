@@ -35,8 +35,8 @@ class JDBIAGURepositoryTest {
 		val result = aguRepo.addAGU(agu, dnoId)
 
 		// assert
-		 assertNotNull(result)
-		 assertEquals(agu.cui, result)
+		assertNotNull(result)
+		assertEquals(agu.cui, result)
 	}
 
 	@Test

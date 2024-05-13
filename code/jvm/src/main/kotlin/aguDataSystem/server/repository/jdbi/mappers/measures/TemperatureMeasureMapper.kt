@@ -10,7 +10,7 @@ import org.jdbi.v3.core.statement.StatementContext
  * @see RowMapper
  * @see TemperatureMeasure
  */
-class TemperatureMeasureMapper: RowMapper<TemperatureMeasure> {
+class TemperatureMeasureMapper : RowMapper<TemperatureMeasure> {
 
 	/**
 	 * Maps the row of the result set to a [TemperatureMeasure]

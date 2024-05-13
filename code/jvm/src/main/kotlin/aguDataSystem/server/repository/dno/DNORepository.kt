@@ -20,7 +20,7 @@ interface DNORepository {
 	 * @param name the name of the DNO
 	 * @return the DNO with the given name or null if it doesn't exist
 	 */
-    fun getByName(name: String): DNO?
+	fun getByName(name: String): DNO?
 
 	/**
 	 * Gets DNO by its id
@@ -28,7 +28,7 @@ interface DNORepository {
 	 * @param id the id of the DNO
 	 * @return the DNO with the given id or null if it doesn't exist
 	 */
-    fun getById(id: Int): DNO?
+	fun getById(id: Int): DNO?
 
 	/**
 	 * Checks if a DNO with the given name is stored
@@ -36,5 +36,5 @@ interface DNORepository {
 	 * @param name the name of the DNO
 	 * @return true if the DNO is stored, false otherwise
 	 */
-    fun isDNOStored(name: String): Boolean
+	fun isDNOStored(name: String): Boolean
 }

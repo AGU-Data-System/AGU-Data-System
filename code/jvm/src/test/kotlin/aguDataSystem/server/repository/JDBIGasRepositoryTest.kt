@@ -3,6 +3,7 @@ package aguDataSystem.server.repository
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.dummyGasMeasures
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.gas.JDBIGasRepository
@@ -27,7 +28,7 @@ class JDBIGasRepositoryTest {
 		val agu = dummyAGU
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
-		val gasMeasures = RepositoryUtils.dummyGasMeasures
+		val gasMeasures = dummyGasMeasures
 		val time = gasMeasures.last().predictionFor.toLocalTime()
 
 		val dnoId = dnoRepository.addDNO(dnoName)
@@ -54,7 +55,7 @@ class JDBIGasRepositoryTest {
 		val agu = dummyAGU
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
-		val gasMeasures = RepositoryUtils.dummyGasMeasures
+		val gasMeasures = dummyGasMeasures
 		val nDays = 2
 		val time = gasMeasures.last().predictionFor.toLocalTime()
 
@@ -81,7 +82,7 @@ class JDBIGasRepositoryTest {
 		val agu = dummyAGU
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
-		val gasMeasures = RepositoryUtils.dummyGasMeasures
+		val gasMeasures = dummyGasMeasures
 		val day = gasMeasures.first().timestamp.toLocalDate()
 
 		val dnoId = dnoRepository.addDNO(dnoName)
@@ -107,7 +108,7 @@ class JDBIGasRepositoryTest {
 		val agu = dummyAGU
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
-		val gasMeasures = RepositoryUtils.dummyGasMeasures
+		val gasMeasures = dummyGasMeasures
 		val nDays = 2
 		val time = gasMeasures.last().predictionFor.plusDays(1).toLocalTime()
 

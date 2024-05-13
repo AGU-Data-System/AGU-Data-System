@@ -7,13 +7,13 @@ import aguDataSystem.server.domain.contact.Contact
  */
 interface ContactRepository {
 
-    /**
-     * Adds a contact to an AGU
-     *
-     * @param cui CUI of the AGU
-     * @param contact Contact to add
-     */
-    fun addContact(cui: String, contact: Contact)
+	/**
+	 * Adds a contact to an AGU
+	 *
+	 * @param cui CUI of the AGU
+	 * @param contact Contact to add
+	 */
+	fun addContact(cui: String, contact: Contact)
 
 	/**
 	 * Gets all contacts of an AGU

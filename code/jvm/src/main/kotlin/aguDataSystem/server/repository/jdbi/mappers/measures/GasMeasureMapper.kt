@@ -10,7 +10,7 @@ import org.jdbi.v3.core.statement.StatementContext
  * @see RowMapper
  * @see GasMeasure
  */
-class GasMeasureMapper: RowMapper<GasMeasure> {
+class GasMeasureMapper : RowMapper<GasMeasure> {
 
 	/**
 	 * Maps the row of the result set to a [GasMeasure]

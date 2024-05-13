@@ -7,6 +7,7 @@ import aguDataSystem.server.domain.agu.AGUCreationInfo
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.ContactType
 import aguDataSystem.server.domain.measure.GasMeasure
+import aguDataSystem.server.domain.measure.TemperatureMeasure
 import java.time.LocalDateTime
 
 /**
@@ -18,7 +19,16 @@ object RepositoryUtils {
 		GasMeasure(
 			timestamp = LocalDateTime.now().truncateNanos(),
 			predictionFor = LocalDateTime.now().plusDays(it.toLong()).truncateNanos(),
-			level = 50 - (it*2)
+			level = 50 - (it * 2)
+		)
+	}.reversed()
+
+	val dummyTemperatureMeasures = List(10) {
+		TemperatureMeasure(
+			timestamp = LocalDateTime.now().truncateNanos(),
+			predictionFor = LocalDateTime.now().plusDays(it.toLong()).truncateNanos(),
+			min = it,
+			max = 10 + it
 		)
 	}.reversed()
 

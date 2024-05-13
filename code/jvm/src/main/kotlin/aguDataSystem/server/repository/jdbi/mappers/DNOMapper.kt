@@ -19,10 +19,10 @@ class DNOMapper : RowMapper<DNO> {
 	 * @param ctx the statement context
 	 * @return the [DNO] from the result set
 	 */
-    override fun map(rs: ResultSet, ctx: StatementContext?): DNO {
-        return DNO(
-            rs.getInt("id"),
-            rs.getString("name")
-        )
-    }
+	override fun map(rs: ResultSet, ctx: StatementContext?): DNO {
+		return DNO(
+			rs.getInt("id"),
+			rs.getString("name")
+		)
+	}
 }
