@@ -38,7 +38,7 @@ export default function Agu(){
     if(state.type == 'loading'){
         return (
             <Box>
-                <CircularProgress />
+                <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
             </Box>
         )
     }
@@ -53,9 +53,9 @@ export default function Agu(){
 
     return(
         <Box>
-            <AguHeader aguOrd={state.aguDetails.dno.name} aguName={state.aguDetails.name} aguCUI={state.aguDetails.cui} aguMetres={state.aguDetails.loadVolume} contacts={state.aguDetails.contacts} aguIsFavorite={state.aguDetails.isFavorite} />
+            <AguHeader aguOrd={state.aguDetails.dno.name} aguName={state.aguDetails.name} aguCUI={state.aguDetails.cui} aguMetres={state.aguDetails.capacity} contacts={state.aguDetails.contacts} aguIsFavorite={state.aguDetails.isFavorite} />
             <br/>
-            <AguBody aguNotes={state.aguDetails.notes} lvlMin={state.aguDetails.levels.min} lvlMax={state.aguDetails.levels.max} lvlMinHist={state.aguDetails.levels.critical} latitude={state.aguDetails.location.latitude} longitude={state.aguDetails.location.longitude} />
+            <AguBody aguNotes={state.aguDetails.notes ? state.aguDetails.notes : ""} lvlMin={state.aguDetails.levels.min} lvlMax={state.aguDetails.levels.max} lvlCrit={state.aguDetails.levels.critical} latitude={state.aguDetails.location.latitude} longitude={state.aguDetails.location.longitude} />
         </Box>
     )
 }

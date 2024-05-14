@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { CircularProgress, Grid, List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import StarIcon from '@mui/icons-material/Star';
+import { FavError } from "../Layouts/Error";
 
 interface UAGDetails {
     name: string
@@ -45,22 +46,23 @@ export default function FavBar() {
 
     if (state.type === 'loading') {
         return (
-            <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
-                <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
+            <Grid container sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px', display: 'flex', flexDirection: 'column'}}>
+                <Grid item sx={{ paddingTop: 2, paddingLeft: 2 }}>
                     <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
                 </Grid>
-                <Grid item sx={{ margin: 2 }}>
-                    <CircularProgress />
+                <Grid item sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
                 </Grid>
             </Grid>
-            );
+        );
     }
 
     if (state.type === 'error') {
         return (
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
-                <Grid item sx={{paddingTop: 2, paddingLeft: 2 }}>
-                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Error while trying to get the favorite UAGs: {state.message}
+                <Grid item sx={{paddingTop: 2, paddingLeft: 2, paddingBottom: 2, width: '100%' }}>
+                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} />
+                    <FavError message={state.message}/>
                 </Grid>
             </Grid>
         );

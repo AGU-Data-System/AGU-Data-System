@@ -7,9 +7,9 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { aguService } from "../../services/agu/aguService";
 import { AgusBasicInfoOutputModel } from "../../services/agu/models/aguOutputModel";
-import {Box, CircularProgress} from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import Error from "../Layouts/Error";
+import { MapError } from "../Layouts/Error";
 
 const centerOfPortugal = [39.483068778739025, -8.09333730633312];
 
@@ -55,14 +55,14 @@ export default function LeafletMap() {
                 height: '100vh',
             }}>
                 <Typography variant="h5" gutterBottom>Loading...</Typography>
-                <CircularProgress />
+                <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
             </Box>
         );
     }
 
     if (state.type === 'error') {
         return (
-            <Error message={state.message}/>
+            <MapError message={state.message}/>
         );
     }
 

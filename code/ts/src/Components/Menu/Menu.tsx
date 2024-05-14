@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Grid } from '@mui/material';
 import { ControlMenuLeft, ControlMenuRight } from '../ControlMenu/ControlMenu';
-//import Map from '../Map/Map';
 import LeafletMap from "../Map/LeafletMap";
 
 export default function Menu() {
