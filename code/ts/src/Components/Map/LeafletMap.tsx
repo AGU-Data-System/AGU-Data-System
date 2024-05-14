@@ -10,6 +10,7 @@ import { AgusBasicInfoOutputModel } from "../../services/agu/models/aguOutputMod
 import { Box, CircularProgress } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { MapError } from "../Layouts/Error";
+import {Problem} from "../../utils/Problem";
 
 const centerOfPortugal = [39.483068778739025, -8.09333730633312];
 
@@ -30,7 +31,9 @@ export default function LeafletMap() {
                     type: 'error',
                     message: getAGUsResponse.value.message,
                 });
-            }else{
+            } else if (getAGUsResponse.value instanceof Problem) {
+                setState({ type: 'error', message: getAGUsResponse.value.title });
+            } else {
                 setState({
                     type: 'success',
                     uagsDetails: getAGUsResponse.value,

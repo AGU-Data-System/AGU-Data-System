@@ -1,7 +1,7 @@
 import * as React from 'react'
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import Typography from "@mui/material/Typography";
-import { ReloadButton } from "./Buttons";
+import {ReloadButton, ReturnButton} from "./Buttons";
 import { Box } from "@mui/material";
 
 function MapError( {message}:{message: string} ) {
@@ -50,6 +50,8 @@ function AguDetailsError ( {message}:{message: string} ) {
             <Typography variant="h5" gutterBottom>Error while trying to display the UAG details</Typography>
             <Typography variant="body1" gutterBottom>Reason: {message}</Typography>
             <ReloadButton/>
+            <br/>
+            <ReturnButton/>
         </Box>
     )
 }

@@ -12,7 +12,6 @@ function ReturnButton(){
             variant="contained"
             sx={{
                 backgroundColor: 'rgb(255, 165, 0)',
-                height: '100%',
                 color: 'black',
                 '&:hover': {
                     backgroundColor: 'rgba(255,165,0,0.49)',

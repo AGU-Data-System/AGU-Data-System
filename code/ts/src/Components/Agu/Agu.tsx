@@ -8,6 +8,7 @@ import { AguDetailsOutputModel } from "../../services/agu/models/aguOutputModel"
 import { aguService } from "../../services/agu/aguService";
 import { AguDetailsError } from "../Layouts/Error";
 import Typography from "@mui/material/Typography";
+import { Problem } from "../../utils/Problem";
 
 type AguState =
     | { type: 'loading' }
@@ -30,6 +31,8 @@ export default function Agu(){
 
             if (getAguDetails.value instanceof Error) {
                 setState({ type: 'error', message: getAguDetails.value.message });
+            } else if (getAguDetails.value instanceof Problem) {
+                setState({ type: 'error', message: getAguDetails.value.title });
             } else {
                 setState({type: 'success', aguDetails: getAguDetails.value});
             }

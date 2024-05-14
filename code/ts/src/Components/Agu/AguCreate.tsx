@@ -8,6 +8,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { aguService } from "../../services/agu/aguService";
 import { useNavigate } from "react-router-dom";
 import { AguCreateInputModel, AguCreateWithoutTanksAndContactsModel, ContactCreateInputModel, TankCreateInputModel } from "../../services/agu/models/createAguInputModel";
+import {Problem} from "../../utils/Problem";
 
 const contact_types = [
     {
@@ -122,7 +123,10 @@ export default function AguCreate() {
             if (createAGUResponse.value instanceof Error) {
                 console.error('Error creating AGU:', createAGUResponse);
                 return;
-            }else{
+            } else if (createAGUResponse.value instanceof Problem) {
+                console.error('Error creating AGU:', createAGUResponse.value.title);
+                return;
+            } else {
                 console.log('AGU created:', createAGUResponse);
 
                 setAGUData(initialAGUData);

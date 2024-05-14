@@ -1,4 +1,5 @@
 import { Either, failure, Failure, success } from '../../utils/Either';
+import { Problem, problemMediaType } from "../../utils/Problem";
 
 const API_ENDPOINT = "http://localhost:8080/api"
 
@@ -33,7 +34,7 @@ async function fetchWithEither(url: string, options: RequestInit): Promise<Eithe
     }
 }
 
-export async function fetchFunction(partialUrl: string, method: string, data: any, authentication: boolean = false, headers?: any): Promise<Either<Error, any>> {
+export async function fetchFunction(partialUrl: string, method: string, data: any, authentication: boolean = false, headers?: any): Promise<Either<Error | Problem, any>> {
     const url = API_ENDPOINT + partialUrl;
     const fetchResult = await fetchWithEither(url, {
         method: method,
@@ -52,7 +53,11 @@ export async function fetchFunction(partialUrl: string, method: string, data: an
         const contentType = response.headers.get('Content-Type');
         const body = await response.json();
         if (!response.ok) {
-            return failure(new UnexpectedResponseError(`Unexpected response type: ${contentType}`));
+            if (contentType?.includes(problemMediaType)) {
+                return failure(new Problem(body));
+            } else {
+                return failure(new UnexpectedResponseError(`Unexpected response type: ${contentType}`));
+            }
         } else {
             return success(body);
         }
