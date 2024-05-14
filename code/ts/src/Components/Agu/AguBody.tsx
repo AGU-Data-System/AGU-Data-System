@@ -5,7 +5,7 @@ import PieGraph from '../Graphs/PieGraph';
 import LineGraph from '../Graphs/LineGraph';
 
 export default function AguBody(
-    { aguNotes, lvlMin, lvlMax, lvlMinHist, latitude, longitude }: { aguNotes: string; lvlMin: number; lvlMax: number; lvlMinHist: number; latitude: number; longitude: number}
+    { aguNotes, lvlMin, lvlMax, lvlCrit, latitude, longitude }: { aguNotes: string; lvlMin: number; lvlMax: number; lvlCrit: number; latitude: number; longitude: number}
 ) {
     const [notes, setNotes] = useState(aguNotes);
     const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +44,7 @@ export default function AguBody(
                 <Box paddingTop='10%' paddingBottom='10%'>
                     <Typography variant="h6">Valor Máximo: {lvlMax}</Typography>
                     <Typography variant="h6">Valor Minimo: {lvlMin}</Typography>
-                    <Typography variant="h6">Valor Minimo Histórico: {lvlMinHist}</Typography>
+                    <Typography variant="h6">Valor Crítico: {lvlCrit}</Typography>
                 </Box>
                 <Card sx={{ display:'flex', flexDirection:'row' }}>
                     <CardMedia

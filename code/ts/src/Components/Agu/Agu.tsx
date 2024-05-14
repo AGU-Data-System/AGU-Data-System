@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import AguBody from "./AguBody";
 import { AguDetailsOutputModel } from "../../services/agu/models/aguOutputModel";
-import {aguService} from "../../services/agu/aguService";
+import { aguService } from "../../services/agu/aguService";
+import { AguDetailsError } from "../Layouts/Error";
+import Typography from "@mui/material/Typography";
 
 type AguState =
     | { type: 'loading' }
@@ -37,25 +39,30 @@ export default function Agu(){
 
     if(state.type == 'loading'){
         return (
-            <Box>
-                <CircularProgress />
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '50vh',
+            }}>
+                <Typography variant="h5" gutterBottom>Loading...</Typography>
+                <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
             </Box>
         )
     }
 
     if (state.type == 'error') {
-        return(
-            <Box>
-                Error: {state.message}
-            </Box>
+        return (
+            <AguDetailsError message={state.message}/>
         )
     }
 
     return(
         <Box>
-            <AguHeader aguOrd={state.aguDetails.dno.name} aguName={state.aguDetails.name} aguCUI={state.aguDetails.cui} aguMetres={state.aguDetails.loadVolume} contacts={state.aguDetails.contacts} aguIsFavorite={state.aguDetails.isFavorite} />
+            <AguHeader aguOrd={state.aguDetails.dno.name} aguName={state.aguDetails.name} aguCUI={state.aguDetails.cui} aguMetres={state.aguDetails.capacity} contacts={state.aguDetails.contacts} aguIsFavorite={state.aguDetails.isFavorite} />
             <br/>
-            <AguBody aguNotes={state.aguDetails.notes} lvlMin={state.aguDetails.levels.min} lvlMax={state.aguDetails.levels.max} lvlMinHist={state.aguDetails.levels.critical} latitude={state.aguDetails.location.latitude} longitude={state.aguDetails.location.longitude} />
+            <AguBody aguNotes={state.aguDetails.notes ? state.aguDetails.notes : ""} lvlMin={state.aguDetails.levels.min} lvlMax={state.aguDetails.levels.max} lvlCrit={state.aguDetails.levels.critical} latitude={state.aguDetails.location.latitude} longitude={state.aguDetails.location.longitude} />
         </Box>
     )
 }

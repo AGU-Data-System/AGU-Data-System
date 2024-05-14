@@ -4,7 +4,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import {useState} from "react";
 import { ReturnButton } from "../Layouts/Buttons";
-import {ContactOutputModel} from "../../services/agu/models/aguOutputModel";
+import { ContactOutputModel } from "../../services/agu/models/aguOutputModel";
 
 export default function AguHeader(
     { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavorite }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavorite: boolean }
@@ -33,7 +33,7 @@ export default function AguHeader(
                 textAlign: 'center',
                 margin: '8px',
             }}>
-                <Typography variant="subtitle1">{aguOrd}</Typography>
+                <Typography variant="subtitle1">ORD {aguOrd}</Typography>
                 <Typography variant="h4">{aguName}</Typography>
                 <Typography variant="body2" sx={{display:'flex', justifyContent:'flex-end', marginRight:'10px'}}>{aguMetres} m<sup>3</sup></Typography>
             </div>
