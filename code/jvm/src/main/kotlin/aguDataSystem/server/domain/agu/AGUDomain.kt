@@ -130,7 +130,7 @@ class AGUDomain {
 			logger.info("Response body: {}", response.body())
 
 			if (response.statusCode() == HttpStatus.CREATED.value()) { // Created the provider
-				val providerId = response.body().toInt()
+				val providerId = response.body().filter { it.isDigit() }.toInt()
 				Either.Right(providerId)
 			} else {
 				Either.Left(response.statusCode())
