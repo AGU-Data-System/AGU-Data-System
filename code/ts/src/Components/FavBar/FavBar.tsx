@@ -4,6 +4,7 @@ import { CircularProgress, Grid, List, ListItem, ListItemText } from "@mui/mater
 import { useNavigate } from "react-router-dom";
 import StarIcon from '@mui/icons-material/Star';
 import { FavError } from "../Layouts/Error";
+import Typography from "@mui/material/Typography";
 
 interface UAGDetails {
     name: string
@@ -50,7 +51,8 @@ export default function FavBar() {
                 <Grid item sx={{ paddingTop: 2, paddingLeft: 2 }}>
                     <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
                 </Grid>
-                <Grid item sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Grid item sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                    <Typography variant="h5" gutterBottom>Loading...</Typography>
                     <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
                 </Grid>
             </Grid>
@@ -61,7 +63,7 @@ export default function FavBar() {
         return (
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
                 <Grid item sx={{paddingTop: 2, paddingLeft: 2, paddingBottom: 2, width: '100%' }}>
-                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} />
+                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
                     <FavError message={state.message}/>
                 </Grid>
             </Grid>
