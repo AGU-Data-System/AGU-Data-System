@@ -12,9 +12,9 @@ values ('PT1701000000000006JQ', 'Alfândega da Fé', 20, 85, 20, 50, 41.33134454
         'Cazerrada de Ansiães', (SELECT id FROM dno WHERE name = 'Sonorgas'));
 
 INSERT INTO tank
-values ('PT1701000000000006JQ', 1, 20, 85, 20, 50, 90),
-       ('PT1701000000000009JL', 1, 30, 85, 20, 20, 120),
-       ('PT1701000000000012JE', 1, 25, 85, 20, 52, 90);
+values ('PT1701000000000006JQ', 1, 20, 85, 20, 50, 90, 0),
+       ('PT1701000000000009JL', 1, 30, 85, 20, 20, 120, 0),
+       ('PT1701000000000012JE', 1, 25, 85, 20, 52, 90, 0);
 
 -- for test purposes
 Insert into contacts

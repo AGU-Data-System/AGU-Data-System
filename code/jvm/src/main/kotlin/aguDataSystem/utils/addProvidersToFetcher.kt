@@ -1,5 +1,6 @@
 package aguDataSystem.utils
 
+import com.github.doyaaaaaken.kotlincsv.dsl.context.InsufficientFieldsRowBehaviour
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import java.io.File
 import java.net.URI
@@ -26,13 +27,13 @@ fun main() {
 	runBlocking {
 		val scraper = GasAndTempScraper()
 		scraper.fetchAndPostGasSynoptics()
-		scraper.fetchAndPostTemperatureSynoptics("code/jvm/src/main/kotlin/aguDataSystem/utils/12042024_UAGs Route Map.csv")
+		scraper.fetchAndPostTemperatureSynoptics("code/jvm/src/main/kotlin/aguDataSystem/utils/12042024_UAGs_Route_Map.csv")
 	}
 }
 
 class GasAndTempScraper {
 	private val sonorgasUrl = "https://dourogas.thinkdigital.pt/dashboards/ca824027-c206-44b9-af54-cba5dc6edde7/viewer"
-	private val fetcherUrl = "http://localhost:8080/api/provider"
+	private val fetcherUrl = "http://localhost:8081/api/provider"
 	private val client = HttpClient.newHttpClient()
 	private val jsonFormatter = Json { prettyPrint = true }
 
@@ -54,6 +55,8 @@ class GasAndTempScraper {
 
 	fun fetchAndPostTemperatureSynoptics(csvPath: String) {
 		val rows = csvReader {
+			charset = "UTF-16"
+			this.insufficientFieldsRowBehaviour = InsufficientFieldsRowBehaviour.IGNORE
 			autoRenameDuplicateHeaders = true
 		}.readAllWithHeader(File(csvPath))
 
