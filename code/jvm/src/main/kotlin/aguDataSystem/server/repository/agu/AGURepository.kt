@@ -18,6 +18,13 @@ interface AGURepository {
 	fun getAGUsBasicInfo(): List<AGUBasicInfo>
 
 	/**
+	 * Get favourite AGUs
+	 *
+	 * @return List of AGUs basic info
+	 */
+	fun getFavouriteAGUs(): List<AGUBasicInfo>
+
+	/**
 	 * Get AGU by CUI
 	 *
 	 * @param cui CUI of AGU
@@ -49,6 +56,14 @@ interface AGURepository {
 	 * @return AGU
 	 */
 	fun updateAGU(agu: AGU): AGU
+
+	/**
+	 * Update AGU favourite state
+	 *
+	 * @param cui CUI of AGU
+	 * @param isFavorite New favourite state
+	 */
+	fun updateFavouriteState(cui: String, isFavorite: Boolean)
 
 	/**
 	 * Checks whether an AGU exists

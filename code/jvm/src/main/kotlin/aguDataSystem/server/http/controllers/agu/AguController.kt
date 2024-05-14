@@ -7,14 +7,15 @@ import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.GetMeasuresError
+import aguDataSystem.server.service.errors.agu.UpdateAGUError
 import aguDataSystem.utils.Failure
 import aguDataSystem.utils.Success
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -144,6 +145,52 @@ class AguController(private val service: AGUService) {
     }
 
     /**
+     * Get the list of the favourite AGUs with their basic info
+     *
+     * @return the list of the favorite AGUs
+     */
+    @GetMapping(URIs.Agu.GET_FAVOURITE_AGUS)
+    fun getFavouriteAGUs(): ResponseEntity<*> {
+        return ResponseEntity.ok(service.getFavouriteAGUs())
+    }
+
+    /**
+     * Changes the favourite state of the AGU
+     *
+     * @param aguCui the CUI of the AGU to change
+     * @param aguFavouriteInput the new favourite state of the AGU
+     * @return the changed AGU
+     */
+    @PutMapping(URIs.Agu.GET_BY_ID)
+    fun updateFavouriteState(
+        @PathVariable aguCui: String,
+        @RequestBody aguFavouriteInput: Boolean
+    ): ResponseEntity<*> {
+        return when (val res = service.updateFavouriteState(aguCui, aguFavouriteInput)) {
+            is Failure -> res.value.resolveProblem()
+            is Success -> ResponseEntity.ok(res.value)
+        }
+    }
+
+    /**
+     * Changes the AGU
+     *
+     * @param aguCui the CUI of the AGU to change
+     * @param aguInput the new AGU
+     * @return the changed AGU
+     */
+    @PutMapping(URIs.Agu.GET_BY_ID)
+    fun updateAGU(
+        @PathVariable aguCui: String,
+        @RequestBody aguInput: AGUCreationInputModel
+    ): ResponseEntity<*> {
+        return when (val res = service.updateAGU(aguInput.toAGUCreationDTO())) {
+            is Failure -> res.value.resolveProblem()
+            is Success -> ResponseEntity.ok(res.value)
+        }
+    }
+
+    /**
      * Resolve the problem of creating an AGU
      *
      * @receiver the error to resolve
@@ -214,4 +261,51 @@ class AguController(private val service: AGUService) {
                 Problem.ProviderNotFound
             )
         }
+
+    /**
+     * Resolve the problem of updating an AGU
+     *
+     * @receiver the error to resolve
+     * @return the response entity to return
+     */
+    private fun UpdateAGUError.resolveProblem(): ResponseEntity<*> =
+        when (this) {
+            UpdateAGUError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+            UpdateAGUError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
+            UpdateAGUError.InvalidContact -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidContact)
+            UpdateAGUError.InvalidContactType -> Problem.response(
+                HttpStatus.BAD_REQUEST.value(),
+                Problem.InvalidContactType
+            )
+
+            UpdateAGUError.InvalidCoordinates -> Problem.response(
+                HttpStatus.BAD_REQUEST.value(),
+                Problem.InvalidCoordinates
+            )
+
+            UpdateAGUError.InvalidCriticalLevel -> Problem.response(
+                HttpStatus.BAD_REQUEST.value(),
+                Problem.InvalidCriticalLevel
+            )
+
+            UpdateAGUError.InvalidDNO -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidDNO)
+            UpdateAGUError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+            UpdateAGUError.InvalidLoadVolume -> Problem.response(
+                HttpStatus.BAD_REQUEST.value(),
+                Problem.InvalidLoadVolume
+            )
+
+            UpdateAGUError.InvalidMaxLevel -> Problem.response(
+                HttpStatus.BAD_REQUEST.value(),
+                Problem.InvalidMaxLevel
+            )
+
+            UpdateAGUError.InvalidMinLevel -> Problem.response(
+                HttpStatus.BAD_REQUEST.value(),
+                Problem.InvalidMinLevel
+            )
+            UpdateAGUError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
+            UpdateAGUError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
+        }
+
 }

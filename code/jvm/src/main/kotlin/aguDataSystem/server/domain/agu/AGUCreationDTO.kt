@@ -38,12 +38,12 @@ data class AGUCreationDTO(
 	val training: String?,
 ) {
 	/**
-	 * Converts the creation DTO to an AGU
+	 * Converts the creation DTO to an AGU creation info
 	 *
 	 * @receiver the creation DTO
 	 * @return the AGU
 	 */
-	fun toAGUBasicInfo() = AGUCreationInfo(
+	fun toAGUCreationInfo() = AGUCreationInfo(
 		cui = this.cui,
 		name = this.name,
 		levels = this.levels,

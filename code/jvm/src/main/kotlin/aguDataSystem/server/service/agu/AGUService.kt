@@ -62,13 +62,13 @@ class AGUService(
         }
         logger.info("Creation of AGU with CUI: {}, is valid", creationAGU.cui)
 
-        val aguBasicInfo = creationAGU.toAGUBasicInfo()
+        val aguCreationInfo = creationAGU.toAGUCreationInfo()
 
         val temperatureUrl =
-            aguDomain.generateTemperatureUrl(aguBasicInfo.location.latitude, aguBasicInfo.location.longitude)
+            aguDomain.generateTemperatureUrl(aguCreationInfo.location.latitude, aguCreationInfo.location.longitude)
 
-        val gasProviderInput = ProviderInput(aguBasicInfo.name, aguBasicInfo.gasLevelUrl, ProviderType.GAS)
-        val temperatureProviderInput = ProviderInput(aguBasicInfo.name, temperatureUrl, ProviderType.TEMPERATURE)
+        val gasProviderInput = ProviderInput(aguCreationInfo.name, aguCreationInfo.gasLevelUrl, ProviderType.GAS)
+        val temperatureProviderInput = ProviderInput(aguCreationInfo.name, temperatureUrl, ProviderType.TEMPERATURE)
 
         logger.info("Adding Gas provider for AGU with CUI: {}", creationAGU.cui)
         val gasRes = aguDomain.addProviderRequest(gasProviderInput)
@@ -84,26 +84,26 @@ class AGUService(
         return try {
             transactionManager.run {
                 val dno =
-                    it.dnoRepository.getByName(aguBasicInfo.dnoName) ?: return@run failure(AGUCreationError.InvalidDNO)
+                    it.dnoRepository.getByName(aguCreationInfo.dnoName) ?: return@run failure(AGUCreationError.InvalidDNO)
 
-                it.aguRepository.addAGU(aguBasicInfo, dno.id)
+                it.aguRepository.addAGU(aguCreationInfo, dno.id)
                 logger.info("AGU with CUI: {} added to the database", creationAGU.cui)
 
-                aguBasicInfo.tanks.forEach { tank ->
-                    it.tankRepository.addTank(aguBasicInfo.cui, tank)
+                aguCreationInfo.tanks.forEach { tank ->
+                    it.tankRepository.addTank(aguCreationInfo.cui, tank)
                 }
                 logger.info("Tanks added to AGU with CUI: {}", creationAGU.cui)
 
-                aguBasicInfo.contacts.forEach { contact ->
-                    it.contactRepository.addContact(aguBasicInfo.cui, contact)
+                aguCreationInfo.contacts.forEach { contact ->
+                    it.contactRepository.addContact(aguCreationInfo.cui, contact)
                 }
                 logger.info("Contacts added to AGU with CUI: {}", creationAGU.cui)
 
-                it.providerRepository.addProvider(aguBasicInfo.cui, gasRes.getSuccessOrThrow(), ProviderType.GAS)
+                it.providerRepository.addProvider(aguCreationInfo.cui, gasRes.getSuccessOrThrow(), ProviderType.GAS)
                 logger.info("Gas provider added to AGU with CUI: {}", creationAGU.cui)
 
                 it.providerRepository.addProvider(
-                    aguBasicInfo.cui,
+                    aguCreationInfo.cui,
                     tempRes.getSuccessOrThrow(),
                     ProviderType.TEMPERATURE
                 )
@@ -229,6 +229,61 @@ class AGUService(
 
             success(levels)
         }
+    }
+
+    /**
+     * Gets the favourites AGUs and their basic information
+     *
+     * @return the list of favourite AGUs
+     */
+    fun getFavouriteAGUs(): List<AGUBasicInfo> {
+        return transactionManager.run {
+            logger.info("Getting favourite AGUs from the database")
+
+            val agus = it.aguRepository.getFavouriteAGUs()
+
+            logger.info("Retrieved {} favourite AGUs from the database", agus.size)
+
+            agus
+        }
+    }
+
+    /**
+     * Updates the favourite status of an AGU
+     *
+     * @param cui the CUI of the AGU
+     * @param isFavourite the new favourite status
+     * @return the updated AGU
+     */
+    fun updateFavouriteState(cui: String, isFavourite: Boolean): UpdateFavouriteStateResult {
+        return transactionManager.run {
+            logger.info("Updating favourite status of AGU with CUI: {} to {}", cui, isFavourite)
+
+            it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
+
+            it.aguRepository.updateFavouriteState(cui, isFavourite)
+
+            logger.info("Favourite status of AGU with CUI: {} updated to {}", cui, isFavourite)
+
+            success(Unit)
+        }
+    }
+
+    /**
+     * Update an AGU
+     *
+     * @param agu the AGU to update
+     * @return the updated AGU
+     */
+    fun updateAGU(agu: AGUCreationDTO): UpdateAGUResult {
+        //What do we want to update? just AGU info, or also tanks, or contacts, or DNO, or providers?
+        //If we want to update everything, we need to check if the new info is valid, what is different form the old info
+        //and update everything
+        //this is specially hard for the providers because we have no info about what is the URL of the provider to check if it has changed,
+        // for that we need to send a request to the fetcher
+        //slowing down the update process, so i think we should have an update for each part
+        //TODO()
+        return success(Unit)
     }
 
 

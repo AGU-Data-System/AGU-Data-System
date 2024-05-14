@@ -2,6 +2,19 @@ package aguDataSystem.server.service.errors.agu
 
 /**
  * Error for creating an AGU
+ *
+ * @property InvalidCUI The CUI is invalid.
+ * @property InvalidDNO The DNO is invalid.
+ * @property InvalidCoordinates The coordinates are invalid.
+ * @property InvalidMinLevel The minimum level is invalid.
+ * @property InvalidMaxLevel The maximum level is invalid.
+ * @property InvalidCriticalLevel The critical level is invalid.
+ * @property InvalidLevels The levels are invalid.
+ * @property InvalidLoadVolume The load volume is invalid.
+ * @property InvalidContact The contact is invalid.
+ * @property InvalidContactType The contact type is invalid.
+ * @property InvalidTank The tank is invalid.
+ * @property ProviderError There was an error with the provider.
  */
 sealed class AGUCreationError {
 	//TODO: Insert Possible Errors

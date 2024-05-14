@@ -37,6 +37,29 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	}
 
 	/**
+	 * Get favourite AGUs
+	 *
+	 * @return List of AGUs basic info
+	 */
+	override fun getFavouriteAGUs(): List<AGUBasicInfo> {
+		logger.info("Getting favourite AGUs from the database")
+
+		val aGUs = handle.createQuery(
+			"""
+			SELECT agu.cui, agu.name, dno.id as dno_id, dno.name as dno_name, latitude, longitude, location_name
+			FROM agu left join dno on agu.dno_id = dno.id
+			WHERE is_favorite = true
+			""".trimIndent()
+		)
+			.mapTo<AGUBasicInfo>()
+			.list()
+
+		logger.info("Retrieved {} favourite AGUs from the database", aGUs.size)
+
+		return aGUs
+	}
+
+	/**
 	 * Get AGU by CUI
 	 *
 	 * @param cui CUI of AGU
@@ -182,6 +205,29 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		logger.info("AGU with CUI: {}, updated in the database", agu.cui)
 		return agu
+	}
+
+	/**
+	 * Update AGU favourite state
+	 *
+	 * @param cui CUI of AGU
+	 * @param isFavorite New favourite state
+	 */
+	override fun updateFavouriteState(cui: String, isFavorite: Boolean) {
+		logger.info("Updating AGU favourite state in the database")
+
+		handle.createUpdate(
+			"""
+			UPDATE agu 
+			SET is_favorite = :isFavorite
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.bind("isFavorite", isFavorite)
+			.execute()
+
+		logger.info("AGU with CUI: {}, favourite state updated in the database", cui)
 	}
 
 	/**

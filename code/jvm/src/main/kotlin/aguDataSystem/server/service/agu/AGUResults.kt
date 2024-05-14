@@ -6,6 +6,7 @@ import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.GetMeasuresError
+import aguDataSystem.server.service.errors.agu.UpdateAGUError
 import aguDataSystem.utils.Either
 
 /**
@@ -27,3 +28,13 @@ typealias GetTemperatureMeasuresResult = Either<GetMeasuresError, List<Temperatu
  * Result for getting gas measures
  */
 typealias GetGasMeasuresResult = Either<GetMeasuresError, List<GasMeasure>>
+
+/**
+ * Result for updating an AGU favourite state
+ */
+typealias UpdateFavouriteStateResult = Either<GetAGUError, Unit>
+
+/**
+ * Result for updating an AGU
+ */
+typealias UpdateAGUResult = Either<UpdateAGUError, Unit>

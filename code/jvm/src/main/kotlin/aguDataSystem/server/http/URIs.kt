@@ -21,6 +21,7 @@ object URIs {
 		const val GET_DAILY_GAS_LEVELS = "/{aguCui}/gas/daily"
 		const val GET_HOURLY_GAS_LEVELS = "/{aguCui}/gas/hourly"
 		const val GET_PREDICTION_GAS_LEVELS = "/{aguCui}/gas/predictions"
+		const val GET_FAVOURITE_AGUS = "/favourites"
 
 		fun byID(id: String) = UriTemplate(ROOT + GET_BY_ID).expand(id)
 		fun home() = URI(HOME)
@@ -29,6 +30,7 @@ object URIs {
 		fun dailyGasLevels(id: String) = UriTemplate(ROOT + GET_DAILY_GAS_LEVELS).expand(id)
 		fun hourlyGasLevels(id: String) = UriTemplate(ROOT + GET_HOURLY_GAS_LEVELS).expand(id)
 		fun predictionGasLevels(id: String) = UriTemplate(ROOT + GET_PREDICTION_GAS_LEVELS).expand(id)
+		fun favouriteAgus() = URI(ROOT + GET_FAVOURITE_AGUS)
 	}
 
 }
