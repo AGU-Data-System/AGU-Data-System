@@ -34,7 +34,7 @@ async function fetchWithEither(url: string, options: RequestInit): Promise<Eithe
     }
 }
 
-export async function fetchFunction(partialUrl: string, method: string, data: any, authentication: boolean = false, headers?: any): Promise<Either<Error | Problem, any>> {
+export async function fetchFunction(partialUrl: string, method: string, data: any = null, authentication: boolean = false, headers?: any): Promise<Either<Error | Problem, any>> {
     const url = API_ENDPOINT + partialUrl;
     const fetchResult = await fetchWithEither(url, {
         method: method,

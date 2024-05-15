@@ -2,6 +2,7 @@ package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.updateAgu.UpdateFavouriteAGUInputModel
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
@@ -161,12 +162,12 @@ class AguController(private val service: AGUService) {
      * @param aguFavouriteInput the new favourite state of the AGU
      * @return the changed AGU
      */
-    @PutMapping(URIs.Agu.GET_BY_ID)
+    @PutMapping(URIs.Agu.PUT_FAVOURITE_AGUS)
     fun updateFavouriteState(
         @PathVariable aguCui: String,
-        @RequestBody aguFavouriteInput: Boolean
+        @RequestBody aguFavouriteInput: UpdateFavouriteAGUInputModel
     ): ResponseEntity<*> {
-        return when (val res = service.updateFavouriteState(aguCui, aguFavouriteInput)) {
+        return when (val res = service.updateFavouriteState(aguCui, aguFavouriteInput.isFavourite)) {
             is Failure -> res.value.resolveProblem()
             is Success -> ResponseEntity.ok(res.value)
         }

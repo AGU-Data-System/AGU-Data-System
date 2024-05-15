@@ -2,9 +2,11 @@ import * as React from 'react';
 import { Typography, IconButton, Divider } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import {useState} from "react";
+import { useState } from "react";
 import { ReturnButton } from "../Layouts/Buttons";
 import { ContactOutputModel } from "../../services/agu/models/aguOutputModel";
+import { aguService } from "../../services/agu/aguService";
+import {Problem} from "../../utils/Problem";
 
 export default function AguHeader(
     { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavorite }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavorite: boolean }
@@ -14,7 +16,17 @@ export default function AguHeader(
 
     const handleToggleFavorite = () => {
         setWaitFetch(true);
-        setIsFavorite(!isFavorite);
+        const updateFavourite = async () => {
+            const updateAgu = await aguService.updateFavouriteOnAGU(aguCUI, !isFavorite);
+            if (updateAgu.value instanceof Error) {
+                console.log(updateAgu.value.message);
+            } else if (updateAgu.value instanceof Problem) {
+                console.log(updateAgu.value.detail);
+            } else {
+                setIsFavorite(!isFavorite);
+            }
+        }
+        updateFavourite();
         setTimeout(() => {
             setWaitFetch(false);
         }, 1000);

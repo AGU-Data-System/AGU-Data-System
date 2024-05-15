@@ -22,6 +22,7 @@ object URIs {
 		const val GET_HOURLY_GAS_LEVELS = "/{aguCui}/gas/hourly"
 		const val GET_PREDICTION_GAS_LEVELS = "/{aguCui}/gas/predictions"
 		const val GET_FAVOURITE_AGUS = "/favourites"
+		const val PUT_FAVOURITE_AGUS = "/{aguCui}/favourite"
 
 		fun byID(id: String) = UriTemplate(ROOT + GET_BY_ID).expand(id)
 		fun home() = URI(HOME)

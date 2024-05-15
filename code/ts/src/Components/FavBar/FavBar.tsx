@@ -5,18 +5,15 @@ import { useNavigate } from "react-router-dom";
 import StarIcon from '@mui/icons-material/Star';
 import { FavError } from "../Layouts/Error";
 import Typography from "@mui/material/Typography";
-
-interface UAGDetails {
-    name: string
-    currLvl: number
-    nextLvl: number
-    nextLvlDate: string
-}
+import { aguService } from "../../services/agu/aguService";
+import { Problem } from "../../utils/Problem";
+import { AgusBasicInfoOutputModel } from "../../services/agu/models/aguOutputModel";
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 
 type FavBarState =
     | { type: 'loading' }
-    | { type: 'error'; message: string }
-    | { type: 'success'; uagsDetails: UAGDetails[] };
+    | { type: 'error'; message: string | undefined }
+    | { type: 'success'; uagsDetails: AgusBasicInfoOutputModel[] };
 
 export default function FavBar() {
     const [state, setState] = useState<FavBarState>({ type: 'loading' });
@@ -24,25 +21,17 @@ export default function FavBar() {
 
     useEffect(() => {
         setState({ type: 'loading' });
-        // TODO: fetch UAGs details, for now we just simulate a successful fetch
-        setTimeout(() => {
-            setState({
-                type: 'success',
-                uagsDetails: [
-                    { name: 'UAG1', currLvl: 30, nextLvl: 40, nextLvlDate: '16042024' },
-                    { name: 'UAG2', currLvl: 50, nextLvl: 50, nextLvlDate: '17042024' },
-                    { name: 'UAG3', currLvl: 80, nextLvl: 75, nextLvlDate: '18042024' },
-                    { name: 'UAG5', currLvl: 50, nextLvl: 50, nextLvlDate: '17042024' },
-                    { name: 'UAG6', currLvl: 80, nextLvl: 75, nextLvlDate: '18042024' },
-                    { name: 'UAG7', currLvl: 30, nextLvl: 40, nextLvlDate: '16042024' },
-                    { name: 'UAG8', currLvl: 50, nextLvl: 50, nextLvlDate: '17042024' },
-                    { name: 'UAG9', currLvl: 80, nextLvl: 75, nextLvlDate: '18042024' },
-                    { name: 'UAG10', currLvl: 30, nextLvl: 40, nextLvlDate: '16042024' },
-                    { name: 'UAG11', currLvl: 50, nextLvl: 50, nextLvlDate: '17042024' },
-                    { name: 'UAG12', currLvl: 80, nextLvl: 75, nextLvlDate: '18042024' },
-                ],
-            });
-        }, 1000);
+        const getFavAgus = async () => {
+            const favAugs = await aguService.getFavouriteAgus();
+            if (favAugs.value instanceof Error) {
+                setState({ type: 'error', message: favAugs.value.message });
+            } else if (favAugs.value instanceof Problem) {
+                setState({ type: 'error', message: favAugs.value.detail });
+            } else {
+                setState({type: 'success', uagsDetails: favAugs.value});
+            }
+        }
+        getFavAgus();
     }, []);
 
     if (state.type === 'loading') {
@@ -64,7 +53,7 @@ export default function FavBar() {
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
                 <Grid item sx={{paddingTop: 2, paddingLeft: 2, paddingBottom: 2, width: '100%' }}>
                     <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
-                    <FavError message={state.message}/>
+                    <FavError message={state.message ? state.message : "Error fetching!"}/>
                 </Grid>
             </Grid>
         );
@@ -73,10 +62,16 @@ export default function FavBar() {
     return (
         <Grid container alignItems="right" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
             <Grid item sx={{paddingTop: 2, paddingLeft: 2, width: '100%'}}>
-                <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
+                <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> UAGs Favoritas
             </Grid>
             <Grid item sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
                 <List sx={{ display: 'flex', flexDirection: 'row' }}>
+                    {
+                        state.uagsDetails.length === 0 &&
+                        <ListItem sx={{ display: 'flex', flexDirection: 'row', margin: 2 }}>
+                            <WarningAmberOutlinedIcon sx={{ color: 'rgb(255, 165, 0)', marginRight: 1 }}/> <ListItemText primary="Sem UAGs favoritas!" />
+                        </ListItem>
+                    }
                     {state.uagsDetails.map((uag, index) => (
                         <ListItem
                             key={index}
@@ -92,12 +87,13 @@ export default function FavBar() {
                                     backgroundColor: 'rgba(255,165,0,0.49)'
                                 }
                             }}
-                            onClick={() => navigate(`/uag/${uag.name}`)}
+                            onClick={() => navigate(`/uag/${uag.cui}`)}
                         >
-                            <ListItemText primary={`Name: ${uag.name}`} />
-                            <ListItemText primary={`Curr Level: ${uag.currLvl}`} />
+                            <ListItemText primary={`Nome: ${uag.name}`} />
+                            <ListItemText primary={`ORD: ${uag.dno.name}`} />
+                            {/*<ListItemText primary={`Curr Level: ${uag.currLvl}`} />
                             <ListItemText primary={`Next Level: ${uag.nextLvl}`} />
-                            <ListItemText primary={`Next Level Date: ${uag.nextLvlDate}`} />
+                            <ListItemText primary={`Next Level Date: ${uag.nextLvlDate}`} />*/}
                         </ListItem>
                     ))}
                 </List>
