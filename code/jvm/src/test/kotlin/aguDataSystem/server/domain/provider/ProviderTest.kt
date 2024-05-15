@@ -37,8 +37,8 @@ class ProviderTest {
 		// arrange
 		val sut = ProviderType.GAS
 		val readings = listOf(
-			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10),
-			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20)
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10, 1),
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20, 1)
 		)
 
 		// act
@@ -55,8 +55,8 @@ class ProviderTest {
 		// arrange
 		val sut = ProviderType.TEMPERATURE
 		val readings = listOf(
-			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10),
-			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20)
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10, 1),
+			GasMeasure(LocalDateTime.now(), LocalDateTime.now().plusDays(1), 20, 1)
 		)
 
 		// act & assert

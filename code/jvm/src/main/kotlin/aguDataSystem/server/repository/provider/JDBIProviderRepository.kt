@@ -4,6 +4,7 @@ import aguDataSystem.server.domain.provider.GasProvider
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.provider.TemperatureProvider
+import java.time.LocalDateTime
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -87,8 +88,8 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 		val providers = mutableListOf<Provider>()
 		ProviderType.entries.forEach {
 			when (it) {
-				ProviderType.TEMPERATURE -> providers.plus(getAllTemperatureProviders())
-				ProviderType.GAS -> providers.plus(getAllGasProviders())
+				ProviderType.TEMPERATURE -> providers.addAll(getAllTemperatureProviders())
+				ProviderType.GAS -> providers.addAll(getAllGasProviders())
 			}
 		}
 
@@ -148,6 +149,58 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	}
 
 	/**
+	 * Updates the last fetch time of a provider
+	 *
+	 * @param id the id of the provider
+	 * @param lastFetch the last fetch time
+	 */
+	override fun updateLastFetch(id: Int, lastFetch: LocalDateTime) {
+		logger.info("Updating last fetch time of provider with id {}", id)
+
+		val updates = handle.createUpdate(
+			"""
+			UPDATE provider SET last_fetch = :lastFetch WHERE id = :id
+			""".trimIndent()
+		)
+			.bind("id", id)
+			.bind("lastFetch", lastFetch)
+			.execute()
+
+		if (updates == 0) {
+			logger.info("Provider with id {} not found, didn't update last fetch", id)
+		} else {
+			logger.info("Updated last fetch time of provider with id {}", id)
+		}
+	}
+
+	/**
+	 * Gets the AGU CUI of a provider
+	 *
+	 * @param providerId the id of the provider
+	 * @return the CUI of the AGU
+	 */
+	override fun getAGUFromProviderId(providerId: Int): String? {
+		logger.info("Getting AGU CUI of provider with id {}", providerId)
+
+		val aguCUI = handle.createQuery(
+			"""
+			SELECT agu_cui FROM provider WHERE id = :id
+			""".trimIndent()
+		)
+			.bind("id", providerId)
+			.mapTo<String>()
+			.singleOrNull()
+
+		if (aguCUI != null) {
+			logger.info("Fetched AGU CUI of provider with id {}: {}", providerId, aguCUI)
+		} else {
+			logger.info("Provider with id {} not found, could not find agu cui", providerId)
+		}
+
+		return aguCUI
+	}
+
+	/**
 	 * Gets all the temperature providers with their measures.
 	 *
 	 * @return a list of all the temperature providers
@@ -162,11 +215,12 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 			m2.data as max
 			FROM provider
          	left join measure m1 on provider.id = m1.provider_id AND provider.agu_cui = m1.agu_cui AND m1.tag = 'MIN'
-         	join measure m2 on m1.provider_id = m2.provider_id AND m1.agu_cui = m2.agu_cui AND m2.tag = 'MAX'
-			WHERE provider.provider_type = 'TEMPERATURE'
+         	left join measure m2 on m1.provider_id = m2.provider_id AND m1.agu_cui = m2.agu_cui AND m2.tag = 'MAX'
+			WHERE provider.provider_type = :providerType
 			Order BY provider.id, m1.timestamp, m1.prediction_for;
 			""".trimIndent()
 		)
+			.bind("providerType", ProviderType.TEMPERATURE.name.lowercase())
 			.mapTo<TemperatureProvider>()
 			.list()
 
@@ -186,13 +240,14 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 		val providers = handle.createQuery(
 			"""
 			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch,
-			measure.timestamp, measure.prediction_for, measure.data as level
+			measure.timestamp, measure.prediction_for, measure.data, measure.tank_number as level
 			FROM provider
 		 	left join measure on provider.id = measure.provider_id AND provider.agu_cui = measure.agu_cui AND measure.tag = 'level'
-			WHERE provider.provider_type = 'GAS'
+			WHERE provider.provider_type = :providerType
 			Order BY provider.id, measure.timestamp, measure.prediction_for;
 			""".trimIndent()
 		)
+			.bind("providerType", ProviderType.GAS.name.lowercase())
 			.mapTo<GasProvider>()
 			.list()
 

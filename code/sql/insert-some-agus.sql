@@ -32,9 +32,9 @@ values (1, 'PT1701000000000006JQ', 'gas'),
        (3, 'PT1701000000000012JE', 'gas');
 
 insert into measure
-values (now(), 'PT1701000000000006JQ', 1, 'level', 70, now()),
-       (now(), 'PT1701000000000006JQ', 1, 'level', 80, now() + interval '1 day'),
-       (now(), 'PT1701000000000006JQ', 1, 'level', 60, now() + interval '2 day');
+values (now(), 'PT1701000000000006JQ', 1, 'level', 70, now(), 1),
+       (now(), 'PT1701000000000006JQ', 1, 'level', 80, now() + interval '1 day', 1),
+       (now(), 'PT1701000000000006JQ', 1, 'level', 60, now() + interval '2 day', 1);
 
 -- Temperature
 insert into provider

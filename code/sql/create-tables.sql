@@ -80,13 +80,13 @@ create table if not exists agu
 create table if not exists tank
 (
     agu_cui           CUI,
-    number            int           check (number >= 0)            not null,
+    number            int check (number >= 0)                      not null,
     min_level         PERCENTAGE                                   not null,
     max_level         PERCENTAGE                                   not null,
     critical_level    PERCENTAGE                                   not null,
     load_volume       numeric(6, 3) check (load_volume >= 0)       not null, -- using 20tons as reference is a percentage of that can be higher than 100%
     correction_factor numeric(6, 3) check (correction_factor >= 0) not null,
-    capacity          int           check (capacity >= 0)          not null,
+    capacity          int check (capacity >= 0)                    not null,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
@@ -112,9 +112,12 @@ create table if not exists measure
     tag            varchar check (tag ~* '^(level|min|max)$'),
     data           int not null,
     prediction_for timestamp with time zone, -- NULL if not a prediction
+    tank_number    int check ((tag ~* '(level)$' and tank_number IS NOT NULL) or
+                              (tank_number is null and tag ~* '^(min|max)$')),
 
     foreign key (agu_cui) references agu (cui),
     foreign key (provider_id) references provider (id),
+    foreign key (agu_cui, tank_number) references tank (agu_cui, number),
 
     primary key (timestamp, agu_cui, provider_id, tag, prediction_for)
 );
@@ -134,15 +137,16 @@ create table if not exists contacts
 -- Views
 
 create or replace view temperature_measures as
-select measure.agu_cui,
-       measure.provider_id,
-       measure.timestamp                            as fetch_timestamp,
-       measure.prediction_for                       as date,
-       measure.data, -- ->> 'min'                        as min, -- Wrong due to tag
-       -- measure.data ->> 'max'                        as max, -- Wrong due to tag
-       (measure.timestamp - measure.prediction_for) as days_ahead
-from measure
-         join provider on measure.provider_id = provider.id
+select provider.id,
+       provider.agu_cui,
+       measure1.timestamp                             as fetch_timestamp,
+       measure1.prediction_for,
+       measure1.data                                  as min,
+       measure2.data                                  as max,
+       (measure1.timestamp - measure1.prediction_for) as days_ahead
+from provider
+         left join measure measure1 on measure1.provider_id = provider.id
+         left join measure measure2 on measure2.provider_id = measure1.provider_id
 where provider.provider_type = 'temperature';
 
 -- view for gas readings
@@ -152,10 +156,11 @@ select measure.agu_cui,
        measure.timestamp                            as fetch_timestamp,
        measure.prediction_for                       as date,
        measure.data                                 as level,
-       -- readings.model as prediction_model,
+       tank.number                                  as tank_number,
        (measure.timestamp - measure.prediction_for) as days_ahead
 from measure
-         join provider on measure.provider_id = provider.id
+         left join provider on measure.provider_id = provider.id
+         left join tank on measure.agu_cui = tank.agu_cui
 where provider.provider_type = 'gas';
 commit;
 

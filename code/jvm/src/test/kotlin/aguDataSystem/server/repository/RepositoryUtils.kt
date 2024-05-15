@@ -19,7 +19,8 @@ object RepositoryUtils {
 		GasMeasure(
 			timestamp = LocalDateTime.now().truncateNanos(),
 			predictionFor = LocalDateTime.now().plusDays(it.toLong()).truncateNanos(),
-			level = 50 - (it * 2)
+			level = 50 - (it * 2),
+			tankNumber = 1
 		)
 	}.reversed()
 

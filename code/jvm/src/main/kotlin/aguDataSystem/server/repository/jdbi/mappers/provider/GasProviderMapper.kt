@@ -24,11 +24,13 @@ class GasProviderMapper : RowMapper<GasProvider> {
 		val id = rs.getInt("id")
 		val lastFetch = rs.getTimestamp("last_fetch")
 		while (rs.next()) {
+			if (rs.wasNull()) break
 			gasMeasures.plus(
 				GasMeasure(
 					timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
 					predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
-					level = rs.getInt("level")
+					level = rs.getInt("level"),
+					tankNumber = rs.getInt("tank_number")
 				)
 			)
 		}

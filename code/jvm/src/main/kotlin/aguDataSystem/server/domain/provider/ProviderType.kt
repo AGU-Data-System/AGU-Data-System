@@ -1,18 +1,17 @@
 package aguDataSystem.server.domain.provider
 
-import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.Measure
-import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.measure.toGasReadings
 import aguDataSystem.server.domain.measure.toTemperatureReadings
+import java.time.Duration
 import java.time.LocalDateTime
 
 /**
  * Represents a ProviderType
  */
-enum class ProviderType {
-	GAS,
-	TEMPERATURE;
+enum class ProviderType(val pollingFrequency: Duration) {
+	GAS(Duration.ofHours(1)),
+	TEMPERATURE(Duration.ofDays(1));
 
 	/**
 	 * Creates a Provider based on a type
@@ -30,33 +29,6 @@ enum class ProviderType {
 				id = id,
 				measures = measures.toTemperatureReadings(),
 				lastFetch = lastFetch
-			)
-		}
-	}
-
-	/**
-	 * Builds a measures based on a map.
-	 *
-	 * @param timestamp The time when the reading was taken.
-	 * @param predictionFor The time for which the measure is
-	 * a prediction if its null it's not a prediction.
-	 * @param values The list containing the measure data.
-	 * @return The reading.
-	 */
-	fun buildMeasure(timestamp: LocalDateTime, predictionFor: LocalDateTime, vararg values: Int): Measure {
-		require(values.size in 1..2) { "Invalid number of values" }
-		return when (this) {
-			GAS -> GasMeasure(
-				timestamp = timestamp,
-				predictionFor = predictionFor,
-				level = values.first()
-			)
-
-			TEMPERATURE -> TemperatureMeasure(
-				timestamp = timestamp,
-				predictionFor = predictionFor,
-				min = values.first(),
-				max = values.last()
 			)
 		}
 	}

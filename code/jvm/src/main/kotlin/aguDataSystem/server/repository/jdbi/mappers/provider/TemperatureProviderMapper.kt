@@ -24,6 +24,7 @@ class TemperatureProviderMapper : RowMapper<TemperatureProvider> {
 		val id = rs.getInt("id")
 		val lastFetch = rs.getTimestamp("last_fetch")
 		while (rs.next()) {
+			if (rs.wasNull()) break
 			temperatureMeasures.plus(
 				TemperatureMeasure(
 					timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),

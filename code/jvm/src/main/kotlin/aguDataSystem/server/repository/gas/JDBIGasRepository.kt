@@ -27,7 +27,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		val measures = handle.createQuery(
 			"""
-            SELECT measure.timestamp, measure.prediction_for, measure.data 
+            SELECT measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
             FROM measure
             WHERE measure.provider_id = :providerId AND 
             measure.timestamp::time >= :timestamp AND 
@@ -59,7 +59,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		val measures = handle.createQuery(
 			"""
-            SELECT measure.timestamp, measure.prediction_for, measure.data FROM measure
+            SELECT measure.timestamp, measure.prediction_for, measure.data, measure.tank_number FROM measure
             WHERE measure.provider_id = :providerId AND 
             measure.prediction_for >= :day AND 
             measure.prediction_for < :nextDay
@@ -89,7 +89,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		val measures = handle.createQuery(
 			"""
-            SELECT measure.timestamp, measure.prediction_for, measure.data 
+            SELECT measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
             FROM measure
             WHERE measure.provider_id = :providerId AND 
             extract (hours from (

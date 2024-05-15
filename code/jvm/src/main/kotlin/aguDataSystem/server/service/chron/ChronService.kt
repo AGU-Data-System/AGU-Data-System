@@ -1,4 +1,4 @@
-package aguDataSystem.server.service
+package aguDataSystem.server.service.chron
 
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.repository.TransactionManager
@@ -11,6 +11,8 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.scheduling.annotation.Schedules
 import org.springframework.stereotype.Service
 
 /**
@@ -31,8 +33,6 @@ class ChronService(
 	private val chronScheduler: ScheduledExecutorService =
 		Executors.newScheduledThreadPool(chronPoolSize)
 
-	private val defaultFrequency = Duration.ofMinutes(60)
-
 	@PostConstruct
 	fun initialize() {
 		logger.info("Initializing Chron Service")
@@ -43,15 +43,16 @@ class ChronService(
 	/**
 	 * Schedules the chron tasks for the providers.
 	 */
+	@Schedules(Scheduled(cron = "0 0 0/1 * * *"), Scheduled(cron = "0 0 9 * * *")) // Every hour, Every Day at 09:00
 	fun scheduleChron() {
 		transactionManager.run {
 			logger.info("Scheduling chron tasks based on providers")
-			val activeChron = it.providerRepository.getAllProviders().onEach { provider ->
-				logger.info("Provider: {}", provider)
-			}
-			activeChron.forEach { provider ->
+			val providerChron = it.providerRepository.getAllProviders()
+			providerChron.forEach { provider ->
+				val providerType = provider.getProviderType()
+
 				logger.info("Scheduling chron task for provider: {}", provider)
-				scheduleChronTask(provider)
+				scheduleChronTask(provider, providerType.pollingFrequency)
 			}
 		}
 	}
@@ -61,14 +62,15 @@ class ChronService(
 	 *
 	 * @param provider The provider to schedule
 	 */
-	fun scheduleChronTask(provider: Provider) {
-		val delay = calculateInitialDelay(provider.lastFetch ?: LocalDateTime.MIN)
+	fun scheduleChronTask(provider: Provider, frequency: Duration) {
+		val lastFetch = provider.lastFetch ?: LocalDateTime.MIN
+		val delay = calculateInitialDelay(lastFetch, frequency)
 
 		logger.info("Scheduling chron task for provider: {} with delay: {}", provider, delay)
 
 		val future: ScheduledFuture<*> = chronScheduler.scheduleAtFixedRate({
-			fetchService.fetch(provider.id, provider.lastFetch ?: LocalDateTime.MIN)
-		}, delay, defaultFrequency.toMillis(), TimeUnit.MILLISECONDS)
+			fetchService.fetchAndSave(provider, lastFetch)
+		}, delay, frequency.toMillis(), TimeUnit.MILLISECONDS)
 		scheduledChron[provider.id] = future
 
 		logger.info("Scheduled chron task for provider: {}", provider)
@@ -80,9 +82,9 @@ class ChronService(
 	 * @param lastReading The last reading time
 	 * @return The initial delay
 	 */
-	private fun calculateInitialDelay(lastReading: LocalDateTime): Long {
+	private fun calculateInitialDelay(lastReading: LocalDateTime, frequency: Duration): Long {
 		val timeSinceLastReading = Duration.between(lastReading, LocalDateTime.now())
-		return if (timeSinceLastReading >= defaultFrequency) 0 else timeSinceLastReading.toMillis()
+		return if (timeSinceLastReading >= frequency) 0 else timeSinceLastReading.toMillis()
 	}
 
 	companion object {

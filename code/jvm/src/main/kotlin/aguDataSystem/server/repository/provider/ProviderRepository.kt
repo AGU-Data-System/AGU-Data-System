@@ -2,6 +2,7 @@ package aguDataSystem.server.repository.provider
 
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
+import java.time.LocalDateTime
 
 /**
  * A repository for the providers
@@ -48,4 +49,20 @@ interface ProviderRepository {
 	 * @param cui the CUI of the AGU
 	 */
 	fun deleteProviderById(id: Int, cui: String)
+
+	/**
+	 * Updates the last fetch time of a provider
+	 *
+	 * @param id the id of the provider
+	 * @param lastFetch the last fetch time
+	 */
+	fun updateLastFetch(id: Int, lastFetch: LocalDateTime)
+
+	/**
+	 * Gets the AGU CUI of a provider
+	 *
+	 * @param providerId the id of the provider
+	 * @return the CUI of the AGU
+	 */
+	fun getAGUFromProviderId(providerId: Int): String?
 }

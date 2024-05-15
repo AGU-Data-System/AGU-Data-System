@@ -22,7 +22,8 @@ class GasMeasureMapper : RowMapper<GasMeasure> {
 		return GasMeasure(
 			timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
 			predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
-			level = rs.getInt("data")
+			level = rs.getInt("data"),
+			tankNumber = rs.getInt("tank_number")
 		)
 	}
 }
