@@ -43,7 +43,8 @@ class ChronService(
 	/**
 	 * Schedules the chron tasks for the providers.
 	 */
-	@Schedules(Scheduled(cron = "0 0 0/1 * * *"), Scheduled(cron = "0 0 9 * * *")) // Every hour, Every Day at 09:00
+	//At every 10th minute from 2 through 59, Every Day at 09:01
+	@Schedules(Scheduled(cron = "* 2/10 * * * *"), Scheduled(cron = "0 1 9 * * *"))
 	fun scheduleChron() {
 		transactionManager.run {
 			logger.info("Scheduling chron tasks based on providers")

@@ -21,7 +21,7 @@ data class TemperatureMeasure(
  * @receiver The list of measure to convert.
  * @return The list of temperature measure.
  */
-fun List<Measure>.toTemperatureReadings(): List<TemperatureMeasure> {
+fun List<Measure>.toTemperatureMeasures(): List<TemperatureMeasure> {
 	if (this.all { it is TemperatureMeasure }) {
 		return this.map { it as TemperatureMeasure }
 	} else {

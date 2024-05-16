@@ -5,7 +5,7 @@ import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.Measure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.measure.toGasReadings
-import aguDataSystem.server.domain.measure.toTemperatureReadings
+import aguDataSystem.server.domain.measure.toTemperatureMeasures
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
@@ -66,7 +66,7 @@ class FetchService(
 					it.temperatureRepository.addTemperatureMeasuresToProvider(
 						aguCui = aguCui,
 						providerId = provider.id,
-						temperatureMeasures = data.toTemperatureReadings()
+						temperatureMeasures = data.toTemperatureMeasures()
 					)
 
 				ProviderType.GAS -> it.gasRepository.addGasMeasuresToProvider(

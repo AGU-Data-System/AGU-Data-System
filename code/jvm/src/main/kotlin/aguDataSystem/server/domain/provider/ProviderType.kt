@@ -2,7 +2,7 @@ package aguDataSystem.server.domain.provider
 
 import aguDataSystem.server.domain.measure.Measure
 import aguDataSystem.server.domain.measure.toGasReadings
-import aguDataSystem.server.domain.measure.toTemperatureReadings
+import aguDataSystem.server.domain.measure.toTemperatureMeasures
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -27,7 +27,7 @@ enum class ProviderType(val pollingFrequency: Duration) {
 			GAS -> GasProvider(id = id, measures = measures.toGasReadings(), lastFetch = lastFetch)
 			TEMPERATURE -> TemperatureProvider(
 				id = id,
-				measures = measures.toTemperatureReadings(),
+				measures = measures.toTemperatureMeasures(),
 				lastFetch = lastFetch
 			)
 		}

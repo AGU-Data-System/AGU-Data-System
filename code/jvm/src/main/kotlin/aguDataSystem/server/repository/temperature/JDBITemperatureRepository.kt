@@ -125,12 +125,12 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 		temperatureMeasures: List<TemperatureMeasure>
 	) {
 		logger.info("Adding temperature measures to provider {}", providerId)
-		temperatureMeasures.forEachIndexed { index, it ->
+		temperatureMeasures.forEachIndexed { index, tempMeasure ->
 			// inserting min temp
-			addTagTemperature(aguCui, providerId, it, it::min.name)
+			addTagTemperature(aguCui, providerId, tempMeasure, tempMeasure::min.name)
 
 			// inserting max temp
-			addTagTemperature(aguCui, providerId, it, it::max.name)
+			addTagTemperature(aguCui, providerId, tempMeasure, tempMeasure::max.name)
 
 			logger.info("Added temperature measure {} to provider {}", index + 1, providerId)
 		}
