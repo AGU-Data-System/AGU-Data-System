@@ -150,7 +150,7 @@ class FetchService(
 	 * @return The list of gas measures
 	 */
 	fun String.mapToGasMeasures(): List<GasMeasure> {
-		val objectMapper = Json { ignoreUnknownKeys = true }
+		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
 		val gasMeasures = mutableListOf<GasMeasure>()
 
@@ -160,11 +160,12 @@ class FetchService(
 			objectMapper.parseToJsonElement(item.data).jsonArray.forEach { elem ->
 				val gasData = objectMapper.decodeFromJsonElement<GasDataItem>(elem)
 				if (gasData.name.startsWith(GasDataItem.TANK_LEVEL)) {
+					if (gasData.value == null) return@forEach
 					gasMeasures.add(
 						GasMeasure(
 							timestamp = fetchTimestamp,
 							predictionFor = ZonedDateTime.parse(gasData.dateValue).toLocalDateTime(),
-							level = gasData.value,
+							level = gasData.value.toInt(),
 							tankNumber = gasData.name.last().digitToIntOrNull() ?: 1,
 						)
 					)

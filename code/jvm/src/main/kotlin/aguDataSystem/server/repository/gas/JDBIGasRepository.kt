@@ -128,19 +128,20 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	override fun addGasMeasuresToProvider(aguCui: String, providerId: Int, gasMeasures: List<GasMeasure>) {
 		logger.info("Adding gas measures to provider with id {}", providerId)
 
-		gasMeasures.forEachIndexed { index, it ->
+		gasMeasures.forEachIndexed { index, measure ->
 			handle.createUpdate(
 				"""
-                INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data)
-                VALUES (:agu_cui, :providerId, :tag, :timestamp, :predictionFor, :data)
+                INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data, tank_number)
+                VALUES (:agu_cui, :providerId, :tag, :timestamp, :predictionFor, :data, :tankNumber)
                 """.trimIndent()
 			)
 				.bind("agu_cui", aguCui)
 				.bind("providerId", providerId)
-				.bind("tag", it::level.name)
-				.bind("timestamp", it.timestamp)
-				.bind("predictionFor", it.predictionFor)
-				.bind("data", it.level)
+				.bind("tag", measure::level.name)
+				.bind("timestamp", measure.timestamp)
+				.bind("predictionFor", measure.predictionFor)
+				.bind("data", measure.level)
+				.bind("tankNumber", measure.tankNumber)
 				.execute()
 
 			logger.info("Added gas measure {} to provider with id {}", index + 1, providerId)

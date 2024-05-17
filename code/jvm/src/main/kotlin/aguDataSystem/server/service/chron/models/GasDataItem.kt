@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 data class GasDataItem(
 	val id: Int,
 	val name: String,
-	val value: Int,
+	val value: Double?,
 	@SerialName("date_value") val dateValue: String,
 	@SerialName("component_name") val componentName: String
 ) {

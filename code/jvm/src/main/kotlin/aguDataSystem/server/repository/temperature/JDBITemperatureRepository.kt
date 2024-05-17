@@ -24,20 +24,19 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 		logger.info("Getting temperature measures for provider {}, for {} days", providerId, days)
 		val tempMeasures = handle.createQuery(
 			"""
-            SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, m2.data as max 
+            SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, 
+			m2.data as max 
             FROM measure m1 join measure m2
-            ON m1.provider_id = m2.provider_id 
-            AND m1.prediction_for = m2.prediction_for 
-            AND m1.timestamp = m2.timestamp 
-            AND m1.agu_cui = m2.agu_cui
-            WHERE m1.tag = 'min' 
-            AND m2.tag = 'max' 
-            AND m1.provider_id = :providerId
+            ON m1.provider_id = m2.provider_id AND m1.prediction_for = m2.prediction_for 
+            AND m1.timestamp = m2.timestamp AND m1.agu_cui = m2.agu_cui
+            WHERE m1.tag = :minTag AND m2.tag = :maxTag AND m1.provider_id = :providerId
             ORDER BY m1.timestamp DESC
             LIMIT :days
             """
 		)
 			.bind("providerId", providerId)
+			.bind("minTag", TemperatureMeasure::min.name)
+			.bind("maxTag", TemperatureMeasure::max.name)
 			.bind("days", days)
 			.mapTo<TemperatureMeasure>()
 			.list()
@@ -60,18 +59,16 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
             SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, 
             m2.data as max 
             FROM measure m1 join measure m2
-            ON m1.provider_id = m2.provider_id 
-            AND m1.prediction_for = m2.prediction_for 
-            AND m1.timestamp = m2.timestamp 
-            AND m1.agu_cui = m2.agu_cui
-            WHERE m1.tag = 'min' 
-            AND m2.tag = 'max' 
-            AND m1.provider_id = :providerId
-            AND m1.prediction_for = :day
+            ON m1.provider_id = m2.provider_id AND m1.prediction_for = m2.prediction_for 
+            AND m1.timestamp = m2.timestamp AND m1.agu_cui = m2.agu_cui
+            WHERE m1.tag = :minTag AND m2.tag = :maxTag AND m1.provider_id = :providerId
+            AND m1.prediction_for::date = :day
             ORDER BY prediction_for DESC
             """
 		)
 			.bind("providerId", providerId)
+			.bind("minTag", TemperatureMeasure::min.name)
+			.bind("maxTag", TemperatureMeasure::max.name)
 			.bind("day", day)
 			.mapTo<TemperatureMeasure>()
 			.list()
