@@ -211,15 +211,10 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 		val providers = handle.createQuery(
 			"""
-			SELECT provider.id, provider.provider_type, provider.last_fetch,
-       				m1.timestamp, m1.prediction_for, m1.data as min,
-         			m2.data as max
+			SELECT provider.id, provider.provider_type, provider.last_fetch
 			FROM provider
-         		left join measure m1 on provider.id = m1.provider_id AND provider.agu_cui = m1.agu_cui AND m1.tag = :minTag
-        		join measure m2 on provider.id = m2.provider_id AND provider.agu_cui = m2.agu_cui AND m2.tag = :maxTag 
-					AND m1.timestamp = m2.timestamp AND m1.prediction_for = m2.prediction_for
 			WHERE provider.provider_type = :providerType
-			Order BY provider.id, m1.timestamp, m1.prediction_for;
+			Order BY provider.id
 			""".trimIndent()
 		)
 			.bind("providerType", ProviderType.TEMPERATURE.name.lowercase())
@@ -243,12 +238,10 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 		val providers = handle.createQuery(
 			"""
-			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch,
-			measure.timestamp, measure.prediction_for, measure.data, measure.tank_number as level
+			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch
 			FROM provider
-		 	left join measure on provider.id = measure.provider_id AND provider.agu_cui = measure.agu_cui AND measure.tag = 'level'
-			WHERE provider.provider_type = :providerType
-			Order BY provider.id, measure.timestamp, measure.prediction_for;
+		 	WHERE provider.provider_type = :providerType
+			Order BY provider.id
 			""".trimIndent()
 		)
 			.bind("providerType", ProviderType.GAS.name.lowercase())

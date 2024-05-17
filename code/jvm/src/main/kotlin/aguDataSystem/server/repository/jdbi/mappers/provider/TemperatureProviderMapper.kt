@@ -1,6 +1,5 @@
 package aguDataSystem.server.repository.jdbi.mappers.provider
 
-import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.provider.TemperatureProvider
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
@@ -20,20 +19,10 @@ class TemperatureProviderMapper : RowMapper<TemperatureProvider> {
 	 * @return the [TemperatureProvider] from the result set
 	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): TemperatureProvider {
-		val temperatureMeasures = emptyList<TemperatureMeasure>()
-		val id = rs.getInt("id")
-		val lastFetch = rs.getTimestamp("last_fetch")
-		while (rs.next()) {
-			if (rs.wasNull()) break
-			temperatureMeasures.plus(
-				TemperatureMeasure(
-					timestamp = rs.getTimestamp("timestamp").toLocalDateTime(),
-					predictionFor = rs.getTimestamp("prediction_for").toLocalDateTime(),
-					min = rs.getInt("min"),
-					max = rs.getInt("max")
-				)
-			)
-		}
-		return TemperatureProvider(id = id, measures = temperatureMeasures, lastFetch = lastFetch?.toLocalDateTime())
+		return TemperatureProvider(
+			id = rs.getInt("id"),
+			measures = emptyList(),
+			lastFetch = rs.getTimestamp("last_fetch")?.toLocalDateTime()
+		)
 	}
 }
