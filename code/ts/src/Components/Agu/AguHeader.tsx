@@ -47,6 +47,7 @@ export default function AguHeader(
             }}>
                 <Typography variant="subtitle1">ORD {aguOrd}</Typography>
                 <Typography variant="h4">{aguName}</Typography>
+                <Typography variant="body2">{`CUI: ${aguCUI}`}</Typography>
                 <Typography variant="body2" sx={{display:'flex', justifyContent:'flex-end', marginRight:'10px'}}>{aguMetres} m<sup>3</sup></Typography>
             </div>
 
@@ -55,18 +56,12 @@ export default function AguHeader(
             <div style={{
                 flex: 2,
                 textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'row',
                 margin: '8px',
             }}>
                 {displayContacts(contacts, 'logistic')}
                 {displayContacts(contacts, 'emergency')}
-                <div style={{
-                    marginLeft: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                }}>
-                    <Typography variant="body2">{`CUI: ${aguCUI}`}</Typography>
-                </div>
             </div>
 
             <div style={{
@@ -97,7 +92,7 @@ function displayContacts(contacts: ContactOutputModel[], type: string) {
             </div>
             <div style={{
                 marginLeft: '6px',
-                maxHeight: '50px',
+                maxHeight: '60px',
                 overflowY: 'auto',
             }}>
                 {contacts.filter(contact => contact.type.toLowerCase() === type).map((contact, index) => (
