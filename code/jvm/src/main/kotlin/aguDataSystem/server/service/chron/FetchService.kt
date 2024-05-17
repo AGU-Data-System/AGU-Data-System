@@ -51,7 +51,13 @@ class FetchService(
 		logger.info("Fetched data from provider: {} with status code: {}", provider.id, response.statusCode)
 		if (response.statusCode != HttpStatus.OK.value()) return
 
-		val data = response.body.deserialize(provider.getProviderType())
+		val data = response.body.deserialize(provider.getProviderType(), since)
+
+		if (data.isEmpty()) {
+			logger.info("No new data fetched from provider: {}", provider.id)
+			return
+		}
+
 		transactionManager.run {
 			val lastFetched = data.maxOf { data -> data.timestamp }
 			logger.info("Saving data from provider: {} to database", provider.id)
@@ -103,13 +109,14 @@ class FetchService(
 	/**
 	 * Deserializes a string to a list of measures.
 	 *
+	 * @param lastFetch last fetch from the provider
 	 * @param providerType The type of provider
 	 * @return The list of measures
 	 */
-	fun String.deserialize(providerType: ProviderType): List<Measure> {
+	fun String.deserialize(providerType: ProviderType, lastFetch: LocalDateTime): List<Measure> {
 		return when (providerType) {
-			ProviderType.TEMPERATURE -> this.mapToTemperatureMeasures()
-			ProviderType.GAS -> this.mapToGasMeasures()
+			ProviderType.TEMPERATURE -> this.mapToTemperatureMeasures(lastFetch)
+			ProviderType.GAS -> this.mapToGasMeasures(lastFetch)
 		}
 	}
 
@@ -117,12 +124,16 @@ class FetchService(
 	 * Maps a JsonNode to a list of temperature measures
 	 *
 	 * @receiver String to deserialize
+	 * @param lastFetch lastFetch from the temperature [Provider]
 	 * @return The list of temperature measures
 	 */
-	fun String.mapToTemperatureMeasures(): List<TemperatureMeasure> {
-		val objectMapper = Json { ignoreUnknownKeys = true }
+	fun String.mapToTemperatureMeasures(lastFetch: LocalDateTime): List<TemperatureMeasure> {
+		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true}
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
 		val temperatureMeasures = mutableListOf<TemperatureMeasure>()
+
+		if (providerResponse.dataList.isEmpty() || LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
+			return temperatureMeasures
 
 		for (item in providerResponse.dataList) {
 			val fetchTimestamp = LocalDateTime.parse(item.fetchTime)
@@ -147,12 +158,16 @@ class FetchService(
 	 * Maps a JsonNode to a list of gas measures
 	 *
 	 * @receiver String to deserialize
+	 * @param lastFetch lastFetch from the gas [Provider]
 	 * @return The list of gas measures
 	 */
-	fun String.mapToGasMeasures(): List<GasMeasure> {
+	fun String.mapToGasMeasures(lastFetch: LocalDateTime): List<GasMeasure> {
 		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
 		val gasMeasures = mutableListOf<GasMeasure>()
+
+		if (providerResponse.dataList.isEmpty() || LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
+			return gasMeasures
 
 		for (item in providerResponse.dataList) {
 			val fetchTimestamp = LocalDateTime.parse(item.fetchTime)
