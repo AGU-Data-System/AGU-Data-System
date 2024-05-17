@@ -67,7 +67,7 @@ export default function LineGraph({ data }: { data: TemperatureOutputModel[] }) 
             month,
             year,
         };
-    }).reverse();
+    });
 
     const lineChartData = formattedData.map(item => ({
         day: item.day,
