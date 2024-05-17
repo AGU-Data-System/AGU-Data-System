@@ -1,14 +1,23 @@
 import * as React from 'react';
-import { useState } from 'react';
-import {TextField, Typography, Grid, Card, CardContent, CardMedia, Button, Box} from '@mui/material';
-import PieGraph from '../Graphs/PieGraph';
-import LineGraph from '../Graphs/LineGraph';
+import {useEffect, useState} from 'react';
+import {TextField, Typography, Grid, Card, CardContent, CardMedia, Button, Box, CircularProgress} from '@mui/material';
+import TemperatureOutputModel from "../../services/agu/models/temperatureOutputModel";
+import { aguService } from "../../services/agu/aguService";
+import { Problem } from "../../utils/Problem";
+import LineGraph from "../Graphs/LineGraph";
+import { TemperatureError } from "../Layouts/Error";
+
+type TempGraphState =
+    | { type: 'loading' }
+    | { type: 'error'; message: string }
+    | { type: 'success'; tempData: TemperatureOutputModel[] };
 
 export default function AguBody(
-    { aguNotes, lvlMin, lvlMax, lvlCrit, latitude, longitude }: { aguNotes: string; lvlMin: number; lvlMax: number; lvlCrit: number; latitude: number; longitude: number}
+    { aguCui, aguNotes, lvlMin, lvlMax, lvlCrit, latitude, longitude }: { aguCui: string, aguNotes: string; lvlMin: number; lvlMax: number; lvlCrit: number; latitude: number; longitude: number}
 ) {
     const [notes, setNotes] = useState(aguNotes);
     const [isEditing, setIsEditing] = useState(false);
+    const [tempState, setTempState] = useState<TempGraphState>({ type: 'loading' });
 
     const handleNotesChange = (event: any) => {
         setNotes(event.target.value);
@@ -18,6 +27,25 @@ export default function AguBody(
     const handleSubmitNotes = () => {
         console.log('Notes submitted successfully: ' + notes);
     };
+
+    useEffect(() => {
+        const fetch = async () => {
+            setTempState({ type: 'loading' });
+
+            const tempData = await aguService.getTemperatureData(aguCui);
+
+            if (tempData.value instanceof Error) {
+                setTempState({ type: 'error', message: tempData.value.message });
+            } else if (tempData.value instanceof Problem) {
+                setTempState({ type: 'error', message: tempData.value.title });
+            } else {
+                setTempState({type: 'success', tempData: tempData.value});
+            }
+        }
+
+        fetch();
+
+    }, [aguCui]);
 
     return (
         <Grid container spacing={3}>
@@ -64,11 +92,24 @@ export default function AguBody(
                 </Card>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{ width: '100%' }}>
                 <Card>
                     <CardContent>
-                        <PieGraph data={[{ value: 10, label: 'A' }, { value: 20, label: 'B' }, { value: 30, label: 'C' }]}/>
-                        <LineGraph data={[[1,2,3],[1,2,3]]} scale={'day'}/>
+                        {tempState.type === 'loading' && (
+                            <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                                <Typography variant="h5" gutterBottom>Loading...</Typography>
+                                <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
+                            </Box>
+                        )}
+                        {tempState.type === 'error' && (
+                            <TemperatureError message={tempState.message} />
+                        )}
+                        {tempState.type === 'success' && tempState.tempData.length > 0 && (
+                            <LineGraph data={tempState.tempData} />
+                        )}
+                        {tempState.type === 'success' && tempState.tempData.length === 0 && (
+                            <Typography variant="h5" gutterBottom>Sem data de temperatura</Typography>
+                        )}
                     </CardContent>
                 </Card>
             </Grid>

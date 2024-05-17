@@ -38,7 +38,7 @@ export default function FavBar() {
         return (
             <Grid container sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px', display: 'flex', flexDirection: 'column'}}>
                 <Grid item sx={{ paddingTop: 2, paddingLeft: 2 }}>
-                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
+                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> UAGs Favoritas
                 </Grid>
                 <Grid item sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
                     <Typography variant="h5" gutterBottom>Loading...</Typography>
@@ -52,7 +52,7 @@ export default function FavBar() {
         return (
             <Grid container alignItems="center" sx={{ marginTop: '20px', border: 1, borderColor: 'rgb(255, 165, 0)', borderRadius: '16px', borderWidth: '6px'}}>
                 <Grid item sx={{paddingTop: 2, paddingLeft: 2, paddingBottom: 2, width: '100%' }}>
-                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> Favorite UAGs
+                    <StarIcon fontSize='large' sx={{ color: 'rgb(255, 165, 0)' }} /> UAGs Favoritas
                     <FavError message={state.message ? state.message : "Error fetching!"}/>
                 </Grid>
             </Grid>
