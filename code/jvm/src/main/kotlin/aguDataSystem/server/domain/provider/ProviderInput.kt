@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  * @property isActive if the Provider is active
  */
 @Serializable
-class ProviderInput(
+data class ProviderInput(
 	val name: String,
 	private val url: String,
 	private val frequency: String,
@@ -20,7 +20,7 @@ class ProviderInput(
 ) {
 	companion object {
 		const val DEFAULT_ACTIVE = true
-		const val GAS_FREQUENCY = "PT1H"
+		const val GAS_FREQUENCY = "PT10M"
 		const val TEMPERATURE_FREQUENCY = "P1D"
 	}
 

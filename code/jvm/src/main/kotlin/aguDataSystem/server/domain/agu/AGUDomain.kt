@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
+/**
+ * Validation class for the AGU domain
+ */
 @Component
 class AGUDomain {
 
@@ -95,7 +98,8 @@ class AGUDomain {
 	 * @param levels the levels to check
 	 * @return true if the levels are valid, false otherwise
 	 */
-	fun areLevelsValid(levels: GasLevels): Boolean = levels.min in levels.critical..levels.max
+	fun areLevelsValid(levels: GasLevels): Boolean = (levels.min in levels.critical..levels.max)
+			&& isPercentageValid(levels.min) && isPercentageValid(levels.max) && isPercentageValid(levels.critical)
 
 	/**
 	 * Checks if the coordinates are valid
@@ -148,7 +152,7 @@ class AGUDomain {
 	 * @return the result of the request (Left is the status code of the error in case of failure, Right is true in case of success)
 	 */
 	fun deleteProviderRequest(providerId: Int): DeleteProviderResult {
-		val deleteUrl = "/provider/$FETCHER_URL/$providerId"
+		val deleteUrl = "$FETCHER_URL/provider/$providerId"
 
 		val request = HttpRequest
 			.newBuilder()
