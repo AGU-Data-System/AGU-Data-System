@@ -4,25 +4,12 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import TemperatureOutputModel from "../../services/agu/models/temperatureOutputModel";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
 
-const chartSetting = {
-    yAxis: [
-        {
-            label: 'Temperatura (°C)',
-        },
-    ],
-    sx: {
-        [`.${axisClasses.left} .${axisClasses.label}`]: {
-            transform: 'translate(-10px, 0)',
-        },
-    },
-};
-
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
     const month = date.toLocaleString('default', { month: 'short' });
     const year = date.getFullYear();
-    return { day, month, year };
+    return { day, month, year, date };
 };
 
 const valueFormatter = (value: number | null) => `${value}°C`;
@@ -30,7 +17,7 @@ const valueFormatter = (value: number | null) => `${value}°C`;
 const getMonthYearLabel = (data: TemperatureOutputModel[]) => {
     const months = new Set(data.map(item => {
         const date = new Date(item.predictionFor);
-        return date.toLocaleString('default', { month: 'short' });
+        return date.toLocaleString('default', { month: 'short' }).toUpperCase();
     }));
     const year = new Date(data[0].predictionFor).getFullYear();
 
@@ -60,14 +47,15 @@ export default function LineGraph({ data }: { data: TemperatureOutputModel[] }) 
     }, []);
 
     const formattedData = data.map((item) => {
-        const { day, month, year } = formatDate(item.predictionFor);
+        const { day, month, year, date } = formatDate(item.predictionFor);
         return {
             ...item,
             day,
             month,
             year,
+            date,
         };
-    });
+    }).sort((a, b) => a.date.getTime() - b.date.getTime());
 
     const lineChartData = formattedData.map(item => ({
         day: item.day,
@@ -76,6 +64,23 @@ export default function LineGraph({ data }: { data: TemperatureOutputModel[] }) 
     }));
 
     const monthYearLabel = getMonthYearLabel(data);
+
+    const maxTemperature = Math.max(...data.map(item => item.max));
+    const yAxisMaxValue = maxTemperature + 1;
+
+    const chartSetting = {
+        yAxis: [
+            {
+                label: 'Temperatura (°C)',
+                max: yAxisMaxValue,
+            },
+        ],
+        sx: {
+            [`.${axisClasses.left} .${axisClasses.label}`]: {
+                transform: 'translate(-10px, 0)',
+            },
+        },
+    };
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', textAlign: 'center', marginBottom: '10px' }}>
