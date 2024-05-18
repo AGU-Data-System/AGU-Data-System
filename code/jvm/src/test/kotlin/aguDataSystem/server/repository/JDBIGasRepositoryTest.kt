@@ -4,6 +4,7 @@ import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.RepositoryUtils.dummyGasMeasures
+import aguDataSystem.server.repository.RepositoryUtils.dummyTank
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.gas.JDBIGasRepository
@@ -25,7 +26,7 @@ class JDBIGasRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val gasRepository = JDBIGasRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
+		val agu = dummyAGU.copy(tanks = listOf(dummyTank))
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
@@ -52,7 +53,7 @@ class JDBIGasRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val gasRepository = JDBIGasRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
+		val agu = dummyAGU.copy(tanks = listOf(dummyTank))
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
@@ -79,7 +80,7 @@ class JDBIGasRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val gasRepository = JDBIGasRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
+		val agu = dummyAGU.copy(tanks = listOf(dummyTank))
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
@@ -105,7 +106,7 @@ class JDBIGasRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val gasRepository = JDBIGasRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
+		val agu = dummyAGU.copy(tanks = listOf(dummyTank))
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures

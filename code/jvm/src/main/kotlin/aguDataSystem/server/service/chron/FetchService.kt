@@ -37,6 +37,8 @@ class FetchService(
 	private val transactionManager: TransactionManager
 ) {
 
+	private val pageSize = Int.MAX_VALUE
+
 	/**
 	 * Fetches the data from the provider and saves it to the database.
 	 *
@@ -44,7 +46,7 @@ class FetchService(
 	 * @param since The time to fetch data from
 	 */
 	fun fetchAndSave(provider: Provider, since: LocalDateTime) {
-		val providerURL = Environment.getFetcherUrl() + "/provider/${provider.id}?beginDate=$since"
+		val providerURL = Environment.getFetcherUrl() + "/provider/${provider.id}?beginDate=$since&size=$pageSize"
 		logger.info("Fetching data from provider: {}", provider.id)
 
 		val response = fetch(url = providerURL)

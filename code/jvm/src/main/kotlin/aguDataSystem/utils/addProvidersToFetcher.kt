@@ -48,7 +48,7 @@ class GasAndTempScraper {
 			val fullName = "gas - $name"
 
 			val providerUrl = "$sonorgasUrl/$id/sensors"
-			val providerInput = ProviderInput(fullName, providerUrl, "PT1H", true)
+			val providerInput = ProviderInput(fullName, providerUrl, "PT10M", true)
 			sendPostRequest(providerInput)
 		}
 	}
