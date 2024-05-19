@@ -7,6 +7,6 @@ package aguDataSystem.server.service.errors.agu
  * @property ProviderNotFound The provider was not found.
  */
 sealed class GetMeasuresError {
-    data object AGUNotFound : GetMeasuresError()
-    data object ProviderNotFound : GetMeasuresError()
+	data object AGUNotFound : GetMeasuresError()
+	data object ProviderNotFound : GetMeasuresError()
 }

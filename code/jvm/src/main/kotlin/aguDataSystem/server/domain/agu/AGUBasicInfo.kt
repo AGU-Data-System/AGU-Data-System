@@ -12,8 +12,8 @@ import aguDataSystem.server.domain.company.DNO
  * @property location location of the AGU
  */
 data class AGUBasicInfo(
-    val cui: String,
-    val name: String,
-    val dno: DNO,
-    val location: Location
+	val cui: String,
+	val name: String,
+	val dno: DNO,
+	val location: Location
 )

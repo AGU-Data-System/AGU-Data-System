@@ -130,7 +130,7 @@ class FetchService(
 	 * @return The list of temperature measures
 	 */
 	fun String.mapToTemperatureMeasures(lastFetch: LocalDateTime): List<TemperatureMeasure> {
-		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true}
+		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
 		val temperatureMeasures = mutableListOf<TemperatureMeasure>()
 
