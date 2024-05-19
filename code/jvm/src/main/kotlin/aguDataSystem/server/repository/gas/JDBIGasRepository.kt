@@ -23,6 +23,11 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	 * @return a list of gas measures
 	 */
 	override fun getGasMeasures(providerId: Int, days: Int, time: LocalTime): List<GasMeasure> {
+		if (days <= 0) {
+			logger.error("The number of days must be greater than 0")
+			return emptyList()
+		}
+
 		logger.info("Getting gas measures for provider with id {} for the last {} days", providerId, days)
 
 		val measures = handle.createQuery(
@@ -55,6 +60,11 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	 * @return a list of gas measures
 	 */
 	override fun getGasMeasures(providerId: Int, day: LocalDate): List<GasMeasure> {
+		if (day.isAfter(LocalDate.now())) {
+			logger.error("The day must be before today")
+			return emptyList()
+		}
+
 		logger.info("Getting gas measures for provider with id {} for the day {}", providerId, day)
 
 		val measures = handle.createQuery(
@@ -85,6 +95,11 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	 * @return a list of gas measures
 	 */
 	override fun getPredictionGasMeasures(providerId: Int, days: Int, time: LocalTime): List<GasMeasure> {
+		if (days <= 0) {
+			logger.error("The number of days must be positive")
+			return emptyList()
+		}
+
 		logger.info("Getting gas prediction measures for provider with id {} for the last {} days", providerId, days)
 
 		val measures = handle.createQuery(
@@ -110,7 +125,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 			.list()
 
 		logger.info(
-			"Fetched: {} gas prediction measures for provider with id: {} for the last {} days",
+			"Fetched: {} gas prediction measures for provider with id: {} for the next: {} days",
 			measures.size,
 			providerId,
 			days
@@ -121,7 +136,8 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 	/**
 	 * Adds gas measures to a provider
-	 *
+	 * TODO its possible to to without aguCui by doing a select aguCui from provider where id = providerId
+	 * @param aguCui the cui of the AGU
 	 * @param providerId the id of the provider
 	 * @param gasMeasures the gas measures to add
 	 */

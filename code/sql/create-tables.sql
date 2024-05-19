@@ -106,14 +106,16 @@ create table if not exists provider
 
 create table if not exists measure
 (
-    timestamp      timestamp with time zone,
+    timestamp      timestamp with time zone not null,
     agu_cui        CUI,
     provider_id    int,
     tag            varchar check (tag ~* '^(level|min|max)$'),
-    data           int not null,
-    prediction_for timestamp with time zone, -- NULL if not a prediction
+    data           int                      not null,
+    prediction_for timestamp with time zone not null,
     tank_number    int check ((tag ~* '(level)$' and tank_number IS NOT NULL) or
                               (tank_number is null and tag ~* '^(min|max)$')),
+
+    constraint prediction_in_future check (prediction_for >= timestamp),
 
     foreign key (agu_cui) references agu (cui),
     foreign key (provider_id) references provider (id),

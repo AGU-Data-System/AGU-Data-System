@@ -52,7 +52,7 @@ object RepositoryUtils {
 	)
 
 	val dummyTank = Tank(
-		number = 0,
+		number = 1,
 		levels = dummyGasLevels,
 		loadVolume = 50,
 		capacity = 100,
