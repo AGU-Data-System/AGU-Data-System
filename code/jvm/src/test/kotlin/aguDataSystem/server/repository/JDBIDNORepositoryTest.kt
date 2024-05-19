@@ -47,6 +47,18 @@ class JDBIDNORepositoryTest {
 	}
 
 	@Test
+	fun `addDNO with an empty DNO name`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = ""
+
+		// act
+		assertFailsWith<UnableToExecuteStatementException> {
+			dnoRepository.addDNO(sut)
+		}
+	}
+
+	@Test
 	fun `getByName Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
@@ -66,6 +78,19 @@ class JDBIDNORepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val sut = "123"
+
+		// act
+		val dno = dnoRepository.getByName(sut)
+
+		// assert
+		assertNull(dno)
+	}
+
+	@Test
+	fun `getByName with an empty DNO name`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = ""
 
 		// act
 		val dno = dnoRepository.getByName(sut)
@@ -96,7 +121,7 @@ class JDBIDNORepositoryTest {
 	fun `getById with an un-existing DNO`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = Int.MAX_VALUE
+		val sut = Int.MIN_VALUE
 
 		// act
 		val dno = dnoRepository.getById(sut)

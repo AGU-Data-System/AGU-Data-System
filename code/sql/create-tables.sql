@@ -50,7 +50,7 @@ create table if not exists loads
 create table if not exists dno
 (
     id   int generated always as identity,
-    name varchar unique not null,
+    name varchar check (length(name) > 0) unique not null,
 
     primary key (id)
 );
@@ -58,16 +58,16 @@ create table if not exists dno
 create table if not exists agu
 (
     cui            CUI primary key,
-    name           varchar unique                         not null,
-    min_level      PERCENTAGE                             not null,
-    max_level      PERCENTAGE                             not null,
-    critical_level PERCENTAGE                             not null,
-    load_volume    numeric(6, 3) check (load_volume >= 0) not null,
-    latitude       LATITUDE                               not null,
-    longitude      LONGITUDE                              not null,
-    location_name  varchar                                not null,
-    dno_id         int                                    not null,
-    is_favorite    boolean default false                  not null,
+    name           varchar check (length(name) > 0) unique not null,
+    min_level      PERCENTAGE                              not null,
+    max_level      PERCENTAGE                              not null,
+    critical_level PERCENTAGE                              not null,
+    load_volume    numeric(6, 3) check (load_volume >= 0)  not null,
+    latitude       LATITUDE                                not null,
+    longitude      LONGITUDE                               not null,
+    location_name  varchar                                 not null,
+    dno_id         int                                     not null,
+    is_favorite    boolean default false                   not null,
     notes          json,
     training       json,
     image          bytea,

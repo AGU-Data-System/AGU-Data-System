@@ -12,4 +12,12 @@ data class GasLevels(
 	val min: Int, //Percentage,
 	val max: Int, //Percentage,
 	val critical: Int //Percentage
-)
+) {
+
+	/**
+	 * Returns a string representation of the object
+	 */
+	override fun toString(): String {
+		return "GasLevels(min = $min%, max = $max%, critical = $critical%)"
+	}
+}

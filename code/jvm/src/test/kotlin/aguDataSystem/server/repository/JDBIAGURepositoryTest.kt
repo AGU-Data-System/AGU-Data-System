@@ -69,6 +69,36 @@ class JDBIAGURepositoryTest {
 	}
 
 	@Test
+	fun `add AGU with empty CUI should throw exception`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val agu = dummyAGU.copy(cui = "")
+
+		// act & assert
+		assertFailsWith<UnableToExecuteStatementException> {
+			aguRepo.addAGU(agu, dnoId)
+		}
+	}
+
+	@Test
+	fun `add AGU with empty name should throw exception`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val agu = dummyAGU.copy(name = "")
+
+		// act & assert
+		assertFailsWith<UnableToExecuteStatementException> {
+			aguRepo.addAGU(agu, dnoId)
+		}
+	}
+
+	@Test
 	fun `get AGU by CUI`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
