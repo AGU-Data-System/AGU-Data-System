@@ -62,6 +62,16 @@ class JDBIContactRepositoryTest {
 	}
 
 	@Test
+	fun `add contact with invalid CUI should fail`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val contactRepo = JDBIContactRepository(handle)
+		//act & assert
+		assertFailsWith<UnableToExecuteStatementException> {
+			contactRepo.addContact("", dummyContact)
+		}
+	}
+
+	@Test
 	fun `get contacts by AGU correctly`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val contactRepo = JDBIContactRepository(handle)
