@@ -1,8 +1,9 @@
 package aguDataSystem.server.http.controllers.agu.models.addAgu
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUCreationDTO
+import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationInputModel
 
 /**
  * The input model for creating an AGU
@@ -37,8 +38,8 @@ data class AGUCreationInputModel(
 	val dnoName: String,
 	val gasLevelUrl: String,
 	val image: ByteArray,
-	val tanks: List<TankInputModel>,
-	val contacts: List<ContactInputModel>,
+	val tanks: List<TankCreationInputModel>,
+	val contacts: List<ContactCreationInputModel>,
 	val isFavorite: Boolean = false,
 	val notes: String? = null,
 ) {
@@ -66,7 +67,7 @@ data class AGUCreationInputModel(
 		dnoName = this.dnoName,
 		gasLevelUrl = this.gasLevelUrl,
 		image = this.image,
-		contacts = this.contacts.map { contactInputModel -> contactInputModel.toContactDTO() },
+		contacts = this.contacts.map { contactCreationInputModel -> contactCreationInputModel.toContactCreationDTO() },
 		tanks = this.tanks.map { tankInputModel -> tankInputModel.toTank() },
 		isFavorite = this.isFavorite,
 		notes = this.notes,

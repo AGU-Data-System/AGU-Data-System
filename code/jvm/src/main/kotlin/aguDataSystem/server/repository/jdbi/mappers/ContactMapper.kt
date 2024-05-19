@@ -22,6 +22,7 @@ class ContactMapper : RowMapper<Contact> {
 	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): Contact {
 		return Contact(
+			id = rs.getInt("id"),
 			name = rs.getString("name"),
 			phone = rs.getString("phone"),
 			type = rs.getString("type").toContactType()

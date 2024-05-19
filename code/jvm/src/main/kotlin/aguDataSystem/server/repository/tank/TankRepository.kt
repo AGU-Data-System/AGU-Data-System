@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository.tank
 
-import aguDataSystem.server.domain.Tank
+import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.tank.TankUpdateInfo
 
 /**
  * A repository for the tanks of an AGU
@@ -44,9 +45,10 @@ interface TankRepository {
 	 * Updates a tank from an AGU
 	 *
 	 * @param cui the cui of the AGU
-	 * @param tank the tank to update
+	 * @param number the number of the tank
+	 * @param tankUpdateInfo the info to update the tank
 	 */
-	fun updateTank(cui: String, tank: Tank)
+	fun updateTank(cui: String, number: Int, tankUpdateInfo: TankUpdateInfo)
 
 	/**
 	 * Checks the number of tanks in an AGU

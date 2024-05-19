@@ -1,13 +1,13 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.domain.GasLevels
 import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Tank
 import aguDataSystem.server.domain.agu.AGUCreationInfo
-import aguDataSystem.server.domain.contact.Contact
+import aguDataSystem.server.domain.contact.ContactCreation
 import aguDataSystem.server.domain.contact.ContactType
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
+import aguDataSystem.server.domain.tank.Tank
 import java.time.LocalDateTime
 
 /**
@@ -33,13 +33,13 @@ object RepositoryUtils {
 		)
 	}.reversed()
 
-	val dummyLogisticContact = Contact(
+	val dummyLogisticContact = ContactCreation(
 		name = "John Doe",
 		phone = "123456789",
 		type = ContactType.LOGISTIC
 	)
 
-	val dummyEmergencyContact = Contact(
+	val dummyEmergencyContact = ContactCreation(
 		name = "Jane Doe",
 		phone = "987654321",
 		type = ContactType.EMERGENCY

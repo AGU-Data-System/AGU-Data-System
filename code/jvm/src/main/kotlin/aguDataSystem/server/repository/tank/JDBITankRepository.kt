@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository.tank
 
-import aguDataSystem.server.domain.Tank
+import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.tank.TankUpdateInfo
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -131,10 +132,11 @@ class JDBITankRepository(private val handle: Handle) : TankRepository {
 	 * Updates a tank from an AGU
 	 *
 	 * @param cui the cui of the AGU
-	 * @param tank the tank to update
+	 * @param number the number of the tank
+	 * @param tankUpdateInfo the info to update the tank
 	 */
-	override fun updateTank(cui: String, tank: Tank) {
-		logger.info("Updating tank with number {} from the AGU with CUI {}", tank.number, cui)
+	override fun updateTank(cui: String, number: Int, tankUpdateInfo: TankUpdateInfo) {
+		logger.info("Updating tank with number {} from the AGU with CUI {}", number, cui)
 
 		val updated = handle.createUpdate(
 			"""
@@ -148,20 +150,20 @@ class JDBITankRepository(private val handle: Handle) : TankRepository {
                 WHERE agu_cui = :cui AND number = :number
             """.trimIndent()
 		)
-			.bind("min_level", tank.levels.min)
-			.bind("max_level", tank.levels.max)
-			.bind("critical_level", tank.levels.critical)
-			.bind("load_volume", tank.loadVolume)
-			.bind("capacity", tank.capacity)
-			.bind("correction_factor", tank.correctionFactor)
+			.bind("min_level", tankUpdateInfo.levels.min)
+			.bind("max_level", tankUpdateInfo.levels.max)
+			.bind("critical_level", tankUpdateInfo.levels.critical)
+			.bind("load_volume", tankUpdateInfo.loadVolume)
+			.bind("capacity", tankUpdateInfo.capacity)
+			.bind("correction_factor", tankUpdateInfo.correctionFactor)
 			.bind("cui", cui)
-			.bind("number", tank.number)
+			.bind("number", number)
 			.execute()
 
 		if (updated == 0) {
-			logger.info("Tank with number {} not found in the AGU with CUI {}", tank.number, cui)
+			logger.info("Tank with number {} not found in the AGU with CUI {}", number, cui)
 		} else {
-			logger.info("Updated tank with number {} from the AGU with CUI {}", tank.number, cui)
+			logger.info("Updated tank with number {} from the AGU with CUI {}", number, cui)
 		}
 	}
 

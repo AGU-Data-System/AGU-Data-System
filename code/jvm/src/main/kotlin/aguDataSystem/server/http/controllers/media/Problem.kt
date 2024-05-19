@@ -111,5 +111,17 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			title = "Provider Not Found.",
 			details = "The provider with the given ID was not found."
 		)
+
+		val TankNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "tank-not-found"),
+			title = "Tank Not Found.",
+			details = "The tank with the given ID was not found."
+		)
+
+		val ContactAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "contact-already-exists"),
+			title = "Contact Already Exists.",
+			details = "The contact already exists."
+		)
 	}
 }

@@ -84,7 +84,7 @@ create table if not exists tank
     min_level         PERCENTAGE                                   not null,
     max_level         PERCENTAGE                                   not null,
     critical_level    PERCENTAGE                                   not null,
-    load_volume       numeric(6, 3) check (load_volume >= 0)       not null, -- using 20tons as reference is a percentage of that can be higher than 100%
+    load_volume       numeric(6, 3) check (load_volume >= 0)       not null,
     correction_factor numeric(6, 3) check (correction_factor >= 0) not null,
     capacity          int check (capacity >= 0)                    not null,
 
@@ -134,6 +134,8 @@ create table if not exists contacts
     foreign key (agu_cui) references agu (cui),
 
     primary key (agu_cui, name, type)
+
+-- primary key (agu_cui, phone)
 );
 
 -- Views

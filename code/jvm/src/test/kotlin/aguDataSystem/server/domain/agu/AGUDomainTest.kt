@@ -1,6 +1,6 @@
 package aguDataSystem.server.domain.agu
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure

@@ -1,9 +1,9 @@
 package aguDataSystem.server.domain.agu
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Tank
-import aguDataSystem.server.domain.contact.ContactDTO
+import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.contact.ContactCreationDTO
 
 /**
  * Data Transfer Object for creating an AGU
@@ -31,7 +31,7 @@ data class AGUCreationDTO(
 	val dnoName: String,
 	val gasLevelUrl: String,
 	val image: ByteArray, //TODO: change later to an Image object
-	val contacts: List<ContactDTO>,
+	val contacts: List<ContactCreationDTO>,
 	val tanks: List<Tank>,
 	val isFavorite: Boolean = false,
 	val notes: String?,
@@ -52,7 +52,7 @@ data class AGUCreationDTO(
 		dnoName = this.dnoName,
 		gasLevelUrl = this.gasLevelUrl,
 		image = this.image,
-		contacts = this.contacts.map { it.toContact() },
+		contacts = this.contacts.map { it.toContactCreation() },
 		tanks = this.tanks,
 		isFavorite = this.isFavorite,
 		notes = this.notes,

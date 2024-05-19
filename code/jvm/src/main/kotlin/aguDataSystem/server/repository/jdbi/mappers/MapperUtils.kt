@@ -1,8 +1,8 @@
 package aguDataSystem.server.repository.jdbi.mappers
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Tank
+import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.toContactType
@@ -19,13 +19,14 @@ object MapperUtils {
 	 * @param rs the result set
 	 * @return the list of contacts
 	 */
-	fun mapToContact(rs: ResultSet): List<Contact> {
+	fun mapToContacts(rs: ResultSet): List<Contact> {
 		if (rs.getString("contact_name") == null) return emptyList()
 		val contacts = mutableListOf<Contact>()
 		val cui = rs.getString("cui")
 		do {
 			contacts.add(
 				Contact(
+					id = rs.getInt("contact_id"),
 					name = rs.getString("contact_name"),
 					phone = rs.getString("contact_phone"),
 					type = rs.getString("contact_type").toContactType()

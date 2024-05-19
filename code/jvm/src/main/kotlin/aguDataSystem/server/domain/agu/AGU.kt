@@ -1,8 +1,8 @@
 package aguDataSystem.server.domain.agu
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Tank
+import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.provider.Provider

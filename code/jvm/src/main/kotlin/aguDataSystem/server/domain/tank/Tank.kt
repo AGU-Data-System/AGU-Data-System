@@ -1,4 +1,6 @@
-package aguDataSystem.server.domain
+package aguDataSystem.server.domain.tank
+
+import aguDataSystem.server.domain.gasLevels.GasLevels
 
 /**
  * Represents a tank

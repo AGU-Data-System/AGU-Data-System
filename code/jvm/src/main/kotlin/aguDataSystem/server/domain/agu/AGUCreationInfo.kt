@@ -1,9 +1,9 @@
 package aguDataSystem.server.domain.agu
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.Tank
-import aguDataSystem.server.domain.contact.Contact
+import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.contact.ContactCreation
 
 /**
  * Represents the creation information of an AGU.
@@ -23,17 +23,17 @@ import aguDataSystem.server.domain.contact.Contact
  * @property training The training of the AGU.
  */
 data class AGUCreationInfo(
-	val cui: String,
-	val name: String,
-	val levels: GasLevels,
-	val loadVolume: Int,
-	val location: Location,
-	val dnoName: String,
-	val gasLevelUrl: String,
-	val image: ByteArray, //TODO: change later to an Image object
-	val contacts: List<Contact>, // TODO: Study if AGU basic info only has agu table content
-	val tanks: List<Tank>,
-	val isFavorite: Boolean = false,
-	val notes: String?,
-	val training: String?,
+    val cui: String,
+    val name: String,
+    val levels: GasLevels,
+    val loadVolume: Int,
+    val location: Location,
+    val dnoName: String,
+    val gasLevelUrl: String,
+    val image: ByteArray,
+    val contacts: List<ContactCreation>,
+    val tanks: List<Tank>,
+    val isFavorite: Boolean = false,
+    val notes: String?,
+    val training: String?,
 )

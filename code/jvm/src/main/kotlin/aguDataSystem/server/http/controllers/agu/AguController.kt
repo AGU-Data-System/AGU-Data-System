@@ -2,19 +2,30 @@ package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.gasLevels.GasLevelsInputModel
+import aguDataSystem.server.http.controllers.agu.models.addAgu.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.updateAgu.UpdateFavouriteAGUInputModel
+import aguDataSystem.server.http.controllers.agu.models.updateTank.TankUpdateInputModel
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
+import aguDataSystem.server.service.errors.agu.AddContactError
+import aguDataSystem.server.service.errors.agu.AddTankError
+import aguDataSystem.server.service.errors.agu.DeleteContactError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.GetMeasuresError
-import aguDataSystem.server.service.errors.agu.UpdateAGUError
+import aguDataSystem.server.service.errors.agu.UpdateFavouriteStateError
+import aguDataSystem.server.service.errors.agu.UpdateGasLevelsError
+import aguDataSystem.server.service.errors.agu.UpdateNotesError
+import aguDataSystem.server.service.errors.agu.UpdateTankError
 import aguDataSystem.utils.Failure
 import aguDataSystem.utils.Success
 import java.time.LocalDate
 import java.time.LocalTime
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -157,7 +168,6 @@ class AguController(private val service: AGUService) {
 	 *
 	 * @param aguCui the CUI of the AGU to change
 	 * @param aguFavouriteInput the new favourite state of the AGU
-	 * @return the changed AGU
 	 */
 	@PutMapping(URIs.Agu.PUT_FAVOURITE_AGUS)
 	fun updateFavouriteState(
@@ -171,18 +181,109 @@ class AguController(private val service: AGUService) {
 	}
 
 	/**
-	 * Changes the AGU
+	 * Adds a contact to an AGU
 	 *
-	 * @param aguCui the CUI of the AGU to change
-	 * @param aguInput the new AGU
-	 * @return the changed AGU
+	 * @param aguCui the CUI of the AGU to add the contact to
+	 * @param contact the contact to add
+	 * @return the added contact
 	 */
-	@PutMapping(URIs.Agu.GET_BY_ID)
-	fun updateAGU(
+	@PostMapping(URIs.Agu.CONTACT)
+	fun addContact(
 		@PathVariable aguCui: String,
-		@RequestBody aguInput: AGUCreationInputModel
+		@RequestBody contact: ContactCreationInputModel
 	): ResponseEntity<*> {
-		return when (val res = service.updateAGU(aguInput.toAGUCreationDTO())) {
+		return when (val res = service.addContact(aguCui, contact.toContactCreationDTO())) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.created(URIs.Agu.contactByID(aguCui, res.value)).body(res.value)
+		}
+	}
+
+	/**
+	 * Deletes a contact from an AGU
+	 *
+	 * @param aguCui the CUI of the AGU to delete the contact from
+	 * @param contactId the ID of the contact to delete
+	 * @return the AGU with the deleted contact
+	 */
+	@DeleteMapping(URIs.Agu.CONTACT_BY_ID)
+	fun deleteContact(
+		@PathVariable aguCui: String,
+		@PathVariable contactId: Int
+	): ResponseEntity<*> {
+		return when (val res = service.deleteContact(aguCui, contactId)) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
+	}
+
+	/**
+	 * Adds a tank to an AGU
+	 *
+	 * @param aguCui the CUI of the AGU to add the tank to
+	 * @param tankInput the tank to add
+	 */
+	@PostMapping(URIs.Agu.TANK)
+	fun addTank(
+		@PathVariable aguCui: String,
+		@RequestBody tankInput: TankCreationInputModel
+	): ResponseEntity<*> {
+		return when (val res = service.addTank(aguCui, tankInput.toTank())) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.created(URIs.Agu.tankByID(aguCui, res.value)).body(res.value)
+		}
+	}
+
+	/**
+	 * Changes a tank in an AGU
+	 *
+	 * @param aguCui the CUI of the AGU to change the tank in
+	 * @param tankNumber the number of the tank to change
+	 * @param tankInput the new tank info to change to
+	 * @return the changed Tank
+	 */
+	@PutMapping(URIs.Agu.TANK_BY_ID)
+	fun changeTank(
+		@PathVariable aguCui: String,
+		@PathVariable tankNumber: Int,
+		@RequestBody tankInput: TankUpdateInputModel
+	): ResponseEntity<*> {
+		return when (val res = service.updateTank(aguCui, tankNumber, tankInput.toTankUpdateDTO())) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
+	}
+
+	/**
+	 * Changes the gas levels of an AGU
+	 *
+	 * @param aguCui the CUI of the AGU to change the gas levels of
+	 * @param gasLevels the new gas levels to change to
+	 * @return the AGU with the changed gas levels
+	 */
+	@PutMapping(URIs.Agu.LEVELS)
+	fun changeGasLevels(
+		@PathVariable aguCui: String,
+		@RequestBody gasLevels: GasLevelsInputModel
+	): ResponseEntity<*> {
+		return when (val res = service.updateGasLevels(aguCui, gasLevels.toGasLevelsDTO())) {
+			is Failure -> res.value.resolveProblem()
+			is Success -> ResponseEntity.ok(res.value)
+		}
+	}
+
+	/**
+	 * Changes the notes of an AGU
+	 *
+	 * @param aguCui the CUI of the AGU to change the notes of
+	 * @param notes the new notes to change to
+	 * @return the AGU with the changed notes
+	 */
+	@PutMapping(URIs.Agu.NOTES)
+	fun changeNotes(
+		@PathVariable aguCui: String,
+		@RequestBody notes: String
+	): ResponseEntity<*> {
+		return when (val res = service.updateNotes(aguCui, notes)) {
 			is Failure -> res.value.resolveProblem()
 			is Success -> ResponseEntity.ok(res.value)
 		}
@@ -261,49 +362,95 @@ class AguController(private val service: AGUService) {
 		}
 
 	/**
-	 * Resolve the problem of updating an AGU
+	 * Resolve the problem of updating the favourite state of an AGU
 	 *
 	 * @receiver the error to resolve
 	 * @return the response entity to return
 	 */
-	private fun UpdateAGUError.resolveProblem(): ResponseEntity<*> =
+	private fun UpdateFavouriteStateError.resolveProblem(): ResponseEntity<*> =
 		when (this) {
-			UpdateAGUError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
-			UpdateAGUError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
-			UpdateAGUError.InvalidContact -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidContact)
-			UpdateAGUError.InvalidContactType -> Problem.response(
+			UpdateFavouriteStateError.AGUNotFound -> Problem.response(
+				HttpStatus.NOT_FOUND.value(),
+				Problem.AGUNotFound
+			)
+		}
+
+	/**
+	 * Resolve the problem of adding a contact to an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun AddContactError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			AddContactError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+			AddContactError.InvalidContact -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidContact)
+			AddContactError.InvalidContactType -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.InvalidContactType
 			)
-
-			UpdateAGUError.InvalidCoordinates -> Problem.response(
+			AddContactError.ContactAlreadyExists -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidCoordinates
+				Problem.ContactAlreadyExists
 			)
+		}
 
-			UpdateAGUError.InvalidCriticalLevel -> Problem.response(
-				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidCriticalLevel
-			)
+	/**
+	 * Resolves the problem of deleting a contact from an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun DeleteContactError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			DeleteContactError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+		}
 
-			UpdateAGUError.InvalidDNO -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidDNO)
-			UpdateAGUError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
-			UpdateAGUError.InvalidLoadVolume -> Problem.response(
-				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidLoadVolume
-			)
+	/**
+	 * Resolves the problem of adding a tank to an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun AddTankError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			AddTankError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+			AddTankError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+		}
 
-			UpdateAGUError.InvalidMaxLevel -> Problem.response(
-				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidMaxLevel
-			)
+	/**
+	 * Resolves the problem of updating a tank in an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun UpdateTankError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			UpdateTankError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+			UpdateTankError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+			UpdateTankError.TankNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.TankNotFound)
+		}
 
-			UpdateAGUError.InvalidMinLevel -> Problem.response(
-				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidMinLevel
-			)
+	/**
+	 * Resolves the problem of updating the gas levels of an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun UpdateGasLevelsError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			UpdateGasLevelsError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+			UpdateGasLevelsError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+		}
 
-			UpdateAGUError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
-			UpdateAGUError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
+	/**
+	 * Resolves the problem of updating the notes of an AGU
+	 *
+	 * @receiver the error to resolve
+	 * @return the response entity to return
+	 */
+	private fun UpdateNotesError.resolveProblem(): ResponseEntity<*> =
+		when (this) {
+			UpdateNotesError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
 		}
 }

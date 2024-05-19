@@ -1,6 +1,6 @@
-package aguDataSystem.server.http.controllers.agu.models.addAgu
+package aguDataSystem.server.http.controllers.agu.models.contact
 
-import aguDataSystem.server.domain.contact.ContactDTO
+import aguDataSystem.server.domain.contact.ContactCreationDTO
 
 /**
  * The input model for creating a contact
@@ -9,7 +9,7 @@ import aguDataSystem.server.domain.contact.ContactDTO
  * @param phone the phone of the contact
  * @param type the type of the contact
  */
-data class ContactInputModel(
+data class ContactCreationInputModel(
 	val name: String,
 	val phone: String,
 	val type: String
@@ -20,7 +20,7 @@ data class ContactInputModel(
 	 * @receiver the contact input model
 	 * @return the contact data transfer object
 	 */
-	fun toContactDTO() = ContactDTO(
+	fun toContactCreationDTO() = ContactCreationDTO(
 		name = this.name,
 		phone = this.phone,
 		type = this.type

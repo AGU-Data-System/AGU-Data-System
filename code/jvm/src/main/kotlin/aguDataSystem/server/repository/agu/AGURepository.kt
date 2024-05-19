@@ -1,5 +1,6 @@
 package aguDataSystem.server.repository.agu
 
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationInfo
@@ -72,4 +73,20 @@ interface AGURepository {
 	 * @return True if AGU exists, false otherwise
 	 */
 	fun isAGUStored(cui: String): Boolean
+
+	/**
+	 * Update gas levels of an AGU
+	 *
+	 * @param cui CUI of AGU
+	 * @param levels New gas levels
+	 */
+	fun updateGasLevels(cui: String, levels: GasLevels)
+
+	/**
+	 * Update notes of an AGU
+	 *
+	 * @param cui CUI of AGU
+	 * @param notes New notes
+	 */
+	fun updateNotes(cui: String, notes: String)
 }

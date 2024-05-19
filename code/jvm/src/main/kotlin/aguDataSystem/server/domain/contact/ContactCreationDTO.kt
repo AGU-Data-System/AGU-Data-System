@@ -1,13 +1,13 @@
 package aguDataSystem.server.domain.contact
 
 /**
- * Data Transfer Object for Contact
+ * Data Transfer Object for Creating a Contact
  *
  * @property name name of the contact
  * @property phone phone number of the contact
  * @property type type of the contact
  */
-data class ContactDTO(
+data class ContactCreationDTO(
 	val name: String,
 	val phone: String,
 	val type: String
@@ -18,7 +18,7 @@ data class ContactDTO(
 	 *
 	 * @return the Contact
 	 */
-	fun toContact() = Contact(
+	fun toContactCreation() = ContactCreation(
 		name = this.name,
 		phone = this.phone,
 		type = this.type.toContactType()

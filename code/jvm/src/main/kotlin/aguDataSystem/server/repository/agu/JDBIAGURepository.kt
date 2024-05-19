@@ -1,5 +1,6 @@
 package aguDataSystem.server.repository.agu
 
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationInfo
@@ -71,7 +72,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		val agu = handle.createQuery(
 			"""
 			SELECT agu.*, 
-			contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
+			contacts.id as contact_id, contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
 			dno.id as dno_id, dno.name as dno_name
 			FROM agu 
 			left join contacts 
@@ -251,6 +252,54 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		logger.info("AGU with CUI: {} exists in the database: {}", cui, isStored)
 		return isStored
+	}
+
+	/**
+	 * Update gas levels of an AGU
+	 *
+	 * @param cui CUI of AGU
+	 * @param levels New gas levels
+	 */
+	override fun updateGasLevels(cui: String, levels: GasLevels) {
+		logger.info("Updating gas levels of AGU with CUI: {} in the database", cui)
+
+		handle.createUpdate(
+			"""
+			UPDATE agu 
+			SET min_level = :minLevel, max_level = :maxLevel, critical_level = :criticalLevel
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.bind("minLevel", levels.min)
+			.bind("maxLevel", levels.max)
+			.bind("criticalLevel", levels.critical)
+			.execute()
+
+		logger.info("Gas levels of AGU with CUI: {} updated in the database", cui)
+	}
+
+	/**
+	 * Update notes of an AGU
+	 *
+	 * @param cui CUI of AGU
+	 * @param notes New notes
+	 */
+	override fun updateNotes(cui: String, notes: String) {
+		logger.info("Updating notes of AGU with CUI: {} in the database", cui)
+
+		handle.createUpdate(
+			"""
+			UPDATE agu 
+			SET notes = :notes::json
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.bind("notes", notes)
+			.execute()
+
+		logger.info("Notes of AGU with CUI: {} updated in the database", cui)
 	}
 
 	companion object {

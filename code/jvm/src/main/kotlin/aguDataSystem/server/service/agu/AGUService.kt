@@ -1,25 +1,36 @@
 package aguDataSystem.server.service.agu
 
-import aguDataSystem.server.domain.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevels
+import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.domain.agu.AddProviderResult
+import aguDataSystem.server.domain.contact.ContactCreationDTO
+import aguDataSystem.server.domain.gasLevels.GasLevelsDTO
 import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.server.domain.provider.ProviderType
+import aguDataSystem.server.domain.tank.TankUpdateDTO
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
+import aguDataSystem.server.service.errors.agu.AddContactError
+import aguDataSystem.server.service.errors.agu.AddTankError
+import aguDataSystem.server.service.errors.agu.DeleteContactError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.GetMeasuresError
+import aguDataSystem.server.service.errors.agu.UpdateFavouriteStateError
+import aguDataSystem.server.service.errors.agu.UpdateGasLevelsError
+import aguDataSystem.server.service.errors.agu.UpdateNotesError
+import aguDataSystem.server.service.errors.agu.UpdateTankError
 import aguDataSystem.utils.failure
 import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure
 import aguDataSystem.utils.isSuccess
 import aguDataSystem.utils.success
-import java.time.LocalDate
-import java.time.LocalTime
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * Service for managing the AGUs.
@@ -260,33 +271,181 @@ class AGUService(
 		return transactionManager.run {
 			logger.info("Updating favourite status of AGU with CUI: {} to {}", cui, isFavourite)
 
-			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(UpdateFavouriteStateError.AGUNotFound)
 
 			it.aguRepository.updateFavouriteState(cui, isFavourite)
 
 			logger.info("Favourite status of AGU with CUI: {} updated to {}", cui, isFavourite)
+
+			success(it.aguRepository.getAGUByCUI(cui)!!)
+		}
+	}
+
+	/**
+	 * Add a contact to an AGU
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param contact the contact to add
+	 * @return the AGU with the added contact or an error
+	 */
+	fun addContact(cui: String, contact: ContactCreationDTO): AddContactResult {
+		logger.info("Adding contact to AGU with CUI: {}", cui)
+
+		if (!aguDomain.isPhoneValid(contact.phone) || contact.name.isEmpty()) {
+			return failure(AddContactError.InvalidContact)
+		}
+
+		if (!aguDomain.isContactTypeValid(contact.type)) {
+			return failure(AddContactError.InvalidContactType)
+		}
+		return transactionManager.run {
+
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(AddContactError.AGUNotFound)
+
+			if(it.contactRepository.isContactStoredByPhoneNumberAndType(cui, contact.phone, contact.type)){
+				return@run failure(AddContactError.ContactAlreadyExists)
+			}
+
+			val contactId = it.contactRepository.addContact(cui, contact.toContactCreation())
+
+			logger.info("Contact added to AGU with CUI: {}", cui)
+
+			success(contactId)
+		}
+	}
+
+	/**
+	 * Delete a contact from an AGU
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param id the ID of the contact to delete
+	 * @return the result of the deletion
+	 */
+	fun deleteContact(cui: String, id: Int): DeleteContactResult {
+		return transactionManager.run {
+			logger.info("Deleting contact with ID: {} from AGU with CUI: {}", id, cui)
+
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(DeleteContactError.AGUNotFound)
+
+			it.contactRepository.deleteContact(cui, id)
+
+			logger.info("Contact with ID: {} deleted from AGU with CUI: {}", id, cui)
 
 			success(Unit)
 		}
 	}
 
 	/**
-	 * Update an AGU
+	 * Adds a tank to an AGU
 	 *
-	 * @param agu the AGU to update
-	 * @return the updated AGU
+	 * @param cui the CUI of the AGU
+	 * @param tank the tank to add
+	 * @return the AGU with the added tank or an error
 	 */
-	fun updateAGU(agu: AGUCreationDTO): UpdateAGUResult {
-		//What do we want to update? just AGU info, or also tanks, or contacts, or DNO, or providers?
-		//If we want to update everything, we need to check if the new info is valid, what is different form the old info
-		//and update everything
-		//this is specially hard for the providers because we have no info about what is the URL of the provider to check if it has changed,
-		// for that we need to send a request to the fetcher
-		//slowing down the update process, so i think we should have an update for each part
-		//TODO()
-		return success(Unit)
+	fun addTank(cui: String, tank: Tank): AddTankResult {
+
+		if (!aguDomain.areLevelsValid(tank.levels)) {
+			return failure(AddTankError.InvalidLevels)
+		}
+
+		return transactionManager.run {
+			logger.info("Adding tank to AGU with CUI: {}", cui)
+
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(AddTankError.AGUNotFound)
+
+			val tankNumber = it.tankRepository.addTank(cui, tank)
+
+			logger.info("Tank added to AGU with CUI: {}", cui)
+
+			success(tankNumber)
+		}
 	}
 
+	/**
+	 * Updates a tank of an AGU
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param number the number of the tank to change
+	 * @param tankDTO the new tank data
+	 * @return the AGU with the changed tank or an error
+	 */
+	fun updateTank(cui: String, number: Int, tankDTO: TankUpdateDTO): UpdateTankResult {
+
+		val tankUpdateInfo = tankDTO.toTankUpdateInfo()
+
+		if (!aguDomain.areLevelsValid(tankUpdateInfo.levels)) {
+			return failure(UpdateTankError.InvalidLevels)
+		}
+
+		return transactionManager.run {
+			logger.info("Changing tank with number: {} from AGU with CUI: {}", number, cui)
+
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(UpdateTankError.AGUNotFound)
+
+			if (it.tankRepository.getTankByNumber(cui, number) == null) {
+				return@run failure(UpdateTankError.TankNotFound)
+			}
+
+			it.tankRepository.updateTank(cui, number, tankUpdateInfo)
+
+			logger.info("Tank with number: {} changed from AGU with CUI: {}", number, cui)
+
+			success(it.aguRepository.getAGUByCUI(cui)!!)
+		}
+	}
+
+	/**
+	 * Updates the gas levels of an AGU
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param levelsDTO the new gas levels
+	 * @return the AGU with the changed gas levels or an error
+	 */
+	fun updateGasLevels(cui: String, levelsDTO: GasLevelsDTO): UpdateGasLevelsResult {
+
+		val levels = levelsDTO.toGasLevels()
+
+		if (!aguDomain.areLevelsValid(levels)) {
+			return failure(UpdateGasLevelsError.InvalidLevels)
+		}
+
+		return transactionManager.run {
+			logger.info("Changing gas levels of AGU with CUI: {}", cui)
+
+			if (it.aguRepository.getAGUByCUI(cui) == null) {
+				return@run failure(UpdateGasLevelsError.AGUNotFound)
+			}
+
+			it.aguRepository.updateGasLevels(cui, levels)
+
+			logger.info("Gas levels of AGU with CUI: {} changed", cui)
+
+			success(it.aguRepository.getAGUByCUI(cui)!!)
+		}
+	}
+
+	/**
+	 * Updates the notes of an AGU
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param notes the new notes
+	 * @return the AGU with the changed notes or an error
+	 */
+	fun updateNotes(cui: String, notes: String): UpdateNotesResult {
+		return transactionManager.run {
+			logger.info("Changing notes of AGU with CUI: {}", cui)
+
+			if (it.aguRepository.getAGUByCUI(cui) == null) {
+				return@run failure(UpdateNotesError.AGUNotFound)
+			}
+
+			it.aguRepository.updateNotes(cui, notes)
+
+			logger.info("Notes of AGU with CUI: {} changed", cui)
+
+			success(it.aguRepository.getAGUByCUI(cui)!!)
+		}
+	}
 
 	/**
 	 * Check if the AGU DTO is valid

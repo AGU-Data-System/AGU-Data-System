@@ -4,9 +4,15 @@ import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.service.errors.agu.AGUCreationError
+import aguDataSystem.server.service.errors.agu.AddContactError
+import aguDataSystem.server.service.errors.agu.AddTankError
+import aguDataSystem.server.service.errors.agu.DeleteContactError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.GetMeasuresError
-import aguDataSystem.server.service.errors.agu.UpdateAGUError
+import aguDataSystem.server.service.errors.agu.UpdateFavouriteStateError
+import aguDataSystem.server.service.errors.agu.UpdateGasLevelsError
+import aguDataSystem.server.service.errors.agu.UpdateNotesError
+import aguDataSystem.server.service.errors.agu.UpdateTankError
 import aguDataSystem.utils.Either
 
 /**
@@ -32,9 +38,34 @@ typealias GetGasMeasuresResult = Either<GetMeasuresError, List<GasMeasure>>
 /**
  * Result for updating an AGU favourite state
  */
-typealias UpdateFavouriteStateResult = Either<GetAGUError, Unit>
+typealias UpdateFavouriteStateResult = Either<UpdateFavouriteStateError, AGU>
 
 /**
- * Result for updating an AGU
+ * Result for adding a contact to an AGU
  */
-typealias UpdateAGUResult = Either<UpdateAGUError, Unit>
+typealias AddContactResult = Either<AddContactError, Int>
+
+/**
+ * Result for deleting a contact from an AGU
+ */
+typealias DeleteContactResult = Either<DeleteContactError, Unit>
+
+/**
+ * Result for adding a tank to an AGU
+ */
+typealias AddTankResult = Either<AddTankError, Int>
+
+/**
+ * Result for updating a tank from an AGU
+ */
+typealias UpdateTankResult = Either<UpdateTankError, AGU>
+
+/**
+ * Result for updating the gas levels of an AGU
+ */
+typealias UpdateGasLevelsResult = Either<UpdateGasLevelsError, AGU>
+
+/**
+ * Result for updating the notes of an AGU
+ */
+typealias UpdateNotesResult = Either<UpdateNotesError, AGU>
