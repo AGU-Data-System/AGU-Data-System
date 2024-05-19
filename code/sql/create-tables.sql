@@ -31,7 +31,7 @@ CREATE DOMAIN LATITUDE as numeric(9, 6) check (value >= -90 and value <= 90);
 -- Tables
 create table if not exists transport_company
 (
-    name varchar primary key
+    name varchar check (length(name) > 0) primary key
 );
 
 create table if not exists loads
@@ -58,16 +58,16 @@ create table if not exists dno
 create table if not exists agu
 (
     cui            CUI primary key,
-    name           varchar check (length(name) > 0) unique not null,
-    min_level      PERCENTAGE                              not null,
-    max_level      PERCENTAGE                              not null,
-    critical_level PERCENTAGE                              not null,
-    load_volume    numeric(6, 3) check (load_volume >= 0)  not null,
-    latitude       LATITUDE                                not null,
-    longitude      LONGITUDE                               not null,
-    location_name  varchar                                 not null,
-    dno_id         int                                     not null,
-    is_favorite    boolean default false                   not null,
+    name           varchar check (length(name) > 0) unique   not null,
+    min_level      PERCENTAGE                                not null,
+    max_level      PERCENTAGE                                not null,
+    critical_level PERCENTAGE                                not null,
+    load_volume    numeric(6, 3) check (load_volume >= 0)    not null,
+    latitude       LATITUDE                                  not null,
+    longitude      LONGITUDE                                 not null,
+    location_name  varchar check (length(location_name) > 0) not null,
+    dno_id         int                                       not null,
+    is_favorite    boolean default false                     not null,
     notes          json,
     training       json,
     image          bytea,
@@ -126,7 +126,7 @@ create table if not exists measure
 
 create table if not exists contacts
 (
-    name    varchar                                          not null,
+    name    varchar check (length(name) > 0)                 not null,
     phone   PHONE                                            not null,
     type    varchar check (type ~* '^(emergency|logistic)$') not null,
     agu_cui CUI,
@@ -147,8 +147,9 @@ select provider.id,
        measure2.data                                  as max,
        (measure1.timestamp - measure1.prediction_for) as days_ahead
 from provider
-         left join measure measure1 on measure1.provider_id = provider.id
-         left join measure measure2 on measure2.provider_id = measure1.provider_id
+         left join measure measure1 on measure1.provider_id = provider.id and measure1.tag = 'min'
+         left join measure measure2 on measure2.provider_id = measure1.provider_id and measure2.tag = 'max'
+    and measure2.timestamp = measure1.timestamp and measure2.prediction_for = measure1.prediction_for
 where provider.provider_type = 'temperature';
 
 -- view for gas readings
