@@ -126,15 +126,16 @@ create table if not exists measure
 
 create table if not exists contacts
 (
-    id      int generated always as identity primary key,
+    id      int generated always as identity,
     name    varchar check (length(name) > 0)                 not null,
     phone   PHONE                                            not null,
     type    varchar check (type ~* '^(emergency|logistic)$') not null,
     agu_cui CUI,
 
-    foreign key (agu_cui) references agu (cui),
+    unique (agu_cui, phone, type),
 
-    unique (agu_cui, phone, type)
+    foreign key (agu_cui) references agu (cui),
+    primary key (agu_cui, id)
 
 );
 
