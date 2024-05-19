@@ -45,5 +45,5 @@ data class AGU(
 	val capacity = tanks.sumOf { it.capacity }
 
 	// calculate the total correction factor of the AGU
-	val correctionFactor = tanks.sumOf { it.correctionFactor * (it.loadVolume / capacity) }
+	val correctionFactor = tanks.sumOf { tank -> (tank.correctionFactor * tank.capacity) } / this.capacity
 }

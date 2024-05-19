@@ -579,4 +579,36 @@ class JDBIAGURepositoryTest {
 		val updatedAGUFromDb = aguRepo.updateAGU(updatedAGU)
 		assertEquals(updatedAGU.image, updatedAGUFromDb.image)
 	}
+
+	@Test
+	fun `update Favorite State with valid cui`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+
+		// act
+		aguRepo.updateFavouriteState(result, true)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+
+		// assert
+		assertNotNull(aguFromDb)
+		assertTrue(aguFromDb.isFavorite)
+	}
+
+	@Test
+	fun `update Favorite State with invalid cui`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+
+		// act
+		aguRepo.updateFavouriteState("invalid", true)
+		val aguFromDb = aguRepo.getAGUByCUI("invalid")
+
+		// assert
+		assertNull(aguFromDb)
+	}
 }
