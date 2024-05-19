@@ -1,5 +1,6 @@
 package aguDataSystem.server.repository
 
+import aguDataSystem.server.domain.contact.ContactCreation
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.agu.JDBIAGURepository
@@ -125,7 +126,7 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.isFavorite, aguFromDb.isFavorite)
 		assertEquals(agu.notes, aguFromDb.notes)
 		assertEquals(agu.training, aguFromDb.training)
-		assertEquals(agu.contacts, aguFromDb.contacts)
+		assertEquals(agu.contacts, aguFromDb.contacts.map { ContactCreation(name = it.name, phone = it.phone, type = it.type) })
 	}
 
 	@Test

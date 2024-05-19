@@ -66,7 +66,7 @@ class FetchService(
 			it.providerRepository.updateLastFetch(provider.id, lastFetched)
 			logger.info("Provider: {} - last fetch TimeStamp updated: {} to database", provider.id, lastFetched)
 
-			val aguCui = it.providerRepository.getAGUFromProviderId(provider.id) ?: return@run
+			val aguCui = it.providerRepository.getAGUCuiFromProviderId(provider.id) ?: return@run
 
 			logger.info("Saving data from provider: {} to database", provider.id)
 			when (provider.getProviderType()) {

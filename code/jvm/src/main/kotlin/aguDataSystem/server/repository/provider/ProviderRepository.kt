@@ -64,5 +64,5 @@ interface ProviderRepository {
 	 * @param providerId the id of the provider
 	 * @return the CUI of the AGU
 	 */
-	fun getAGUFromProviderId(providerId: Int): String?
+	fun getAGUCuiFromProviderId(providerId: Int): String?
 }

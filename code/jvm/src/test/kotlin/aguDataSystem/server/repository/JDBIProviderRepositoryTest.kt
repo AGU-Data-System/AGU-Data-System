@@ -2,6 +2,7 @@ package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.provider.GasProvider
 import aguDataSystem.server.domain.provider.ProviderType
+import aguDataSystem.server.domain.provider.TemperatureProvider
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.agu.JDBIAGURepository
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class JDBIProviderRepositoryTest {
 
 	@Test
-	fun `add provider correctly`() = testWithHandleAndRollback { handle ->
+	fun `add a provider correctly`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val providerRepository = JDBIProviderRepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
@@ -45,7 +46,7 @@ class JDBIProviderRepositoryTest {
 	}
 
 	@Test
-	fun `create a provider without an AGU`() = testWithHandleAndRollback { handle ->
+	fun `add a provider without an AGU should fail`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val providerRepository = JDBIProviderRepository(handle)
 		val providerId = 1
@@ -86,7 +87,7 @@ class JDBIProviderRepositoryTest {
 		val providerRepository = JDBIProviderRepository(handle)
 
 		//act
-		val provider = providerRepository.getProviderById(Int.MAX_VALUE)
+		val provider = providerRepository.getProviderById(Int.MIN_VALUE)
 
 		//assert
 		assertNull(provider)
@@ -150,42 +151,43 @@ class JDBIProviderRepositoryTest {
 		assertNull(provider)
 	}
 
-//	@Test
-//	fun `getAllProviders correctly`() = testWithHandleAndRollback { handle ->
-//		//arrange
-//		val providerRepository = JDBIProviderRepository(handle)
-//		val aguRepository = JDBIAGURepository(handle)
-//		val dnoRepository = JDBIDNORepository(handle)
-//		val agu = dummyAGU
-//		val dnoName = DUMMY_DNO_NAME
-//
-//		val dnoId = dnoRepository.addDNO(dnoName)
-//		aguRepository.addAGU(agu, dnoId)
-//
-//		ProviderType.entries.forEachIndexed { index, it ->
-//			providerRepository.addProvider(agu.cui, index+1, it)
-//		}
-//
-//		//act
-//		val providers = providerRepository.getAllProviders()
-//
-//		//assert
-//		assertEquals(2, providers.size)
-//		assert(providers.first() is GasProvider) // TODO Smelly code, stops working if the order of the enum changes
-//		assert(providers.last() is TemperatureProvider)
-//	}
-//
-//	@Test
-//	fun `getAllProviders with no providers`() = testWithHandleAndRollback { handle ->
-//		//arrange
-//		val providerRepository = JDBIProviderRepository(handle)
-//
-//		//act
-//		val providers = providerRepository.getAllProviders()
-//
-//		//assert
-//		assert(providers.isEmpty())
-//	}
+	@Test
+	fun `getAllProviders correctly`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val dnoRepository = JDBIDNORepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+
+		ProviderType.entries.forEachIndexed { index, it ->
+			providerRepository.addProvider(agu.cui, index+1, it)
+		}
+
+		//act
+		val providers = providerRepository.getAllProviders()
+
+		//assert
+		assertEquals(2, providers.size)
+
+		assert(providers.any { it is GasProvider })
+		assert(providers.any { it is TemperatureProvider })
+	}
+
+	@Test
+	fun `getAllProviders with no providers`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+
+		//act
+		val providers = providerRepository.getAllProviders()
+
+		//assert
+		assert(providers.isEmpty())
+	}
 
 	@Test
 	fun `deleteProviderById correctly`() = testWithHandleAndRollback { handle ->

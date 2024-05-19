@@ -116,7 +116,7 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 		)
 			.bind("cui", cui)
 			.bind("providerId", providerId)
-			.bind("providerType", providerType.name)
+			.bind("providerType", providerType.name.lowercase())
 			.executeAndReturnGeneratedKeys(Provider::id.name)
 			.mapTo<Int>()
 			.one()
@@ -180,7 +180,7 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	 * @param providerId the id of the provider
 	 * @return the CUI of the AGU
 	 */
-	override fun getAGUFromProviderId(providerId: Int): String? {
+	override fun getAGUCuiFromProviderId(providerId: Int): String? {
 		logger.info("Getting AGU CUI of provider with id {}", providerId)
 
 		val aguCUI = handle.createQuery(

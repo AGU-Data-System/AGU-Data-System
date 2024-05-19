@@ -132,8 +132,6 @@ create table if not exists contacts
     type    varchar check (type ~* '^(emergency|logistic)$') not null,
     agu_cui CUI,
 
-    unique (agu_cui, phone, type),
-
     foreign key (agu_cui) references agu (cui),
     primary key (agu_cui, id)
 
