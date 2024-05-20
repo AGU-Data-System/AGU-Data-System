@@ -1,9 +1,9 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.domain.tank.TankUpdateInfo
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.RepositoryUtils.dummyTank
+import aguDataSystem.server.repository.RepositoryUtils.toUpdateInfo
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.tank.JDBITankRepository
@@ -358,12 +358,7 @@ class JDBITankRepositoryTest {
 		val updatedTank = tank.copy(number = tankNumber, capacity = 50)
 
 		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-			levels = updatedTank.levels,
-			loadVolume = updatedTank.loadVolume,
-			capacity = updatedTank.capacity,
-			correctionFactor = updatedTank.correctionFactor
-		))
+		tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		val tankByNumber = tankRepo.getTankByNumber(agu.cui, tankNumber)
 
 		// assert
@@ -387,12 +382,7 @@ class JDBITankRepositoryTest {
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-				levels = updatedTank.levels,
-				loadVolume = updatedTank.loadVolume,
-				capacity = updatedTank.capacity,
-				correctionFactor = updatedTank.correctionFactor
-			))
+			tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		}
 	}
 
@@ -411,12 +401,7 @@ class JDBITankRepositoryTest {
 		val updatedTank = tank.copy(number = tankNumber + 1)
 
 		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-			levels = updatedTank.levels,
-			loadVolume = updatedTank.loadVolume,
-			capacity = updatedTank.capacity,
-			correctionFactor = updatedTank.correctionFactor
-		))
+		tankRepo.updateTank(agu.cui, updatedTank.number, tank.toUpdateInfo())
 		val tankByNumber = tankRepo.getTankByNumber(agu.cui, updatedTank.number)
 
 		// assert
@@ -439,12 +424,7 @@ class JDBITankRepositoryTest {
 		val updatedTank = tank.copy(number = Int.MIN_VALUE)
 
 		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-			levels = updatedTank.levels,
-			loadVolume = updatedTank.loadVolume,
-			capacity = updatedTank.capacity,
-			correctionFactor = updatedTank.correctionFactor
-		))
+		tankRepo.updateTank(agu.cui, updatedTank.number, tank.toUpdateInfo())
 		val updatedTankFromDB = tankRepo.getTankByNumber(agu.cui, updatedTank.number)
 
 		// assert
@@ -466,12 +446,7 @@ class JDBITankRepositoryTest {
 		val updatedTank = tank.copy(number = tankNumber, correctionFactor = 1.0)
 
 		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-			levels = updatedTank.levels,
-			loadVolume = updatedTank.loadVolume,
-			capacity = updatedTank.capacity,
-			correctionFactor = updatedTank.correctionFactor
-		))
+		tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		val tankByNumber = tankRepo.getTankByNumber(agu.cui, updatedTank.number)
 
 		// assert
@@ -495,12 +470,7 @@ class JDBITankRepositoryTest {
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-				levels = updatedTank.levels,
-				loadVolume = updatedTank.loadVolume,
-				capacity = updatedTank.capacity,
-				correctionFactor = updatedTank.correctionFactor
-			))
+			tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		}
 	}
 
@@ -519,12 +489,7 @@ class JDBITankRepositoryTest {
 		val updatedTank = tank.copy(number = tankNumber, levels = tank.levels.copy(max = 100))
 
 		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-			levels = updatedTank.levels,
-			loadVolume = updatedTank.loadVolume,
-			capacity = updatedTank.capacity,
-			correctionFactor = updatedTank.correctionFactor
-		))
+		tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		val tankByNumber = tankRepo.getTankByNumber(agu.cui, updatedTank.number)
 
 		// assert
@@ -548,12 +513,7 @@ class JDBITankRepositoryTest {
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-				levels = updatedTank.levels,
-				loadVolume = updatedTank.loadVolume,
-				capacity = updatedTank.capacity,
-				correctionFactor = updatedTank.correctionFactor
-			))
+			tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		}
 	}
 
@@ -572,12 +532,7 @@ class JDBITankRepositoryTest {
 		val updatedTank = tank.copy(number = tankNumber, loadVolume = 100)
 
 		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-			levels = updatedTank.levels,
-			loadVolume = updatedTank.loadVolume,
-			capacity = updatedTank.capacity,
-			correctionFactor = updatedTank.correctionFactor
-		))
+		tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		val tankByNumber = tankRepo.getTankByNumber(agu.cui, updatedTank.number)
 
 		// assert
@@ -601,12 +556,7 @@ class JDBITankRepositoryTest {
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(agu.cui, updatedTank.number, TankUpdateInfo(
-				levels = updatedTank.levels,
-				loadVolume = updatedTank.loadVolume,
-				capacity = updatedTank.capacity,
-				correctionFactor = updatedTank.correctionFactor
-			))
+			tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
 		}
 	}
 

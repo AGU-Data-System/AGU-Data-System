@@ -8,6 +8,7 @@ import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.tank.TankUpdateInfo
 import java.time.LocalDateTime
 
 /**
@@ -91,5 +92,20 @@ object RepositoryUtils {
 	 */
 	fun LocalDateTime.truncateNanos(): LocalDateTime {
 		return this.withNano(0)
+	}
+
+	/**
+	 * Converts a [Tank] to a [TankUpdateInfo]
+	 *
+	 * @receiver The [Tank] to convert
+	 * @return The [TankUpdateInfo] with the same values as the [Tank]
+	 */
+	fun Tank.toUpdateInfo(): TankUpdateInfo {
+		return TankUpdateInfo(
+			levels = this.levels,
+			loadVolume = this.loadVolume,
+			capacity = this.capacity,
+			correctionFactor = this.correctionFactor
+		)
 	}
 }
