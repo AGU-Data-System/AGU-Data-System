@@ -189,22 +189,20 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 
 		val updates = handle.createUpdate(
 			"""
-			UPDATE provider SET last_fetch = :lastFetch WHERE id = :id returning last_fetch
+			UPDATE provider SET last_fetch = :lastFetch WHERE id = :id
 			""".trimIndent()
 		)
 			.bind("id", id)
 			.bind("lastFetch", lastFetch)
-			.executeAndReturnGeneratedKeys("last_fetch")
-			.mapTo<String>()
-			.one()
+			.execute()
 
 		logger.info("last fetch time updated to {} in provider with id {}", updates, id)
-//
-//		if (updates == 0) {
-//			logger.info("Provider with id {} not found, didn't update last fetch", id)
-//		} else {
-//			logger.info("Updated last fetch time of provider with id {}", id)
-//		}
+
+		if (updates == 0) {
+			logger.info("Provider with id {} not found, didn't update last fetch", id)
+		} else {
+			logger.info("Updated last fetch time of provider with id {}", id)
+		}
 	}
 
 	/**

@@ -89,7 +89,7 @@ object RepositoryUtils {
 	 * @receiver The [LocalDateTime] to truncate
 	 * @return The truncated [LocalDateTime]
 	 */
-	private fun LocalDateTime.truncateNanos(): LocalDateTime {
+	fun LocalDateTime.truncateNanos(): LocalDateTime {
 		return this.withNano(0)
 	}
 }

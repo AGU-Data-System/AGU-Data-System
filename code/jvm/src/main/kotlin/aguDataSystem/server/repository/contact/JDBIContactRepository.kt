@@ -23,7 +23,7 @@ class JDBIContactRepository(private val handle: Handle) : ContactRepository {
 
 		logger.info("Adding contact with type {}, to AGU with CUI {}", contact.type, cui)
 
-		val res = handle.createUpdate(
+		val contactId = handle.createUpdate(
 			"""
                 INSERT INTO contacts (name, phone, type, agu_cui)
                 VALUES (:name, :phone, :type, :agu_cui)
@@ -33,13 +33,13 @@ class JDBIContactRepository(private val handle: Handle) : ContactRepository {
 			.bind("phone", contact.phone)
 			.bind("type", contact.type)
 			.bind("agu_cui", cui)
-			.executeAndReturnGeneratedKeys()
+			.executeAndReturnGeneratedKeys(Contact::id.name)
 			.mapTo<Int>()
 			.one()
 
-		logger.info("Added contact with type {} and id {}, to AGU with CUI {}", contact.type, res, cui)
+		logger.info("Added contact with type {} and id {}, to AGU with CUI {}", contact.type, contactId, cui)
 
-		return res
+		return contactId
 	}
 
 	/**

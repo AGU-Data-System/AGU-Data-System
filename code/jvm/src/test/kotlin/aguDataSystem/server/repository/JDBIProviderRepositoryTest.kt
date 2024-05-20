@@ -5,14 +5,17 @@ import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.provider.TemperatureProvider
 import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.truncateNanos
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.provider.JDBIProviderRepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
+import java.time.LocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.extension.ExtendWith
@@ -220,5 +223,115 @@ class JDBIProviderRepositoryTest {
 
 		//act
 		providerRepository.deleteProviderById(Int.MAX_VALUE, "nonExistentAGU")
+	}
+
+	@Test
+	fun `get provider by agu correctly`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val dnoRepository = JDBIDNORepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val providerType = ProviderType.GAS
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, providerType)
+
+		//act
+		val providers = providerRepository.getProviderByAGU(agu.cui)
+
+		//assert
+		assertEquals(1, providers.size)
+		assertEquals(providerId, providers.first().id)
+	}
+
+	@Test
+	fun `get provider by agu with nonExistent agu`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+
+		//act
+		val providers = providerRepository.getProviderByAGU("nonExistentAGU")
+
+		//assert
+		assert(providers.isEmpty())
+	}
+
+	@Test
+	fun `update last fetch correctly`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val dnoRepository = JDBIDNORepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val providerType = ProviderType.GAS
+		val lastFetched = LocalDateTime.now()
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, providerType)
+
+		//act
+		providerRepository.updateLastFetch(providerId, lastFetched)
+
+		val provider = providerRepository.getProviderById(providerId)
+
+		//assert
+		assertNotNull(provider)
+		assertEquals(lastFetched.truncateNanos(), provider.lastFetch?.truncateNanos())
+	}
+
+	@Test
+	fun `update last fetch with nonExistent provider`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+		val lastFetched = LocalDateTime.now()
+		val providerId = Int.MIN_VALUE
+
+		//act
+		providerRepository.updateLastFetch(providerId, lastFetched)
+		val provider = providerRepository.getProviderById(providerId)
+
+		//assert
+		assertNull(provider)
+	}
+
+	@Test
+	fun `get Agu cui from provider id correctly`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val dnoRepository = JDBIDNORepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val providerType = ProviderType.GAS
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, providerType)
+
+		//act
+		val aguCui = providerRepository.getAGUCuiFromProviderId(providerId)
+
+		//assert
+		assertEquals(agu.cui, aguCui)
+	}
+
+	@Test
+	fun `get Agu cui from provider id with nonExistent provider`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val providerRepository = JDBIProviderRepository(handle)
+
+		//act
+		val aguCui = providerRepository.getAGUCuiFromProviderId(Int.MAX_VALUE)
+
+		//assert
+		assertNull(aguCui)
 	}
 }
