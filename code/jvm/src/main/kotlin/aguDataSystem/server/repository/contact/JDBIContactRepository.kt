@@ -125,7 +125,12 @@ class JDBIContactRepository(private val handle: Handle) : ContactRepository {
 	 * @return True if contact is stored, false otherwise
 	 */
 	override fun isContactStoredByPhoneNumberAndType(cui: String, phoneNumber: String, type: String): Boolean {
-		logger.info("Checking if contact with phone {} and type {} is stored for AGU with CUI {}", phoneNumber, type, cui)
+		logger.info(
+			"Checking if contact with phone {} and type {} is stored for AGU with CUI {}",
+			phoneNumber,
+			type,
+			cui
+		)
 
 		val isStored = handle.createQuery(
 			"""

@@ -167,7 +167,7 @@ class JDBIProviderRepositoryTest {
 		aguRepository.addAGU(agu, dnoId)
 
 		ProviderType.entries.forEachIndexed { index, it ->
-			providerRepository.addProvider(agu.cui, index+1, it)
+			providerRepository.addProvider(agu.cui, index + 1, it)
 		}
 
 		//act

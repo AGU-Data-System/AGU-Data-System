@@ -1,4 +1,4 @@
-package aguDataSystem.server.service.errors.agu
+package aguDataSystem.server.service.errors.measure
 
 /**
  * Error for getting measures

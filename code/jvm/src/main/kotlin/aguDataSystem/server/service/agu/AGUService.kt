@@ -1,36 +1,36 @@
 package aguDataSystem.server.service.agu
 
-import aguDataSystem.server.domain.gasLevels.GasLevels
-import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.domain.agu.AddProviderResult
 import aguDataSystem.server.domain.contact.ContactCreationDTO
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.gasLevels.GasLevelsDTO
 import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.server.domain.provider.ProviderType
+import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.tank.TankUpdateDTO
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.agu.AGUCreationError
-import aguDataSystem.server.service.errors.agu.AddContactError
-import aguDataSystem.server.service.errors.agu.AddTankError
-import aguDataSystem.server.service.errors.agu.DeleteContactError
 import aguDataSystem.server.service.errors.agu.GetAGUError
-import aguDataSystem.server.service.errors.agu.GetMeasuresError
-import aguDataSystem.server.service.errors.agu.UpdateFavouriteStateError
-import aguDataSystem.server.service.errors.agu.UpdateGasLevelsError
-import aguDataSystem.server.service.errors.agu.UpdateNotesError
-import aguDataSystem.server.service.errors.agu.UpdateTankError
+import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
+import aguDataSystem.server.service.errors.agu.update.UpdateGasLevelsError
+import aguDataSystem.server.service.errors.agu.update.UpdateNotesError
+import aguDataSystem.server.service.errors.contact.AddContactError
+import aguDataSystem.server.service.errors.contact.DeleteContactError
+import aguDataSystem.server.service.errors.measure.GetMeasuresError
+import aguDataSystem.server.service.errors.tank.AddTankError
+import aguDataSystem.server.service.errors.tank.UpdateTankError
 import aguDataSystem.utils.failure
 import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure
 import aguDataSystem.utils.isSuccess
 import aguDataSystem.utils.success
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
 /**
  * Service for managing the AGUs.
@@ -53,11 +53,11 @@ class AGUService(
 		return transactionManager.run {
 			logger.info("Getting all AGUs from the database")
 
-			val agus = it.aguRepository.getAGUsBasicInfo()
+			val aguList = it.aguRepository.getAGUsBasicInfo()
 
-			logger.info("Retrieved {} AGUs from the database", agus.size)
+			logger.info("Retrieved {} AGUs from the database", aguList.size)
 
-			agus
+			aguList
 		}
 	}
 
@@ -254,11 +254,11 @@ class AGUService(
 		return transactionManager.run {
 			logger.info("Getting favourite AGUs from the database")
 
-			val agus = it.aguRepository.getFavouriteAGUs()
+			val aguList = it.aguRepository.getFavouriteAGUs()
 
-			logger.info("Retrieved {} favourite AGUs from the database", agus.size)
+			logger.info("Retrieved {} favourite AGUs from the database", aguList.size)
 
-			agus
+			aguList
 		}
 	}
 
@@ -304,7 +304,7 @@ class AGUService(
 
 			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(AddContactError.AGUNotFound)
 
-			if(it.contactRepository.isContactStoredByPhoneNumberAndType(cui, contact.phone, contact.type)){
+			if (it.contactRepository.isContactStoredByPhoneNumberAndType(cui, contact.phone, contact.type)) {
 				return@run failure(AddContactError.ContactAlreadyExists)
 			}
 

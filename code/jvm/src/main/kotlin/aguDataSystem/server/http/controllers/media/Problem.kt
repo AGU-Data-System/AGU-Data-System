@@ -16,7 +16,7 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 	companion object {
 		private const val MEDIA_TYPE = "application/problem+json"
 		private const val PROBLEM_BASE_URL =
-			"https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/" //TODO: Make this page with the problems and the description
+			"https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/"
 
 		/**
 		 * Creates a response entity with the given status and problem

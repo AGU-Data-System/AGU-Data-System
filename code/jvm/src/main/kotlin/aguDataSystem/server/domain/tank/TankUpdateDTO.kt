@@ -12,21 +12,28 @@ import aguDataSystem.server.domain.gasLevels.GasLevels
  * @property correctionFactor the correction factor
  */
 data class TankUpdateDTO(
-    val minLevel: Int,
-    val maxLevel: Int,
-    val criticalLevel: Int,
-    val loadVolume: Int,
-    val capacity: Int,
-    val correctionFactor: Double
+	val minLevel: Int,
+	val maxLevel: Int,
+	val criticalLevel: Int,
+	val loadVolume: Int,
+	val capacity: Int,
+	val correctionFactor: Double
 ) {
-    fun toTankUpdateInfo() = TankUpdateInfo(
-        levels = GasLevels(
-            min = this.minLevel,
-            max = this.maxLevel,
-            critical = this.criticalLevel
-        ),
-        loadVolume = this.loadVolume,
-        capacity = this.capacity,
-        correctionFactor = this.correctionFactor
-    )
+
+	/**
+	 * Converts the DTO to a [TankUpdateInfo]
+	 *
+	 * @receiver The DTO to convert
+	 * @return The [TankUpdateInfo] representation of the DTO
+	 */
+	fun toTankUpdateInfo() = TankUpdateInfo(
+		levels = GasLevels(
+			min = this.minLevel,
+			max = this.maxLevel,
+			critical = this.criticalLevel
+		),
+		loadVolume = this.loadVolume,
+		capacity = this.capacity,
+		correctionFactor = this.correctionFactor
+	)
 }

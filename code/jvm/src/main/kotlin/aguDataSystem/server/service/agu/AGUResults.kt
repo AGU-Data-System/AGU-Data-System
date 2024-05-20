@@ -4,15 +4,15 @@ import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.service.errors.agu.AGUCreationError
-import aguDataSystem.server.service.errors.agu.AddContactError
-import aguDataSystem.server.service.errors.agu.AddTankError
-import aguDataSystem.server.service.errors.agu.DeleteContactError
 import aguDataSystem.server.service.errors.agu.GetAGUError
-import aguDataSystem.server.service.errors.agu.GetMeasuresError
-import aguDataSystem.server.service.errors.agu.UpdateFavouriteStateError
-import aguDataSystem.server.service.errors.agu.UpdateGasLevelsError
-import aguDataSystem.server.service.errors.agu.UpdateNotesError
-import aguDataSystem.server.service.errors.agu.UpdateTankError
+import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
+import aguDataSystem.server.service.errors.agu.update.UpdateGasLevelsError
+import aguDataSystem.server.service.errors.agu.update.UpdateNotesError
+import aguDataSystem.server.service.errors.contact.AddContactError
+import aguDataSystem.server.service.errors.contact.DeleteContactError
+import aguDataSystem.server.service.errors.measure.GetMeasuresError
+import aguDataSystem.server.service.errors.tank.AddTankError
+import aguDataSystem.server.service.errors.tank.UpdateTankError
 import aguDataSystem.utils.Either
 
 /**

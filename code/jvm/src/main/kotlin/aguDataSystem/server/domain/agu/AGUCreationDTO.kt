@@ -37,6 +37,7 @@ data class AGUCreationDTO(
 	val notes: String?,
 	val training: String?,
 ) {
+
 	/**
 	 * Converts the creation DTO to an AGU creation info
 	 *

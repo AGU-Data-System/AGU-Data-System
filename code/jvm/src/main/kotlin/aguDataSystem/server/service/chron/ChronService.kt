@@ -33,6 +33,9 @@ class ChronService(
 	private val chronScheduler: ScheduledExecutorService =
 		Executors.newScheduledThreadPool(chronPoolSize)
 
+	/**
+	 * Initializes the chron service.
+	 */
 	@PostConstruct
 	fun initialize() {
 		logger.info("Initializing Chron Service")
@@ -55,7 +58,7 @@ class ChronService(
 				val lastFetch = provider.lastFetch
 
 				if (lastFetch == null || lastFetch.plusMinutes(pollingFrequency.toMinutes()) < LocalDateTime.now()) {
-                    logger.info("Scheduling chron task for provider: {}", provider)
+					logger.info("Scheduling chron task for provider: {}", provider)
 					scheduleChronTask(provider, pollingFrequency)
 				}
 			}

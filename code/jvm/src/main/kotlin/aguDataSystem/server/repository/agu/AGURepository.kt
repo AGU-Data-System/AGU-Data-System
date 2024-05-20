@@ -1,9 +1,9 @@
 package aguDataSystem.server.repository.agu
 
-import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationInfo
+import aguDataSystem.server.domain.gasLevels.GasLevels
 
 /**
  * Interface for the AGU repository

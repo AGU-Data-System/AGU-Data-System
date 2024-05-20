@@ -17,7 +17,6 @@ package aguDataSystem.server.service.errors.agu
  * @property ProviderError There was an error with the provider.
  */
 sealed class AGUCreationError {
-	//TODO: Insert Possible Errors
 	data object InvalidCUI : AGUCreationError()
 	data object InvalidDNO : AGUCreationError()
 	data object InvalidCoordinates : AGUCreationError()

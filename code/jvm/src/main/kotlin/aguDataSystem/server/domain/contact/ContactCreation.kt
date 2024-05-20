@@ -8,7 +8,7 @@ package aguDataSystem.server.domain.contact
  * @property type type of the contact
  */
 data class ContactCreation(
-    val name: String,
-    val phone: String,
-    val type: ContactType
+	val name: String,
+	val phone: String,
+	val type: ContactType
 )

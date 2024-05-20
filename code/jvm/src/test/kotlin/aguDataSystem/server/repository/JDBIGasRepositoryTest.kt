@@ -298,34 +298,34 @@ class JDBIGasRepositoryTest {
 	@Test
 	fun `get gas prediction measures for the next two days`() =
 		testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepository = JDBIDNORepository(handle)
-		val aguRepository = JDBIAGURepository(handle)
+			// arrange
+			val dnoRepository = JDBIDNORepository(handle)
+			val aguRepository = JDBIAGURepository(handle)
 			val tankRepository = JDBITankRepository(handle)
-		val gasRepository = JDBIGasRepository(handle)
-		val providerRepository = JDBIProviderRepository(handle)
+			val gasRepository = JDBIGasRepository(handle)
+			val providerRepository = JDBIProviderRepository(handle)
 			val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+			val dnoName = DUMMY_DNO_NAME
 			val tank = dummyTank
-		val providerId = 1
-		val gasMeasures = dummyGasMeasures
-		val nDays = 2
+			val providerId = 1
+			val gasMeasures = dummyGasMeasures
+			val nDays = 2
 			val time = gasMeasures.last().predictionFor?.plusDays(1)?.toLocalTime()
 			requireNotNull(time)
 
-		val dnoId = dnoRepository.addDNO(dnoName)
-		aguRepository.addAGU(agu, dnoId)
+			val dnoId = dnoRepository.addDNO(dnoName)
+			aguRepository.addAGU(agu, dnoId)
 			tankRepository.addTank(agu.cui, tank)
-		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
+			providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
 			gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
-		// act
-		val sut = gasRepository.getPredictionGasMeasures(providerId, nDays, time)
+			// act
+			val sut = gasRepository.getPredictionGasMeasures(providerId, nDays, time)
 
-		// assert
-		assertEquals(nDays, sut.size)
-		assertEquals(sut, gasMeasures.take(sut.size))
-	}
+			// assert
+			assertEquals(nDays, sut.size)
+			assertEquals(sut, gasMeasures.take(sut.size))
+		}
 
 	@Test
 	fun `get gas prediction measures with negative number of days should return empty list`() =

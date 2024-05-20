@@ -2,24 +2,24 @@ package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.addAgu.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.gasLevels.GasLevelsInputModel
-import aguDataSystem.server.http.controllers.agu.models.addAgu.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.updateAgu.UpdateFavouriteAGUInputModel
 import aguDataSystem.server.http.controllers.agu.models.updateNotes.NotesInputModel
 import aguDataSystem.server.http.controllers.agu.models.updateTank.TankUpdateInputModel
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
-import aguDataSystem.server.service.errors.agu.AddContactError
-import aguDataSystem.server.service.errors.agu.AddTankError
-import aguDataSystem.server.service.errors.agu.DeleteContactError
 import aguDataSystem.server.service.errors.agu.GetAGUError
-import aguDataSystem.server.service.errors.agu.GetMeasuresError
-import aguDataSystem.server.service.errors.agu.UpdateFavouriteStateError
-import aguDataSystem.server.service.errors.agu.UpdateGasLevelsError
-import aguDataSystem.server.service.errors.agu.UpdateNotesError
-import aguDataSystem.server.service.errors.agu.UpdateTankError
+import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
+import aguDataSystem.server.service.errors.agu.update.UpdateGasLevelsError
+import aguDataSystem.server.service.errors.agu.update.UpdateNotesError
+import aguDataSystem.server.service.errors.contact.AddContactError
+import aguDataSystem.server.service.errors.contact.DeleteContactError
+import aguDataSystem.server.service.errors.measure.GetMeasuresError
+import aguDataSystem.server.service.errors.tank.AddTankError
+import aguDataSystem.server.service.errors.tank.UpdateTankError
 import aguDataSystem.utils.Failure
 import aguDataSystem.utils.Success
 import java.time.LocalDate
@@ -108,7 +108,8 @@ class AguController(private val service: AGUService) {
 	fun getDailyGasMeasures(
 		@PathVariable aguCui: String,
 		@RequestParam(required = false, defaultValue = "10") days: Int,
-		@RequestParam(required = false, defaultValue = "09:00") time: LocalTime //todo: maybe don't put default values, and if not provided, put the default value in the service
+		@RequestParam(required = false, defaultValue = "09:00") time: LocalTime
+	//todo: maybe don't put default values, and if not provided, put the default value in the service
 	): ResponseEntity<*> {
 		return when (val res = service.getDailyGasMeasures(aguCui, days, time)) {
 			is Failure -> res.value.resolveProblem()
@@ -390,6 +391,7 @@ class AguController(private val service: AGUService) {
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.InvalidContactType
 			)
+
 			AddContactError.ContactAlreadyExists -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.ContactAlreadyExists
@@ -417,7 +419,10 @@ class AguController(private val service: AGUService) {
 		when (this) {
 			AddTankError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
 			AddTankError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
-			AddTankError.TankAlreadyExists -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.TankAlreadyExists)
+			AddTankError.TankAlreadyExists -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.TankAlreadyExists
+			)
 		}
 
 	/**
@@ -442,7 +447,10 @@ class AguController(private val service: AGUService) {
 	private fun UpdateGasLevelsError.resolveProblem(): ResponseEntity<*> =
 		when (this) {
 			UpdateGasLevelsError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
-			UpdateGasLevelsError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+			UpdateGasLevelsError.InvalidLevels -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidLevels
+			)
 		}
 
 	/**

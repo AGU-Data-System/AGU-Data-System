@@ -124,7 +124,9 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.isFavorite, aguFromDb.isFavorite)
 		assertEquals(agu.notes, aguFromDb.notes)
 		assertEquals(agu.training, aguFromDb.training)
-		assertEquals(agu.contacts, aguFromDb.contacts.map { ContactCreation(name = it.name, phone = it.phone, type = it.type) })
+		assertEquals(
+			agu.contacts,
+			aguFromDb.contacts.map { ContactCreation(name = it.name, phone = it.phone, type = it.type) })
 	}
 
 	@Test
@@ -718,20 +720,21 @@ class JDBIAGURepositoryTest {
 	}
 
 	@Test
-	fun `update gas levels of AGU with negative critical level should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
+	fun `update gas levels of AGU with negative critical level should throw exception`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val aguRepo = JDBIAGURepository(handle)
+			val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
-		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dnoId)
+			val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+			val agu = dummyAGU
+			val result = aguRepo.addAGU(agu, dnoId)
 
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.updateGasLevels(result, GasLevels(0, 20, -1))
+			// act & assert
+			assertFailsWith<UnableToExecuteStatementException> {
+				aguRepo.updateGasLevels(result, GasLevels(0, 20, -1))
+			}
 		}
-	}
 
 	@Test
 	fun `update notes correctly`() = testWithHandleAndRollback { handle ->

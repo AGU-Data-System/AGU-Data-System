@@ -1,8 +1,8 @@
 package aguDataSystem.server.domain.agu
 
 import aguDataSystem.server.Environment
-import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.contact.ContactType
+import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.utils.Either
 import java.net.URI

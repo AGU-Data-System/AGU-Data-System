@@ -3,6 +3,9 @@ package aguDataSystem.server.http
 import java.net.URI
 import org.springframework.web.util.UriTemplate
 
+/**
+ * Contains the URIs for the API
+ */
 object URIs {
 
 	const val PREFIX = "/api"
@@ -37,8 +40,8 @@ object URIs {
 		fun dailyGasLevels(id: String) = UriTemplate(ROOT + GET_DAILY_GAS_LEVELS).expand(id)
 		fun hourlyGasLevels(id: String) = UriTemplate(ROOT + GET_HOURLY_GAS_LEVELS).expand(id)
 		fun predictionGasLevels(id: String) = UriTemplate(ROOT + GET_PREDICTION_GAS_LEVELS).expand(id)
-		fun favouriteAgus() = URI(ROOT + GET_FAVOURITE_AGUS)
-		fun putFavouriteAgus(id: String) = UriTemplate(ROOT + PUT_FAVOURITE_AGUS).expand(id)
+		fun favouriteAGUs() = URI(ROOT + GET_FAVOURITE_AGUS)
+		fun putFavouriteAGUs(id: String) = UriTemplate(ROOT + PUT_FAVOURITE_AGUS).expand(id)
 		fun contact(id: String) = UriTemplate(ROOT + CONTACT).expand(id)
 		fun contactByID(cui: String, id: Int) = UriTemplate(ROOT + CONTACT_BY_ID).expand(cui, id)
 		fun tank(id: String) = UriTemplate(ROOT + TANK).expand(id)

@@ -10,8 +10,8 @@ import aguDataSystem.server.domain.gasLevels.GasLevels
  * @property correctionFactor the correction factor
  */
 data class TankUpdateInfo(
-    val levels: GasLevels,
-    val loadVolume: Int,
-    val capacity: Int,
-    val correctionFactor: Double
+	val levels: GasLevels,
+	val loadVolume: Int,
+	val capacity: Int,
+	val correctionFactor: Double
 )

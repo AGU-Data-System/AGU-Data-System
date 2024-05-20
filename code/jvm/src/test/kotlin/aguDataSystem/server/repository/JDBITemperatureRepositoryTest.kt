@@ -48,24 +48,24 @@ class JDBITemperatureRepositoryTest {
 	@Test
 	fun `add temperature measures with predictionFor smaller than timestamp should fail`() =
 		testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepository = JDBIDNORepository(handle)
-		val aguRepository = JDBIAGURepository(handle)
-		val temperatureRepository = JDBITemperatureRepository(handle)
-		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
-		val providerId = 1
-		val temperatureMeasures = dummyTemperatureMeasures
+			// arrange
+			val dnoRepository = JDBIDNORepository(handle)
+			val aguRepository = JDBIAGURepository(handle)
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val providerRepository = JDBIProviderRepository(handle)
+			val agu = dummyAGU
+			val dnoName = DUMMY_DNO_NAME
+			val providerId = 1
+			val temperatureMeasures = dummyTemperatureMeasures
 			val invalidTemperatureMeasures = temperatureMeasures.map {
 				it.copy(predictionFor = it.timestamp.minusSeconds(1))
 			}
 
-		val dnoId = dnoRepository.addDNO(dnoName)
-		aguRepository.addAGU(agu, dnoId)
-		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
+			val dnoId = dnoRepository.addDNO(dnoName)
+			aguRepository.addAGU(agu, dnoId)
+			providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 
-		// act
+			// act
 			assertFailsWith<UnableToExecuteStatementException> {
 				temperatureRepository.addTemperatureMeasuresToProvider(providerId, invalidTemperatureMeasures)
 			}

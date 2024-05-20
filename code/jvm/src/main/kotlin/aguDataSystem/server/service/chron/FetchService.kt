@@ -127,10 +127,10 @@ class FetchService(
 		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
 
-        if (LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
-            return emptyList()
+		if (LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
+			return emptyList()
 
-        val temperatureMeasures = mutableListOf<TemperatureMeasure>()
+		val temperatureMeasures = mutableListOf<TemperatureMeasure>()
 
 		for (item in providerResponse.dataList) {
 			val fetchTimestamp = LocalDateTime.parse(item.fetchTime)
@@ -163,10 +163,10 @@ class FetchService(
 		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
 
-        if (LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
-            return emptyList()
+		if (LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
+			return emptyList()
 
-        val gasMeasures = mutableListOf<GasMeasure>()
+		val gasMeasures = mutableListOf<GasMeasure>()
 
 		for (item in providerResponse.dataList) {
 			val fetchTimestamp = LocalDateTime.parse(item.fetchTime)
