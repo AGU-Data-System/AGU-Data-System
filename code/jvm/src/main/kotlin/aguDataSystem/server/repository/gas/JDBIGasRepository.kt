@@ -54,7 +54,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	}
 
 	/**
-	 * Gets the gas measures of a provider for a specific day
+	 * Gets the gas measures of a provider for a specific day with one measure per hour closest to the top of the hour.
 	 *
 	 * @param providerId the id of the provider
 	 * @param day the day to get the measures from
@@ -70,11 +70,35 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		val measures = handle.createQuery(
 			"""
-            SELECT measure.timestamp, measure.prediction_for, measure.data, measure.tank_number FROM measure
-            WHERE measure.provider_id = :providerId AND 
-            measure.prediction_for >= :day AND 
-            measure.prediction_for < :nextDay
-            """.trimIndent()
+        WITH hourly_measures AS (
+            SELECT 
+                measure.timestamp, 
+                measure.prediction_for, 
+                measure.data, 
+                measure.tank_number,
+                date_trunc('hour', measure.timestamp) AS measure_hour,
+                abs(extract(epoch from measure.timestamp) - extract(epoch from date_trunc('hour', measure.timestamp))) AS time_diff
+            FROM measure
+            WHERE 
+                measure.provider_id = :providerId AND 
+                measure.prediction_for >= :day AND 
+                measure.prediction_for < :nextDay
+        ),
+        ranked_measures AS (
+            SELECT 
+                hourly_measures.*, 
+                row_number() OVER (PARTITION BY measure_hour ORDER BY time_diff) AS rank
+            FROM hourly_measures
+        )
+        SELECT 
+            timestamp, 
+            prediction_for, 
+            data, 
+            tank_number
+        FROM ranked_measures
+        WHERE rank = 1
+        ORDER BY timestamp
+        """.trimIndent()
 		)
 			.bind("providerId", providerId)
 			.bind("day", day)
@@ -86,6 +110,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		return measures
 	}
+
 
 	/**
 	 * Gets the gas prediction measures of a provider for a set number of days at the closest to a specific time
