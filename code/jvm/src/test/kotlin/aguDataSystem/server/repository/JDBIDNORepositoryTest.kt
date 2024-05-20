@@ -131,27 +131,40 @@ class JDBIDNORepositoryTest {
 	}
 
 	@Test
-	fun `isDNOStored Correctly`() = testWithHandleAndRollback { handle ->
+	fun `isDNOStoredByName Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val sut = DUMMY_DNO_NAME
 
 		// act
 		dnoRepository.addDNO(sut)
-		val isDNOStored = dnoRepository.isDNOStored(sut)
+		val isDNOStored = dnoRepository.isDNOStoredByName(sut)
 
 		// assert
 		assertTrue(isDNOStored)
 	}
 
 	@Test
-	fun `isDNOStored with an un-existing DNO`() = testWithHandleAndRollback { handle ->
+	fun `isDNOStoredByName with an un-existing DNO`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = Int.MAX_VALUE.toString()
+		val sut = Int.MIN_VALUE.toString()
 
 		// act
-		val isDNOStored = dnoRepository.isDNOStored(sut)
+		val isDNOStored = dnoRepository.isDNOStoredByName(sut)
+
+		// assert
+		assertTrue(!isDNOStored)
+	}
+
+	@Test
+	fun `isDNOStoredByName with an empty DNO name`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = ""
+
+		// act
+		val isDNOStored = dnoRepository.isDNOStoredByName(sut)
 
 		// assert
 		assertTrue(!isDNOStored)

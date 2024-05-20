@@ -104,7 +104,7 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
 	 * @param name the name of the DNO
 	 * @return true if the DNO is stored, false otherwise
 	 */
-	override fun isDNOStored(name: String): Boolean {
+	override fun isDNOStoredByName(name: String): Boolean {
 
 		logger.info("Checking if DNO with name {} is stored", name)
 

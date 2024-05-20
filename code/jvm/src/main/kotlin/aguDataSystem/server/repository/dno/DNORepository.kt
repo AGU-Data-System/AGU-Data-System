@@ -36,5 +36,5 @@ interface DNORepository {
 	 * @param name the name of the DNO
 	 * @return true if the DNO is stored, false otherwise
 	 */
-	fun isDNOStored(name: String): Boolean
+	fun isDNOStoredByName(name: String): Boolean
 }
