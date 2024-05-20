@@ -41,9 +41,8 @@ interface GasRepository {
 	/**
 	 * Adds gas measures to a provider
 	 *
-	 * @param aguCui the cui of the AGU
 	 * @param providerId the id of the provider
 	 * @param gasMeasures the gas measures to add
 	 */
-	fun addGasMeasuresToProvider(aguCui: String, providerId: Int, gasMeasures: List<GasMeasure>)
+	fun addGasMeasuresToProvider(providerId: Int, gasMeasures: List<GasMeasure>)
 }

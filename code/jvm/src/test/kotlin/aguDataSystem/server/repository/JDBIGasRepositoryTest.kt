@@ -35,7 +35,8 @@ class JDBIGasRepositoryTest {
 		val tank = dummyTank
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
-		val time = gasMeasures.last().predictionFor.toLocalTime()
+		val time = gasMeasures.last().predictionFor?.toLocalTime()
+		requireNotNull(time)
 
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
@@ -43,7 +44,7 @@ class JDBIGasRepositoryTest {
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
 
 		// act
-		gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 		val sut = gasRepository.getGasMeasures(providerId, gasMeasures.size, time)
 
@@ -65,8 +66,12 @@ class JDBIGasRepositoryTest {
 			val dnoName = DUMMY_DNO_NAME
 			val tank = dummyTank
 			val providerId = 1
-			val gasMeasures =
-				dummyGasMeasures.map { it.copy(predictionFor = it.timestamp, timestamp = it.predictionFor) }
+			val gasMeasures = dummyGasMeasures.map {
+				it.copy(
+					predictionFor = it.timestamp,
+					timestamp = it.timestamp.minusMinutes(10)
+				)
+			}
 
 			val dnoId = dnoRepository.addDNO(dnoName)
 			aguRepository.addAGU(agu, dnoId)
@@ -75,7 +80,7 @@ class JDBIGasRepositoryTest {
 
 			// act & assert
 			assertFailsWith<UnableToExecuteStatementException> {
-				gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+				gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 			}
 		}
 
@@ -98,32 +103,7 @@ class JDBIGasRepositoryTest {
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
-		}
-	}
-
-	@Test
-	fun `add gas measures with invalid agu cui should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepository = JDBIDNORepository(handle)
-		val aguRepository = JDBIAGURepository(handle)
-		val tankRepository = JDBITankRepository(handle)
-		val gasRepository = JDBIGasRepository(handle)
-		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
-		val tank = dummyTank
-		val providerId = 1
-		val gasMeasures = dummyGasMeasures
-
-		val dnoId = dnoRepository.addDNO(dnoName)
-		aguRepository.addAGU(agu, dnoId)
-		tankRepository.addTank(agu.cui, tank)
-		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			gasRepository.addGasMeasuresToProvider("invalid_cui", providerId, gasMeasures)
+			gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 		}
 	}
 
@@ -148,7 +128,7 @@ class JDBIGasRepositoryTest {
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
-			gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+			gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 		}
 	}
 
@@ -166,13 +146,14 @@ class JDBIGasRepositoryTest {
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
 		val nDays = 2
-		val time = gasMeasures.last().predictionFor.toLocalTime()
+		val time = gasMeasures.last().predictionFor?.toLocalTime()
+		requireNotNull(time)
 
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
 		tankRepository.addTank(agu.cui, tank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-		gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 		// act
 		val sut = gasRepository.getGasMeasures(providerId, nDays, time)
@@ -197,13 +178,14 @@ class JDBIGasRepositoryTest {
 			val providerId = 1
 			val gasMeasures = dummyGasMeasures
 			val nDays = Int.MIN_VALUE
-			val time = gasMeasures.last().predictionFor.toLocalTime()
+			val time = gasMeasures.last().predictionFor?.toLocalTime()
+			requireNotNull(time)
 
 			val dnoId = dnoRepository.addDNO(dnoName)
 			aguRepository.addAGU(agu, dnoId)
 			tankRepository.addTank(agu.cui, tank)
 			providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-			gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+			gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 			// act
 			val sut = gasRepository.getGasMeasures(providerId, nDays, time)
@@ -226,13 +208,14 @@ class JDBIGasRepositoryTest {
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
 		val nDays = 2
-		val time = gasMeasures.last().predictionFor.toLocalTime()
+		val time = gasMeasures.last().predictionFor?.toLocalTime()
+		requireNotNull(time)
 
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
 		tankRepository.addTank(agu.cui, tank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-		gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 		// act
 		val sut = gasRepository.getGasMeasures(Int.MIN_VALUE, nDays, time)
@@ -260,7 +243,7 @@ class JDBIGasRepositoryTest {
 		aguRepository.addAGU(agu, dnoId)
 		tankRepository.addTank(agu.cui, tank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-		gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 		// act
 		val sut = gasRepository.getGasMeasures(providerId, day)
@@ -289,7 +272,7 @@ class JDBIGasRepositoryTest {
 		aguRepository.addAGU(agu, dnoId)
 		tankRepository.addTank(agu.cui, tank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-		gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 		// act
 		val sut = gasRepository.getGasMeasures(providerId, day)
@@ -327,13 +310,14 @@ class JDBIGasRepositoryTest {
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
 		val nDays = 2
-		val time = gasMeasures.last().predictionFor.plusDays(1).toLocalTime()
+			val time = gasMeasures.last().predictionFor?.plusDays(1)?.toLocalTime()
+			requireNotNull(time)
 
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
 			tankRepository.addTank(agu.cui, tank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-		gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+			gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 		// act
 		val sut = gasRepository.getPredictionGasMeasures(providerId, nDays, time)
@@ -357,13 +341,14 @@ class JDBIGasRepositoryTest {
 			val providerId = 1
 			val gasMeasures = dummyGasMeasures
 			val nDays = Int.MIN_VALUE
-			val time = gasMeasures.last().predictionFor.plusDays(1).toLocalTime()
+			val time = gasMeasures.last().predictionFor?.plusDays(1)?.toLocalTime()
+			requireNotNull(time)
 
 			val dnoId = dnoRepository.addDNO(dnoName)
 			aguRepository.addAGU(agu, dnoId)
 			tankRepository.addTank(agu.cui, tank)
 			providerRepository.addProvider(agu.cui, providerId, ProviderType.GAS)
-			gasRepository.addGasMeasuresToProvider(agu.cui, providerId, gasMeasures)
+			gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
 			// act
 			val sut = gasRepository.getPredictionGasMeasures(providerId, nDays, time)
@@ -378,7 +363,8 @@ class JDBIGasRepositoryTest {
 			val gasRepository = JDBIGasRepository(handle)
 			val providerId = Int.MIN_VALUE
 			val nDays = 2
-			val time = dummyGasMeasures.last().predictionFor.plusDays(1).toLocalTime()
+			val time = dummyGasMeasures.last().predictionFor?.plusDays(1)?.toLocalTime()
+			requireNotNull(time)
 
 			// act
 			val sut = gasRepository.getPredictionGasMeasures(providerId, nDays, time)

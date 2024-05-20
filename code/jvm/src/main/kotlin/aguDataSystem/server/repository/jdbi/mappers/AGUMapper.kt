@@ -17,7 +17,7 @@ class AGUMapper : RowMapper<AGU> {
 
 	/**
 	 * Maps the row of the result set to an [AGU]
-	 * TODO smelly due to the fact of contacts and next as well tanks and provides
+	 *
 	 * @param rs the result set
 	 * @param ctx the statement context
 	 * @return the [AGU] from the result set

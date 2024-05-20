@@ -18,7 +18,6 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -78,7 +77,6 @@ class FetchService(
 					)
 
 				ProviderType.GAS -> it.gasRepository.addGasMeasuresToProvider(
-					aguCui = aguCui,
 					providerId = provider.id,
 					gasMeasures = data.toGasReadings()
 				)

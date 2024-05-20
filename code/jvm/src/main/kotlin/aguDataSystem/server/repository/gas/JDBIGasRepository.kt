@@ -136,22 +136,21 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 	/**
 	 * Adds gas measures to a provider
-	 * TODO its possible to to without aguCui by doing a select aguCui from provider where id = providerId
-	 * @param aguCui the cui of the AGU
+	 *
 	 * @param providerId the id of the provider
 	 * @param gasMeasures the gas measures to add
 	 */
-	override fun addGasMeasuresToProvider(aguCui: String, providerId: Int, gasMeasures: List<GasMeasure>) {
+	override fun addGasMeasuresToProvider(providerId: Int, gasMeasures: List<GasMeasure>) {
 		logger.info("Adding gas measures to provider with id {}", providerId)
 
 		gasMeasures.forEachIndexed { index, measure ->
 			handle.createUpdate(
 				"""
                 INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data, tank_number)
-                VALUES (:agu_cui, :providerId, :tag, :timestamp::date, :predictionFor::date, :data, :tankNumber)
+                VALUES ((SELECT provider.agu_cui FROM provider WHERE provider.id = :providerId), 
+						:providerId, :tag, :timestamp, :predictionFor, :data, :tankNumber)
                 """.trimIndent()
 			)
-				.bind("agu_cui", aguCui)
 				.bind("providerId", providerId)
 				.bind("tag", measure::level.name)
 				.bind("timestamp", measure.timestamp)
