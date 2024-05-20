@@ -66,7 +66,7 @@ fun main() {
 }
 
 class ProviderScraper(private val transactionManager: TransactionManager) {
-	private val fetcherUrl = "http://localhost:8081/api/providers"
+	private val fetcherUrl = Environment.getFetcherUrl() + "/providers"
 	private val client = HttpClient.newHttpClient()
 	private val jsonFormatter = Json { ignoreUnknownKeys = true; prettyPrint = true }
 

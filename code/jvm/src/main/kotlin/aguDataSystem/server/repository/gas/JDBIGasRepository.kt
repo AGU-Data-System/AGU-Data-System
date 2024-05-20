@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 	/**
-	 * Gets the latest gas measures of a provider for a set number of days
+	 * Gets the closest gas measures of a provider to [time] for a set number of days.
 	 *
 	 * @param providerId the id of the provider
 	 * @param days the number of days to get the measures from
@@ -32,14 +32,15 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		val measures = handle.createQuery(
 			"""
-            SELECT measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
-            FROM measure
-            WHERE measure.provider_id = :providerId AND 
-            measure.timestamp::time >= :timestamp AND 
-            measure.prediction_for = measure.timestamp AND
-            measure.timestamp::date >= now()::date - :days
-            ORDER BY measure.timestamp DESC
-            """.trimIndent()
+        SELECT DISTINCT ON (date_trunc('day', measure.timestamp)) 
+            measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
+        FROM measure
+        WHERE measure.provider_id = :providerId AND 
+        measure.timestamp::date >= now()::date - :days AND
+        measure.prediction_for = measure.timestamp
+        ORDER BY date_trunc('day', measure.timestamp), 
+                 abs(extract(epoch from measure.timestamp::time) - extract(epoch from :timestamp::time))
+        """.trimIndent()
 		)
 			.bind("providerId", providerId)
 			.bind("timestamp", time)
@@ -87,7 +88,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	}
 
 	/**
-	 * Gets the gas prediction measures of a provider for a set number of days at a specific time
+	 * Gets the gas prediction measures of a provider for a set number of days at the closest to a specific time
 	 *
 	 * @param providerId the id of the provider
 	 * @param days the number of days to get the measures from
@@ -100,27 +101,22 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 			return emptyList()
 		}
 
-		logger.info("Getting gas prediction measures for provider with id {} for the last {} days", providerId, days)
+		logger.info("Getting gas prediction measures for provider with id {} for the next {} days", providerId, days)
 
 		val measures = handle.createQuery(
 			"""
-            SELECT measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
-            FROM measure
-            WHERE measure.provider_id = :providerId AND 
-            extract (hours from (
-                Select inner_measure.prediction_for from measure as inner_measure
-                WHERE inner_measure.provider_id = :providerId 
-                Order by abs(extract(epoch from inner_measure.prediction_for) - extract(epoch from :timestamp)) 
-                limit 1
-            )) = extract(hours from measure.prediction_for)
-			AND measure.prediction_for > now()::date
-			AND measure.prediction_for <> measure.timestamp
-            ORDER BY measure.prediction_for DESC
-            LIMIT :days
-            """.trimIndent()
+        SELECT DISTINCT ON (date_trunc('day', measure.prediction_for)) 
+            measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
+        FROM measure
+        WHERE measure.provider_id = :providerId AND 
+        measure.prediction_for::date <= now()::date + :days AND
+        measure.prediction_for <> measure.timestamp
+        ORDER BY date_trunc('day', measure.prediction_for), 
+                 abs(extract(epoch from measure.prediction_for::time) - extract(epoch from :timestamp::time))
+        """.trimIndent()
 		)
 			.bind("providerId", providerId)
-			.bind("timestamp", LocalDate.now().atTime(time))
+			.bind("timestamp", time)
 			.bind("days", days)
 			.mapTo<GasMeasure>()
 			.list()
@@ -134,6 +130,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		return measures
 	}
+
 
 	/**
 	 * Adds gas measures to a provider
