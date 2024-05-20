@@ -1,7 +1,6 @@
 package aguDataSystem.server.repository.jdbi.mappers
 
 import aguDataSystem.server.domain.agu.AGU
-import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToContacts
 import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToDNO
 import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToGasLevels
 import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToLocation
@@ -35,7 +34,7 @@ class AGUMapper : RowMapper<AGU> {
 			notes = rs.getString("notes"),
 			training = rs.getString("training"),
 			image = rs.getBytes("image") ?: byteArrayOf(),
-			contacts = mapToContacts(rs),
+			contacts = emptyList(),
 			tanks = emptyList(),
 			providers = emptyList()
 		)

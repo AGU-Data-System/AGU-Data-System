@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {TextField, Typography, Grid, Card, CardContent, CardMedia, Button, Box, CircularProgress} from '@mui/material';
+import {TextField, Typography, Grid, Card, CardContent, CardMedia, Box, CircularProgress} from '@mui/material';
 import TemperatureOutputModel from "../../services/agu/models/temperatureOutputModel";
 import { aguService } from "../../services/agu/aguService";
 import { Problem } from "../../utils/Problem";
@@ -16,16 +16,29 @@ export default function AguBody(
     { aguCui, aguNotes, lvlMin, lvlMax, lvlCrit, latitude, longitude }: { aguCui: string, aguNotes: string; lvlMin: number; lvlMax: number; lvlCrit: number; latitude: number; longitude: number}
 ) {
     const [notes, setNotes] = useState(aguNotes);
-    const [isEditing, setIsEditing] = useState(false);
+    const [fetchingNotes, setFetchingNotes] = useState(false);
     const [tempState, setTempState] = useState<TempGraphState>({ type: 'loading' });
 
     const handleNotesChange = (event: any) => {
         setNotes(event.target.value);
-        console.log('Notes: ' + notes);
     };
 
     const handleSubmitNotes = () => {
-        console.log('Notes submitted successfully: ' + notes);
+        setFetchingNotes(true);
+
+        const updateNotes = async () => {
+            const updatedNotes = await aguService.updateAguNotes(aguCui, notes);
+
+            if (updatedNotes.value instanceof Error) {
+                setTempState({ type: 'error', message: updatedNotes.value.message });
+            } else if (updatedNotes.value instanceof Problem) {
+                setTempState({ type: 'error', message: updatedNotes.value.title });
+            } else {
+                setFetchingNotes(false);
+            }
+        }
+
+        updateNotes();
     };
 
     useEffect(() => {
@@ -57,18 +70,9 @@ export default function AguBody(
                     value={notes}
                     onChange={handleNotesChange}
                     fullWidth
-                    onFocus={() => setIsEditing(true)}
-                    onBlur={() => setIsEditing(false)}
+                    disabled={fetchingNotes}
+                    onBlur={handleSubmitNotes}
                 />
-                {isEditing && (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSubmitNotes}
-                    >
-                        Save Notes
-                    </Button>
-                )}
                 <Box paddingTop='10%' paddingBottom='10%'>
                     <Typography variant="h6">Valor Máximo: {lvlMax}</Typography>
                     <Typography variant="h6">Valor Minimo: {lvlMin}</Typography>

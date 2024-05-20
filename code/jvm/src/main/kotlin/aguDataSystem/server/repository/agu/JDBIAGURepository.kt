@@ -71,16 +71,12 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val agu = handle.createQuery(
 			"""
-			SELECT agu.*, 
-			contacts.id as contact_id, contacts.name as contact_name, contacts.phone as contact_phone, contacts.type as contact_type,
-			dno.id as dno_id, dno.name as dno_name
+			SELECT agu.*, dno.id as dno_id, dno.name as dno_name
 			FROM agu 
-			left join contacts 
-            on agu.cui = contacts.agu_cui 
 			join dno 
 			on agu.dno_id = dno.id
             WHERE agu.cui = :agu_cui 
-            group by dno.id, agu.cui, contacts.name, contacts.phone, contacts.type
+            group by dno.id, agu.cui
             """.trimIndent()
 		)
 			.bind("agu_cui", cui)
@@ -291,7 +287,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		handle.createUpdate(
 			"""
 			UPDATE agu 
-			SET notes = :notes::json
+			SET notes = :notes
 			WHERE cui = :cui
 			""".trimIndent()
 		)

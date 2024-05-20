@@ -118,6 +118,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The tank with the given ID was not found."
 		)
 
+		val TankAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "tank-already-exists"),
+			title = "Tank Already Exists.",
+			details = "The tank already exists."
+		)
+
 		val ContactAlreadyExists = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "contact-already-exists"),
 			title = "Contact Already Exists.",

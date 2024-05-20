@@ -27,6 +27,14 @@ interface ProviderRepository {
 	fun getProviderByAGUAndType(aguCUI: String, providerType: ProviderType): Provider?
 
 	/**
+	 * Gets all the providers of a given AGU
+	 *
+	 * @param aguCUI the CUI of the AGU
+	 * @return a list of all the providers of the AGU
+	 */
+	fun getProviderByAGU(aguCUI: String): List<Provider>
+
+	/**
 	 * Gets all the providers
 	 *
 	 * @return a list of all the providers

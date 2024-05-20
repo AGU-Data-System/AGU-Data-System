@@ -142,9 +142,11 @@ class AGUService(
 		return transactionManager.run {
 			logger.info("Getting AGU by CUI: {} from the database", cui)
 			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
-
+			val tanks = it.tankRepository.getAGUTanks(cui)
+			val contacts = it.contactRepository.getContactsByAGU(cui)
+			val providers = it.providerRepository.getProviderByAGU(cui)
 			logger.info("Retrieved AGU by CUI from the database")
-			success(agu)
+			success(agu.copy(tanks = tanks, contacts = contacts, providers = providers))
 		}
 	}
 
@@ -353,6 +355,10 @@ class AGUService(
 
 			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(AddTankError.AGUNotFound)
 
+			it.tankRepository.getTankByNumber(cui, tank.number)?.let {
+				return@run failure(AddTankError.TankAlreadyExists)
+			}
+
 			val tankNumber = it.tankRepository.addTank(cui, tank)
 
 			logger.info("Tank added to AGU with CUI: {}", cui)
@@ -390,7 +396,7 @@ class AGUService(
 
 			logger.info("Tank with number: {} changed from AGU with CUI: {}", number, cui)
 
-			success(it.aguRepository.getAGUByCUI(cui)!!)
+			success(getAGUById(cui).getSuccessOrThrow())
 		}
 	}
 
@@ -420,7 +426,7 @@ class AGUService(
 
 			logger.info("Gas levels of AGU with CUI: {} changed", cui)
 
-			success(it.aguRepository.getAGUByCUI(cui)!!)
+			success(getAGUById(cui).getSuccessOrThrow())
 		}
 	}
 
@@ -443,7 +449,7 @@ class AGUService(
 
 			logger.info("Notes of AGU with CUI: {} changed", cui)
 
-			success(it.aguRepository.getAGUByCUI(cui)!!)
+			success(getAGUById(cui).getSuccessOrThrow())
 		}
 	}
 

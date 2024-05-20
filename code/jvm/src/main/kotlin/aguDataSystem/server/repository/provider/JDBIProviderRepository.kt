@@ -78,6 +78,35 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	}
 
 	/**
+	 * Gets all the providers of a given AGU
+	 *
+	 * @param aguCUI the CUI of the AGU
+	 * @return a list of all the providers of the AGU
+	 */
+	override fun getProviderByAGU(aguCUI: String): List<Provider> {
+		logger.info("Getting provider with CUI {}", aguCUI)
+
+		val providers = handle.createQuery(
+			"""
+			SELECT provider.id, provider.agu_cui, provider.provider_type, provider.last_fetch 
+			FROM provider
+			WHERE provider.agu_cui = :CUI
+			""".trimIndent()
+		)
+			.bind("CUI", aguCUI)
+			.mapTo<Provider>()
+			.list()
+
+		if (providers.isNotEmpty()) {
+			logger.info("Fetched provider with CUI {}", aguCUI)
+		} else {
+			logger.info("Provider with CUI {} not found", aguCUI)
+		}
+
+		return providers
+	}
+
+	/**
 	 * Gets all the providers
 	 *
 	 * @return a list of all the providers

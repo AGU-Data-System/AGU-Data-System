@@ -6,6 +6,7 @@ import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationI
 import aguDataSystem.server.http.controllers.agu.models.gasLevels.GasLevelsInputModel
 import aguDataSystem.server.http.controllers.agu.models.addAgu.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.updateAgu.UpdateFavouriteAGUInputModel
+import aguDataSystem.server.http.controllers.agu.models.updateNotes.NotesInputModel
 import aguDataSystem.server.http.controllers.agu.models.updateTank.TankUpdateInputModel
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
@@ -275,15 +276,15 @@ class AguController(private val service: AGUService) {
 	 * Changes the notes of an AGU
 	 *
 	 * @param aguCui the CUI of the AGU to change the notes of
-	 * @param notes the new notes to change to
+	 * @param notesInputModel the new notes to change to
 	 * @return the AGU with the changed notes
 	 */
 	@PutMapping(URIs.Agu.NOTES)
 	fun changeNotes(
 		@PathVariable aguCui: String,
-		@RequestBody notes: String
+		@RequestBody notesInputModel: NotesInputModel
 	): ResponseEntity<*> {
-		return when (val res = service.updateNotes(aguCui, notes)) {
+		return when (val res = service.updateNotes(aguCui, notesInputModel.notes)) {
 			is Failure -> res.value.resolveProblem()
 			is Success -> ResponseEntity.ok(res.value)
 		}
@@ -416,6 +417,7 @@ class AguController(private val service: AGUService) {
 		when (this) {
 			AddTankError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
 			AddTankError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+			AddTankError.TankAlreadyExists -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.TankAlreadyExists)
 		}
 
 	/**

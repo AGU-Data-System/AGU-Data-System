@@ -68,7 +68,7 @@ create table if not exists agu
     location_name  varchar check (length(location_name) > 0) not null,
     dno_id         int                                       not null,
     is_favorite    boolean default false                     not null,
-    notes          json,
+    notes          varchar,
     training       json,
     image          bytea,
 

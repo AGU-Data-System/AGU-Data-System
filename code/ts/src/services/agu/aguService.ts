@@ -35,4 +35,9 @@ export namespace aguService {
         const url = `/agus/${aguCui}/temperature`;
         return fetchFunction(url, "GET");
     }
+
+    export async function updateAguNotes(aguCui: string, notes: string): Promise<Either<Error | Problem, void>> {
+        const url = `/agus/${aguCui}/notes`;
+        return fetchFunction(url, "PUT", JSON.stringify({notes}));
+    }
 }
