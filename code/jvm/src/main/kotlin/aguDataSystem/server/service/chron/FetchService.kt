@@ -52,7 +52,7 @@ class FetchService(
 		logger.info("Fetched data from provider: {} with status code: {}", provider.id, response.statusCode)
 		if (response.statusCode != HttpStatus.OK.value()) return
 
-		val data = response.body.deserialize(provider.getProviderType(), since).also { println("data size " + it.size) }
+		val data = response.body.deserialize(provider.getProviderType(), since)
 
 		if (data.isEmpty()) {
 			logger.info("No new data fetched from provider: {}", provider.id)
@@ -61,17 +61,13 @@ class FetchService(
 
 		transactionManager.run {
 			val lastFetched = data.maxOf { data -> data.timestamp }
-			logger.info("Saving data from provider: {} to database", provider.id)
 			it.providerRepository.updateLastFetch(provider.id, lastFetched)
 			logger.info("Provider: {} - last fetch TimeStamp updated: {} to database", provider.id, lastFetched)
-
-			val aguCui = it.providerRepository.getAGUCuiFromProviderId(provider.id) ?: return@run
 
 			logger.info("Saving data from provider: {} to database", provider.id)
 			when (provider.getProviderType()) {
 				ProviderType.TEMPERATURE ->
 					it.temperatureRepository.addTemperatureMeasuresToProvider(
-						aguCui = aguCui,
 						providerId = provider.id,
 						temperatureMeasures = data.toTemperatureMeasures()
 					)

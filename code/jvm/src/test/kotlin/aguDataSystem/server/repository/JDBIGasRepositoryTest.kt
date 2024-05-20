@@ -296,7 +296,7 @@ class JDBIGasRepositoryTest {
 	}
 
 	@Test
-	fun `get gas prediction measures for the next days based on tomorrow's date`() =
+	fun `get gas prediction measures for the next two days`() =
 		testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)

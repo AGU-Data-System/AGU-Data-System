@@ -11,6 +11,8 @@ import aguDataSystem.server.repository.temperature.JDBITemperatureRepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -27,21 +29,224 @@ class JDBITemperatureRepositoryTest {
 		val agu = dummyAGU
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
-		val temperatureMeasures = dummyTemperatureMeasures.onEach(::println)
+		val temperatureMeasures = dummyTemperatureMeasures
 
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 
 		// act
-		temperatureRepository.addTemperatureMeasuresToProvider(agu.cui, providerId, temperatureMeasures)
+		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
-		val sut = temperatureRepository.getTemperatureMeasures(providerId, temperatureMeasures.size).onEach(::println)
+		val sut = temperatureRepository.getTemperatureMeasures(providerId, temperatureMeasures.size)
 
 		// assert
 		assert(temperatureMeasures.containsAll(sut))
 		assertEquals(temperatureMeasures.last(), sut.last())
 	}
+
+	@Test
+	fun `add temperature measures with predictionFor smaller than timestamp should fail`() =
+		testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val temperatureRepository = JDBITemperatureRepository(handle)
+		val providerRepository = JDBIProviderRepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val temperatureMeasures = dummyTemperatureMeasures
+			val invalidTemperatureMeasures = temperatureMeasures.map {
+				it.copy(predictionFor = it.timestamp.minusSeconds(1))
+			}
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
+
+		// act
+			assertFailsWith<UnableToExecuteStatementException> {
+				temperatureRepository.addTemperatureMeasuresToProvider(providerId, invalidTemperatureMeasures)
+			}
+		}
+
+	@Test
+	fun `add temperature measures with invalid provider should fail`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val temperatureRepository = JDBITemperatureRepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val temperatureMeasures = dummyTemperatureMeasures
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+
+		// act
+		assertFailsWith<UnableToExecuteStatementException> {
+			temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
+		}
+	}
+
+	@Test
+	fun `get temperature measures for the next two days`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val temperatureRepository = JDBITemperatureRepository(handle)
+		val providerRepository = JDBIProviderRepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val temperatureMeasures = dummyTemperatureMeasures
+		val nDays = 2
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
+		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
+
+		// act
+		val sut = temperatureRepository.getTemperatureMeasures(providerId, nDays)
+
+		// assert
+		assert(temperatureMeasures.containsAll(sut))
+	}
+
+	@Test
+	fun `get temperature measures for the next two days with invalid provider should return empty list`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val dnoRepository = JDBIDNORepository(handle)
+			val aguRepository = JDBIAGURepository(handle)
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val agu = dummyAGU
+			val dnoName = DUMMY_DNO_NAME
+			val providerId = 1
+			val nDays = 2
+
+			val dnoId = dnoRepository.addDNO(dnoName)
+			aguRepository.addAGU(agu, dnoId)
+
+			// act
+			val sut = temperatureRepository.getTemperatureMeasures(providerId, nDays)
+
+			// assert
+			assertEquals(emptyList(), sut)
+		}
+
+	@Test
+	fun `get temperature measures with negative number of days should return empty list`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val dnoRepository = JDBIDNORepository(handle)
+			val aguRepository = JDBIAGURepository(handle)
+			val providerRepository = JDBIProviderRepository(handle)
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val agu = dummyAGU
+			val dnoName = DUMMY_DNO_NAME
+			val providerId = 1
+			val dummyTemperatureMeasures = dummyTemperatureMeasures
+			val nDays = -1
+
+			val dnoId = dnoRepository.addDNO(dnoName)
+			aguRepository.addAGU(agu, dnoId)
+			providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
+			temperatureRepository.addTemperatureMeasuresToProvider(providerId, dummyTemperatureMeasures)
+
+			// act
+			val sut = temperatureRepository.getTemperatureMeasures(providerId, nDays)
+
+			// assert
+			assertEquals(emptyList(), sut)
+		}
+
+	@Test
+	fun `get temperature measures with invalid provider id should return empty list`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val providerId = 1
+			val nDays = 2
+
+			// act
+			val sut = temperatureRepository.getTemperatureMeasures(providerId, nDays)
+
+			// assert
+			assertEquals(emptyList(), sut)
+		}
+
+
+	@Test
+	fun `get temperature measures for a past day`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val temperatureRepository = JDBITemperatureRepository(handle)
+		val providerRepository = JDBIProviderRepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val temperatureMeasures = dummyTemperatureMeasures
+		val date = temperatureMeasures.last().predictionFor?.toLocalDate()
+		requireNotNull(date)
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
+		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
+
+		// act
+		val sut = temperatureRepository.getTemperatureMeasures(providerId, date)
+
+		// assert
+		assert(temperatureMeasures.containsAll(sut))
+	}
+
+	@Test
+	fun `get temperature measures for a future day should return a list`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val temperatureRepository = JDBITemperatureRepository(handle)
+		val providerRepository = JDBIProviderRepository(handle)
+		val agu = dummyAGU
+		val dnoName = DUMMY_DNO_NAME
+		val providerId = 1
+		val temperatureMeasures = dummyTemperatureMeasures
+		val date = temperatureMeasures.last().predictionFor?.toLocalDate()?.plusDays(1)
+		requireNotNull(date)
+
+		val dnoId = dnoRepository.addDNO(dnoName)
+		aguRepository.addAGU(agu, dnoId)
+		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
+		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
+
+		// act
+		val sut = temperatureRepository.getTemperatureMeasures(providerId, date)
+
+		// assert
+		assert(sut.isNotEmpty())
+	}
+
+	@Test
+	fun `get temperature measures with a invalid provider id should return empty list`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val providerId = 1
+			val date = dummyTemperatureMeasures.last().predictionFor?.toLocalDate()
+			requireNotNull(date)
+
+			// act
+			val sut = temperatureRepository.getTemperatureMeasures(providerId, date)
+
+			// assert
+			assertEquals(emptyList(), sut)
+		}
 
 	@Test
 	fun `get prediction temperature measures for the next two days`() = testWithHandleAndRollback { handle ->
@@ -59,7 +264,7 @@ class JDBITemperatureRepositoryTest {
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
-		temperatureRepository.addTemperatureMeasuresToProvider(agu.cui, providerId, temperatureMeasures)
+		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
 		// act
 		val sut = temperatureRepository.getPredictionTemperatureMeasures(providerId, nDays)
@@ -69,29 +274,30 @@ class JDBITemperatureRepositoryTest {
 	}
 
 	@Test
-	fun `get temperature measures for a specific day`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepository = JDBIDNORepository(handle)
-		val aguRepository = JDBIAGURepository(handle)
-		val temperatureRepository = JDBITemperatureRepository(handle)
-		val providerRepository = JDBIProviderRepository(handle)
-		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
-		val providerId = 1
-		val temperatureMeasures = dummyTemperatureMeasures
-		val date = temperatureMeasures.last().predictionFor.toLocalDate()
+	fun `get temperature prediction measures with negative number of days should return empty list`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val dnoRepository = JDBIDNORepository(handle)
+			val aguRepository = JDBIAGURepository(handle)
+			val providerRepository = JDBIProviderRepository(handle)
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val agu = dummyAGU
+			val dnoName = DUMMY_DNO_NAME
+			val providerId = 1
+			val dummyTemperatureMeasures = dummyTemperatureMeasures
+			val nDays = -1
 
-		val dnoId = dnoRepository.addDNO(dnoName)
-		aguRepository.addAGU(agu, dnoId)
-		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
-		temperatureRepository.addTemperatureMeasuresToProvider(agu.cui, providerId, temperatureMeasures)
+			val dnoId = dnoRepository.addDNO(dnoName)
+			aguRepository.addAGU(agu, dnoId)
+			providerRepository.addProvider(agu.cui, 1, ProviderType.TEMPERATURE)
+			temperatureRepository.addTemperatureMeasuresToProvider(providerId, dummyTemperatureMeasures)
 
-		// act
-		val sut = temperatureRepository.getTemperatureMeasures(providerId, date)
+			// act
+			val sut = temperatureRepository.getPredictionTemperatureMeasures(providerId, nDays)
 
-		// assert
-		assert(temperatureMeasures.containsAll(sut))
-	}
+			// assert
+			assertEquals(emptyList(), sut)
+		}
 
 	@Test
 	fun `get past temperature readings`() = testWithHandleAndRollback { handle ->
@@ -109,7 +315,7 @@ class JDBITemperatureRepositoryTest {
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
-		temperatureRepository.addTemperatureMeasuresToProvider(agu.cui, providerId, temperatureMeasures)
+		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
 		// act
 		val sut = temperatureRepository.getTemperatureMeasures(providerId, nrOfDays)
@@ -118,4 +324,18 @@ class JDBITemperatureRepositoryTest {
 		assert(temperatureMeasures.containsAll(sut))
 	}
 
+	@Test
+	fun `get past temperature readings with invalid provider id should return empty list`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val temperatureRepository = JDBITemperatureRepository(handle)
+			val providerId = 1
+			val nrOfDays = 2
+
+			// act
+			val sut = temperatureRepository.getTemperatureMeasures(providerId, nrOfDays)
+
+			// assert
+			assertEquals(emptyList(), sut)
+		}
 }

@@ -21,6 +21,11 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 	 * @return a list of temperature measures
 	 */
 	override fun getTemperatureMeasures(providerId: Int, days: Int): List<TemperatureMeasure> {
+		if (days <= 0) {
+			logger.error("The number of days must be positive for provider {}", providerId)
+			return emptyList()
+		}
+
 		logger.info("Getting temperature measures for provider {}, for {} days", providerId, days)
 		val tempMeasures = handle.createQuery(
 			"""
@@ -85,7 +90,13 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 	 * @return a list of temperature measures
 	 */
 	override fun getPredictionTemperatureMeasures(providerId: Int, days: Int): List<TemperatureMeasure> {
+		if (days <= 0) {
+			logger.error("The number of days must be positive")
+			return emptyList()
+		}
+
 		logger.info("Getting prediction temperature measures for provider {}, for {} days", providerId, days)
+
 		val tempMeasures = handle.createQuery(
 			"""
             SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, m2.data as max 
@@ -112,22 +123,20 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 	/**
 	 * Adds temperature measures to a provider
 	 *
-	 * @param aguCui the cui of the AGU
 	 * @param providerId the id of the provider
 	 * @param temperatureMeasures the temperature measures to add
 	 */
 	override fun addTemperatureMeasuresToProvider(
-		aguCui: String,
 		providerId: Int,
 		temperatureMeasures: List<TemperatureMeasure>
 	) {
 		logger.info("Adding temperature measures to provider {}", providerId)
 		temperatureMeasures.forEachIndexed { index, tempMeasure ->
 			// inserting min temp
-			addTagTemperature(aguCui, providerId, tempMeasure, tempMeasure::min.name)
+			addTagTemperature(providerId, tempMeasure, tempMeasure::min.name)
 
 			// inserting max temp
-			addTagTemperature(aguCui, providerId, tempMeasure, tempMeasure::max.name)
+			addTagTemperature(providerId, tempMeasure, tempMeasure::max.name)
 
 			logger.info("Added temperature measure {} to provider {}", index + 1, providerId)
 		}
@@ -137,13 +146,11 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 	/**
 	 * Adds a temperature measure to a provider by its tag
 	 *
-	 * @param aguCui the cui of the AGU
 	 * @param providerId the id of the provider
 	 * @param temperatureMeasure the temperature measure to add
 	 * @param tag the tag of the temperature measure
 	 */
 	private fun addTagTemperature(
-		aguCui: String,
 		providerId: Int,
 		temperatureMeasure: TemperatureMeasure,
 		tag: String
@@ -151,10 +158,10 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 		handle.createUpdate(
 			"""
             INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data)
-            VALUES (:aguCui, :providerId, :tag, :timestamp, :predictionFor, :data)
+            VALUES ((SELECT provider.agu_cui FROM provider WHERE provider.id = :providerId), 
+				:providerId, :tag, :timestamp, :predictionFor, :data)
             """
 		)
-			.bind("aguCui", aguCui)
 			.bind("providerId", providerId)
 			.bind("tag", tag)
 			.bind("timestamp", temperatureMeasure.timestamp)

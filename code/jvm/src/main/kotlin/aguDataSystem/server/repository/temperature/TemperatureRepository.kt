@@ -38,9 +38,8 @@ interface TemperatureRepository {
 	/**
 	 * Adds temperature measures to a provider
 	 *
-	 * @param aguCui the cui of the AGU
 	 * @param providerId the id of the provider
 	 * @param temperatureMeasures the temperature measures to add
 	 */
-	fun addTemperatureMeasuresToProvider(aguCui: String, providerId: Int, temperatureMeasures: List<TemperatureMeasure>)
+	fun addTemperatureMeasuresToProvider(providerId: Int, temperatureMeasures: List<TemperatureMeasure>)
 }
