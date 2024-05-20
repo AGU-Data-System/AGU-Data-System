@@ -34,13 +34,14 @@ class JDBIContactRepositoryTest {
 
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
+
 		//act
-		contactRepo.addContact(agu.cui, dummyContact)
+		val contactId = contactRepo.addContact(agu.cui, dummyContact)
 		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
 		//assert
 		assert(contacts.isNotEmpty())
-		assert(contacts.any { it.phone == dummyContact.phone && it.name == dummyContact.name  && it.type == dummyContact.type })
+		assert(contacts.any { it.id == contactId })
 	}
 
 	@Test
@@ -55,6 +56,7 @@ class JDBIContactRepositoryTest {
 
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
+
 		//act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
 			contactRepo.addContact(agu.cui, dummyContact.copy(phone = ""))
@@ -65,6 +67,7 @@ class JDBIContactRepositoryTest {
 	fun `add contact with invalid CUI should fail`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val contactRepo = JDBIContactRepository(handle)
+
 		//act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
 			contactRepo.addContact("", dummyContact)
@@ -83,16 +86,16 @@ class JDBIContactRepositoryTest {
 
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
-		contactRepo.addContact(agu.cui, dummyLogisticContact)
-		contactRepo.addContact(agu.cui, dummyEmergencyContact)
+		val contactId1 = contactRepo.addContact(agu.cui, dummyLogisticContact)
+		val contactId2 = contactRepo.addContact(agu.cui, dummyEmergencyContact)
 
 		//act
 		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
 		//assert
 		assert(contacts.isNotEmpty())
-		assert(contacts.any { it.phone == dummyLogisticContact.phone && it.name == dummyLogisticContact.name && it.type == dummyLogisticContact.type })
-		assert(contacts.any { it.phone == dummyEmergencyContact.phone && it.name == dummyEmergencyContact.name && it.type == dummyEmergencyContact.type })
+		assert(contacts.any { it.id == contactId1 })
+		assert(contacts.any { it.id == contactId2 })
 	}
 
 	@Test
@@ -107,6 +110,7 @@ class JDBIContactRepositoryTest {
 
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
+
 		//act
 		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
@@ -118,6 +122,7 @@ class JDBIContactRepositoryTest {
 	fun `get contacts by AGU with invalid CUI`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val contactRepo = JDBIContactRepository(handle)
+
 		//act & assert
 		assert(contactRepo.getContactsByAGU("").isEmpty())
 	}
@@ -135,13 +140,14 @@ class JDBIContactRepositoryTest {
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
 
-		contactRepo.addContact(agu.cui, dummyContact)
+		val contactId = contactRepo.addContact(agu.cui, dummyContact)
 
 		val contactsBeforeDeletion = contactRepo.getContactsByAGU(agu.cui)
 		require(contactsBeforeDeletion.isNotEmpty())
-		//act
+		require(contactsBeforeDeletion.any { it.id == contactId })
 
-		contactRepo.deleteContact(agu.cui, contactsBeforeDeletion.first { it.phone == dummyContact.phone }.id)
+		//act
+		contactRepo.deleteContact(agu.cui, contactId)
 
 		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
@@ -174,7 +180,7 @@ class JDBIContactRepositoryTest {
 	}
 
 	@Test
-	fun `delete contact with invalid contact id`() = testWithHandleAndRollback { handle ->
+	fun `delete contact with invalid contact id does nothing`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val contactRepo = JDBIContactRepository(handle)
 		val aguRepo = JDBIAGURepository(handle)
@@ -186,22 +192,19 @@ class JDBIContactRepositoryTest {
 		val dnoId = dnoRepo.addDNO(dno)
 		aguRepo.addAGU(agu, dnoId)
 
-		agu.contacts.forEach {
-			contactRepo.addContact(agu.cui, it)
-		}
+		val contactId = contactRepo.addContact(agu.cui, dummyContact)
 
 		//act
-		val contactsBefore = contactRepo.getContactsByAGU(agu.cui)
 		contactRepo.deleteContact(agu.cui, Int.MIN_VALUE)
-		val contactsAfter = contactRepo.getContactsByAGU(agu.cui)
+		val contacts = contactRepo.getContactsByAGU(agu.cui)
 
 		//assert
-		assert(contactsBefore.containsAll(contactsAfter))
-		assertEquals(contactsBefore.size, contactsAfter.size)
+		assertEquals(1, contacts.size)
+		assert(contacts.any { it.id == contactId })
 	}
 
 	@Test
-	fun `check if contact is stored correctly`() = testWithHandleAndRollback { handle ->
+	fun `check if contact is stored correctly by id correctly`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val contactRepo = JDBIContactRepository(handle)
 		val aguRepo = JDBIAGURepository(handle)
@@ -222,11 +225,61 @@ class JDBIContactRepositoryTest {
 	}
 
 	@Test
-	fun `check if contact is stored with invalid CUI`() = testWithHandleAndRollback { handle ->
+	fun `check if contact is stored by id with invalid CUI should fail`() = testWithHandleAndRollback { handle ->
 		//arrange
 		val contactRepo = JDBIContactRepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+		val aguRepo = JDBIAGURepository(handle)
+		val dno = DUMMY_DNO_NAME
+		val agu = dummyAGU
+
+		val dnoId = dnoRepo.addDNO(dno)
+		aguRepo.addAGU(agu, dnoId)
+
+		val contactId = contactRepo.addContact(agu.cui, dummyLogisticContact)
+
 		//act & assert
-		assertFalse(contactRepo.isContactStoredByPhoneNumberAndType("", dummyLogisticContact.phone, dummyLogisticContact.type.name))
+		assertFalse(contactRepo.isContactStoredById("", contactId))
+	}
+
+	@Test
+	fun `check if contact is stored by phone number and type correctly`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val contactRepo = JDBIContactRepository(handle)
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val agu = dummyAGU
+		val dno = DUMMY_DNO_NAME
+
+		val dnoId = dnoRepo.addDNO(dno)
+		aguRepo.addAGU(agu, dnoId)
+		contactRepo.addContact(agu.cui, dummyLogisticContact)
+
+		//act
+		val isStored = contactRepo.isContactStoredByPhoneNumberAndType(
+			agu.cui,
+			dummyLogisticContact.phone,
+			dummyLogisticContact.type.name
+		)
+
+		//assert
+		assert(isStored)
+	}
+
+	@Test
+	fun `check if contact is stored with invalid CUI should fail`() = testWithHandleAndRollback { handle ->
+		//arrange
+		val contactRepo = JDBIContactRepository(handle)
+
+		//act & assert
+		assertFalse(
+			contactRepo.isContactStoredByPhoneNumberAndType(
+				"",
+				dummyLogisticContact.phone,
+				dummyLogisticContact.type.name
+			)
+		)
 	}
 
 	@Test
@@ -243,6 +296,12 @@ class JDBIContactRepositoryTest {
 		aguRepo.addAGU(agu, dnoId)
 
 		//act & assert
-		assertFalse(contactRepo.isContactStoredByPhoneNumberAndType(agu.cui, phoneNumber = "", dummyLogisticContact.type.name))
+		assertFalse(
+			contactRepo.isContactStoredByPhoneNumberAndType(
+				agu.cui,
+				phoneNumber = "",
+				dummyLogisticContact.type.name
+			)
+		)
 	}
 }
