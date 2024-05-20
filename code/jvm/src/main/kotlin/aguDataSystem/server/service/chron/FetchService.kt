@@ -53,7 +53,7 @@ class FetchService(
 		logger.info("Fetched data from provider: {} with status code: {}", provider.id, response.statusCode)
 		if (response.statusCode != HttpStatus.OK.value()) return
 
-		val data = response.body.deserialize(provider.getProviderType(), since)
+		val data = response.body.deserialize(provider.getProviderType(), since).also { println("data size " + it.size) }
 
 		if (data.isEmpty()) {
 			logger.info("No new data fetched from provider: {}", provider.id)
@@ -184,7 +184,7 @@ class FetchService(
 					gasMeasures.add(
 						GasMeasure(
 							timestamp = fetchTimestamp,
-							predictionFor = ZonedDateTime.parse(gasData.dateValue).toLocalDateTime(),
+							predictionFor = null,
 							level = gasData.value.toInt(),
 							tankNumber = gasData.name.last().digitToIntOrNull() ?: 1,
 						)

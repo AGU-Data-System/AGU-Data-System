@@ -51,12 +51,12 @@ class ChronService(
 			val providerChron = it.providerRepository.getAllProviders()
 			providerChron.forEach { provider ->
 				val providerType = provider.getProviderType()
-				val pollingFrequency = providerType.pollingFrequency.toMinutes()
+				val pollingFrequency = providerType.pollingFrequency
 				val lastFetch = provider.lastFetch
 
-				if (lastFetch == null || lastFetch.plusMinutes(pollingFrequency) < LocalDateTime.now()) {
+				if (lastFetch == null || lastFetch.plusMinutes(pollingFrequency.toMinutes()) < LocalDateTime.now()) {
                     logger.info("Scheduling chron task for provider: {}", provider)
-					scheduleChronTask(provider, providerType.pollingFrequency)
+					scheduleChronTask(provider, pollingFrequency)
 				}
 			}
 		}

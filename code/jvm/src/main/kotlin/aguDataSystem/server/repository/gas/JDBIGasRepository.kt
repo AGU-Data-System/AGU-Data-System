@@ -148,7 +148,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 			handle.createUpdate(
 				"""
                 INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data, tank_number)
-                VALUES (:agu_cui, :providerId, :tag, :timestamp, :predictionFor, :data, :tankNumber)
+                VALUES (:agu_cui, :providerId, :tag, :timestamp::date, :predictionFor::date, :data, :tankNumber)
                 """.trimIndent()
 			)
 				.bind("agu_cui", aguCui)
