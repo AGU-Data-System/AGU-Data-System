@@ -5,12 +5,19 @@ import TemperatureOutputModel from "../../services/agu/models/temperatureOutputM
 import { aguService } from "../../services/agu/aguService";
 import { Problem } from "../../utils/Problem";
 import LineGraph from "../Graphs/LineGraph";
+import BarGraph from "../Graphs/BarGraph";
 import { TemperatureError } from "../Layouts/Error";
+import GasOutputModel from "../../services/agu/models/gasOutputModel";
 
 type TempGraphState =
     | { type: 'loading' }
     | { type: 'error'; message: string }
     | { type: 'success'; tempData: TemperatureOutputModel[] };
+
+type GasGraphState =
+    | { type: 'loading' }
+    | { type: 'error'; message: string }
+    | { type: 'success'; gasData: GasOutputModel[] };
 
 export default function AguBody(
     { aguCui, aguNotes, lvlMin, lvlMax, lvlCrit, latitude, longitude }: { aguCui: string, aguNotes: string; lvlMin: number; lvlMax: number; lvlCrit: number; latitude: number; longitude: number}
@@ -18,6 +25,7 @@ export default function AguBody(
     const [notes, setNotes] = useState(aguNotes);
     const [fetchingNotes, setFetchingNotes] = useState(false);
     const [tempState, setTempState] = useState<TempGraphState>({ type: 'loading' });
+    const [gasState, setGasState] = useState<GasGraphState>({ type: 'loading' });
 
     const handleNotesChange = (event: any) => {
         setNotes(event.target.value);
@@ -42,7 +50,7 @@ export default function AguBody(
     };
 
     useEffect(() => {
-        const fetch = async () => {
+        const fetchTemp = async () => {
             setTempState({ type: 'loading' });
 
             const tempData = await aguService.getTemperatureData(aguCui);
@@ -56,8 +64,22 @@ export default function AguBody(
             }
         }
 
-        fetch();
+        const fetchGas = async () => {
+            setGasState({ type: 'loading' });
 
+            const gasData = await aguService.getGasData(aguCui);
+
+            if (gasData.value instanceof Error) {
+                setGasState({ type: 'error', message: gasData.value.message });
+            } else if (gasData.value instanceof Problem) {
+                setGasState({ type: 'error', message: gasData.value.title });
+            } else {
+                setGasState({type: 'success', gasData: gasData.value});
+            }
+        }
+
+        fetchTemp();
+        fetchGas();
     }, [aguCui]);
 
     return (
@@ -99,17 +121,20 @@ export default function AguBody(
             <Grid item xs={6} sx={{ width: '100%' }}>
                 <Card>
                     <CardContent>
-                        {tempState.type === 'loading' && (
+                        {tempState.type === 'loading' && gasState.type === 'loading' && (
                             <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
                                 <Typography variant="h5" gutterBottom>Loading...</Typography>
                                 <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
                             </Box>
                         )}
-                        {tempState.type === 'error' && (
+                        {tempState.type === 'error' && gasState.type === 'error' && (
                             <TemperatureError message={tempState.message} />
                         )}
-                        {tempState.type === 'success' && tempState.tempData.length > 0 && (
-                            <LineGraph data={tempState.tempData} />
+                        {tempState.type === 'success' && tempState.tempData.length > 0 && gasState.type === 'success' && gasState.gasData.length > 0 && (
+                            <Box>
+                                <LineGraph data={tempState.tempData} />
+                                <BarGraph data={gasState.gasData} aguCui={aguCui}/>
+                            </Box>
                         )}
                         {tempState.type === 'success' && tempState.tempData.length === 0 && (
                             <Typography variant="h5" gutterBottom>Sem data de temperatura</Typography>

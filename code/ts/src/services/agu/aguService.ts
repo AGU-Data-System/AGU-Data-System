@@ -4,6 +4,7 @@ import {AguDetailsOutputModel, AguOutputModel, AgusBasicInfoOutputModel} from ".
 import { AguCreateInputModel } from "./models/createAguInputModel";
 import {Problem} from "../../utils/Problem";
 import TemperatureOutputModel from "./models/temperatureOutputModel";
+import GasOutputModel from "./models/gasOutputModel";
 
 export namespace aguService {
     export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoOutputModel[]>> {
@@ -39,5 +40,15 @@ export namespace aguService {
     export async function updateAguNotes(aguCui: string, notes: string): Promise<Either<Error | Problem, void>> {
         const url = `/agus/${aguCui}/notes`;
         return fetchFunction(url, "PUT", JSON.stringify({notes}));
+    }
+
+    export async function getGasData(aguCui: string): Promise<Either<Error | Problem, GasOutputModel[]>> {
+        const url = `/agus/${aguCui}/gas/daily`;
+        return fetchFunction(url, "GET");
+    }
+
+    export async function getHourlyGasData(aguCui: string, day: number, month: number, year: number): Promise<Either<Error | Problem, GasOutputModel[]>> {
+        const url = `/agus/${aguCui}/gas/hourly?day=${year}-0${month}-${day}`;
+        return fetchFunction(url, "GET");
     }
 }
