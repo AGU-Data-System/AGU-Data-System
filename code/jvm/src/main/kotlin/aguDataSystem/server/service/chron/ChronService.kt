@@ -3,6 +3,9 @@ package aguDataSystem.server.service.chron
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.repository.TransactionManager
 import jakarta.annotation.PostConstruct
+import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
@@ -10,10 +13,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import org.slf4j.LoggerFactory
-import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.scheduling.annotation.Schedules
-import org.springframework.stereotype.Service
 
 /**
  * Service for managing the chron tasks,
@@ -48,7 +47,7 @@ class ChronService(
 	 */
 	//At every 10th minute from 2 through 59, Every Day at 09:01
 	// TODO: Change the cron expression to the desired one
-	@Schedules(Scheduled(cron = "* 1 * * * *"), Scheduled(cron = "0 1 9 * * *"))
+	@Scheduled(cron = "0 1 9 * * *") // Every day at 09:01
 	fun scheduleChron() {
 		transactionManager.run {
 			logger.info("Scheduling chron tasks based on providers")
