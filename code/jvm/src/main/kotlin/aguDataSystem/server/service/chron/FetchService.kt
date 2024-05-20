@@ -142,7 +142,7 @@ class FetchService(
 				temperatureMeasures.add(
 					TemperatureMeasure(
 						timestamp = fetchTimestamp,
-						predictionFor = if (beginningOfDay == fetchTimestamp.toLocalDate()) null else beginningOfDay.atStartOfDay(),
+						predictionFor = if (beginningOfDay == fetchTimestamp.toLocalDate()) fetchTimestamp else beginningOfDay.atStartOfDay(),
 						max = dailyData.max[index].roundToInt(),
 						min = dailyData.min[index].roundToInt()
 					)
@@ -178,7 +178,7 @@ class FetchService(
 					gasMeasures.add(
 						GasMeasure(
 							timestamp = fetchTimestamp,
-							predictionFor = null,
+							predictionFor = fetchTimestamp,
 							level = gasData.value.toInt(),
 							tankNumber = gasData.name.last().digitToIntOrNull() ?: 1,
 						)

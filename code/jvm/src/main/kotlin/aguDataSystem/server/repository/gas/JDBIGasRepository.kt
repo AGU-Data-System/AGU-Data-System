@@ -113,7 +113,8 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
                 Order by abs(extract(epoch from inner_measure.prediction_for) - extract(epoch from :timestamp)) 
                 limit 1
             )) = extract(hours from measure.prediction_for)
-            AND measure.prediction_for <> now()::date
+			AND measure.prediction_for > now()::date
+			AND measure.prediction_for <> measure.timestamp
             ORDER BY measure.prediction_for DESC
             LIMIT :days
             """.trimIndent()
