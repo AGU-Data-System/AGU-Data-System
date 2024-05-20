@@ -81,7 +81,7 @@ object RepositoryUtils {
 		image = ByteArray(0),
 		contacts = emptyList(),
 		tanks = emptyList(),
-		gasLevelUrl = "http://localhost:8081/api/agu/PT1234567890123456XX/gasLevel",
+		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 	)
 
 	/**

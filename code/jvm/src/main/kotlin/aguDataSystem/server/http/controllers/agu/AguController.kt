@@ -109,7 +109,7 @@ class AguController(private val service: AGUService) {
 		@PathVariable aguCui: String,
 		@RequestParam(required = false, defaultValue = "10") days: Int,
 		@RequestParam(required = false, defaultValue = "09:00") time: LocalTime
-	//todo: maybe don't put default values, and if not provided, put the default value in the service
+		//todo: maybe don't put default values, and if not provided, put the default value in the service
 	): ResponseEntity<*> {
 		return when (val res = service.getDailyGasMeasures(aguCui, days, time)) {
 			is Failure -> res.value.resolveProblem()

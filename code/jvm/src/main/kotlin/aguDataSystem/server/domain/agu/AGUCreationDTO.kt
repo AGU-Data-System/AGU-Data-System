@@ -1,9 +1,9 @@
 package aguDataSystem.server.domain.agu
 
-import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.Location
-import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.contact.ContactCreationDTO
+import aguDataSystem.server.domain.gasLevels.GasLevels
+import aguDataSystem.server.domain.tank.Tank
 
 /**
  * Data Transfer Object for creating an AGU
@@ -39,7 +39,7 @@ data class AGUCreationDTO(
 ) {
 
 	/**
-	 * Converts the creation DTO to an AGU creation info
+	 * Converts the creation DTO to AGU creation info
 	 *
 	 * @receiver the creation DTO
 	 * @return the AGU
