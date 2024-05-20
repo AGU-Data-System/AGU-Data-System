@@ -9,7 +9,7 @@ import java.time.LocalDateTime
  */
 data class GasMeasure(
 	override val timestamp: LocalDateTime,
-	override val predictionFor: LocalDateTime,
+	override val predictionFor: LocalDateTime?,
 	val level: Int,
 	val tankNumber: Int
 ) : Measure()

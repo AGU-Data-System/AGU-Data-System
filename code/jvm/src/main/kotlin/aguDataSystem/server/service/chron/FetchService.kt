@@ -132,10 +132,11 @@ class FetchService(
 	fun String.mapToTemperatureMeasures(lastFetch: LocalDateTime): List<TemperatureMeasure> {
 		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
-		val temperatureMeasures = mutableListOf<TemperatureMeasure>()
 
-		if (providerResponse.dataList.isEmpty() || LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
-			return temperatureMeasures
+        if (LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
+            return emptyList()
+
+        val temperatureMeasures = mutableListOf<TemperatureMeasure>()
 
 		for (item in providerResponse.dataList) {
 			val fetchTimestamp = LocalDateTime.parse(item.fetchTime)
@@ -143,10 +144,11 @@ class FetchService(
 			val dailyData = objectMapper.decodeFromString<TemperatureData>(item.data).daily
 
 			dailyData.time.forEachIndexed { index, time ->
+				val beginningOfDay = LocalDate.parse(time)
 				temperatureMeasures.add(
 					TemperatureMeasure(
 						timestamp = fetchTimestamp,
-						predictionFor = LocalDate.parse(time).atStartOfDay(),
+						predictionFor = if (beginningOfDay == fetchTimestamp.toLocalDate()) null else beginningOfDay.atStartOfDay(),
 						max = dailyData.max[index].roundToInt(),
 						min = dailyData.min[index].roundToInt()
 					)
@@ -166,10 +168,11 @@ class FetchService(
 	fun String.mapToGasMeasures(lastFetch: LocalDateTime): List<GasMeasure> {
 		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val providerResponse = objectMapper.decodeFromString<ProviderResponseModel>(this)
-		val gasMeasures = mutableListOf<GasMeasure>()
 
-		if (providerResponse.dataList.isEmpty() || LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
-			return gasMeasures
+        if (LocalDateTime.parse(providerResponse.lastFetch) == lastFetch)
+            return emptyList()
+
+        val gasMeasures = mutableListOf<GasMeasure>()
 
 		for (item in providerResponse.dataList) {
 			val fetchTimestamp = LocalDateTime.parse(item.fetchTime)

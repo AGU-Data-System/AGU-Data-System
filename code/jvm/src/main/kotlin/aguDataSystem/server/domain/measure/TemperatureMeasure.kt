@@ -10,7 +10,7 @@ import java.time.LocalDateTime
  */
 data class TemperatureMeasure(
 	override val timestamp: LocalDateTime,
-	override val predictionFor: LocalDateTime,
+	override val predictionFor: LocalDateTime?,
 	val min: Int,
 	val max: Int
 ) : Measure()

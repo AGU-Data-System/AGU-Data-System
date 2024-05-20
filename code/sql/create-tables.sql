@@ -111,7 +111,7 @@ create table if not exists measure
     provider_id    int,
     tag            varchar check (tag ~* '^(level|min|max)$'),
     data           int                      not null,
-    prediction_for timestamp with time zone not null,
+    prediction_for timestamp with time zone,
     tank_number    int check ((tag ~* '(level)$' and tank_number IS NOT NULL) or
                               (tank_number is null and tag ~* '^(min|max)$')),
 
