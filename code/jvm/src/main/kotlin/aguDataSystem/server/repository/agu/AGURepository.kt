@@ -88,5 +88,13 @@ interface AGURepository {
 	 * @param cui CUI of AGU
 	 * @param notes New notes
 	 */
-	fun updateNotes(cui: String, notes: String)
+	fun updateNotes(cui: String, notes: String?)
+
+	/**
+	 * Update the training model of an AGU
+	 *
+	 * @param cui CUI of AGU
+	 * @param model New training model
+	 */
+	fun updateTrainingModel(cui: String, model: String?)
 }

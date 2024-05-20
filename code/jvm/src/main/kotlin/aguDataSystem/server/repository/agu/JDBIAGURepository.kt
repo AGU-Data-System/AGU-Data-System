@@ -180,7 +180,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             UPDATE agu 
             SET name = :name, is_favorite = :isFavorite, min_level = :minLevel, max_level = :maxLevel, 
             critical_level = :criticalLevel, load_volume = :loadVolume, latitude = :latitude, longitude = :longitude, 
-            location_name = :locationName, dno_id = :dnoId, notes = :notes::json, training = :training::json, image = :image
+            location_name = :locationName, dno_id = :dnoId, notes = :notes, training = :training::json, image = :image
             WHERE cui = :cui
             """.trimIndent()
 		)
@@ -281,7 +281,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	 * @param cui CUI of AGU
 	 * @param notes New notes
 	 */
-	override fun updateNotes(cui: String, notes: String) {
+	override fun updateNotes(cui: String, notes: String?) {
 		logger.info("Updating notes of AGU with CUI: {} in the database", cui)
 
 		handle.createUpdate(
@@ -296,6 +296,29 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.execute()
 
 		logger.info("Notes of AGU with CUI: {} updated in the database", cui)
+	}
+
+	/**
+	 * Update the training model of an AGU
+	 *
+	 * @param cui CUI of AGU
+	 * @param model New training model
+	 */
+	override fun updateTrainingModel(cui: String, model: String?) {
+		logger.info("Updating training model of AGU with CUI: {} in the database", cui)
+
+		handle.createUpdate(
+			"""
+			UPDATE agu 
+			SET training = :training::json
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.bind("training", model)
+			.execute()
+
+		logger.info("Training model of AGU with CUI: {} updated in the database", cui)
 	}
 
 	companion object {
