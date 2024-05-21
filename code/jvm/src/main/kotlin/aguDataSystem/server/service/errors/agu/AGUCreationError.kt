@@ -18,6 +18,7 @@ package aguDataSystem.server.service.errors.agu
  */
 sealed class AGUCreationError {
 	data object InvalidCUI : AGUCreationError()
+	data object InvalidName : AGUCreationError()
 	data object InvalidDNO : AGUCreationError()
 	data object InvalidCoordinates : AGUCreationError()
 	data object InvalidMinLevel : AGUCreationError()

@@ -475,6 +475,9 @@ class AGUService(
 			return failure(AGUCreationError.InvalidTank)
 		}
 
+		if (aguDTO.name.isEmpty())
+			return failure(AGUCreationError.InvalidName)
+
 		aguDTO.tanks.forEach { tank ->
 			ensureLevels(tank.levels)?.let {
 				return it
