@@ -73,6 +73,7 @@ export default function LineGraph({ data }: { data: TemperatureOutputModel[] }) 
             {
                 label: 'Temperatura (°C)',
                 max: yAxisMaxValue,
+                min: 0, // TODO - From [-10, 50]
             },
         ],
         sx: {

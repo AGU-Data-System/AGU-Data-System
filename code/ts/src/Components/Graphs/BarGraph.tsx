@@ -7,20 +7,7 @@ import { useState } from "react";
 import { aguService } from "../../services/agu/aguService";
 import { Problem } from "../../utils/Problem";
 
-const chartSetting = {
-    yAxis: [
-        {
-            label: 'Nivel de gás',
-        },
-    ],
-    sx: {
-        [`.${axisClasses.left} .${axisClasses.label}`]: {
-            transform: 'translate(-10px, 0)',
-        },
-    },
-};
-
-const valueFormatter = (value: number | null) => `${value}`;
+const valueFormatter = (value: number | null) => `${value}%`;
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -83,6 +70,20 @@ export default function BarsDataset({ data, aguCui }: { data: GasOutputModel[], 
         };
     }).sort((a, b) => a.timestamp.localeCompare(b.timestamp)); // Sort by timestamp for accuracy
 
+    const chartSetting = {
+        yAxis: [
+            {
+                label: 'Nivel de gás (%)',
+                max: 100,
+            },
+        ],
+        sx: {
+            [`.${axisClasses.left} .${axisClasses.label}`]: {
+                transform: 'translate(-10px, 0)',
+            },
+        },
+    };
+
     return (
         <Box>
             <div style={{ width: '100%', height: '100%' }}>
@@ -111,7 +112,7 @@ export default function BarsDataset({ data, aguCui }: { data: GasOutputModel[], 
                 <div style={{ textAlign: 'center', marginBottom: '10px' }}>
                     {formattedDayData.length > 0 && (
                         <div>
-                            <span>{formattedDayData[0].month} {formattedDayData[0].year}</span>
+                            <span>{formattedDayData[0].day} {formattedDayData[0].month} {formattedDayData[0].year}</span>
                         </div>
                     )}
                 </div>

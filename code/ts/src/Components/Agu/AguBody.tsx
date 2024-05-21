@@ -6,8 +6,9 @@ import { aguService } from "../../services/agu/aguService";
 import { Problem } from "../../utils/Problem";
 import LineGraph from "../Graphs/LineGraph";
 import BarGraph from "../Graphs/BarGraph";
-import { TemperatureError } from "../Layouts/Error";
+import { TemperatureError, GasError } from "../Layouts/Error";
 import GasOutputModel from "../../services/agu/models/gasOutputModel";
+import sonorgasAGU from "../../assets/sonorgas_agu.jpg";
 
 type TempGraphState =
     | { type: 'loading' }
@@ -88,7 +89,7 @@ export default function AguBody(
                 <TextField
                     multiline
                     rows={4}
-                    label="Notes"
+                    label="Notas"
                     value={notes}
                     onChange={handleNotesChange}
                     fullWidth
@@ -103,13 +104,13 @@ export default function AguBody(
                 <Card sx={{ display:'flex', flexDirection:'row' }}>
                     <CardMedia
                         component="img"
-                        image="https://via.placeholder.com/236x100"
+                        image={sonorgasAGU}
                         alt="Placeholder"
                         sx={{ maxWidth: '50%' }}
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
-                            Location
+                            Localização
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                             Google Maps: <a target="_blank" href={`https://www.google.com/maps/place/${latitude},${longitude}`} rel="noreferrer">Link</a>
@@ -128,7 +129,10 @@ export default function AguBody(
                             </Box>
                         )}
                         {tempState.type === 'error' && gasState.type === 'error' && (
-                            <TemperatureError message={tempState.message} />
+                            <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                                <TemperatureError message={tempState.message} />
+                                <GasError message={tempState.message} />
+                            </Box>
                         )}
                         {tempState.type === 'success' && tempState.tempData.length > 0 && gasState.type === 'success' && gasState.gasData.length > 0 && (
                             <Box>
@@ -138,6 +142,9 @@ export default function AguBody(
                         )}
                         {tempState.type === 'success' && tempState.tempData.length === 0 && (
                             <Typography variant="h5" gutterBottom>Sem data de temperatura</Typography>
+                        )}
+                        {gasState.type === 'success' && gasState.gasData.length === 0 && (
+                            <Typography variant="h5" gutterBottom>Sem data de gás</Typography>
                         )}
                     </CardContent>
                 </Card>

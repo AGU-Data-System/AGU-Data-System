@@ -88,7 +88,7 @@ function displayContacts(contacts: ContactOutputModel[], type: string) {
             textAlign: 'left',
         }}>
             <div>
-                <Typography variant="subtitle2">{type.charAt(0).toUpperCase() + type.slice(1)} Contacts:</Typography>
+                <Typography variant="subtitle2">Contactos de {type.charAt(0).toUpperCase() == 'L' ? "Logística": "Emergencia"}:</Typography>
             </div>
             <div style={{
                 marginLeft: '6px',

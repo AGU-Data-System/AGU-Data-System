@@ -74,4 +74,22 @@ function TemperatureError ( {message}:{message: string} ) {
     )
 }
 
-export { MapError, FavError, AguDetailsError, TemperatureError }
+function GasError ( {message}:{message: string} ) {
+    return (
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
+            <ErrorOutlineOutlinedIcon sx={{ fontSize: 100, color: 'red' }} />
+            <Typography variant="h5" gutterBottom>Error while trying to display the gas details</Typography>
+            <Typography variant="body1" gutterBottom>Reason: {message}</Typography>
+            <ReloadButton/>
+            <br/>
+            <ReturnButton/>
+        </Box>
+    )
+}
+
+export { MapError, FavError, AguDetailsError, TemperatureError, GasError }
