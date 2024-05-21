@@ -1,5 +1,5 @@
 import { Either, failure, Failure, success } from '../../utils/Either';
-import { Problem, problemMediaType } from "../../utils/Problem";
+import { Problem, problemMediaType } from '../../utils/Problem';
 
 const API_ENDPOINT = "http://localhost:8080/api"
 

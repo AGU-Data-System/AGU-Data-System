@@ -10,7 +10,7 @@ import java.time.LocalDateTime
  * Represents a ProviderType
  */
 enum class ProviderType(val pollingFrequency: Duration) {
-	GAS(Duration.ofHours(1)),
+	GAS(Duration.ofMinutes(10)), // TODO check if this or 1 hour
 	TEMPERATURE(Duration.ofDays(1));
 
 	/**

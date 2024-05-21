@@ -4,7 +4,6 @@ import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.repository.TransactionManager
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.LocalDateTime
@@ -45,9 +44,6 @@ class ChronService(
 	/**
 	 * Schedules the chron tasks for the providers.
 	 */
-	//At every 10th minute from 2 through 59, Every Day at 09:01
-	// TODO: Change the cron expression to the desired one
-	@Scheduled(cron = "0 1 9 * * *") // Every day at 09:01
 	fun scheduleChron() {
 		transactionManager.run {
 			logger.info("Scheduling chron tasks based on providers")
@@ -55,12 +51,9 @@ class ChronService(
 			providerChron.forEach { provider ->
 				val providerType = provider.getProviderType()
 				val pollingFrequency = providerType.pollingFrequency
-				val lastFetch = provider.lastFetch
 
-				if (lastFetch == null || lastFetch.plusMinutes(pollingFrequency.toMinutes()) < LocalDateTime.now()) {
-					logger.info("Scheduling chron task for provider: {}", provider)
-					scheduleChronTask(provider, pollingFrequency)
-				}
+				logger.info("Scheduling chron task for provider: {}", provider)
+				scheduleChronTask(provider, pollingFrequency)
 			}
 		}
 	}
