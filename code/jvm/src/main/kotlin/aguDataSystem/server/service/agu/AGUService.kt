@@ -47,7 +47,7 @@ class AGUService(
 	/**
 	 * Get all AGUs
 	 *
-	 * @return List of the basic information of all AGUs
+	 * @return List of the basic information for all AGUs
 	 */
 	fun getAGUsBasicInfo(): List<AGUBasicInfo> {
 		return transactionManager.run {
