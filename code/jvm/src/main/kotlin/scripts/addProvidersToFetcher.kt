@@ -1,6 +1,5 @@
-package aguDataSystem.utils
+package scripts
 
-import aguDataSystem.server.Environment
 import com.github.doyaaaaaken.kotlincsv.dsl.context.InsufficientFieldsRowBehaviour
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import java.io.File
@@ -34,7 +33,7 @@ fun main() {
 
 class GasAndTempScraper {
 	private val sonorgasUrl = "https://dourogas.thinkdigital.pt/dashboards/ca824027-c206-44b9-af54-cba5dc6edde7/viewer"
-	private val fetcherUrl = Environment.getFetcherUrl() + "/provider"
+	private val fetcherUrl = "http://localhost:8081/api/provider"
 	private val client = HttpClient.newHttpClient()
 	private val jsonFormatter = Json { prettyPrint = true }
 

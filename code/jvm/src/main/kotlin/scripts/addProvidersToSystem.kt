@@ -1,4 +1,4 @@
-package aguDataSystem.utils
+package scripts
 
 import aguDataSystem.server.Environment
 import java.net.URI
