@@ -1,6 +1,6 @@
 import { Box, Button, } from '@mui/material';
 import * as React from 'react';
-import Astronaut from '../assets/confusedAstronaut.png';
+import Astronaut from '../Assets/confusedAstronaut.png';
 import { useNavigate } from 'react-router-dom';
 
 export default function NotFoundPage() {

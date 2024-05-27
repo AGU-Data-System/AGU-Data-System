@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import markerIcon from '../../assets/location_pin.png';
+import markerIcon from '../../Assets/location_pin.png';
 import * as L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";

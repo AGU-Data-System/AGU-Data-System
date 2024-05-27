@@ -1,6 +1,6 @@
 FROM node:16-alpine AS CACHE_IMAGE
 
-ARG DEPENDENCY=./code/js
+ARG DEPENDENCY=./code/ts
 ARG APP_HOME=/usr/app
 
 RUN mkdir -p $APP_HOME
