@@ -16,7 +16,7 @@ values ('PT1701000000000006JQ', 'Alfândega da Fé', 20, 85, 20, 50, 41.33134454
        ('PT1604900140400001EW', 'Alpiarça', 30, 85 , 20, 33, 39.265361, -8.549333,
         'Alpiarça', (SELECT dno.id FROM dno WHERE dno.name = 'TGG')),
        ('PT1702900130100001ED', 'Amarante', 30, 85 , 20, 33, 41.288194, -8.086528,
-        'Amarante', (SELECT dno.id FROM dno WHERE dno.name = 'DUT')),
+        'Amarante', (SELECT dno.id FROM dno WHERE dno.name = 'DUR')),
        ('PT1701000000000030ZV', 'Amares', 20, 85 , 20, 30, 41.621372, -8.347767,
         'Amares', (SELECT dno.id FROM dno WHERE dno.name = 'SNG'));
 
