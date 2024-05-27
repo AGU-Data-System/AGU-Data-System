@@ -13,35 +13,41 @@ values ('PT1701000000000006JQ', 'Alfândega da Fé', 20, 85, 20, 50, 41.33134454
         'Alijó', (SELECT dno.id FROM dno WHERE dno.name = 'SNG')),
        ('PT1701000000000012JE', 'Carrazeda de Ansiães', 25, 85, 20, 52, 41.24742767159777, -7.317666075364068,
         'Cazerrada de Ansiães', (SELECT dno.id FROM dno WHERE dno.name = 'SNG')),
-       ('PT1604900140400001EW', 'Alpiarça', 30, 85 , 20, 33, 39.265361, -8.549333,
-        'Alpiarça', (SELECT dno.id FROM dno WHERE dno.name = 'TGG')),
-       ('PT1702900130100001ED', 'Amarante', 30, 85 , 20, 33, 41.288194, -8.086528,
-        'Amarante', (SELECT dno.id FROM dno WHERE dno.name = 'DUR')),
        ('PT1701000000000030ZV', 'Amares', 20, 85 , 20, 30, 41.621372, -8.347767,
-        'Amares', (SELECT dno.id FROM dno WHERE dno.name = 'SNG'));
+        'Amares', (SELECT dno.id FROM dno WHERE dno.name = 'SNG')),
+       ('PT1701000000000018ZM', 'Baião', 30, 85 , 20, 33, 41.16405, -8.048494,
+        'Baião', (SELECT dno.id FROM dno WHERE dno.name = 'SNG')),
+       ('PT1701000000000025ZN', 'Boticas', 30, 85 , 20, 50, 41.681881, -7.659572,
+        'Boticas', (SELECT dno.id FROM dno WHERE dno.name = 'SNG')),
+       ('PT1701000000000014ZR', 'Poiares', 25, 85 , 20, 170, 41.186167, -7.713389,
+        'Poiares', (SELECT dno.id FROM dno WHERE dno.name = 'SNG'));
+
 
 INSERT INTO tank (agu_cui, number, min_level, max_level, critical_level, load_volume, correction_factor, capacity)
 values ('PT1701000000000006JQ', 1, 20, 85, 20, 50, 10.0, 90),
        ('PT1701000000000009JL', 1, 30, 85, 20, 20, 5.0, 120),
        ('PT1701000000000012JE', 1, 25, 85, 20, 52, 12.0, 120),
-       ('PT1604900140400001EW', 1, 30, 85, 20, 33, 3.0, 120),
-       ('PT1702900130100001ED', 1, 30, 85, 20, 33, 3.0, 120),
-       ('PT1701000000000030ZV', 1, 20, 85, 20, 30, 0.0, 120);
+       ('PT1701000000000030ZV', 1, 20, 85, 20, 30, 0.0, 120),
+       ('PT1701000000000018ZM', 1, 30, 85, 20, 33, 3.0, 120),
+       ('PT1701000000000025ZN', 1, 30, 85, 20, 50, 10.0, 90),
+       ('PT1701000000000014ZR', 1, 25, 85, 20, 170, 50.0, 30);
 
 -- for test purposes
 Insert into contacts (name, phone, type, agu_cui)
 values ('ze-alfandega da fe', '123456789', 'emergency', 'PT1701000000000006JQ'),
        ('ze-alijo', '123456789', 'emergency', 'PT1701000000000009JL'),
        ('ze-carrazeda', '123456789', 'emergency', 'PT1701000000000012JE'),
-       ('ze-alpiarca', '123456789', 'emergency', 'PT1604900140400001EW'),
-       ('ze-amarante', '123456789', 'emergency', 'PT1702900130100001ED'),
        ('ze-amares', '123456789', 'emergency', 'PT1701000000000030ZV'),
+       ('ze-baiao', '123456789', 'emergency', 'PT1701000000000018ZM'),
+       ('ze-boticas', '123456789', 'emergency', 'PT1701000000000025ZN'),
+       ('ze-poiares', '123456789', 'emergency', 'PT1701000000000014ZR'),
        ('ana-alfandega da fe', '123456789', 'logistic', 'PT1701000000000006JQ'),
        ('ana-alijo', '123456789', 'logistic', 'PT1701000000000009JL'),
        ('ana-carrazeda', '123456789', 'logistic', 'PT1701000000000012JE'),
-       ('ana-alpiarca', '123456789', 'logistic', 'PT1604900140400001EW'),
-       ('ana-amarante', '123456789', 'logistic', 'PT1702900130100001ED'),
-       ('ana-amares', '123456789', 'logistic', 'PT1701000000000030ZV');
+       ('ana-amares', '123456789', 'logistic', 'PT1701000000000030ZV'),
+       ('ana-baiao', '123456789', 'logistic', 'PT1701000000000018ZM'),
+       ('ana-boticas', '123456789', 'logistic', 'PT1701000000000025ZN'),
+       ('ana-poiares', '123456789', 'logistic', 'PT1701000000000014ZR');
 
 -- -- Gas
 -- insert into provider (id, agu_cui, provider_type)
