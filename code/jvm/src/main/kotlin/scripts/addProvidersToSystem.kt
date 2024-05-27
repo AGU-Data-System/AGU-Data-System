@@ -83,7 +83,7 @@ class ProviderScraper(private val transactionManager: TransactionManager) {
 		transactionManager.run { tx ->
 			providersList.filter { it.name.startsWith("temperature") || it.name.startsWith("gas") }
 				.forEach { provider ->
-					val aguName = provider.name.substringAfterLast(" - ")
+					val aguName = provider.name.substringAfterLast(" - ").substringAfter("UAG").trim()
 					val cui = fetchCuiFromAguName(tx.handle, aguName)
 					if (cui != null) {
 						insertProvider(tx.handle, provider, cui)
