@@ -7,7 +7,7 @@ import { Problem } from "../../utils/Problem";
 import LineGraph from "../Graphs/LineGraph";
 import BarGraph from "../Graphs/BarGraph";
 import { TemperatureError, GasError } from "../Layouts/Error";
-import GasOutputModel from "../../services/agu/models/gasOutputModel";
+import { GasOutputModel } from "../../services/agu/models/gasOutputModel";
 import sonorgasAGU from "../../assets/sonorgas_agu.jpg";
 
 type TempGraphState =
@@ -137,7 +137,7 @@ export default function AguBody(
                         {tempState.type === 'success' && tempState.tempData.length > 0 && gasState.type === 'success' && gasState.gasData.length > 0 && (
                             <Box>
                                 <LineGraph data={tempState.tempData} />
-                                <BarGraph data={gasState.gasData} aguCui={aguCui}/>
+                                <BarGraph data={gasState.gasData} aguCui={aguCui} aguMin={lvlMin} aguMax={lvlMax} aguCrit={lvlCrit}/>
                             </Box>
                         )}
                         {tempState.type === 'success' && tempState.tempData.length === 0 && (

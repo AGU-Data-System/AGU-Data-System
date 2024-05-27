@@ -28,6 +28,13 @@ interface AguDetailsOutputModel {
 }
 
 interface ContactOutputModel {
+    id: number;
+    name: string;
+    phone: string;
+    type: string;
+}
+
+interface ContactInputModel {
     name: string;
     phone: string;
     type: string;
@@ -35,11 +42,24 @@ interface ContactOutputModel {
 
 interface TankOutputModel {
     number: number;
-    minLevel: number;
-    maxLevel: number;
-    criticalLevel: number;
+    levels: {
+        min: number;
+        max: number;
+        critical: number;
+    };
     loadVolume: number;
     capacity: number;
+    correctionFactor: number;
+}
+
+interface TankInputModel {
+    number: number,
+    minLevel: number,
+    maxLevel: number,
+    criticalLevel: number,
+    loadVolume: number,
+    capacity: number
+    correctionFactor: number
 }
 
 interface AguOutputModel {
@@ -60,4 +80,4 @@ interface AgusBasicInfoOutputModel {
     };
 }
 
-export { AguDetailsOutputModel, ContactOutputModel, TankOutputModel, AguOutputModel, AgusBasicInfoOutputModel };
+export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel };

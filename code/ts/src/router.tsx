@@ -6,6 +6,7 @@ import NotFoundPage from './Components/NotFoundPage';
 import Home from './Components/Home';
 import Agu from './Components/Agu/Agu'
 import AguCreate from "./Components/Agu/AguCreate";
+import AguEdit from "./Components/Agu/AguEdit";
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
             {
               'path': '/uag/:aguId',
               'element': <Agu />,
+            },
+            {
+                'path': '/uag/:aguId/edit',
+                'element': <AguEdit />,
             },
         ]
     },

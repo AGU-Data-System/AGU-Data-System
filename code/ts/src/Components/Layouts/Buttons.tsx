@@ -44,4 +44,63 @@ function ReloadButton(){
     )
 }
 
-export { ReturnButton, ReloadButton }
+function BackToAguDetailsButton({aguCUI}:{aguCUI : string}){
+    const navigate = useNavigate()
+    return(
+        <Button
+            size="small"
+            variant="contained"
+            sx={{
+                backgroundColor: 'rgb(255, 165, 0)',
+                color: 'black',
+                '&:hover': {
+                    backgroundColor: 'rgba(255,165,0,0.49)',
+                },
+            }}
+            onClick={() => navigate(`/uag/${aguCUI}`)}
+        >
+            <KeyboardArrowLeftIcon />
+            Voltar
+        </Button>
+    )
+}
+
+function AddButton({handleClick}:{handleClick : ()=>void}){
+    return(
+        <Button
+            size="small"
+            variant="contained"
+            sx={{
+                backgroundColor: 'rgb(255, 165, 0)',
+                color: 'black',
+                '&:hover': {
+                    backgroundColor: 'rgba(255,165,0,0.49)',
+                },
+            }}
+            onClick={handleClick}
+        >
+            Adicionar
+        </Button>
+    )
+}
+
+function EditButton({handleClick}:{handleClick : ()=>void}){
+    return(
+        <Button
+            size="small"
+            variant="contained"
+            sx={{
+                backgroundColor: 'rgb(255, 165, 0)',
+                color: 'black',
+                '&:hover': {
+                    backgroundColor: 'rgba(255,165,0,0.49)',
+                },
+            }}
+            onClick={handleClick}
+        >
+            Editar
+        </Button>
+    )
+}
+
+export { ReturnButton, ReloadButton, BackToAguDetailsButton, AddButton, EditButton }

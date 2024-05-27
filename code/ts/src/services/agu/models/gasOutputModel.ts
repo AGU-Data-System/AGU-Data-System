@@ -6,4 +6,10 @@ interface GasOutputModel {
     [key: string]: string | number;  // Index signature to allow dynamic keys
 }
 
-export default GasOutputModel;
+interface LevelsInputModel {
+    min: number;
+    max: number;
+    critical: number;
+}
+
+export { GasOutputModel, LevelsInputModel };

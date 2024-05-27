@@ -6,13 +6,16 @@ import { useState } from "react";
 import { ReturnButton } from "../Layouts/Buttons";
 import { ContactOutputModel } from "../../services/agu/models/aguOutputModel";
 import { aguService } from "../../services/agu/aguService";
-import {Problem} from "../../utils/Problem";
+import { Problem } from "../../utils/Problem";
+import EditIcon from '@mui/icons-material/Edit';
+import { useNavigate } from "react-router-dom";
 
 export default function AguHeader(
     { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavorite }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavorite: boolean }
 ) {
     const [isFavorite, setIsFavorite] = useState<boolean>(aguIsFavorite);
     const [waitFetch, setWaitFetch] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const handleToggleFavorite = () => {
         setWaitFetch(true);
@@ -31,6 +34,10 @@ export default function AguHeader(
             setWaitFetch(false);
         }, 1000);
     };
+
+    const handleToggleEdit = () => {
+        navigate(`/uag/${aguCUI}/edit`);
+    }
 
     return (
         <div style={{
@@ -68,6 +75,9 @@ export default function AguHeader(
                 textAlign: 'center',
                 margin: '8px',
             }}>
+                <IconButton onClick={handleToggleEdit} disabled={waitFetch}>
+                    <EditIcon fontSize='large' sx={{color: 'rgb(255, 165, 0)'}}/>
+                </IconButton>
                 <IconButton onClick={handleToggleFavorite} disabled={waitFetch}>
                     {isFavorite ? <StarIcon fontSize='large' sx={{color: 'rgb(255, 165, 0)'}}/> :
                         <StarOutlineIcon fontSize='large' sx={{color: 'rgb(255, 165, 0)'}}/>}

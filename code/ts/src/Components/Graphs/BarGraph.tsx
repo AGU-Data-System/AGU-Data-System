@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { axisClasses } from '@mui/x-charts/ChartsAxis';
-import GasOutputModel from "../../services/agu/models/gasOutputModel";
+import { GasOutputModel } from "../../services/agu/models/gasOutputModel";
 import { Box } from "@mui/material";
 import { useState } from "react";
 import { aguService } from "../../services/agu/aguService";
@@ -19,7 +19,7 @@ const formatDate = (dateString: string) => {
     return { hour, minutes, day, month, year };
 };
 
-export default function BarsDataset({ data, aguCui }: { data: GasOutputModel[], aguCui: string }) {
+export default function BarsDataset({ data, aguCui, aguMin, aguMax, aguCrit }: { data: GasOutputModel[], aguCui: string, aguMin: number, aguMax: number, aguCrit: number }) {
     const [dayData, setDayData] = useState<GasOutputModel[]>([]);
 
     const handleAxisClick = (event: any, d: any) => {
@@ -84,6 +84,12 @@ export default function BarsDataset({ data, aguCui }: { data: GasOutputModel[], 
         },
     };
 
+    const minY = 250 - aguMin * 2;
+    const maxY = 250 - aguMax * 2;
+    const critY = 250 - aguCrit * 2;
+
+    const critYOffset = aguMin === aguCrit ? -10 : 0;
+
     return (
         <Box>
             <div style={{ width: '100%', height: '100%' }}>
@@ -97,19 +103,27 @@ export default function BarsDataset({ data, aguCui }: { data: GasOutputModel[], 
                 <div style={{ width: '100%', height: 'calc(100% - 40px)' }}>
                     <BarChart
                         dataset={formattedData}
-                        xAxis={[{ scaleType: 'band', dataKey: 'day', label: 'Dia' }]}
+                        xAxis={[{scaleType: 'band', dataKey: 'day', label: 'Dia'}]}
                         series={[
-                            { dataKey: 'level', label: 'Level', valueFormatter, color: 'orange' },
+                            {dataKey: 'level', label: 'Level', valueFormatter, color: 'orange'},
                         ]}
                         onAxisClick={(event, d) => handleAxisClick(event, d)}
                         width={500}
                         height={300}
                         {...chartSetting}
-                    />
+                    >
+                        <line x1="50" x2="90%" y1={maxY} y2={maxY} stroke="green" strokeWidth="2"/>
+                        <line x1="50" x2="90%" y1={minY} y2={minY} stroke="blue" strokeWidth="2"/>
+                        <line x1="50" x2="90%" y1={critY} y2={critY} stroke="red" strokeWidth="2"/>
+
+                        <text x="91%" y={maxY} fill="green">Max</text>
+                        <text x="91%" y={minY} fill="blue">Min{critYOffset != 0 ? ' &' : ''}</text>
+                        <text x="91%" y={critY + critYOffset} fill="red">Crítico</text>
+                    </BarChart>
                 </div>
             </div>
-            <div style={{ width: '100%', height: '100%' }}>
-                <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+            <div style={{width: '100%', height: '100%'}}>
+                <div style={{textAlign: 'center', marginBottom: '10px'}}>
                     {formattedDayData.length > 0 && (
                         <div>
                             <span>{formattedDayData[0].day} {formattedDayData[0].month} {formattedDayData[0].year}</span>
@@ -126,7 +140,15 @@ export default function BarsDataset({ data, aguCui }: { data: GasOutputModel[], 
                         width={500}
                         height={300}
                         {...chartSetting}
-                    />
+                    >
+                        <line x1="50" x2="90%" y1={maxY} y2={maxY} stroke="green" strokeWidth="2"/>
+                        <line x1="50" x2="90%" y1={minY} y2={minY} stroke="blue" strokeWidth="2"/>
+                        <line x1="50" x2="90%" y1={critY} y2={critY} stroke="red" strokeWidth="2"/>
+
+                        <text x="91%" y={maxY} fill="green">Max</text>
+                        <text x="91%" y={minY} fill="blue">Min{critYOffset!=0 ? ' &' : ''}</text>
+                        <text x="91%" y={critY - critYOffset} fill="red">Crítico</text>
+                    </BarChart>
                 </div>
             </div>
         </Box>

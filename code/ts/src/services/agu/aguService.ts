@@ -1,10 +1,14 @@
 import { fetchFunction } from "../utils/fetchFunction";
 import { Either } from "../../utils/Either";
-import {AguDetailsOutputModel, AguOutputModel, AgusBasicInfoOutputModel} from "./models/aguOutputModel";
+import {
+    AguDetailsOutputModel,
+    AguOutputModel,
+    AgusBasicInfoOutputModel, ContactInputModel, TankInputModel
+} from "./models/aguOutputModel";
 import { AguCreateInputModel } from "./models/createAguInputModel";
 import {Problem} from "../../utils/Problem";
 import TemperatureOutputModel from "./models/temperatureOutputModel";
-import GasOutputModel from "./models/gasOutputModel";
+import { GasOutputModel, LevelsInputModel } from "./models/gasOutputModel";
 
 export namespace aguService {
     export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoOutputModel[]>> {
@@ -50,5 +54,30 @@ export namespace aguService {
     export async function getHourlyGasData(aguCui: string, day: number, month: number, year: number): Promise<Either<Error | Problem, GasOutputModel[]>> {
         const url = `/agus/${aguCui}/gas/hourly?day=${year}-0${month}-${day}`;
         return fetchFunction(url, "GET");
+    }
+
+    export async function addContact(aguCui: string, newContact: ContactInputModel): Promise<Either<Error | Problem, number>> {
+        const url = `/agus/${aguCui}/contact`;
+        return fetchFunction(url, "POST", JSON.stringify(newContact));
+    }
+
+    export async function deleteContact(aguCui: string, contactId: number): Promise<Either<Error | Problem, void>> {
+        const url = `/agus/${aguCui}/contact/${contactId}`;
+        return fetchFunction(url, "DELETE");
+    }
+
+    export async function addTank(aguCui: string, newTank: TankInputModel): Promise<Either<Error | Problem, number>> {
+        const url = `/agus/${aguCui}/tank`;
+        return fetchFunction(url, "POST", JSON.stringify(newTank));
+    }
+
+    export async function updateAguLevels(aguCui: string, levels: LevelsInputModel): Promise<Either<Error | Problem, AguDetailsOutputModel>> {
+        const url = `/agus/${aguCui}/levels`;
+        return fetchFunction(url, "PUT", JSON.stringify(levels));
+    }
+
+    export async function updateTank(aguCui: string, tankNumber: number, tankData: TankInputModel): Promise<Either<Error | Problem, AguDetailsOutputModel>> {
+        const url = `/agus/${aguCui}/tank/${tankNumber}`;
+        return fetchFunction(url, "PUT", JSON.stringify(tankData));
     }
 }
