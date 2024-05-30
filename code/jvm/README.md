@@ -46,7 +46,7 @@ The [`code/sql`](../sql) folder contains all SQL scripts developed:
 
 ## Application Architecture
 
-![Application Architecture](../../docs/img/System Architecture.png)
+![Application Architecture](../../docs/img/system-back-end-system-architecture.png)
 
 The application is structured as follows:
 
