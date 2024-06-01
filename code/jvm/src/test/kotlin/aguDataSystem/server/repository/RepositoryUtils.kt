@@ -23,7 +23,7 @@ object RepositoryUtils {
 			level = 50 - (it * 2),
 			tankNumber = 1
 		)
-	}.reversed()
+	}
 
 	val dummyTemperatureMeasures = List(10) {
 		TemperatureMeasure(
@@ -32,7 +32,7 @@ object RepositoryUtils {
 			min = it,
 			max = 10 + it
 		)
-	}.reversed()
+	}
 
 	val dummyLogisticContact = ContactCreation(
 		name = "John Doe",
@@ -81,7 +81,7 @@ object RepositoryUtils {
 		image = ByteArray(0),
 		contacts = emptyList(),
 		tanks = emptyList(),
-		gasLevelUrl = "http://localhost:8081/api/agu/PT1234567890123456XX/gasLevel",
+		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 	)
 
 	/**

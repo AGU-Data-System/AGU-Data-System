@@ -121,3 +121,6 @@ dist
 ### ts folders ###
 **/ts/node_modules
 **/ts/dist
+
+### CSV files ###
+*.csv

@@ -42,6 +42,7 @@ class JDBITemperatureRepositoryTest {
 
 		// assert
 		assert(temperatureMeasures.containsAll(sut))
+		assertEquals(temperatureMeasures.first(), sut.first())
 		assertEquals(temperatureMeasures.last(), sut.last())
 	}
 
@@ -217,7 +218,7 @@ class JDBITemperatureRepositoryTest {
 		val dnoName = DUMMY_DNO_NAME
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
-		val date = temperatureMeasures.last().predictionFor?.toLocalDate()?.plusDays(1)
+		val date = temperatureMeasures.first().predictionFor?.toLocalDate()?.plusDays(1)
 		requireNotNull(date)
 
 		val dnoId = dnoRepository.addDNO(dnoName)

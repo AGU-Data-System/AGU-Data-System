@@ -32,12 +32,11 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		val measures = handle.createQuery(
 			"""
-        SELECT DISTINCT ON (date_trunc('day', measure.timestamp)) 
+        SELECT 
             measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
         FROM measure
         WHERE measure.provider_id = :providerId AND 
-        measure.timestamp::date >= now()::date - :days AND
-        measure.prediction_for = measure.timestamp
+        (measure.prediction_for::date between now()::date and now()::date + :days)
         ORDER BY date_trunc('day', measure.timestamp), 
                  abs(extract(epoch from measure.timestamp::time) - extract(epoch from :timestamp::time))
         """.trimIndent()

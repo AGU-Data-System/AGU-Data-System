@@ -14,10 +14,9 @@
 - [Error Handling](#error-handling)
 - [Running the application](#running-the-application)
 
-
 ## Introduction
 
-This document provides an overview of the backend system of the AGU Data System and its conception. 
+This document provides an overview of the backend system of the AGU Data System and its conception.
 The backend system is responsible for managing the data and the business logic of the AGU Data System,
 communicating with the fetching module and frontend system,
 and providing the necessary APIs for the frontend system to interact with the backend system.
@@ -70,12 +69,13 @@ The Controller Layer is organized as follows:
 
 - [config](src/main/kotlin/aguDataSystem/server/http/config) - Contains the configuration class of the application;
 - [controllers](src/main/kotlin/aguDataSystem/server/http/controllers) - Contains the controllers of the application.
-  - [/agu](src/main/kotlin/aguDataSystem/server/http/controllers/agu) - Contains the controller for the AGU classes as 
-  well as the input and output models.
-    - [/models](src/main/kotlin/aguDataSystem/server/http/controllers/agu/models) - Contains the input and output models 
-    for data operations.
-  - [/media](src/main/kotlin/aguDataSystem/server/http/controllers/media) - Contains the Problem class for the errors 
-  that are used in the application.
+    - [/agu](src/main/kotlin/aguDataSystem/server/http/controllers/agu) - Contains the controller for the AGU classes as
+      well as the input and output models.
+        - [/models](src/main/kotlin/aguDataSystem/server/http/controllers/agu/models) - Contains the input and output
+          models
+          for data operations.
+    - [/media](src/main/kotlin/aguDataSystem/server/http/controllers/media) - Contains the Problem class for the errors
+      that are used in the application.
 
 ### Service Layer
 
@@ -92,10 +92,12 @@ These responses can be one of two types:
 The Service Layer is organized as follows:
 
 - [services](src/main/kotlin/aguDataSystem/server/service) - Contains the services of the application;
-  - [/agu](src/main/kotlin/aguDataSystem/server/service/agu) - Contains the service for the AGU classes and its possible results;
-  - [/chron](src/main/kotlin/aguDataSystem/server/service/chron) - Contains the service for the automatic polling of data from the fetching module;
-  - [/errors](src/main/kotlin/aguDataSystem/server/service/errors) - Contains the possible errors that can occur in the application on the service layer.
-
+    - [/agu](src/main/kotlin/aguDataSystem/server/service/agu) - Contains the service for the AGU classes and its
+      possible results;
+    - [/chron](src/main/kotlin/aguDataSystem/server/service/chron) - Contains the service for the automatic polling of
+      data from the fetching module;
+    - [/errors](src/main/kotlin/aguDataSystem/server/service/errors) - Contains the possible errors that can occur in
+      the application on the service layer.
 
 ### Repository Layer
 
@@ -110,15 +112,19 @@ but it can be easily changed to use another database access library.
 This layer is organized as follows:
 
 - [repositories](src/main/kotlin/aguDataSystem/server/repository) - Contains all the repositories of the application;
-  - [/agu](src/main/kotlin/aguDataSystem/server/repository/agu) - Contains the repository for the AGU classes;
-  - [/contact](src/main/kotlin/aguDataSystem/server/repository/contact) - Contains the repository for the contact classes;
-  - [/dno](src/main/kotlin/aguDataSystem/server/repository/dno) - Contains the repository for the DNO classes;
-  - [/gas](src/main/kotlin/aguDataSystem/server/repository/gas) - Contains the repository for the gas classes;
-  - [/jdbi](src/main/kotlin/aguDataSystem/server/repository/jdbi) - Contains the JDBI configuration class;
-    - [/mappers](src/main/kotlin/aguDataSystem/server/repository/jdbi/mappers) - Contains the mappers for the domain classes;
-  - [/provider](src/main/kotlin/aguDataSystem/server/repository/provider) - Contains the repository for the provider classes;
-  - [/tank](src/main/kotlin/aguDataSystem/server/repository/tank) - Contains the repository for the tank classes;
-  - [/temperature](src/main/kotlin/aguDataSystem/server/repository/temperature) - Contains the repository for the temperature classes;
+    - [/agu](src/main/kotlin/aguDataSystem/server/repository/agu) - Contains the repository for the AGU classes;
+    - [/contact](src/main/kotlin/aguDataSystem/server/repository/contact) - Contains the repository for the contact
+      classes;
+    - [/dno](src/main/kotlin/aguDataSystem/server/repository/dno) - Contains the repository for the DNO classes;
+    - [/gas](src/main/kotlin/aguDataSystem/server/repository/gas) - Contains the repository for the gas classes;
+    - [/jdbi](src/main/kotlin/aguDataSystem/server/repository/jdbi) - Contains the JDBI configuration class;
+        - [/mappers](src/main/kotlin/aguDataSystem/server/repository/jdbi/mappers) - Contains the mappers for the domain
+          classes;
+    - [/provider](src/main/kotlin/aguDataSystem/server/repository/provider) - Contains the repository for the provider
+      classes;
+    - [/tank](src/main/kotlin/aguDataSystem/server/repository/tank) - Contains the repository for the tank classes;
+    - [/temperature](src/main/kotlin/aguDataSystem/server/repository/temperature) - Contains the repository for the
+      temperature classes;
 
 ### Data Representation
 

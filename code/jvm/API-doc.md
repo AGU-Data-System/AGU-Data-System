@@ -11,8 +11,8 @@
 
 ## Introduction
 
-This document outlines the API endpoints and how to make requests to say API. 
-The API is a simple REST API that allows to interact with the AGU Data System. 
+This document outlines the API endpoints and how to make requests to say API.
+The API is a simple REST API that allows to interact with the AGU Data System.
 The API is divided into several endpoints, each responsible for a different part of the system.
 
 ## Pagination
@@ -23,7 +23,7 @@ As of current implementation, the API does not support pagination, due to the qu
 
 The API has the following endpoints:
 
-### 
+###   
 
 - **URL:** ``
 - **Method:** ``

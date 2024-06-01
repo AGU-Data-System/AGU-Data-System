@@ -35,7 +35,7 @@ class JDBIGasRepositoryTest {
 		val tank = dummyTank
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
-		val time = gasMeasures.last().predictionFor?.toLocalTime()
+		val time = gasMeasures.first().predictionFor?.toLocalTime()
 		requireNotNull(time)
 
 		val dnoId = dnoRepository.addDNO(dnoName)
@@ -50,6 +50,7 @@ class JDBIGasRepositoryTest {
 
 		// assert
 		assert(gasMeasures.containsAll(sut))
+		assertEquals(gasMeasures.first(), sut.first())
 		assertEquals(gasMeasures.last(), sut.last())
 	}
 
@@ -249,7 +250,7 @@ class JDBIGasRepositoryTest {
 		val sut = gasRepository.getGasMeasures(providerId, day)
 
 		// assert
-		assertContains(sut, gasMeasures.last())
+		assertContains(sut, gasMeasures.first())
 		assertEquals(1, sut.size)
 	}
 
@@ -324,7 +325,10 @@ class JDBIGasRepositoryTest {
 
 			// assert
 			assertEquals(nDays, sut.size)
-			assertEquals(sut, gasMeasures.take(sut.size))
+			assertEquals(
+				sut,
+				gasMeasures.drop(1).take(sut.size)
+			) // drop the first element because it is the today's measure
 		}
 
 	@Test

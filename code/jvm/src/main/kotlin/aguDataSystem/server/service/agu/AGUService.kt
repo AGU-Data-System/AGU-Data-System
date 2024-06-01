@@ -55,7 +55,7 @@ class AGUService(
 
 			val aguList = it.aguRepository.getAGUsBasicInfo()
 
-			logger.info("Retrieved {} AGUs from the database", aguList.size)
+			logger.info("Retrieved: {} AGUs from the database", aguList.size)
 
 			aguList
 		}
@@ -94,9 +94,8 @@ class AGUService(
 
 		return try {
 			transactionManager.run {
-				val dno =
-					it.dnoRepository.getByName(aguCreationInfo.dnoName)
-						?: return@run failure(AGUCreationError.InvalidDNO)
+				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
+					?: return@run failure(AGUCreationError.InvalidDNO)
 
 				it.aguRepository.addAGU(aguCreationInfo, dno.id)
 				logger.info("AGU with CUI: {} added to the database", creationAGU.cui)
@@ -256,7 +255,7 @@ class AGUService(
 
 			val aguList = it.aguRepository.getFavouriteAGUs()
 
-			logger.info("Retrieved {} favourite AGUs from the database", aguList.size)
+			logger.info("Retrieved: {} as favourite AGUs from the database", aguList.size)
 
 			aguList
 		}
@@ -460,6 +459,9 @@ class AGUService(
 	 * @return the result of the check
 	 */
 	private fun isAGUDTOValid(aguDTO: AGUCreationDTO): AGUCreationResult? {
+		if (aguDTO.name.isEmpty())
+			return failure(AGUCreationError.InvalidName)
+
 		if (!aguDomain.isCUIValid(aguDTO.cui)) {
 			return failure(AGUCreationError.InvalidCUI)
 		}

@@ -3,8 +3,6 @@ package aguDataSystem.server.service.chron
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.repository.TransactionManager
 import jakarta.annotation.PostConstruct
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
@@ -12,6 +10,8 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
 /**
  * Service for managing the chron tasks,

@@ -35,7 +35,7 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
             ON m1.provider_id = m2.provider_id AND m1.prediction_for = m2.prediction_for 
             AND m1.timestamp = m2.timestamp AND m1.agu_cui = m2.agu_cui
             WHERE m1.tag = :minTag AND m2.tag = :maxTag AND m1.provider_id = :providerId
-            ORDER BY m1.timestamp DESC
+            ORDER BY m1.timestamp
             LIMIT :days
             """
 		)

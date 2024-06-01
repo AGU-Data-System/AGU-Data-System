@@ -88,6 +88,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The critical level must be valid."
 		)
 
+		val InvalidName = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-name"),
+			title = "Invalid Name.",
+			details = "The name must have a value."
+		)
+
 		val InvalidDNO = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-dno"),
 			title = "Invalid DNO.",

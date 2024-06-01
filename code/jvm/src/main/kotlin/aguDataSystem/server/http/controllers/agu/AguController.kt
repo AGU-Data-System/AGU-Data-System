@@ -109,7 +109,7 @@ class AguController(private val service: AGUService) {
 		@PathVariable aguCui: String,
 		@RequestParam(required = false, defaultValue = "10") days: Int,
 		@RequestParam(required = false, defaultValue = "09:00") time: LocalTime
-	//todo: maybe don't put default values, and if not provided, put the default value in the service
+		//todo: maybe don't put default values, and if not provided, put the default value in the service
 	): ResponseEntity<*> {
 		return when (val res = service.getDailyGasMeasures(aguCui, days, time)) {
 			is Failure -> res.value.resolveProblem()
@@ -335,6 +335,7 @@ class AguController(private val service: AGUService) {
 
 			AGUCreationError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
 			AGUCreationError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
+			AGUCreationError.InvalidName -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidName)
 		}
 
 	/**
