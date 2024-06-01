@@ -115,7 +115,7 @@ create table if not exists measure
     tank_number    int check ((tag ~* '(level)$' and tank_number IS NOT NULL) or
                               (tank_number is null and tag ~* '^(min|max)$')),
 
-    constraint prediction_in_future check (prediction_for >= timestamp),
+    constraint prediction_in_future check (prediction_for::date >= timestamp::date),
 
     foreign key (agu_cui) references agu (cui),
     foreign key (provider_id) references provider (id),

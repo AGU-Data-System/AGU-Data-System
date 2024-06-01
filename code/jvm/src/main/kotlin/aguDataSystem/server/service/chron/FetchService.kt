@@ -45,7 +45,7 @@ class FetchService(
 	 * @param since The time to fetch data from
 	 */
 	fun fetchAndSave(provider: Provider, since: LocalDateTime) {
-		val providerURL = Environment.getFetcherUrl() + "/provider/${provider.id}?beginDate=$since&size=$pageSize"
+		val providerURL = Environment.getFetcherUrl() + "/provider/${provider.id}?beginDate=${since.plusSeconds(1)}&size=$pageSize"
 		logger.info("Fetching data from provider: {}", provider.id)
 
 		val response = fetch(url = providerURL)
@@ -142,7 +142,7 @@ class FetchService(
 				temperatureMeasures.add(
 					TemperatureMeasure(
 						timestamp = fetchTimestamp,
-						predictionFor = if (beginningOfDay == fetchTimestamp.toLocalDate()) fetchTimestamp else beginningOfDay.atStartOfDay(),
+						predictionFor = beginningOfDay.atStartOfDay(),
 						max = dailyData.max[index].roundToInt(),
 						min = dailyData.min[index].roundToInt()
 					)
