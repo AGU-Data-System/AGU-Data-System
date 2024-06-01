@@ -51,6 +51,7 @@ create table if not exists dno
 (
     id   int generated always as identity,
     name varchar check (length(name) > 0) unique not null,
+    region varchar, --change to not null and check on size
 
     primary key (id)
 );

@@ -140,10 +140,12 @@ class AGUService(
 	fun getAGUById(cui: String): GetAGUResult {
 		return transactionManager.run {
 			logger.info("Getting AGU by CUI: {} from the database", cui)
+
 			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
 			val tanks = it.tankRepository.getAGUTanks(cui)
 			val contacts = it.contactRepository.getContactsByAGU(cui)
 			val providers = it.providerRepository.getProviderByAGU(cui)
+
 			logger.info("Retrieved AGU by CUI from the database")
 			success(agu.copy(tanks = tanks, contacts = contacts, providers = providers))
 		}
@@ -468,6 +470,10 @@ class AGUService(
 
 		if (!(aguDomain.areCoordinatesValid(aguDTO.location.latitude, aguDTO.location.longitude))) {
 			return failure(AGUCreationError.InvalidCoordinates)
+		}
+
+		if (!aguDomain.isLoadVolumeValid(aguDTO.loadVolume)) {
+			return failure(AGUCreationError.InvalidLoadVolume)
 		}
 
 		ensureLevels(aguDTO.levels)?.let {

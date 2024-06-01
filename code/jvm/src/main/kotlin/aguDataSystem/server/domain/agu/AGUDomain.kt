@@ -79,6 +79,13 @@ class AGUDomain {
 	fun isPercentageValid(percentage: Int): Boolean = percentage in 0..100
 
 	/**
+	 * Checks if the load volume is valid
+	 * @param loadVolume the load volume to check
+	 * @return true if the load volume is valid, false otherwise
+	 */
+	fun isLoadVolumeValid(loadVolume: Int): Boolean = loadVolume >= 0
+
+	/**
 	 * Checks if a Latitude is valid
 	 * @param latitude the latitude to check
 	 * @return true if the latitude is valid, false otherwise

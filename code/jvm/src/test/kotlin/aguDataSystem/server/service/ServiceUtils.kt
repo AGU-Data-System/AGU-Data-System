@@ -22,7 +22,7 @@ object ServiceUtils {
 		name = "dummyLocation"
 	)
 
-	private val dummyLogisticContact = ContactCreationDTO(
+	val dummyLogisticContact = ContactCreationDTO(
 		name = "dummyLogisticContact",
 		phone = "123456789",
 		type = "logistic"

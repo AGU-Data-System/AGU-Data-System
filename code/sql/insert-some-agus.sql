@@ -1,9 +1,9 @@
 BEGIN TRANSACTION;
 
 INSERT INTO dno
-values (default, 'SNG'),
-       (default, 'TGG'),
-       (default, 'DUR');
+values (default, 'SNG', 'north'),
+       (default, 'TGG', 'center'),
+       (default, 'DUR', 'north');
 
 INSERT INTO agu (cui, name, min_level, max_level, critical_level, load_volume, latitude, longitude,
                  location_name, dno_id)
