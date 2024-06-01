@@ -8,7 +8,7 @@ import LineGraph from "../Graphs/LineGraph";
 import BarGraph from "../Graphs/BarGraph";
 import { TemperatureError, GasError } from "../Layouts/Error";
 import { GasOutputModel } from "../../services/agu/models/gasOutputModel";
-import sonorgasAGU from "../../Assets/sonorgas_agu.jpg";
+import sonorgasAGU from "../../assets/sonorgas_agu.jpg";
 
 type TempGraphState =
     | { type: 'loading' }

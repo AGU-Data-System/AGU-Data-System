@@ -9,7 +9,7 @@ import org.springframework.web.util.UriTemplate
 object URIs {
 
 	const val PREFIX = "/api"
-	const val HOME = "$PREFIX/"
+	private const val HOME = "$PREFIX/"
 
 	fun home() = URI(HOME)
 
@@ -34,7 +34,6 @@ object URIs {
 		const val NOTES = "/{aguCui}/notes"
 
 		fun byID(id: String) = UriTemplate(ROOT + GET_BY_ID).expand(id)
-		fun home() = URI(HOME)
 		fun register() = URI(CREATE)
 		fun temperature(id: String) = UriTemplate(ROOT + GET_TEMPERATURE).expand(id)
 		fun dailyGasLevels(id: String) = UriTemplate(ROOT + GET_DAILY_GAS_LEVELS).expand(id)
@@ -49,5 +48,4 @@ object URIs {
 		fun levels(id: String) = UriTemplate(ROOT + LEVELS).expand(id)
 		fun notes(id: String) = UriTemplate(ROOT + NOTES).expand(id)
 	}
-
 }
