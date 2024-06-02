@@ -52,7 +52,7 @@ export namespace aguService {
     }
 
     export async function getHourlyGasData(aguCui: string, day: number, month: number, year: number): Promise<Either<Error | Problem, GasOutputModel[]>> {
-        const url = `/agus/${aguCui}/gas/hourly?day=${year}-0${month}-${day}`;
+        const url = `/agus/${aguCui}/gas/hourly?day=${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         return fetchFunction(url, "GET");
     }
 
