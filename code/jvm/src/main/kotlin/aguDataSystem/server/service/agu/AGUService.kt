@@ -12,6 +12,7 @@ import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.tank.TankUpdateDTO
 import aguDataSystem.server.repository.TransactionManager
+import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
@@ -41,7 +42,8 @@ import org.springframework.stereotype.Service
 @Service
 class AGUService(
 	private val transactionManager: TransactionManager,
-	val aguDomain: AGUDomain
+	private val aguDomain: AGUDomain,
+	private val scheduleChron: ChronService
 ) {
 
 	/**
@@ -92,13 +94,13 @@ class AGUService(
 			return deleteSuccessProviders(gasRes, tempRes)
 		}
 
-		return try {
+		val result = try {
 			transactionManager.run {
 				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
 					?: return@run failure(AGUCreationError.InvalidDNO)
 
 				it.aguRepository.addAGU(aguCreationInfo, dno.id)
-				logger.info("AGU with CUI: {} added to the database", creationAGU.cui)
+				logger.info("AGU basic info with CUI: {} added to the database", creationAGU.cui)
 
 				aguCreationInfo.tanks.forEach { tank ->
 					it.tankRepository.addTank(aguCreationInfo.cui, tank)
@@ -129,6 +131,18 @@ class AGUService(
 			deleteSuccessProviders(gasRes, tempRes)
 			throw e
 		}
+		logger.info("AGU with CUI: {} added successfully", creationAGU.cui)
+
+		logger.info("Scheduling chron tasks for AGU with CUI: {}", creationAGU.cui)
+		val providers = transactionManager.run {
+			it.providerRepository.getProviderByAGU(result.getSuccessOrThrow())
+		}
+		providers.forEach { provider ->
+			scheduleChron.scheduleChronTask(provider, provider.getProviderType().pollingFrequency)
+		}
+		logger.info("Chron tasks scheduled for AGU with CUI: {}", creationAGU.cui)
+
+		return result
 	}
 
 	/**
