@@ -4,6 +4,8 @@ import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.service.ServiceUtils.dummyAGUCreationDTO
 import aguDataSystem.server.service.ServiceUtils.dummyDNOName
 import aguDataSystem.server.service.agu.AGUService
+import aguDataSystem.server.service.chron.ChronService
+import aguDataSystem.server.service.chron.FetchService
 import aguDataSystem.server.service.dno.DNOService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.testUtils.SchemaManagementExtension
@@ -23,8 +25,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with valid data`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -39,8 +43,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid tank`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf())
 
@@ -56,11 +62,13 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU without any DNO`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
-		val aguService = AGUService(transactionManager, aguDomain)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		// act
-		val result = aguService.createAGU(creationAgu)
+		val result = aguService.createAGU(creationAgu).also(::println)
 
 		// assert
 		assert(result.isFailure())
@@ -70,8 +78,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid DNO`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -87,8 +97,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid coordinates`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -104,8 +116,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid cui`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -121,8 +135,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -138,8 +154,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid min level`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -155,8 +173,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid max level`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -172,8 +192,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid critical level`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -189,8 +211,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid levels`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -206,8 +230,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid load volume`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -223,8 +249,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid contact type`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(
 			tanks = listOf(ServiceUtils.dummyTank),
@@ -243,8 +271,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid contact name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(
 			tanks = listOf(ServiceUtils.dummyTank),
@@ -263,8 +293,10 @@ class AGUServiceTest {
 	@Test
 	fun `create AGU with invalid contact phone number`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(
 			tanks = listOf(ServiceUtils.dummyTank),
@@ -285,10 +317,12 @@ class AGUServiceTest {
 	// TODO
 
 	@Test
-	fun `get agu by its id`() = testWithTransactionManagerAndRollback {
+	fun `get agu by its id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
-		val dnoService = DNOService(it)
-		val aguService = AGUService(it, aguDomain)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -304,10 +338,12 @@ class AGUServiceTest {
 	}
 
 	@Test
-	fun `get agu by its id with invalid id`() = testWithTransactionManagerAndRollback {
+	fun `get agu by its id with invalid id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
-		val aguService = AGUService(it, aguDomain)
-		val dnoService = DNOService(it)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
@@ -322,10 +358,12 @@ class AGUServiceTest {
 	}
 
 	@Test
-	fun `get temperature measures by agu id and days`() = testWithTransactionManagerAndRollback {
+	fun `get temperature measures by agu id and days`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
-		val dnoService = DNOService(it)
-		val aguService = AGUService(it, aguDomain)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNOName
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 		val days = 2

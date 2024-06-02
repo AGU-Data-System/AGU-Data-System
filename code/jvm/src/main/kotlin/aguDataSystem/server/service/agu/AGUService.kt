@@ -131,12 +131,20 @@ class AGUService(
 			deleteSuccessProviders(gasRes, tempRes)
 			throw e
 		}
+		if (result.isFailure()) {
+			logger.error("Failed to add AGU with CUI: {}", creationAGU.cui)
+			deleteSuccessProviders(gasRes, tempRes)
+			return result
+		}
 		logger.info("AGU with CUI: {} added successfully", creationAGU.cui)
 
 		logger.info("Scheduling chron tasks for AGU with CUI: {}", creationAGU.cui)
 		val providers = transactionManager.run {
-			it.providerRepository.getProviderByAGU(result.getSuccessOrThrow())
-		}
+			if (result.isSuccess())
+				it.providerRepository.getProviderByAGU(result.getSuccessOrThrow())
+			else
+				null
+		} ?: return failure(AGUCreationError.ProviderError)
 		providers.forEach { provider ->
 			scheduleChron.scheduleChronTask(provider, provider.getProviderType().pollingFrequency)
 		}
