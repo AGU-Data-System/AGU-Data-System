@@ -3,7 +3,6 @@ package aguDataSystem.server.service.agu
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
-import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationOutputModel
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
@@ -19,7 +18,7 @@ import aguDataSystem.utils.Either
 /**
  * Result for creating an AGU
  */
-typealias AGUCreationResult = Either<AGUCreationError, AGUCreationOutputModel>
+typealias AGUCreationResult = Either<AGUCreationError, String>
 
 /**
  * Result for getting an AGU

@@ -2,6 +2,7 @@ package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationOutputModel
 import aguDataSystem.server.http.controllers.agu.models.addAgu.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.gasLevels.GasLevelsInputModel
@@ -74,7 +75,7 @@ class AguController(private val service: AGUService) {
 	fun create(@RequestBody aguInput: AGUCreationInputModel): ResponseEntity<*> {
 		return when (val res = service.createAGU(aguInput.toAGUCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value.cui)).body(res.value)
+			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value)).body(AGUCreationOutputModel(res.value))
 		}
 	}
 

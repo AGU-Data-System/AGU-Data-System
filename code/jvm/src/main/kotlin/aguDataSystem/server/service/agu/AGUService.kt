@@ -11,7 +11,6 @@ import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.tank.TankUpdateDTO
-import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationOutputModel
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
@@ -130,7 +129,7 @@ class AGUService(
 				)
 				logger.info("Temperature provider added to AGU with CUI: {}", creationAGU.cui)
 
-				success(AGUCreationOutputModel(creationAGU.cui))
+				success(creationAGU.cui)
 			}
 		} catch (e: Exception) {
 			logger.error("Failed to add AGU with CUI: {}", creationAGU.cui)
@@ -149,7 +148,7 @@ class AGUService(
 		logger.info("Scheduling chron tasks for AGU with CUI: {}", creationAGU.cui)
 		val providers = transactionManager.run {
 			if (result.isSuccess())
-				it.providerRepository.getProviderByAGU(result.getSuccessOrThrow().cui)
+				it.providerRepository.getProviderByAGU(result.getSuccessOrThrow())
 			else
 				null
 		} ?: return failure(AGUCreationError.ProviderError)
