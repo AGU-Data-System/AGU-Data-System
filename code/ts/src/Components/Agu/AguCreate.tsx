@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import {Button, Container, Grid, MenuItem, TextField, Typography} from '@mui/material';
+import { Button, Container, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import { ReturnButton } from "../Layouts/Buttons";
@@ -8,7 +8,9 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { aguService } from "../../services/agu/aguService";
 import { useNavigate } from "react-router-dom";
 import { AguCreateInputModel, AguCreateWithoutTanksAndContactsModel, ContactCreateInputModel, TankCreateInputModel } from "../../services/agu/models/createAguInputModel";
-import {Problem} from "../../utils/Problem";
+import { Problem } from "../../utils/Problem";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const contact_types = [
     {
@@ -33,7 +35,7 @@ const initialAGUData: AguCreateWithoutTanksAndContactsModel = {
     locationName: '',
     dnoName: '',
     gasLevelUrl: '',
-    image: '',
+    image: [],
     isFavorite: false,
     notes: '',
 };
@@ -44,6 +46,16 @@ export default function AguCreate() {
     const [tankData, setTankData] = useState<TankCreateInputModel[]>([]);
     const [contacts, setContacts] = useState<ContactCreateInputModel[]>([]);
     const [aguData, setAGUData] = useState<AguCreateWithoutTanksAndContactsModel>(initialAGUData);
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+
+    const handleOpenSnackbar = (message: string, severity: string) => {
+        setMessage(message);
+        setSnackbarSeverity(severity as 'success' | 'error');
+        setOpen(true);
+    };
 
     const handleAGUChange = (prop: keyof typeof aguData) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setAGUData({ ...aguData, [prop]: event.target.value });
@@ -117,35 +129,20 @@ export default function AguCreate() {
                 isFavorite: false,
                 notes: '',
             }
-            console.log('AGU data:', aguDataInput);
             const createAGUResponse = await aguService.createAgu(aguDataInput);
 
             if (createAGUResponse.value instanceof Error) {
-                console.error('Error creating AGU:', createAGUResponse);
+                handleOpenSnackbar(createAGUResponse.value.message, 'error');
                 return;
             } else if (createAGUResponse.value instanceof Problem) {
-                console.error('Error creating AGU:', createAGUResponse.value.title);
+                handleOpenSnackbar(createAGUResponse.value.title, 'error');
                 return;
             } else {
-                console.log('AGU created:', createAGUResponse);
-
-                setAGUData(initialAGUData);
-
-                setTankData([]);
-                setContacts([]);
-
-                // Show success message
-                alert('AGU created successfully!');
-
-                // Redirect to AGU details page
-                navigate(`/uag/${createAGUResponse.value.cui}`);
+                handleOpenSnackbar('AGU created successfully', 'success');
             }
         }
 
-        fetchCreateAGU().then(
-            () => console.log('AGU created successfully!'),
-            (error) => console.error('Error creating AGU:', error)
-        )
+        fetchCreateAGU()
     };
 
     return (
@@ -380,6 +377,20 @@ export default function AguCreate() {
                     </Grid>
                 </Grid>
             </form>
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                onClose={() => setOpen(false)}
+            >
+                <MuiAlert
+                    elevation={6}
+                    variant="filled"
+                    onClose={() => setOpen(false)}
+                    severity={snackbarSeverity}
+                >
+                    {message}
+                </MuiAlert>
+            </Snackbar>
         </Container>
     );
 }

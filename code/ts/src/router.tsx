@@ -21,7 +21,7 @@ const createRouter = (isDarkMode: boolean, toggleTheme: () => void) =>
             children: [
                 {
                     path: '/',
-                    element: <Home />,
+                    element: <Home darkMode={isDarkMode} />,
                 },
                 {
                     path: '/uag/create',

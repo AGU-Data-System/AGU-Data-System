@@ -10,7 +10,7 @@ interface AguCreateInputModel {
     locationName: string;
     dnoName: string;
     gasLevelUrl: string;
-    image: string;
+    image: string[];
     tanks: TankCreateInputModel[];
     contacts: ContactCreateInputModel[];
     isFavorite: boolean;
@@ -29,7 +29,7 @@ interface AguCreateWithoutTanksAndContactsModel {
     locationName: string;
     dnoName: string;
     gasLevelUrl: string;
-    image: string;
+    image: string[];
     isFavorite: boolean;
     notes: string;
 }

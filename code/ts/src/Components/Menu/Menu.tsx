@@ -4,7 +4,7 @@ import { Grid } from '@mui/material';
 import { ControlMenuLeft, ControlMenuRight } from '../ControlMenu/ControlMenu';
 import LeafletMap from "../Map/LeafletMap";
 
-export default function Menu() {
+export default function Menu({ darkMode }: { darkMode: boolean }) {
     const [filter, setFilter] = useState<string>('');
 
     return (
@@ -13,7 +13,7 @@ export default function Menu() {
                 <ControlMenuLeft />
             </Grid>
             <Grid item xs={4}>
-                <LeafletMap filter={filter} />
+                <LeafletMap filter={filter} darkMode={darkMode} />
             </Grid>
             <Grid item xs={4}>
                 <ControlMenuRight setFilter={setFilter} />

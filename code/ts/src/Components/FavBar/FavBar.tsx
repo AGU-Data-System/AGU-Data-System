@@ -84,7 +84,8 @@ export default function FavBar() {
                                 borderWidth: '6px',
                                 margin: 2,
                                 '&:hover': {
-                                    backgroundColor: 'rgba(255,165,0,0.49)'
+                                    backgroundColor: 'rgba(255,165,0,0.49)',
+                                    cursor: 'pointer',
                                 }
                             }}
                             onClick={() => navigate(`/uag/${uag.cui}`)}

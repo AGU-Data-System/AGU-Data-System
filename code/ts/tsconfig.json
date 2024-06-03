@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "jsx": "react",
-        "target": "ES6",
+        "target": "ES2017",
         "moduleResolution": "node",
         "strict": true,
         "noImplicitAny": true,
@@ -9,5 +9,6 @@
             "node_modules/@types",
             "src/utils/types"
         ],
+        "lib": ["dom", "es2017"]
     }
 }

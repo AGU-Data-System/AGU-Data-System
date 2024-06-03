@@ -28,7 +28,7 @@ const CENTROLATMIN = 38.3;
 const SULLATMAX = 38.3;
 const SULLATMIN = 36.9;
 
-export default function LeafletMap({ filter }: { filter: string }) {
+export default function LeafletMap({ filter, darkMode }: { filter: string, darkMode: boolean }) {
     const [state, setState] = useState<MapState>({ type: 'loading' });
 
     useEffect(() => {
@@ -99,7 +99,7 @@ export default function LeafletMap({ filter }: { filter: string }) {
     return (
         <MapContainer center={centerOfPortugal} zoom={7} scrollWheelZoom={true}>
             <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                url={darkMode ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
             />
             {state.uagsDetails.map((marker, index) => (
                 <Marker key={index} position={[marker.location.latitude, marker.location.longitude]} icon={icon}>

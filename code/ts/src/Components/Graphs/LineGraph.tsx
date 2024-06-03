@@ -65,15 +65,16 @@ export default function LineGraph({ data }: { data: TemperatureOutputModel[] }) 
 
     const monthYearLabel = getMonthYearLabel(data);
 
-    const maxTemperature = Math.max(...data.map(item => item.max));
-    const yAxisMaxValue = maxTemperature + 1;
+    const minTemperature = Math.min(...formattedData.map(item => item.min));
+    const maxTemperature = Math.max(...formattedData.map(item => item.max));
 
     const chartSetting = {
         yAxis: [
             {
                 label: 'Temperatura (°C)',
-                max: yAxisMaxValue,
-                min: 0, // TODO - From [-10, 50]
+                max: Math.ceil(maxTemperature / 10) * 10,
+                min: Math.floor(minTemperature / 10) * 10,
+                zeroSegmentedLine: true,
             },
         ],
         sx: {
