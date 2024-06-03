@@ -8,8 +8,13 @@ import aguDataSystem.server.http.controllers.agu.models.input.gasLevels.GasLevel
 import aguDataSystem.server.http.controllers.agu.models.input.updateAgu.UpdateFavouriteAGUInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.updateNotes.NotesInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.updateTank.TankUpdateInputModel
-import aguDataSystem.server.http.controllers.agu.models.output.addAgu.AGUCreationOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.getAll.AGUBasicInfoListOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUBasicInfoListOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUCreationOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.contact.AddContactOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.provider.GasMeasureListOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.provider.TemperatureMeasureListOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.tank.AddTankOutputModel
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
@@ -67,7 +72,7 @@ class AguController(private val service: AGUService) {
 	fun getById(@PathVariable aguCui: String): ResponseEntity<*> {
 		return when (val res = service.getAGUById(aguCui)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(AGUOutputModel(res.value))
 		}
 	}
 
@@ -99,7 +104,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.getTemperatureMeasures(aguCui, days)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(TemperatureMeasureListOutputModel(res.value))
 		}
 	}
 
@@ -120,7 +125,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.getDailyGasMeasures(aguCui, days, time)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(GasMeasureListOutputModel(res.value))
 		}
 	}
 
@@ -138,7 +143,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.getHourlyGasMeasures(aguCui, day)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(GasMeasureListOutputModel(res.value))
 		}
 	}
 
@@ -158,7 +163,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.getPredictionGasLevels(aguCui, days, time)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(GasMeasureListOutputModel(res.value))
 		}
 	}
 
@@ -185,7 +190,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.updateFavouriteState(aguCui, aguFavouriteInput.isFavourite)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(AGUOutputModel(res.value))
 		}
 	}
 
@@ -203,7 +208,9 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.addContact(aguCui, contact.toContactCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.created(URIs.Agu.contactByID(aguCui, res.value)).body(res.value)
+			is Success -> ResponseEntity
+				.created(URIs.Agu.contactByID(aguCui, res.value))
+				.body(AddContactOutputModel(res.value))
 		}
 	}
 
@@ -238,27 +245,29 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.addTank(aguCui, tankInput.toTank())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.created(URIs.Agu.tankByID(aguCui, res.value)).body(res.value)
+			is Success -> ResponseEntity
+				.created(URIs.Agu.tankByID(aguCui, res.value))
+				.body(AddTankOutputModel(res.value))
 		}
 	}
 
 	/**
-	 * Changes a tank in an AGU
+	 * Updates a tank in an AGU
 	 *
 	 * @param aguCui the CUI of the AGU to change the tank in
 	 * @param tankNumber the number of the tank to change
 	 * @param tankInput the new tank info to change to
-	 * @return the changed Tank
+	 * @return the AGU with the changed tank
 	 */
 	@PutMapping(URIs.Agu.TANK_BY_ID)
-	fun changeTank(
+	fun updateTank(
 		@PathVariable aguCui: String,
 		@PathVariable tankNumber: Int,
 		@RequestBody tankInput: TankUpdateInputModel
 	): ResponseEntity<*> {
 		return when (val res = service.updateTank(aguCui, tankNumber, tankInput.toTankUpdateDTO())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(AGUOutputModel(res.value))
 		}
 	}
 
@@ -276,7 +285,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.updateGasLevels(aguCui, gasLevels.toGasLevelsDTO())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(AGUOutputModel(res.value))
 		}
 	}
 
@@ -294,7 +303,7 @@ class AguController(private val service: AGUService) {
 	): ResponseEntity<*> {
 		return when (val res = service.updateNotes(aguCui, notesInputModel.notes)) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.ok(res.value)
+			is Success -> ResponseEntity.ok(AGUOutputModel(res.value))
 		}
 	}
 

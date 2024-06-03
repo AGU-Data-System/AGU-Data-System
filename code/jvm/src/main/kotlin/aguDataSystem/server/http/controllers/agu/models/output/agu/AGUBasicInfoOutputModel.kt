@@ -1,6 +1,8 @@
-package aguDataSystem.server.http.controllers.agu.models.output.getAll
+package aguDataSystem.server.http.controllers.agu.models.output.agu
 
 import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.http.controllers.agu.models.output.dno.DNOOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.location.LocationOutputModel
 
 /**
  * Output model for AGU basic info

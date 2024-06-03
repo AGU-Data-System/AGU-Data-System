@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.output.getAll
+package aguDataSystem.server.http.controllers.agu.models.output.agu
 
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 
@@ -13,7 +13,7 @@ data class AGUBasicInfoListOutputModel(
 	val size: Int
 ) {
 	constructor(agus: List<AGUBasicInfo>) : this(
-		agus.map { AGUBasicInfoOutputModel(it) },
-		agus.size
+		agusBasicInfo = agus.map { AGUBasicInfoOutputModel(it) },
+		size = agus.size
 	)
 }

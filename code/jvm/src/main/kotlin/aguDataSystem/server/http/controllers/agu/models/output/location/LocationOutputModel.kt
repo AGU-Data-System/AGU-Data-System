@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.output.getAll
+package aguDataSystem.server.http.controllers.agu.models.output.location
 
 import aguDataSystem.server.domain.Location
 

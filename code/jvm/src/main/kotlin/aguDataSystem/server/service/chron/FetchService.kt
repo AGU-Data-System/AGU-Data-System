@@ -4,7 +4,7 @@ import aguDataSystem.server.Environment
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.Measure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
-import aguDataSystem.server.domain.measure.toGasReadings
+import aguDataSystem.server.domain.measure.toGasMeasures
 import aguDataSystem.server.domain.measure.toTemperatureMeasures
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
@@ -75,7 +75,7 @@ class FetchService(
 
 				ProviderType.GAS -> it.gasRepository.addGasMeasuresToProvider(
 					providerId = provider.id,
-					gasMeasures = data.toGasReadings()
+					gasMeasures = data.toGasMeasures()
 				)
 			}
 			logger.info("Saved data from provider: {} to database", provider.id)

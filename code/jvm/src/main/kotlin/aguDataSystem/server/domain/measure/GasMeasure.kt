@@ -20,7 +20,7 @@ data class GasMeasure(
  * @receiver The list of measures to convert.
  * @return The list of gas measures.
  */
-fun List<Measure>.toGasReadings(): List<GasMeasure> {
+fun List<Measure>.toGasMeasures(): List<GasMeasure> {
 	if (this.all { it is GasMeasure }) {
 		return this.map { it as GasMeasure }
 	} else {
