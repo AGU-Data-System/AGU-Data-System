@@ -41,14 +41,14 @@ export function ControlMenuLeft() {
     );
 }
 
-export function ControlMenuRight() {
+export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) => void }) {
     return (
         <Card>
             <CardContent>
                 <Typography variant="h5" component="div">
                     Menu de Acessibilidade
                 </Typography>
-                <br/>
+                <br />
                 <div
                     style={{
                         display: "flex",
@@ -57,37 +57,49 @@ export function ControlMenuRight() {
                         justifyContent: "flex-start",
                     }}
                 >
-                    <Button variant="contained" sx={{
-                        margin: '8px',
-                        backgroundColor: 'rgb(255, 165, 0)',
-                        height: '100%',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255,165,0,0.49)',
-                        },
-                    }} onClick={() => console.log("Norte")}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => setFilter("norte")}
+                    >
                         Norte
                     </Button>
-                    <Button variant="contained" sx={{
-                        margin: '8px',
-                        backgroundColor: 'rgb(255, 165, 0)',
-                        height: '100%',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255,165,0,0.49)',
-                        },
-                    }} onClick={() => console.log("Centro")}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => setFilter("centro")}
+                    >
                         Centro
                     </Button>
-                    <Button variant="contained" sx={{
-                        margin: '8px',
-                        backgroundColor: 'rgb(255, 165, 0)',
-                        height: '100%',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255,165,0,0.49)',
-                        },
-                    }} onClick={() => console.log("Sul")}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => setFilter("sul")}
+                    >
                         Sul
                     </Button>
                 </div>
@@ -99,31 +111,54 @@ export function ControlMenuRight() {
                         justifyContent: "flex-start",
                     }}
                 >
-                    <Button variant="contained" sx={{
-                        margin: '8px',
-                        backgroundColor: 'rgb(255, 165, 0)',
-                        height: '100%',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255,165,0,0.49)',
-                        },
-                    }} onClick={() => console.log("Sonorgas")}>
-                        Sonorgas
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => setFilter("sng")}
+                    >
+                        Sonorgás
                     </Button>
-                    <Button variant="contained" sx={{
-                        margin: '8px',
-                        backgroundColor: 'rgb(255, 165, 0)',
-                        height: '100%',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255,165,0,0.49)',
-                        },
-                    }} onClick={() => console.log("Floene")}>
-                        Floene
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => setFilter("tgg")}
+                    >
+                        Tagusgás
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => setFilter("dur")}
+                    >
+                        Duriensegás
                     </Button>
                 </div>
-                <br/>
-                <Divider orientation="horizontal" flexItem/>
+                <br />
+                <Divider orientation="horizontal" flexItem />
             </CardContent>
         </Card>
     );

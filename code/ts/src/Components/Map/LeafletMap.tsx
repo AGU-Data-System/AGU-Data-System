@@ -10,7 +10,7 @@ import { AgusBasicInfoOutputModel } from "../../services/agu/models/aguOutputMod
 import { Box, CircularProgress } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { MapError } from "../Layouts/Error";
-import {Problem} from "../../utils/Problem";
+import { Problem } from "../../utils/Problem";
 
 const centerOfPortugal = [39.483068778739025, -8.09333730633312];
 
@@ -19,7 +19,16 @@ type MapState =
     | { type: 'error'; message: string }
     | { type: 'success'; uagsDetails: AgusBasicInfoOutputModel[] };
 
-export default function LeafletMap() {
+const NORTLATMAX = 43;
+const NORTLATMIN = 40.5;
+
+const CENTROLATMAX = 40.5;
+const CENTROLATMIN = 38.3;
+
+const SULLATMAX = 38.3;
+const SULLATMIN = 36.9;
+
+export default function LeafletMap({ filter }: { filter: string }) {
     const [state, setState] = useState<MapState>({ type: 'loading' });
 
     useEffect(() => {
@@ -34,14 +43,32 @@ export default function LeafletMap() {
             } else if (getAGUsResponse.value instanceof Problem) {
                 setState({ type: 'error', message: getAGUsResponse.value.title });
             } else {
-                setState({
-                    type: 'success',
-                    uagsDetails: getAGUsResponse.value,
-                });
+                switch (filter.toLowerCase()) {
+                    case 'norte':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.location.latitude < NORTLATMAX && uag.location.latitude > NORTLATMIN) });
+                        break;
+                    case 'centro':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.location.latitude <= CENTROLATMAX && uag.location.latitude >= CENTROLATMIN) });
+                        break;
+                    case 'sul':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.location.latitude < SULLATMAX && uag.location.latitude > SULLATMIN) });
+                        break;
+                    case 'sng':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.dno.name.toLowerCase() === 'sng') });
+                        break;
+                    case 'tgg':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.dno.name.toLowerCase() === 'tgg') });
+                        break;
+                    case 'dur':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.dno.name.toLowerCase() === 'dur') });
+                        break;
+                    default:
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value });
+                }
             }
         }
         fetchGetAGUs();
-    }, []);
+    }, [filter]);
 
     const icon = new L.Icon({
         iconUrl: markerIcon,
