@@ -169,7 +169,7 @@ class AguController(private val service: AGUService) {
 	 */
 	@GetMapping(URIs.Agu.GET_FAVOURITE_AGUS)
 	fun getFavouriteAGUs(): ResponseEntity<*> {
-		return ResponseEntity.ok(service.getFavouriteAGUs())
+		return ResponseEntity.ok(AGUBasicInfoListOutputModel(service.getFavouriteAGUs()))
 	}
 
 	/**

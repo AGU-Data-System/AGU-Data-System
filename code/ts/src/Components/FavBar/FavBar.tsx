@@ -28,7 +28,7 @@ export default function FavBar() {
             } else if (favAugs.value instanceof Problem) {
                 setState({ type: 'error', message: favAugs.value.detail });
             } else {
-                setState({type: 'success', uagsDetails: favAugs.value});
+                setState({type: 'success', uagsDetails: favAugs.value.agusBasicInfo});
             }
         }
         getFavAgus();

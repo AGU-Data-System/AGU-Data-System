@@ -45,25 +45,25 @@ export default function LeafletMap({ filter, darkMode }: { filter: string, darkM
             } else {
                 switch (filter.toLowerCase()) {
                     case 'norte':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.location.latitude < NORTLATMAX && uag.location.latitude > NORTLATMIN) });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.location.latitude <= NORTLATMAX && uag.location.latitude >= NORTLATMIN) });
                         break;
                     case 'centro':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.location.latitude <= CENTROLATMAX && uag.location.latitude >= CENTROLATMIN) });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.location.latitude <= CENTROLATMAX && uag.location.latitude >= CENTROLATMIN) });
                         break;
                     case 'sul':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.location.latitude < SULLATMAX && uag.location.latitude > SULLATMIN) });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.location.latitude < SULLATMAX && uag.location.latitude > SULLATMIN) });
                         break;
                     case 'sng':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.dno.name.toLowerCase() === 'sng') });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.name.toLowerCase() === 'sng') });
                         break;
                     case 'tgg':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.dno.name.toLowerCase() === 'tgg') });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.name.toLowerCase() === 'tgg') });
                         break;
                     case 'dur':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.filter(uag => uag.dno.name.toLowerCase() === 'dur') });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.name.toLowerCase() === 'dur') });
                         break;
                     default:
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo });
                 }
             }
         }

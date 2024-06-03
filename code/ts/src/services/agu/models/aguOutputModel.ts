@@ -80,4 +80,9 @@ interface AgusBasicInfoOutputModel {
     };
 }
 
-export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel };
+interface AgusBasicInfoListOutputModel {
+    agusBasicInfo: AgusBasicInfoOutputModel[];
+    size: number;
+}
+
+export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel, AgusBasicInfoListOutputModel };

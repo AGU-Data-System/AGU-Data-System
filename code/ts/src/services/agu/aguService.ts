@@ -3,7 +3,9 @@ import { Either } from "../../utils/Either";
 import {
     AguDetailsOutputModel,
     AguOutputModel,
-    AgusBasicInfoOutputModel, ContactInputModel, TankInputModel
+    AgusBasicInfoListOutputModel,
+    ContactInputModel,
+    TankInputModel
 } from "./models/aguOutputModel";
 import { AguCreateInputModel } from "./models/createAguInputModel";
 import {Problem} from "../../utils/Problem";
@@ -11,7 +13,7 @@ import TemperatureOutputModel from "./models/temperatureOutputModel";
 import { GasOutputModel, LevelsInputModel } from "./models/gasOutputModel";
 
 export namespace aguService {
-    export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoOutputModel[]>> {
+    export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoListOutputModel>> {
         const url = `/agus`;
         return fetchFunction(url, "GET");
     }
@@ -26,7 +28,7 @@ export namespace aguService {
         return fetchFunction(url, "POST", JSON.stringify(aguData));
     }
 
-    export async function getFavouriteAgus(): Promise<Either<Error | Problem, AgusBasicInfoOutputModel[]>> {
+    export async function getFavouriteAgus(): Promise<Either<Error | Problem, AgusBasicInfoListOutputModel>> {
         const url = `/agus/favourites`;
         return fetchFunction(url, "GET");
     }
