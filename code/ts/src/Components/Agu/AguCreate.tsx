@@ -139,6 +139,7 @@ export default function AguCreate() {
                 return;
             } else {
                 handleOpenSnackbar('AGU created successfully', 'success');
+                navigate(`/uag/${createAGUResponse.value.cui}`);
             }
         }
 

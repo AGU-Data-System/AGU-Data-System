@@ -122,30 +122,38 @@ export default function AguBody(
             <Grid item xs={6} sx={{ width: '100%' }}>
                 <Card>
                     <CardContent>
-                        {tempState.type === 'loading' && gasState.type === 'loading' && (
-                            <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                                <Typography variant="h5" gutterBottom>Loading...</Typography>
-                                <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
-                            </Box>
-                        )}
-                        {tempState.type === 'error' && gasState.type === 'error' && (
-                            <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                        <Box>
+                            {tempState.type === 'loading' && (
+                                <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                                    <Typography variant="h5" gutterBottom>Loading...</Typography>
+                                    <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
+                                </Box>
+                            )}
+                            {gasState.type === 'loading' && (
+                                <Box sx={{ margin: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                                    <Typography variant="h5" gutterBottom>Loading...</Typography>
+                                    <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }}/>
+                                </Box>
+                            )}
+                            {tempState.type === 'error' && (
                                 <TemperatureError message={tempState.message} />
-                                <GasError message={tempState.message} />
-                            </Box>
-                        )}
-                        {tempState.type === 'success' && tempState.tempData.length > 0 && gasState.type === 'success' && gasState.gasData.length > 0 && (
-                            <Box>
+                            )}
+                            {gasState.type === 'error' && (
+                                <GasError message={gasState.message} />
+                            )}
+                            {tempState.type === 'success' && tempState.tempData.length > 0 && (
                                 <LineGraph data={tempState.tempData} />
+                            )}
+                            {gasState.type === 'success' && gasState.gasData.length > 0 && (
                                 <BarGraph data={gasState.gasData} aguCui={aguCui} aguMin={lvlMin} aguMax={lvlMax} aguCrit={lvlCrit}/>
-                            </Box>
-                        )}
-                        {tempState.type === 'success' && tempState.tempData.length === 0 && (
-                            <Typography variant="h5" gutterBottom>Sem data de temperatura</Typography>
-                        )}
-                        {gasState.type === 'success' && gasState.gasData.length === 0 && (
-                            <Typography variant="h5" gutterBottom>Sem data de gás</Typography>
-                        )}
+                            )}
+                            {tempState.type === 'success' && tempState.tempData.length === 0 && (
+                                <Typography variant="h5" gutterBottom>Sem data de temperatura</Typography>
+                            )}
+                            {gasState.type === 'success' && gasState.gasData.length === 0 && (
+                                <Typography variant="h5" gutterBottom>Sem data de gás</Typography>
+                            )}
+                        </Box>
                     </CardContent>
                 </Card>
             </Grid>

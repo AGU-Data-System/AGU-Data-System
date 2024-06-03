@@ -34,6 +34,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The AGU already exists with the given CUI."
 		)
 
+		val AGUNameAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "agu-name-already-exists"),
+			title = "AGU Name Already Exists.",
+			details = "The AGU already exists with the given name."
+		)
+
 		val InvalidCUI = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-cui"),
 			title = "Invalid CUI.",

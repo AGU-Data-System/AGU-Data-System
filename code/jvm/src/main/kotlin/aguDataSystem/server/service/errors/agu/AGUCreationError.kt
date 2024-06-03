@@ -18,6 +18,7 @@ package aguDataSystem.server.service.errors.agu
  */
 sealed class AGUCreationError {
 	data object AGUAlreadyExists : AGUCreationError()
+	data object AGUNameAlreadyExists : AGUCreationError()
 	data object InvalidCUI : AGUCreationError()
 	data object InvalidName : AGUCreationError()
 	data object InvalidDNO : AGUCreationError()

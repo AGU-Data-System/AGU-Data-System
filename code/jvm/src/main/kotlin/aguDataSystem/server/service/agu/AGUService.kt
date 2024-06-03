@@ -11,6 +11,7 @@ import aguDataSystem.server.domain.provider.ProviderInput
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.tank.TankUpdateDTO
+import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationOutputModel
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
@@ -98,7 +99,10 @@ class AGUService(
 			transactionManager.run {
 
 				if (getAGUById(creationAGU.cui).isSuccess())
-					failure(AGUCreationError.AGUAlreadyExists)
+					return@run failure(AGUCreationError.AGUAlreadyExists)
+
+				if (it.aguRepository.getCUIByName(creationAGU.name) != null)
+					return@run failure(AGUCreationError.AGUNameAlreadyExists)
 
 				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
 					?: return@run failure(AGUCreationError.InvalidDNO)
@@ -126,7 +130,7 @@ class AGUService(
 				)
 				logger.info("Temperature provider added to AGU with CUI: {}", creationAGU.cui)
 
-				success(creationAGU.cui)
+				success(AGUCreationOutputModel(creationAGU.cui))
 			}
 		} catch (e: Exception) {
 			logger.error("Failed to add AGU with CUI: {}", creationAGU.cui)
@@ -145,7 +149,7 @@ class AGUService(
 		logger.info("Scheduling chron tasks for AGU with CUI: {}", creationAGU.cui)
 		val providers = transactionManager.run {
 			if (result.isSuccess())
-				it.providerRepository.getProviderByAGU(result.getSuccessOrThrow())
+				it.providerRepository.getProviderByAGU(result.getSuccessOrThrow().cui)
 			else
 				null
 		} ?: return failure(AGUCreationError.ProviderError)

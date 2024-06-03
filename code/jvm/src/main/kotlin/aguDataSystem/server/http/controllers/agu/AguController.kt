@@ -74,7 +74,7 @@ class AguController(private val service: AGUService) {
 	fun create(@RequestBody aguInput: AGUCreationInputModel): ResponseEntity<*> {
 		return when (val res = service.createAGU(aguInput.toAGUCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value)).body(res.value)
+			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value.cui)).body(res.value)
 		}
 	}
 
@@ -339,6 +339,10 @@ class AguController(private val service: AGUService) {
 			AGUCreationError.AGUAlreadyExists -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.AGUAlreadyExists
+			)
+			AGUCreationError.AGUNameAlreadyExists -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.AGUNameAlreadyExists
 			)
 		}
 
