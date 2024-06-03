@@ -336,6 +336,10 @@ class AguController(private val service: AGUService) {
 			AGUCreationError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
 			AGUCreationError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
 			AGUCreationError.InvalidName -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidName)
+			AGUCreationError.AGUAlreadyExists -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.AGUAlreadyExists
+			)
 		}
 
 	/**

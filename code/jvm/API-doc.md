@@ -23,7 +23,7 @@ As of current implementation, the API does not support pagination, due to the qu
 
 The API has the following endpoints:
 
-###   
+###    
 
 - **URL:** ``
 - **Method:** ``

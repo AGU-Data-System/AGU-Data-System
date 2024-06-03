@@ -28,6 +28,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			.header("Content-Type", MEDIA_TYPE)
 			.body<Any>(problem)
 
+		val AGUAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "agu-already-exists"),
+			title = "AGU Already Exists.",
+			details = "The AGU already exists with the given CUI."
+		)
+
 		val InvalidCUI = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-cui"),
 			title = "Invalid CUI.",

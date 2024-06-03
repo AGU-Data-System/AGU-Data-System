@@ -96,6 +96,10 @@ class AGUService(
 
 		val result = try {
 			transactionManager.run {
+
+				if (getAGUById(creationAGU.cui).isSuccess())
+					failure(AGUCreationError.AGUAlreadyExists)
+
 				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
 					?: return@run failure(AGUCreationError.InvalidDNO)
 
