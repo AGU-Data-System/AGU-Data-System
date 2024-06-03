@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.gasLevels
+package aguDataSystem.server.http.controllers.agu.models.input.gasLevels
 
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.gasLevels.GasLevelsDTO

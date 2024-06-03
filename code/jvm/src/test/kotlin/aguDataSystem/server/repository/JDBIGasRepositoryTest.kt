@@ -35,8 +35,7 @@ class JDBIGasRepositoryTest {
 		val tank = dummyTank
 		val providerId = 1
 		val gasMeasures = dummyGasMeasures
-		val time = gasMeasures.first().predictionFor?.toLocalTime()
-		requireNotNull(time)
+		val day = gasMeasures.first().timestamp.toLocalDate()
 
 		val dnoId = dnoRepository.addDNO(dnoName)
 		aguRepository.addAGU(agu, dnoId)
@@ -46,7 +45,8 @@ class JDBIGasRepositoryTest {
 		// act
 		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
-		val sut = gasRepository.getGasMeasures(providerId, gasMeasures.size, time)
+		val sut = gasRepository.getGasMeasures(providerId, day)
+		// TODO check this
 
 		// assert
 		assert(gasMeasures.containsAll(sut))

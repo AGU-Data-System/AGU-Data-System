@@ -1,9 +1,9 @@
-package aguDataSystem.server.http.controllers.agu.models.addAgu
+package aguDataSystem.server.http.controllers.agu.models.input.addAGU
 
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.gasLevels.GasLevels
-import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
 
 /**
  * The input model for creating an AGU

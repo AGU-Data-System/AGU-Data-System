@@ -1,14 +1,15 @@
 package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
-import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.addAgu.AGUCreationOutputModel
-import aguDataSystem.server.http.controllers.agu.models.addAgu.TankCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.contact.ContactCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.gasLevels.GasLevelsInputModel
-import aguDataSystem.server.http.controllers.agu.models.updateAgu.UpdateFavouriteAGUInputModel
-import aguDataSystem.server.http.controllers.agu.models.updateNotes.NotesInputModel
-import aguDataSystem.server.http.controllers.agu.models.updateTank.TankUpdateInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.addAGU.AGUCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.addAGU.TankCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.gasLevels.GasLevelsInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.updateAgu.UpdateFavouriteAGUInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.updateNotes.NotesInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.updateTank.TankUpdateInputModel
+import aguDataSystem.server.http.controllers.agu.models.output.addAgu.AGUCreationOutputModel
+import aguDataSystem.server.http.controllers.agu.models.output.getAll.AGUBasicInfoListOutputModel
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
@@ -48,7 +49,12 @@ class AguController(private val service: AGUService) {
 	 */
 	@GetMapping
 	fun getAll(): ResponseEntity<*> {
-		return ResponseEntity.ok(service.getAGUsBasicInfo())
+		val agus = service.getAGUsBasicInfo()
+		return if (agus.isEmpty()) {
+			Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+		} else {
+			ResponseEntity.ok(AGUBasicInfoListOutputModel(agus))
+		}
 	}
 
 	/**
@@ -341,6 +347,7 @@ class AguController(private val service: AGUService) {
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.AGUAlreadyExists
 			)
+
 			AGUCreationError.AGUNameAlreadyExists -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.AGUNameAlreadyExists

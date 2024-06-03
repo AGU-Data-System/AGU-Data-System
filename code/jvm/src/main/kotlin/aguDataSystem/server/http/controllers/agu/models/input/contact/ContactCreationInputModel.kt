@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.contact
+package aguDataSystem.server.http.controllers.agu.models.input.contact
 
 import aguDataSystem.server.domain.contact.ContactCreationDTO
 

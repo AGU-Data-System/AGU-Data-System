@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.addAgu
+package aguDataSystem.server.http.controllers.agu.models.input.addAGU
 
 import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.tank.Tank

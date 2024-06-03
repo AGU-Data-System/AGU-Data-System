@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.updateNotes
+package aguDataSystem.server.http.controllers.agu.models.input.updateNotes
 
 import aguDataSystem.server.domain.agu.AGU
 
