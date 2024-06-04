@@ -16,10 +16,32 @@
   - [Contact Creation Input Model](#contact-creation-input-model)
   - [AGU Creation Input Model](#agu-creation-input-model)
 - [Output Models](#output-models)
-  - [Location Output Model](#location-output-model)
-  - [DNO Output Model](#dno-output-model)
-  - [AGU Basic Info Output Model](#agu-basic-info-output-model)
-  - [AGU Basic Info List Output Model](#agu-basic-info-list-output-model)
+  - [AGU Output Models](#agu-output-models)
+    - [AGU Basic Info Output Model](#agu-basic-info-output-model)
+    - [AGU Basic Info List Output Model](#agu-basic-info-list-output-model)
+    - [AGU Creation Output Model](#agu-creation-output-model)
+    - [AGU Output Model](#agu-output-model)
+  - [Contact Output Models](#contact-output-models)
+    - [Add Contact Output Model](#add-contact-output-model)
+    - [Contact List Output Model](#contact-list-output-model)
+    - [Contact Output Model](#contact-output-model)
+  - [DNO Output Models](#dno-output-models)
+    - [DNO Output Model](#dno-output-model)
+  - [Gas Levels Output Models](#gas-levels-output-models)
+    - [Gas Levels Output Model](#gas-levels-output-model)
+  - [Location Output Models](#location-output-models)
+    - [Location Output Model](#location-output-model)
+  - [Provider Output Models](#provider-output-models)
+    - [Gas Measure List Output Model](#gas-measure-list-output-model)
+    - [Gas Measure Output Model](#gas-measure-output-model)
+    - [Provider List Output Model](#provider-list-output-model)
+    - [Provider Output Model](#provider-output-model)
+    - [Temperature Measure List Output Model](#temperature-measure-list-output-model)
+    - [Temperature Measure Output Model](#temperature-measure-output-model)
+  - [Tank Output Models](#tank-output-models)
+    - [Add Tank Output Model](#add-tank-output-model)
+    - [Tank List Output Model](#tank-list-output-model)
+    - [Tank Output Model](#tank-output-model)
 - [Error Handling](#error-handling)
   - [Bad Request](#bad-request)
 
@@ -241,41 +263,9 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 ## Output Models
 
-### Location Output Model
+### AGU Output Models
 
-- **Type:** `application/json`
-- **Attributes:**
-    - **Required:**
-        - `name`: The name of the location.
-        - `latitude`: The latitude of the location.
-        - `longitude`: The longitude of the location.
-
-- **Example:** 
-```json
-{
-    "name": "string",
-    "latitude": 0.0,
-    "longitude": 0.0
-}
-```
-
-### DNO Output Model
-
-- **Type:** `application/json`
-- **Attributes:**
-    - **Required:**
-        - `id`: The id of the DNO.
-        - `name`: The name of the DNO.
-
-- **Example:** 
-```json
-{
-    "id": 0,
-    "name": "string"
-}
-```
-
-### AGU Basic Info Output Model
+#### AGU Basic Info Output Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -302,7 +292,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 }
 ```
 
-### AGU Basic Info List Output Model
+#### AGU Basic Info List Output Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -329,6 +319,487 @@ AGU Endpoint is responsible for managing AGUs in the system.
         }
     ],
     "size": 1
+}
+```
+
+#### AGU Creation Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `cui`: The CUI of the AGU.
+
+- **Example:**
+```json
+{
+    "cui": "string"
+}
+```
+
+#### AGU Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `cui`: The CUI of the AGU.
+        - `name`: The name of the AGU.
+        - `levels`: [Gas Levels Output Model](#gas-levels-output-model).
+        - `loadVolume`: The load volume of the AGU.
+        - `location`: [Location Output Model](#location-output-model).
+        - `dno`: [DNO Output Model](#dno-output-model).
+        - `image`: The image of the AGU.
+        - `contacts`: [Contact List Output Model](#contact-list-output-model).
+        - `tanks`: [Tank List Output Model](#tank-list-output-model).
+        - `providers`: [Provider List Output Model](#provider-list-output-model).
+        - `isFavorite`: The favorite status of the AGU.
+    - **Optional:**
+        - `notes`: The notes of the AGU.
+        - `training`: The training of the AGU.
+
+- **Example:**
+```json
+{
+    "cui": "string",
+    "name": "string",
+    "levels": {
+        "min": 0,
+        "max": 0,
+        "critical": 0
+    },
+    "loadVolume": 0,
+    "location": {
+        "name": "string",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    "dno": {
+        "id": 0,
+        "name": "string"
+    },
+    "image": "byte[]",
+    "contacts": {
+        "contacts": [
+            {
+                "id": 0,
+                "name": "string",
+                "phone": "string",
+                "type": "emergency"
+            }
+        ],
+        "size": 1
+    },
+    "tanks": {
+        "tanks": [
+            {
+                "number": 0,
+                "levels": {
+                    "min": 0,
+                    "max": 0,
+                    "critical": 0
+                },
+                "loadVolume": 0,
+                "capacity": 0,
+                "correctionFactor": 0.0
+            }
+        ],
+        "size": 1
+    },
+    "providers": {
+        "providers": [
+            {
+                "id": 0,
+                "measures": {
+                    "gasMeasures": {
+                        "gasMeasures": [
+                            {
+                                "id": 0,
+                                "date": "2024-03-18T12:28:34.971+00:00",
+                                "level": 0
+                            }
+                        ],
+                        "size": 1
+                    },
+                    "temperatureMeasures": {
+                        "temperatureMeasures": [
+                            {
+                                "timestamp": "2024-03-18T12:28:34.971+00:00",
+                                "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                                "min": 0,
+                                "max": 0
+                            }
+                        ],
+                        "size": 1
+                    }
+                },
+                "lastFetch": "2024-03-18T12:28:34.971+00:00",
+                "type": "string"
+            }
+        ],
+        "size": 1
+    },
+    "isFavorite": true,
+    "notes": "string"
+}
+```
+
+### Contact Output Models
+
+#### Add Contact Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the contact.
+
+- **Example:**
+```json
+{
+    "id": 0
+}
+```
+
+#### Contact List Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `contacts`: [Contact Output Model](#contact-output-model) list.
+        - `size`: The size of the list.
+
+- **Example:**
+```json
+{
+    "contacts": [
+        {
+            "id": 0,
+            "name": "string",
+            "phone": "string",
+            "type": "emergency"
+        }
+    ],
+    "size": 1
+}
+```
+
+#### Contact Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the contact.
+        - `name`: The name of the contact.
+        - `phone`: The phone of the contact.
+        - `type`: The type of the contact.
+
+- **Example:**
+```json
+{
+    "id": 0,
+    "name": "xpto",
+    "phone": "123456789",
+    "type": "emergency"
+}
+```
+
+### DNO Output Models
+
+### DNO Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the DNO.
+        - `name`: The name of the DNO.
+
+- **Example:**
+```json
+{
+    "id": 0,
+    "name": "string"
+}
+```
+
+### Gas Levels Output Models
+
+#### Gas Levels Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `min`: The minimum level of the AGU.
+        - `max`: The maximum level of the AGU.
+        - `critical`: The critical level of the AGU.
+
+- **Example:**
+```json
+{
+    "min": 0,
+    "max": 0,
+    "critical": 0
+}
+```
+
+### Location Output Models
+
+#### Location Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `name`: The name of the location.
+        - `latitude`: The latitude of the location.
+        - `longitude`: The longitude of the location.
+
+- **Example:**
+```json
+{
+    "name": "string",
+    "latitude": 0.0,
+    "longitude": 0.0
+}
+```
+
+### Provider Output Models
+
+#### Gas Measure List Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `gasMeasures`: [Gas Measure Output Model](#gas-measure-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+```json
+{
+    "gasMeasures": [
+        {
+            "timestamp": "2024-03-18T12:28:34.971+00:00",
+            "predictionFor": "2024-03-18T12:28:34.971+00:00",
+            "level": 0,
+            "tankNumber": 0
+        }
+    ],
+    "size": 1
+}
+```
+
+#### Gas Measure Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `timestamp`: The timestamp of the measure.
+        - `predictionFor`: The prediction date of the measure if any.
+        - `level`: The level of the gas measure.
+        - `tankNumber`: The tank number of the gas measure.
+- **Example:**
+```json
+{
+    "timestamp": "2024-03-18T12:28:34.971+00:00",
+    "predictionFor": "2024-03-18T12:28:34.971+00:00",
+    "level": 0,
+    "tankNumber": 0
+}
+```
+
+#### Provider List Output Model
+data class ProviderListOutputModel(
+val providers: List<ProviderOutputModel>,
+val size: Int
+)
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `providers`: [Provider Output Model](#provider-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+```json
+{
+    "providers": [
+        {
+            "id": 0,
+            "measures": {
+                "gasMeasures": {
+                    "gasMeasures": [
+                        {
+                            "id": 0,
+                            "date": "2024-03-18T12:28:34.971+00:00",
+                            "level": 0
+                        }
+                    ],
+                    "size": 1
+                },
+                "temperatureMeasures": {
+                    "temperatureMeasures": [
+                        {
+                            "timestamp": "2024-03-18T12:28:34.971+00:00",
+                            "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                            "min": 0,
+                            "max": 0
+                        }
+                    ],
+                    "size": 1
+                }
+            },
+            "lastFetch": "2024-03-18T12:28:34.971+00:00",
+            "type": "string"
+        }
+    ],
+    "size": 1
+}
+```
+
+#### Provider Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the provider.
+        - `measures`: The measures of the provider.
+        - `lastFetch`: The last fetch of the provider.
+        - `type`: The type of the provider.
+- **Example:**
+```json
+{
+    "id": 0,
+    "measures": {
+        "gasMeasures": {
+            "gasMeasures": [
+                {
+                    "id": 0,
+                    "date": "2024-03-18T12:28:34.971+00:00",
+                    "level": 0
+                }
+            ],
+            "size": 1
+        },
+        "temperatureMeasures": {
+            "temperatureMeasures": [
+                {
+                    "timestamp": "2024-03-18T12:28:34.971+00:00",
+                    "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                    "min": 0,
+                    "max": 0
+                }
+            ],
+            "size": 1
+        }
+    },
+    "lastFetch": "2024-03-18T12:28:34.971+00:00",
+    "type": "string"
+}
+```
+
+#### Temperature Measure List Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `temperatureMeasures`: [Temperature Measure Output Model](#temperature-measure-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+```json
+{
+    "temperatureMeasures": [
+        {
+            "timestamp": "2024-03-18T12:28:34.971+00:00",
+            "predictionFor": "2024-03-18T12:28:34.971+00:00",
+            "min": 0,
+            "max": 10
+        }
+    ],
+    "size": 1
+}
+```
+
+#### Temperature Measure Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `timestamp`: The timestamp of the measure.
+        - `predictionFor`: The prediction date of the measure if any.
+        - `min`: The minimum temperature of the measure.
+        - `max`: The maximum temperature of the measure.
+- **Example:**
+```json
+{
+    "timestamp": "2024-03-18T12:28:34.971+00:00",
+    "predictionFor": "2024-03-18T12:28:34.971+00:00",
+    "min": 0,
+    "max": 10
+}
+```
+
+### Tank Output Models
+
+#### Add Tank Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `number`: The number of the tank.
+- **Example:**
+```json
+{
+    "number": 0
+}
+```
+
+#### Tank List Output Model
+data class TankListOutputModel(
+val tanks: List<TankOutputModel>,
+val size: Int
+)
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `tanks`: [Tank Output Model](#tank-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+```json
+{
+    "tanks": [
+        {
+            "number": 0,
+            "levels": {
+                "min": 0,
+                "max": 0,
+                "critical": 0
+            },
+            "loadVolume": 0,
+            "capacity": 0,
+            "correctionFactor": 0.0
+        }
+    ],
+    "size": 1
+}
+```
+
+#### Tank Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `number`: The number of the tank.
+        - `levels`: [Gas Levels Output Model](#gas-levels-output-model).
+        - `loadVolume`: The load volume of the tank.
+        - `capacity`: The capacity of the tank.
+        - `correctionFactor`: The correction factor of the tank.
+- **Example:**
+```json
+{
+    "number": 0,
+    "levels": {
+        "min": 0,
+        "max": 0,
+        "critical": 0
+    },
+    "loadVolume": 0,
+    "capacity": 0,
+    "correctionFactor": 0.0
 }
 ```
 
