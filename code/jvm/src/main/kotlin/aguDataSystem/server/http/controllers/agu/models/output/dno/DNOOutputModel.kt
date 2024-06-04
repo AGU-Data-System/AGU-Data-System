@@ -10,10 +10,12 @@ import aguDataSystem.server.domain.company.DNO
  */
 data class DNOOutputModel(
 	val id: Int,
-	val name: String
+	val name: String,
+	val region: String
 ) {
 	constructor(dno: DNO) : this(
 		id = dno.id,
-		name = dno.name
+		name = dno.name,
+		region = dno.region
 	)
 }
