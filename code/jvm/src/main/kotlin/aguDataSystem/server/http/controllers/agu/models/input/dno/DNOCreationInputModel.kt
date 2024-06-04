@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.input.addAGU
+package aguDataSystem.server.http.controllers.agu.models.input.dno
 
 import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.company.DNOCreationDTO

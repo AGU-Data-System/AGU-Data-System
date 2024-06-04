@@ -1,13 +1,13 @@
 package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
-import aguDataSystem.server.http.controllers.agu.models.input.addAGU.AGUCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.addAGU.TankCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.agu.AGUCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.gasLevels.GasLevelsInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.updateAgu.UpdateFavouriteAGUInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.updateNotes.NotesInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.updateTank.TankUpdateInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.agu.UpdateFavouriteAGUInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.agu.NotesInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.tank.TankUpdateInputModel
 import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUBasicInfoListOutputModel
 import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUCreationOutputModel
 import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUOutputModel

@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.controllers.agu.models.input.updateTank
+package aguDataSystem.server.http.controllers.agu.models.input.tank
 
 import aguDataSystem.server.domain.tank.TankUpdateDTO
 

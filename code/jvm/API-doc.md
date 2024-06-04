@@ -8,13 +8,19 @@
     - [AGU](#agu)
         - [Get All AGUs](#get-all-agus)
 - [Input Models](#input-models)
-    - [Update Tank Input Model](#update-tank-input-model)
-    - [Update Notes Input Model](#update-notes-input-model)
-    - [Update Favorite AGU Input Model](#update-favorite-agu-input-model)
-    - [Gas Levels Input model](#gas-levels-input-model)
-    - [Tank Creation Input Model](#tank-creation-input-model)
-    - [Contact Creation Input Model](#contact-creation-input-model)
-    - [AGU Creation Input Model](#agu-creation-input-model)
+    - [AGU Input Models](#agu-input-models)
+        - [AGU Creation Input Model](#agu-creation-input-model) 
+        - [Notes Input Model](#notes-input-model)
+        - [Update Favourite AGU Input Model](#update-favorite-agu-input-model)
+    - [Contact Input Models](#contact-input-models)
+        - [Contact Creation Input Model](#contact-creation-input-model)
+    - [DNO Input Models](#dno-input-models)
+        - [DNO Creation Input Model](#dno-creation-input-model)
+    - [Gas Levels Input Models](#gas-levels-input-models)
+        - [Gas Levels Input Model](#gas-levels-input-model)
+    - [Tank Input Models](#tank-input-models)
+        - [Tank Creation Input Model](#tank-creation-input-model)
+        - [Update Tank Input Model](#update-tank-input-model)
 - [Output Models](#output-models)
     - [AGU Output Models](#agu-output-models)
         - [AGU Basic Info Output Model](#agu-basic-info-output-model)
@@ -82,32 +88,71 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 ## Input Models
 
-### Update Tank Input Model
+### AGU Input Models
+
+#### AGU Creation Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
     - **Required:**
-        - `minLevel`: The minimum level of the tank.
-        - `maxLevel`: The maximum level of the tank.
-        - `criticalLevel`: The critical level of the tank.
-        - `loadVolume`: The load volume of the tank.
-        - `capacity`: The capacity of the tank.
-        - `correctionFactor`: The correction factor of the tank.
+        - `cui`: The CUI of the AGU.
+        - `name`: The name of the AGU.
+        - `minLevel`: The minimum level of the AGU.
+        - `maxLevel`: The maximum level of the AGU.
+        - `criticalLevel`: The critical level of the AGU.
+        - `loadVolume`: The load volume of the AGU.
+        - `latitude`: The latitude of the AGU.
+        - `longitude`: The longitude of the AGU.
+        - `locationName`: The location name of the AGU.
+        - `dnoCreation`: [DNO Creation Input Model](#dno-creation-input-model).
+        - `gasLevelUrl`: The gas level URL of the AGU.
+        - `image`: The image of the AGU.
+        - `tanks`: [Tank Creation Input Model](#tank-creation-input-model) list.
+        - `contacts`: [Contact Creation Input Model](#contact-creation-input-model) list.
+        - `isFavorite`: The favorite status of the AGU.
+    - **Optional:**
+        - `notes`: The notes of the AGU.
 
 - **Example:**
 
 ```json
 {
+    "cui": "string",
+    "name": "string",
     "minLevel": 0,
     "maxLevel": 0,
     "criticalLevel": 0,
-    "loadVolume": 0.0,
-    "capacity": 0,
-    "correctionFactor": 0.0
+    "loadVolume": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "locationName": "string",
+    "dnoCreation": {
+        "name": "string",
+        "region": "string"
+    },
+    "gasLevelUrl": "string",
+    "image": "byte[]",
+    "tanks": [
+        {
+            "name": "string",
+            "capacity": 0,
+            "level": 0,
+            "isCritical": true
+        }
+    ],
+    "contacts": [
+        {
+            "name": "string",
+            "phone": "string",
+            "email": "string"
+        }
+    ],
+    "isFavorite": true,
+    "notes": "string"
 }
 ```
 
-### Update Notes Input Model
+#### Notes Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -122,7 +167,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 }
 ```
 
-### Update Favorite AGU Input Model
+#### Update Favorite AGU Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -137,7 +182,48 @@ AGU Endpoint is responsible for managing AGUs in the system.
 }
 ```
 
-### Gas Levels Input model
+### Contact Input Models
+
+#### Contact Creation Input Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `name`: The name of the contact.
+        - `phone`: The phone of the contact.
+        - `email`: The email of the contact.
+
+- **Example:**
+
+```json
+{
+    "name": "string",
+    "phone": "string",
+    "email": "string"
+}
+```
+
+### DNO Input Models
+
+#### DNO Creation Input Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `name`: The name of the DNO.
+        - `region`: The region of the DNO.
+- **Example:**
+
+```json
+{
+    "name": "string",
+    "region": "string"
+}
+```
+
+### Gas Levels Input Models
+
+#### Gas Levels Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -156,7 +242,9 @@ AGU Endpoint is responsible for managing AGUs in the system.
 }
 ```
 
-### Tank Creation Input Model
+### Tank Input Models
+
+#### Tank Creation Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -183,81 +271,28 @@ AGU Endpoint is responsible for managing AGUs in the system.
 }
 ```
 
-### Contact Creation Input Model
+#### Update Tank Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
     - **Required:**
-        - `name`: The name of the contact.
-        - `phone`: The phone of the contact.
-        - `email`: The email of the contact.
+        - `minLevel`: The minimum level of the tank.
+        - `maxLevel`: The maximum level of the tank.
+        - `criticalLevel`: The critical level of the tank.
+        - `loadVolume`: The load volume of the tank.
+        - `capacity`: The capacity of the tank.
+        - `correctionFactor`: The correction factor of the tank.
 
 - **Example:**
 
 ```json
 {
-    "name": "string",
-    "phone": "string",
-    "email": "string"
-}
-```
-
-### AGU Creation Input Model
-
-- **Type:** `application/json`
-- **Attributes:**
-    - **Required:**
-        - `cui`: The CUI of the AGU.
-        - `name`: The name of the AGU.
-        - `minLevel`: The minimum level of the AGU.
-        - `maxLevel`: The maximum level of the AGU.
-        - `criticalLevel`: The critical level of the AGU.
-        - `loadVolume`: The load volume of the AGU.
-        - `latitude`: The latitude of the AGU.
-        - `longitude`: The longitude of the AGU.
-        - `locationName`: The location name of the AGU.
-        - `dnoName`: The DNO name of the AGU.
-        - `gasLevelUrl`: The gas level URL of the AGU.
-        - `image`: The image of the AGU.
-        - `tanks`: [Tank Creation Input Model](#tank-creation-input-model) list.
-        - `contacts`: [Contact Creation Input Model](#contact-creation-input-model) list.
-        - `isFavorite`: The favorite status of the AGU.
-    - **Optional:**
-        - `notes`: The notes of the AGU.
-
-- **Example:**
-
-```json
-{
-    "cui": "string",
-    "name": "string",
     "minLevel": 0,
     "maxLevel": 0,
     "criticalLevel": 0,
-    "loadVolume": 0,
-    "latitude": 0,
-    "longitude": 0,
-    "locationName": "string",
-    "dnoName": "string",
-    "gasLevelUrl": "string",
-    "image": "byte[]",
-    "tanks": [
-        {
-            "name": "string",
-            "capacity": 0,
-            "level": 0,
-            "isCritical": true
-        }
-    ],
-    "contacts": [
-        {
-            "name": "string",
-            "phone": "string",
-            "email": "string"
-        }
-    ],
-    "isFavorite": true,
-    "notes": "string"
+    "loadVolume": 0.0,
+    "capacity": 0,
+    "correctionFactor": 0.0
 }
 ```
 
@@ -517,13 +552,15 @@ AGU Endpoint is responsible for managing AGUs in the system.
     - **Required:**
         - `id`: The id of the DNO.
         - `name`: The name of the DNO.
+        - `region`: The region of the DNO.
 
 - **Example:**
 
 ```json
 {
     "id": 0,
-    "name": "string"
+    "name": "string",
+    "region": "string"
 }
 ```
 

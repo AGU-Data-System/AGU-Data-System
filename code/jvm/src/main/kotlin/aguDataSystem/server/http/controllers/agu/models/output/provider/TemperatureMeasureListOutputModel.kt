@@ -13,7 +13,7 @@ data class TemperatureMeasureListOutputModel(
 	val size: Int
 ) {
 	constructor(temperatureMeasures: List<TemperatureMeasure>) : this(
-		temperatureMeasures = temperatureMeasures.map { TemperatureMeasureOutputModel(it) },
+		temperatureMeasures = temperatureMeasures.map { measure -> TemperatureMeasureOutputModel(measure) },
 		size = temperatureMeasures.size
 	)
 }

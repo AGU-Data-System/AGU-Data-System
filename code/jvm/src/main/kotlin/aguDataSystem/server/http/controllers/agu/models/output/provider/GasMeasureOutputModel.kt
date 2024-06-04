@@ -1,6 +1,7 @@
 package aguDataSystem.server.http.controllers.agu.models.output.provider
 
 import aguDataSystem.server.domain.measure.GasMeasure
+import java.time.format.DateTimeFormatter
 
 /**
  * Output model for GasMeasure
@@ -17,8 +18,8 @@ data class GasMeasureOutputModel(
 	val tankNumber: Int
 ) {
 	constructor(measure: GasMeasure) : this(
-		timestamp = measure.timestamp.toString(),
-		predictionFor = measure.predictionFor?.toString(),
+		timestamp = measure.timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+		predictionFor = measure.predictionFor?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
 		level = measure.level,
 		tankNumber = measure.tankNumber
 	)

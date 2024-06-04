@@ -13,7 +13,7 @@ data class GasMeasureListOutputModel(
 	val size: Int
 ) {
 	constructor(gasMeasures: List<GasMeasure>) : this(
-		gasMeasures = gasMeasures.map { GasMeasureOutputModel(it) },
+		gasMeasures = gasMeasures.map { measure -> GasMeasureOutputModel(measure) },
 		size = gasMeasures.size
 	)
 }
