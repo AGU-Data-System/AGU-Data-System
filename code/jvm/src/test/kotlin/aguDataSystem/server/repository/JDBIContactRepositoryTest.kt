@@ -1,8 +1,8 @@
 package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.contact.ContactType
-import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.RepositoryUtils.dummyEmergencyContact
 import aguDataSystem.server.repository.RepositoryUtils.dummyLogisticContact
 import aguDataSystem.server.repository.agu.JDBIAGURepository
@@ -30,9 +30,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		//act
@@ -52,9 +52,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		//act & assert
@@ -82,9 +82,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 		val contactId1 = contactRepo.addContact(agu.cui, dummyLogisticContact)
 		val contactId2 = contactRepo.addContact(agu.cui, dummyEmergencyContact)
@@ -106,9 +106,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU.copy(contacts = emptyList())
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		//act
@@ -135,9 +135,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		val contactId = contactRepo.addContact(agu.cui, dummyContact)
@@ -163,9 +163,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		val contactId = contactRepo.addContact(agu.cui, dummyContact)
@@ -187,9 +187,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		val contactId = contactRepo.addContact(agu.cui, dummyContact)
@@ -211,9 +211,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 		val contactId = contactRepo.addContact(agu.cui, dummyLogisticContact)
 
@@ -230,10 +230,10 @@ class JDBIContactRepositoryTest {
 		val contactRepo = JDBIContactRepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 		val aguRepo = JDBIAGURepository(handle)
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val agu = dummyAGU
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		val contactId = contactRepo.addContact(agu.cui, dummyLogisticContact)
@@ -250,9 +250,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 		contactRepo.addContact(agu.cui, dummyLogisticContact)
 
@@ -290,9 +290,9 @@ class JDBIContactRepositoryTest {
 		val dnoRepo = JDBIDNORepository(handle)
 
 		val agu = dummyAGU
-		val dno = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepo.addDNO(dno)
+		val dnoId = dnoRepo.addDNO(dno).id
 		aguRepo.addAGU(agu, dnoId)
 
 		//act & assert

@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
+import aguDataSystem.server.domain.company.DNOCreationDTO
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
@@ -20,22 +21,22 @@ class JDBIDNORepositoryTest {
 	fun `addDNO Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = DUMMY_DNO_NAME
+		val sut = dummyDNO
 
 		// act
 		dnoRepository.addDNO(sut)
-		val dno = dnoRepository.getByName(sut)
+		val dno = dnoRepository.getByName(sut.name)
 
 		// assert
 		assertNotNull(dno)
-		assertEquals(sut, dno.name)
+		assertEquals(sut.name, dno.name)
 	}
 
 	@Test
 	fun `addDNO with an existing DNO`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = DUMMY_DNO_NAME
+		val sut = dummyDNO
 
 		// act
 		dnoRepository.addDNO(sut)
@@ -50,7 +51,7 @@ class JDBIDNORepositoryTest {
 	fun `addDNO with an empty DNO name`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = ""
+		val sut = DNOCreationDTO(name = "", region = "Region 1")
 
 		// act
 		assertFailsWith<UnableToExecuteStatementException> {
@@ -62,15 +63,15 @@ class JDBIDNORepositoryTest {
 	fun `getByName Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = DUMMY_DNO_NAME
+		val sut = dummyDNO
 
 		// act
 		dnoRepository.addDNO(sut)
-		val dno = dnoRepository.getByName(sut)
+		val dno = dnoRepository.getByName(sut.name)
 
 		// assert
 		assertNotNull(dno)
-		assertEquals(sut, dno.name)
+		assertEquals(sut.name, dno.name)
 	}
 
 	@Test
@@ -103,18 +104,15 @@ class JDBIDNORepositoryTest {
 	fun `getById Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = DUMMY_DNO_NAME
+		val sut = dummyDNO
 
 		// act
-		dnoRepository.addDNO(sut)
-		val dnoByName = dnoRepository.getByName(sut)
-		requireNotNull(dnoByName)
-
-		val dnoById = dnoRepository.getById(dnoByName.id)
+		val addedDNO = dnoRepository.addDNO(sut)
+		val dnoById = dnoRepository.getById(addedDNO.id)
 
 		// assert
 		assertNotNull(dnoById)
-		assertEquals(sut, dnoByName.name)
+		assertEquals(sut.name, dnoById.name)
 	}
 
 	@Test
@@ -134,11 +132,11 @@ class JDBIDNORepositoryTest {
 	fun `isDNOStoredByName Correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = DUMMY_DNO_NAME
+		val sut = dummyDNO
 
 		// act
 		dnoRepository.addDNO(sut)
-		val isDNOStored = dnoRepository.isDNOStoredByName(sut)
+		val isDNOStored = dnoRepository.isDNOStoredByName(sut.name)
 
 		// assert
 		assertTrue(isDNOStored)

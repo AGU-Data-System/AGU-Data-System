@@ -3,8 +3,8 @@ package aguDataSystem.server.repository
 import aguDataSystem.server.domain.provider.GasProvider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.domain.provider.TemperatureProvider
-import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.RepositoryUtils.truncateNanos
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
@@ -30,11 +30,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 
 		//act
@@ -68,11 +68,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 
@@ -103,11 +103,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 
@@ -139,11 +139,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 
@@ -161,9 +161,9 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 
 		ProviderType.entries.forEachIndexed { index, it ->
@@ -199,11 +199,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 
@@ -232,11 +232,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 
@@ -267,12 +267,12 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 		val lastFetched = LocalDateTime.now()
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 
@@ -308,11 +308,11 @@ class JDBIProviderRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val dnoRepository = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val providerType = ProviderType.GAS
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, providerType)
 

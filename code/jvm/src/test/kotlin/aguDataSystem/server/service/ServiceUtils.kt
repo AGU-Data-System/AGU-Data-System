@@ -2,13 +2,17 @@ package aguDataSystem.server.service
 
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUCreationDTO
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreationDTO
 import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.tank.Tank
 
 object ServiceUtils {
 
-	const val dummyDNOName = "dummyDNOName"
+	val dummyDNODTO = DNOCreationDTO(
+		name = "Test DNO",
+		region = "Test Region"
+	)
 
 	private val dummyGasLevels = GasLevels(
 		min = 30,
@@ -48,7 +52,7 @@ object ServiceUtils {
 		levels = dummyGasLevels,
 		loadVolume = 40,
 		location = dummyLocation,
-		dnoName = dummyDNOName,
+		dno = dummyDNODTO,
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 		image = ByteArray(0),
 		contacts = emptyList(),

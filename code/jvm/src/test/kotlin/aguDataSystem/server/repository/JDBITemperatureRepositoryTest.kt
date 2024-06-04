@@ -1,8 +1,8 @@
 package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.provider.ProviderType
-import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.RepositoryUtils.dummyTemperatureMeasures
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
@@ -27,11 +27,11 @@ class JDBITemperatureRepositoryTest {
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 
@@ -55,14 +55,14 @@ class JDBITemperatureRepositoryTest {
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val providerRepository = JDBIProviderRepository(handle)
 			val agu = dummyAGU
-			val dnoName = DUMMY_DNO_NAME
+			val dno = dummyDNO
 			val providerId = 1
 			val temperatureMeasures = dummyTemperatureMeasures
 			val invalidTemperatureMeasures = temperatureMeasures.map {
 				it.copy(predictionFor = it.timestamp.minusSeconds(1))
 			}
 
-			val dnoId = dnoRepository.addDNO(dnoName)
+			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
 			providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 
@@ -79,11 +79,11 @@ class JDBITemperatureRepositoryTest {
 		val aguRepository = JDBIAGURepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 
 		// act
@@ -100,12 +100,12 @@ class JDBITemperatureRepositoryTest {
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 		val nDays = 2
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
@@ -125,11 +125,11 @@ class JDBITemperatureRepositoryTest {
 			val aguRepository = JDBIAGURepository(handle)
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val agu = dummyAGU
-			val dnoName = DUMMY_DNO_NAME
+			val dno = dummyDNO
 			val providerId = 1
 			val nDays = 2
 
-			val dnoId = dnoRepository.addDNO(dnoName)
+			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
 
 			// act
@@ -148,12 +148,12 @@ class JDBITemperatureRepositoryTest {
 			val providerRepository = JDBIProviderRepository(handle)
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val agu = dummyAGU
-			val dnoName = DUMMY_DNO_NAME
+			val dno = dummyDNO
 			val providerId = 1
 			val dummyTemperatureMeasures = dummyTemperatureMeasures
 			val nDays = -1
 
-			val dnoId = dnoRepository.addDNO(dnoName)
+			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
 			providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 			temperatureRepository.addTemperatureMeasuresToProvider(providerId, dummyTemperatureMeasures)
@@ -189,13 +189,13 @@ class JDBITemperatureRepositoryTest {
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 		val date = temperatureMeasures.last().predictionFor?.toLocalDate()
 		requireNotNull(date)
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
@@ -215,13 +215,13 @@ class JDBITemperatureRepositoryTest {
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 		val date = temperatureMeasures.first().predictionFor?.toLocalDate()?.plusDays(1)
 		requireNotNull(date)
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
@@ -257,12 +257,12 @@ class JDBITemperatureRepositoryTest {
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 		val nDays = 2
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
@@ -283,12 +283,12 @@ class JDBITemperatureRepositoryTest {
 			val providerRepository = JDBIProviderRepository(handle)
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val agu = dummyAGU
-			val dnoName = DUMMY_DNO_NAME
+			val dno = dummyDNO
 			val providerId = 1
 			val dummyTemperatureMeasures = dummyTemperatureMeasures
 			val nDays = -1
 
-			val dnoId = dnoRepository.addDNO(dnoName)
+			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
 			providerRepository.addProvider(agu.cui, 1, ProviderType.TEMPERATURE)
 			temperatureRepository.addTemperatureMeasuresToProvider(providerId, dummyTemperatureMeasures)
@@ -308,12 +308,12 @@ class JDBITemperatureRepositoryTest {
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
-		val dnoName = DUMMY_DNO_NAME
+		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
 		val nrOfDays = 2
 
-		val dnoId = dnoRepository.addDNO(dnoName)
+		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)

@@ -2,7 +2,7 @@ package aguDataSystem.server.service
 
 import aguDataSystem.server.domain.agu.AGUDomain
 import aguDataSystem.server.service.ServiceUtils.dummyAGUCreationDTO
-import aguDataSystem.server.service.ServiceUtils.dummyDNOName
+import aguDataSystem.server.service.ServiceUtils.dummyDNODTO
 import aguDataSystem.server.service.agu.AGUService
 import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.chron.FetchService
@@ -29,7 +29,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -47,7 +47,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf())
 
 		dnoService.createDNO(dnoCreation)
@@ -82,12 +82,12 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
 		// act
-		val result = aguService.createAGU(creationAgu.copy(dnoName = "invalid"))
+		val result = aguService.createAGU(creationAgu.copy(dno = dummyDNODTO.copy(name = "invalid")))
 
 		// assert
 		assert(result.isFailure())
@@ -101,7 +101,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -120,7 +120,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -139,7 +139,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -158,7 +158,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -177,7 +177,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -196,7 +196,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -215,7 +215,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -234,7 +234,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
@@ -253,7 +253,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(
 			tanks = listOf(ServiceUtils.dummyTank),
 			contacts = listOf(ServiceUtils.dummyLogisticContact.copy(type = "invalid"))
@@ -275,7 +275,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(
 			tanks = listOf(ServiceUtils.dummyTank),
 			contacts = listOf(ServiceUtils.dummyLogisticContact.copy(name = ""))
@@ -297,7 +297,7 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(
 			tanks = listOf(ServiceUtils.dummyTank),
 			contacts = listOf(ServiceUtils.dummyLogisticContact.copy(phone = ""))
@@ -323,11 +323,11 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
 
 		// act
 		val result = aguService.getAGUById(agu.getSuccessOrThrow())
@@ -344,11 +344,11 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		aguService.createAGU(creationAgu.copy(dnoName = dnoCreation))
+		aguService.createAGU(creationAgu.copy(dno = dnoCreation))
 
 		// act
 		val result = aguService.getAGUById("invalid")
@@ -364,12 +364,12 @@ class AGUServiceTest {
 		val chronService = ChronService(transactionManager, fetchService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNOName
+		val dnoCreation = dummyDNODTO
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(ServiceUtils.dummyTank))
 		val days = 2
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
 
 		// act
 		val result = aguService.getTemperatureMeasures(agu.getSuccessOrThrow(), days)

@@ -1,7 +1,7 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.RepositoryUtils.dummyTank
 import aguDataSystem.server.repository.RepositoryUtils.toUpdateInfo
 import aguDataSystem.server.repository.agu.JDBIAGURepository
@@ -30,7 +30,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act
@@ -52,7 +52,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank.copy(correctionFactor = -1.0)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -70,7 +70,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank.copy(levels = dummyTank.levels.copy(min = 100, max = 50, critical = 100))
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -88,7 +88,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank.copy(levels = dummyTank.levels.copy(min = 101, max = 101, critical = 101))
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -106,7 +106,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank.copy(loadVolume = -1)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -124,7 +124,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank.copy(capacity = -1)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -164,7 +164,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank.copy(number = -1)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -182,7 +182,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		tankRepo.addTank(agu.cui, tank)
 
@@ -202,7 +202,7 @@ class JDBITankRepositoryTest {
 		val tankRepo = JDBITankRepository(handle)
 		val agu = dummyAGU
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act
@@ -233,7 +233,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 
@@ -253,7 +253,7 @@ class JDBITankRepositoryTest {
 		val tankRepo = JDBITankRepository(handle)
 		val agu = dummyAGU
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act
@@ -272,7 +272,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		tankRepo.addTank(agu.cui, tank)
 
@@ -304,7 +304,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 
@@ -335,7 +335,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		tankRepo.addTank(agu.cui, tank)
 
@@ -352,7 +352,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, capacity = 50)
@@ -375,7 +375,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, capacity = -1)
@@ -395,7 +395,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber + 1)
@@ -418,7 +418,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = Int.MIN_VALUE)
@@ -440,7 +440,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, correctionFactor = 1.0)
@@ -463,7 +463,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, correctionFactor = -1.0)
@@ -483,7 +483,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, levels = tank.levels.copy(max = 100))
@@ -506,7 +506,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, levels = tank.levels.copy(min = 100, max = 50, critical = 100))
@@ -526,7 +526,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, loadVolume = 100)
@@ -549,7 +549,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, loadVolume = -1)
@@ -569,7 +569,7 @@ class JDBITankRepositoryTest {
 		val agu = dummyAGU
 		val tank = dummyTank
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 		tankRepo.addTank(agu.cui, tank)
 
@@ -588,7 +588,7 @@ class JDBITankRepositoryTest {
 		val tankRepo = JDBITankRepository(handle)
 		val agu = dummyAGU
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu, dnoId)
 
 		// act

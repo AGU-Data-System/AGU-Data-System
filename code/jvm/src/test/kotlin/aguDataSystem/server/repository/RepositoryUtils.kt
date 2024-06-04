@@ -2,6 +2,7 @@ package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUCreationInfo
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreation
 import aguDataSystem.server.domain.contact.ContactType
 import aguDataSystem.server.domain.gasLevels.GasLevels
@@ -66,7 +67,10 @@ object RepositoryUtils {
 		name = "New York"
 	)
 
-	const val DUMMY_DNO_NAME = "TEST_DNO"
+	val dummyDNO = DNOCreationDTO(
+		name = "Test DNO",
+		region = "Test Region"
+	)
 
 	val dummyAGU = AGUCreationInfo(
 		cui = "PT1234567890123456XX",
@@ -74,7 +78,7 @@ object RepositoryUtils {
 		levels = dummyGasLevels,
 		loadVolume = 50,
 		location = dummyLocation,
-		dnoName = DUMMY_DNO_NAME,
+		dno = dummyDNO,
 		isFavorite = false,
 		notes = null,
 		training = null,

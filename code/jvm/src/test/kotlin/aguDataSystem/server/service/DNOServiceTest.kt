@@ -1,6 +1,6 @@
 package aguDataSystem.server.service
 
-import aguDataSystem.server.service.ServiceUtils.dummyDNOName
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.service.dno.DNOService
 import aguDataSystem.server.service.errors.dno.CreateDNOError
 import aguDataSystem.server.service.errors.dno.GetDNOError
@@ -20,7 +20,7 @@ class DNOServiceTest {
 	fun `create DNO with valid data`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 
 		// act
 		val result = dnoService.createDNO(creationDno)
@@ -33,7 +33,7 @@ class DNOServiceTest {
 	fun `create DNO with empty name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = ""
+		val creationDno = dummyDNO.copy(name = "")
 
 		// act
 		val result = dnoService.createDNO(creationDno)
@@ -47,7 +47,7 @@ class DNOServiceTest {
 	fun `create DNO with same name twice should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 
 		// act
 		val result = dnoService.createDNO(creationDno)
@@ -60,25 +60,25 @@ class DNOServiceTest {
 	}
 
 	@Test
-	fun `get Dno By name with valid name`() = testWithTransactionManagerAndRollback { transactionManager ->
+	fun `get DNO By name with valid name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 		dnoService.createDNO(creationDno)
 
 		// act
-		val result = dnoService.getDNOByName(creationDno)
+		val result = dnoService.getDNOByName(creationDno.name)
 
 		// assert
 		assert(result.isSuccess())
-		assert(result.getSuccessOrThrow().name == creationDno)
+		assert(result.getSuccessOrThrow().name == creationDno.name)
 	}
 
 	@Test
 	fun `get Dno By name with invalid name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 		dnoService.createDNO(creationDno)
 
 		// act
@@ -90,14 +90,14 @@ class DNOServiceTest {
 	}
 
 	@Test
-	fun `is Dno Stored By Name with valid name`() = testWithTransactionManagerAndRollback { transactionManager ->
+	fun `is DNO Stored By Name with valid name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 		dnoService.createDNO(creationDno)
 
 		// act
-		val result = dnoService.isDNOStoredByName(creationDno)
+		val result = dnoService.isDNOStoredByName(creationDno.name)
 
 		// assert
 		assert(result)
@@ -107,7 +107,7 @@ class DNOServiceTest {
 	fun `is Dno Stored By Name with invalid name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 		dnoService.createDNO(creationDno)
 
 		// act
@@ -121,7 +121,7 @@ class DNOServiceTest {
 	fun `get Dno By Id with valid id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 		val dno = dnoService.createDNO(creationDno).getSuccessOrThrow()
 
 		// act
@@ -129,14 +129,14 @@ class DNOServiceTest {
 
 		// assert
 		assert(result.isSuccess())
-		assert(result.getSuccessOrThrow().name == creationDno)
+		assert(result.getSuccessOrThrow().name == creationDno.name)
 	}
 
 	@Test
 	fun `get Dno By Id with invalid id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val dnoService = DNOService(transactionManager)
-		val creationDno = dummyDNOName
+		val creationDno = dummyDNO
 		dnoService.createDNO(creationDno)
 
 		// act

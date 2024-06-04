@@ -1,9 +1,10 @@
 package aguDataSystem.server.repository
 
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreation
 import aguDataSystem.server.domain.gasLevels.GasLevels
-import aguDataSystem.server.repository.RepositoryUtils.DUMMY_DNO_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
+import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
@@ -29,7 +30,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 
 		// act
@@ -46,7 +47,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		aguRepo.addAGU(agu, dnoId)
 
@@ -75,7 +76,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU.copy(cui = "")
 
 		// act & assert
@@ -90,7 +91,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU.copy(name = "")
 
 		// act & assert
@@ -105,7 +106,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
@@ -120,7 +121,7 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.levels, aguFromDb.levels)
 		assertEquals(agu.loadVolume, aguFromDb.loadVolume)
 		assertEquals(agu.location, aguFromDb.location)
-		assertEquals(agu.dnoName, aguFromDb.dno.name)
+		assertEquals(agu.dno.name, aguFromDb.dno.name)
 		assertEquals(agu.isFavorite, aguFromDb.isFavorite)
 		assertEquals(agu.notes, aguFromDb.notes)
 		assertEquals(agu.training, aguFromDb.training)
@@ -147,7 +148,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		aguRepo.addAGU(agu, dnoId)
 
@@ -180,7 +181,7 @@ class JDBIAGURepositoryTest {
 		val sut1 = dummyAGU
 		val sut2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 
 		aguRepo.addAGU(sut1, dnoId)
 		aguRepo.addAGU(sut2, dnoId)
@@ -212,7 +213,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -241,7 +242,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -264,7 +265,7 @@ class JDBIAGURepositoryTest {
 		val agu1 = dummyAGU
 		val agu2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "Test AGU 2")
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		aguRepo.addAGU(agu1, dnoId)
 		val result = aguRepo.addAGU(agu2, dnoId)
 
@@ -285,7 +286,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -305,7 +306,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -326,7 +327,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -347,8 +348,8 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId1 = dnoRepo.addDNO(DUMMY_DNO_NAME)
-		val dnoId2 = dnoRepo.addDNO("DNO 2")
+		val dnoId1 = dnoRepo.addDNO(dummyDNO).id
+		val dnoId2 = dnoRepo.addDNO(DNOCreationDTO(name = "DNO 2", region = "Region 2")).id
 
 		val dno1 = dnoRepo.getById(dnoId1)
 		val dno2 = dnoRepo.getById(dnoId2)
@@ -374,7 +375,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val dno = dnoRepo.getById(dnoId)
 		requireNotNull(dno)
 
@@ -398,7 +399,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -418,7 +419,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -439,7 +440,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -460,7 +461,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -480,7 +481,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -501,7 +502,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -520,7 +521,7 @@ class JDBIAGURepositoryTest {
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -540,7 +541,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -560,7 +561,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -580,7 +581,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -600,7 +601,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -620,7 +621,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -640,7 +641,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -660,7 +661,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -692,7 +693,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -726,7 +727,7 @@ class JDBIAGURepositoryTest {
 			val aguRepo = JDBIAGURepository(handle)
 			val dnoRepo = JDBIDNORepository(handle)
 
-			val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+			val dnoId = dnoRepo.addDNO(dummyDNO).id
 			val agu = dummyAGU
 			val result = aguRepo.addAGU(agu, dnoId)
 
@@ -742,7 +743,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -775,7 +776,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val result = aguRepo.addAGU(agu, dnoId)
 
 		// act
@@ -794,7 +795,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val result = aguRepo.addAGU(agu, dnoId)
 
 		// act
@@ -812,7 +813,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val result = aguRepo.addAGU(agu, dnoId)
 
 		// act
@@ -830,7 +831,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 		val agu = dummyAGU
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val result = aguRepo.addAGU(agu, dnoId)
 
 		// act & assert
@@ -845,7 +846,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -864,7 +865,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU
 		val result = aguRepo.addAGU(agu, dnoId)
 
@@ -883,7 +884,7 @@ class JDBIAGURepositoryTest {
 		val aguRepo = JDBIAGURepository(handle)
 		val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(DUMMY_DNO_NAME)
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
 		val agu = dummyAGU.copy(isFavorite = true)
 		val result = aguRepo.addAGU(agu, dnoId)
 
