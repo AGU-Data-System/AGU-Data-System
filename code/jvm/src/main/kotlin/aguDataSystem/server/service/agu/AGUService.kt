@@ -103,7 +103,7 @@ class AGUService(
 				if (it.aguRepository.getCUIByName(creationAGU.name) != null)
 					return@run failure(AGUCreationError.AGUNameAlreadyExists)
 
-				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
+				val dno = it.dnoRepository.getByName(aguCreationInfo.dno.name)
 					?: return@run failure(AGUCreationError.InvalidDNO)
 
 				it.aguRepository.addAGU(aguCreationInfo, dno.id)

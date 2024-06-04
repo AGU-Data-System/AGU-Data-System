@@ -21,8 +21,9 @@ class DNOMapper : RowMapper<DNO> {
 	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): DNO {
 		return DNO(
-			rs.getInt("id"),
-			rs.getString("name")
+			id = rs.getInt("id"),
+			name = rs.getString("name"),
+			region = rs.getString("region")
 		)
 	}
 }

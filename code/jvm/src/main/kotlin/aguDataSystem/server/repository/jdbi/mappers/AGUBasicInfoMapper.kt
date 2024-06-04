@@ -29,7 +29,8 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 			name = rs.getString("name"),
 			dno = DNO(
 				id = rs.getInt("dno_id"),
-				name = rs.getString("dno_name")
+				name = rs.getString("dno_name"),
+				region = rs.getString("region")
 			),
 			location = Location(
 				latitude = rs.getDouble("latitude"),

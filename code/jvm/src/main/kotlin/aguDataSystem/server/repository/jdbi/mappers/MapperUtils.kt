@@ -47,7 +47,8 @@ object MapperUtils {
 	fun mapToDNO(rs: ResultSet): DNO {
 		return DNO(
 			id = rs.getInt("dno_id"),
-			name = rs.getString("dno_name")
+			name = rs.getString("dno_name"),
+			region = rs.getString("region")
 		)
 	}
 }
