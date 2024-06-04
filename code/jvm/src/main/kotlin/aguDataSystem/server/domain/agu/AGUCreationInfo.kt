@@ -1,6 +1,7 @@
 package aguDataSystem.server.domain.agu
 
 import aguDataSystem.server.domain.Location
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreation
 import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.tank.Tank
@@ -13,7 +14,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property levels The gas levels of the AGU.
  * @property loadVolume The load volume of the AGU.
  * @property location The location of the AGU.
- * @property dnoName The name of the DNO of the AGU.
+ * @property dno The DNO of the AGU.
  * @property gasLevelUrl The URL of the gas levels of the AGU.
  * @property image The image of the AGU.
  * @property contacts The contacts of the AGU.
@@ -28,7 +29,7 @@ data class AGUCreationInfo(
 	val levels: GasLevels,
 	val loadVolume: Int,
 	val location: Location,
-	val dnoName: String,
+	val dno: DNOCreationDTO,
 	val gasLevelUrl: String,
 	val image: ByteArray,
 	val contacts: List<ContactCreation>,

@@ -8,5 +8,6 @@ package aguDataSystem.server.domain.company
  */
 data class DNO(
 	override val id: Int,
-	override val name: String
+	override val name: String,
+	val region: String
 ) : Company()

@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository.dno
 
 import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.company.DNOCreationDTO
 
 /**
  * A repository for the DNOs
@@ -10,9 +11,9 @@ interface DNORepository {
 	/**
 	 * Adds a DNO to the repository
 	 *
-	 * @param name the name of the DNO
+	 * @param dnoCreation the creation model for a [DNO]
 	 */
-	fun addDNO(name: String): Int
+	fun addDNO(dnoCreation: DNOCreationDTO): DNO
 
 	/**
 	 * Gets DNO by its name

@@ -17,7 +17,7 @@ import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCre
  * @param latitude the latitude of the AGU
  * @param longitude the longitude of the AGU
  * @param locationName the name of the location of the AGU
- * @param dnoName the name of the DNO of the AGU
+ * @param dnoCreation the DNO creation input model
  * @param gasLevelUrl the URL of the gas level of the AGU
  * @param image the image of the AGU
  * @param tanks the tanks of the AGU
@@ -35,7 +35,7 @@ data class AGUCreationInputModel(
 	val latitude: Double,
 	val longitude: Double,
 	val locationName: String,
-	val dnoName: String,
+	val dnoCreation: DNOCreationInputModel,
 	val gasLevelUrl: String,
 	val image: ByteArray,
 	val tanks: List<TankCreationInputModel>,
@@ -64,7 +64,7 @@ data class AGUCreationInputModel(
 			latitude = this.latitude,
 			longitude = this.longitude
 		),
-		dnoName = this.dnoName,
+		dno = this.dnoCreation.toDNOCreationDTO(),
 		gasLevelUrl = this.gasLevelUrl,
 		image = this.image,
 		contacts = this.contacts.map { contactCreationInputModel -> contactCreationInputModel.toContactCreationDTO() },

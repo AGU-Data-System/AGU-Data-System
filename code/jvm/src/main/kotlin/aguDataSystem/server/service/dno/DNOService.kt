@@ -1,6 +1,6 @@
 package aguDataSystem.server.service.dno
 
-import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.dno.CreateDNOError
 import aguDataSystem.server.service.errors.dno.GetDNOError
@@ -17,21 +17,21 @@ class DNOService(
 ) {
 
 	/**
-	 * Creates a new DNO with the given [name].
+	 * Creates a new DNO with the given [DNOCreationDTO].
 	 *
-	 * @param name The name of the DNO to create.
+	 * @param dnoCreation The creation model for the DNO.
 	 * @return The result of the operation.
 	 */
-	fun createDNO(name: String): CreateDNOResult {
+	fun createDNO(dnoCreation: DNOCreationDTO): CreateDNOResult {
 		return transactionManager.run {
-			if (name.isEmpty())
+			if (dnoCreation.name.isEmpty())
 				return@run failure(CreateDNOError.InvalidName)
 
-			if (it.dnoRepository.isDNOStoredByName(name))
+			if (it.dnoRepository.isDNOStoredByName(dnoCreation.name))
 				return@run failure(CreateDNOError.DNOAlreadyExists)
 
-			val dnoId = it.dnoRepository.addDNO(name)
-			success(DNO(dnoId, name))
+			val dno = it.dnoRepository.addDNO(dnoCreation)
+			success(dno)
 		}
 	}
 

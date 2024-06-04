@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository.dno
 
 import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -15,27 +16,29 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
 	/**
 	 * Adds a DNO to the repository
 	 *
-	 * @param name the name of the DNO
+	 * @param dnoCreation the creation model for a [DNO]
 	 */
-	override fun addDNO(name: String): Int {
+	override fun addDNO(dnoCreation: DNOCreationDTO): DNO {
 
-		logger.info("Adding DNO with name {}", name)
+		logger.info("Adding DNO with name {}", dnoCreation.name)
 
 		val id = handle.createUpdate(
 			"""
-                INSERT INTO dno (name)
-                VALUES (:name)
+                INSERT INTO dno (name, region)
+                VALUES (:name, :region)
                 returning id
             """.trimIndent()
 		)
-			.bind("name", name)
+			.bind("name", dnoCreation.name)
+			.bind("region", dnoCreation.region)
 			.executeAndReturnGeneratedKeys(DNO::id.name)
 			.mapTo<Int>()
 			.one()
 
-		logger.info("Added DNO with name {} and it's id is {}", name, id)
+		logger.info("Added DNO with name {} and it's id is {}", dnoCreation.name, id)
 
-		return id
+		return getById(id)
+			?: throw IllegalStateException("DNO not found after adding") // TODO is it right to throw an exception here?
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package aguDataSystem.server.domain.agu
 
 import aguDataSystem.server.domain.Location
+import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreationDTO
 import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.tank.Tank
@@ -13,7 +14,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property levels gas levels of the AGU
  * @property loadVolume load volume of the AGU
  * @property location location of the AGU
- * @property dnoName name of the DNO
+ * @property dno DNO of the AGU
  * @property gasLevelUrl URL of the gas level
  * @property image image of the AGU
  * @property contacts contacts of the AGU
@@ -28,7 +29,7 @@ data class AGUCreationDTO(
 	val levels: GasLevels,
 	val loadVolume: Int,
 	val location: Location,
-	val dnoName: String,
+	val dno: DNOCreationDTO,
 	val gasLevelUrl: String,
 	val image: ByteArray, //TODO: change later to an Image object
 	val contacts: List<ContactCreationDTO>,
@@ -50,7 +51,7 @@ data class AGUCreationDTO(
 		levels = this.levels,
 		loadVolume = this.loadVolume,
 		location = this.location,
-		dnoName = this.dnoName,
+		dno = this.dno,
 		gasLevelUrl = this.gasLevelUrl,
 		image = this.image,
 		contacts = this.contacts.map { it.toContactCreation() },

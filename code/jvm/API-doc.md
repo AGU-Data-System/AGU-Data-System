@@ -5,45 +5,45 @@
 - [Introduction](#introduction)
 - [Pagination](#pagination)
 - [API Endpoints](#api-endpoints)
-  - [AGU](#agu)
-    - [Get All AGUs](#get-all-agus)
+    - [AGU](#agu)
+        - [Get All AGUs](#get-all-agus)
 - [Input Models](#input-models)
-  - [Update Tank Input Model](#update-tank-input-model)
-  - [Update Notes Input Model](#update-notes-input-model)
-  - [Update Favorite AGU Input Model](#update-favorite-agu-input-model)
-  - [Gas Levels Input model](#gas-levels-input-model)
-  - [Tank Creation Input Model](#tank-creation-input-model)
-  - [Contact Creation Input Model](#contact-creation-input-model)
-  - [AGU Creation Input Model](#agu-creation-input-model)
+    - [Update Tank Input Model](#update-tank-input-model)
+    - [Update Notes Input Model](#update-notes-input-model)
+    - [Update Favorite AGU Input Model](#update-favorite-agu-input-model)
+    - [Gas Levels Input model](#gas-levels-input-model)
+    - [Tank Creation Input Model](#tank-creation-input-model)
+    - [Contact Creation Input Model](#contact-creation-input-model)
+    - [AGU Creation Input Model](#agu-creation-input-model)
 - [Output Models](#output-models)
-  - [AGU Output Models](#agu-output-models)
-    - [AGU Basic Info Output Model](#agu-basic-info-output-model)
-    - [AGU Basic Info List Output Model](#agu-basic-info-list-output-model)
-    - [AGU Creation Output Model](#agu-creation-output-model)
-    - [AGU Output Model](#agu-output-model)
-  - [Contact Output Models](#contact-output-models)
-    - [Add Contact Output Model](#add-contact-output-model)
-    - [Contact List Output Model](#contact-list-output-model)
-    - [Contact Output Model](#contact-output-model)
-  - [DNO Output Models](#dno-output-models)
-    - [DNO Output Model](#dno-output-model)
-  - [Gas Levels Output Models](#gas-levels-output-models)
-    - [Gas Levels Output Model](#gas-levels-output-model)
-  - [Location Output Models](#location-output-models)
-    - [Location Output Model](#location-output-model)
-  - [Provider Output Models](#provider-output-models)
-    - [Gas Measure List Output Model](#gas-measure-list-output-model)
-    - [Gas Measure Output Model](#gas-measure-output-model)
-    - [Provider List Output Model](#provider-list-output-model)
-    - [Provider Output Model](#provider-output-model)
-    - [Temperature Measure List Output Model](#temperature-measure-list-output-model)
-    - [Temperature Measure Output Model](#temperature-measure-output-model)
-  - [Tank Output Models](#tank-output-models)
-    - [Add Tank Output Model](#add-tank-output-model)
-    - [Tank List Output Model](#tank-list-output-model)
-    - [Tank Output Model](#tank-output-model)
+    - [AGU Output Models](#agu-output-models)
+        - [AGU Basic Info Output Model](#agu-basic-info-output-model)
+        - [AGU Basic Info List Output Model](#agu-basic-info-list-output-model)
+        - [AGU Creation Output Model](#agu-creation-output-model)
+        - [AGU Output Model](#agu-output-model)
+    - [Contact Output Models](#contact-output-models)
+        - [Add Contact Output Model](#add-contact-output-model)
+        - [Contact List Output Model](#contact-list-output-model)
+        - [Contact Output Model](#contact-output-model)
+    - [DNO Output Models](#dno-output-models)
+        - [DNO Output Model](#dno-output-model)
+    - [Gas Levels Output Models](#gas-levels-output-models)
+        - [Gas Levels Output Model](#gas-levels-output-model)
+    - [Location Output Models](#location-output-models)
+        - [Location Output Model](#location-output-model)
+    - [Provider Output Models](#provider-output-models)
+        - [Gas Measure List Output Model](#gas-measure-list-output-model)
+        - [Gas Measure Output Model](#gas-measure-output-model)
+        - [Provider List Output Model](#provider-list-output-model)
+        - [Provider Output Model](#provider-output-model)
+        - [Temperature Measure List Output Model](#temperature-measure-list-output-model)
+        - [Temperature Measure Output Model](#temperature-measure-output-model)
+    - [Tank Output Models](#tank-output-models)
+        - [Add Tank Output Model](#add-tank-output-model)
+        - [Tank List Output Model](#tank-list-output-model)
+        - [Tank Output Model](#tank-output-model)
 - [Error Handling](#error-handling)
-  - [Bad Request](#bad-request)
+    - [Bad Request](#bad-request)
 
 ## Introduction
 
@@ -276,6 +276,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `location`: [Location Output Model](#location-output-model).
 
 - **Example:**
+
 ```json
 {
     "cui": "string",
@@ -301,6 +302,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `size`: The size of the list.
 
 - **Example:**
+
 ```json
 {
     "agusBasicInfo": [
@@ -330,6 +332,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `cui`: The CUI of the AGU.
 
 - **Example:**
+
 ```json
 {
     "cui": "string"
@@ -357,6 +360,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `training`: The training of the AGU.
 
 - **Example:**
+
 ```json
 {
     "cui": "string",
@@ -452,6 +456,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `id`: The id of the contact.
 
 - **Example:**
+
 ```json
 {
     "id": 0
@@ -467,6 +472,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `size`: The size of the list.
 
 - **Example:**
+
 ```json
 {
     "contacts": [
@@ -492,6 +498,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `type`: The type of the contact.
 
 - **Example:**
+
 ```json
 {
     "id": 0,
@@ -512,6 +519,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `name`: The name of the DNO.
 
 - **Example:**
+
 ```json
 {
     "id": 0,
@@ -531,6 +539,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `critical`: The critical level of the AGU.
 
 - **Example:**
+
 ```json
 {
     "min": 0,
@@ -551,6 +560,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `longitude`: The longitude of the location.
 
 - **Example:**
+
 ```json
 {
     "name": "string",
@@ -569,6 +579,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `gasMeasures`: [Gas Measure Output Model](#gas-measure-output-model) list.
         - `size`: The size of the list.
 - **Example:**
+
 ```json
 {
     "gasMeasures": [
@@ -593,6 +604,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `level`: The level of the gas measure.
         - `tankNumber`: The tank number of the gas measure.
 - **Example:**
+
 ```json
 {
     "timestamp": "2024-03-18T12:28:34.971+00:00",
@@ -603,6 +615,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 ```
 
 #### Provider List Output Model
+
 data class ProviderListOutputModel(
 val providers: List<ProviderOutputModel>,
 val size: Int
@@ -614,6 +627,7 @@ val size: Int
         - `providers`: [Provider Output Model](#provider-output-model) list.
         - `size`: The size of the list.
 - **Example:**
+
 ```json
 {
     "providers": [
@@ -660,6 +674,7 @@ val size: Int
         - `lastFetch`: The last fetch of the provider.
         - `type`: The type of the provider.
 - **Example:**
+
 ```json
 {
     "id": 0,
@@ -699,6 +714,7 @@ val size: Int
         - `temperatureMeasures`: [Temperature Measure Output Model](#temperature-measure-output-model) list.
         - `size`: The size of the list.
 - **Example:**
+
 ```json
 {
     "temperatureMeasures": [
@@ -723,6 +739,7 @@ val size: Int
         - `min`: The minimum temperature of the measure.
         - `max`: The maximum temperature of the measure.
 - **Example:**
+
 ```json
 {
     "timestamp": "2024-03-18T12:28:34.971+00:00",
@@ -741,6 +758,7 @@ val size: Int
     - **Required:**
         - `number`: The number of the tank.
 - **Example:**
+
 ```json
 {
     "number": 0
@@ -748,6 +766,7 @@ val size: Int
 ```
 
 #### Tank List Output Model
+
 data class TankListOutputModel(
 val tanks: List<TankOutputModel>,
 val size: Int
@@ -759,6 +778,7 @@ val size: Int
         - `tanks`: [Tank Output Model](#tank-output-model) list.
         - `size`: The size of the list.
 - **Example:**
+
 ```json
 {
     "tanks": [
@@ -789,6 +809,7 @@ val size: Int
         - `capacity`: The capacity of the tank.
         - `correctionFactor`: The correction factor of the tank.
 - **Example:**
+
 ```json
 {
     "number": 0,
@@ -809,12 +830,13 @@ val size: Int
 
 - **Type:** `application/problem+json`
 - **Attributes:**
-  - **Required:**
-    - `timestamp` - The time the error occurred.
-    - `status` - The status of the error.
-    - `error` - The error message.
-    - `path` - The path of the request that caused the error.
+    - **Required:**
+        - `timestamp` - The time the error occurred.
+        - `status` - The status of the error.
+        - `error` - The error message.
+        - `path` - The path of the request that caused the error.
 - **Example:**
+
 ```json
   {
     "timestamp": "2024-03-18T12:28:34.971+00:00",
