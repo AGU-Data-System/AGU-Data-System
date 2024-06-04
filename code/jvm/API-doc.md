@@ -7,6 +7,20 @@
 - [API Endpoints](#api-endpoints)
     - [AGU](#agu)
         - [Get All AGUs](#get-all-agus)
+        - [Get AGU by id](#get-agu-by-id)
+        - [Create AGU](#create-agu)
+        - [Get Temperature Measures](#get-temperature-measures)
+        - [Get Daily Gas Measures](#get-daily-gas-measures)
+        - [Get Hourly Gas Measures](#get-hourly-gas-measures)
+        - [Get Prediction Gas Measures](#get-prediction-gas-measures)
+        - [Get Favourite AGUs](#get-favourite-agus)
+        - [Update Favourite State](#update-favourite-state)
+        - [Add Contact](#add-contact)
+        - [Delete Contact](#delete-contact)
+        - [Add tank](#add-tank)
+        - [Update Tank](#update-tank)
+        - [Change Gas Levels](#change-gas-levels)
+        - [Change Notes](#change-notes)
 - [Input Models](#input-models)
     - [AGU Input Models](#agu-input-models)
         - [AGU Creation Input Model](#agu-creation-input-model) 
@@ -83,7 +97,301 @@ AGU Endpoint is responsible for managing AGUs in the system.
             - [Bad Request](#bad-request)
 - **Sample Call:**
     ```shell
-    curl 
+    curl -X GET "http://localhost:8080/api/agus" -H "accept: application/json"
+    ```
+
+#### Get AGU by id
+
+- **URL:** `/api/agus/{cui}`
+- **Method:** `GET`
+- **Path Variables:**
+    - `cui` - The unique id of the AGU.
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX" -H "accept: application/json"
+    ```
+
+#### Create AGU
+
+- **URL:** `/api/agus/create`
+- **Method:** `POST`
+- **Request Body:**
+    - `application/json`
+        - [AGU Creation Input Model](#agu-creation-input-model)
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [AGU Creation Output Model](#agu-creation-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+  curl -X POST "http://localhost:8080/api/agus/create" -H "accept: application/json" //TODO body here
+  ```    
+
+#### Get Temperature Measures
+
+- **URL:** `/api/agus/{cui}/temperature`
+- **Method:** `GET`
+- **Path Variables:**
+    - `cui` - The unique id of the AGU.
+- **Request Param:**
+  - `days` - Number of days to get temperature measures.
+    - **Default:** `10`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Temperature Measure List Output Model](#temperature-measure-list-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/temperature" -H "accept: application/json"
+    ```
+
+
+#### Get Daily Gas Measures
+
+- **URL:** `/api/agus/{cui}/gas/daily`
+- **Method:** `GET`
+- **Path Variables:**
+    - `cui` - The unique id of the AGU.
+- **Request Param:**
+    - `days` - Number of days to get temperature measures.
+        - **Default:** `10`
+    - `time` - Time to get the measures at (Hour:minute).
+      - **Default:** `09:00`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Gas Measure List Output Model](#gas-measure-list-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/gas/daily" -H "accept: application/json"
+    ```
+
+#### Get Hourly Gas Measures
+
+- **URL:** `/api/agus/{cui}/gas/hourly`
+- **Method:** `GET`
+- **Path Variables:**
+    - `cui` - The unique id of the AGU.
+- **Request Param:**
+    - `day` - The day to get the measures from.
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Gas Measure List Output Model](#gas-measure-list-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/gas/hourly" -H "accept: application/json"
+    ```
+
+#### Get Prediction Gas Measures
+
+- **URL:** `/api/agus/{cui}/gas/predictions`
+- **Method:** `GET`
+- **Path Variables:**
+    - `cui` - The unique id of the AGU.
+- **Request Param:**
+    - `days` - Number of days to get temperature measures.
+        - **Default:** `10`
+    - `time` - Time to get the measures at (Hour:minute).
+        - **Default:** `09:00`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Gas Measure List Output Model](#gas-measure-list-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/gas/predictions" -H "accept: application/json"
+    ```
+
+#### Get Favourite AGUs
+
+- **URL:** `/api/agus/favourite`
+- **Method:** `GET`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Basic Info List Output Model](#agu-basic-info-list-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/agus/favourite" -H "accept: application/json"
+    ```
+
+#### Update Favourite State
+
+- **URL:** `/api/agus/{aguCui}/favourite`
+- **Method:** `POST`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Update Favourite AGU Input Model](#update-favorite-agu-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/favourite" -H "accept: application/json"
+    ```
+
+#### Add Contact
+
+- **URL:** `/api/agus/{aguCui}/contact`
+- **Method:** `POST`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Contact Creation Input Model](#contact-creation-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Add Contact Output Model](#add-contact-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/contact" -H "accept: application/json"
+    ```
+
+#### Delete Contact
+
+- **URL:** `/api/agus/{aguCui}/contact/{contactId}`
+- **Method:** `DELETE`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+    - `contactId` - The id of the Contact
+- **Success Response:**
+    - **Content:**
+        - `nothing`
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/contact/1" -H "accept: application/json"
+    ```
+
+#### Add tank
+
+- **URL:** `/api/agus/{aguCui}/tank`
+- **Method:** `POST`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Tank Creation Input Model](#tank-creation-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Add Tank Output Model](#add-tank-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/tank" -H "accept: application/json"
+    ```
+
+#### Update Tank
+
+- **URL:** `/api/agus/{aguCui}/tank/{tankNumber}`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+    - `tankNumber` - The number of the Tank to update
+- **Request Body:**
+    - [Tank Update Input Model](#update-tank-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/tank/1" -H "accept: application/json"
+    ```
+
+#### Change Gas Levels
+
+- **URL:** `/api/agus/{aguCui}/levels`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Gas Levels Input Model](#gas-levels-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/levels" -H "accept: application/json"
+    ```
+
+#### Change Notes
+
+- **URL:** `/api/agus/{aguCui}/notes`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Notes Input Model](#notes-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Bad Request](#bad-request)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/notes" -H "accept: application/json"
     ```
 
 ## Input Models
