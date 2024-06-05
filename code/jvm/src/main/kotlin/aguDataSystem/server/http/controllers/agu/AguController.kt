@@ -173,7 +173,7 @@ class AguController(private val service: AGUService) {
 	 * @return the list of the favorite AGUs
 	 */
 	@GetMapping(URIs.Agu.GET_FAVOURITE_AGUS)
-	fun getFavouriteAGUs(): ResponseEntity<*> {
+	fun getFavouriteAGUs(): ResponseEntity<*> { // todo : and when theres no favorite agu ....? maybe change to error ?
 		return ResponseEntity.ok(AGUBasicInfoListOutputModel(service.getFavouriteAGUs()))
 	}
 
@@ -350,7 +350,7 @@ class AguController(private val service: AGUService) {
 			)
 
 			AGUCreationError.InvalidTank -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTank)
-			AGUCreationError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.ProviderError)
+			AGUCreationError.ProviderError -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidProvider)
 			AGUCreationError.InvalidName -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidName)
 			AGUCreationError.AGUAlreadyExists -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),

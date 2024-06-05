@@ -64,6 +64,26 @@
         - [Tank Output Model](#tank-output-model)
 - [Error Handling](#error-handling)
     - [Bad Request](#bad-request)
+    - [AGU Already Exists](#agu-already-exists)
+    - [AGU Name Already Exists](#agu-name-already-exists)
+    - [AGU Not Found](#agu-not-found)
+    - [Contact Already Exists](#contact-already-exists)
+    - [Invalid Contact](#invalid-contact)
+    - [Invalid Contact Type](#invalid-contact-type)
+    - [Invalid Coordinates](#invalid-coordinates)
+    - [Invalid Critical Level](#invalid-critical-level)
+    - [Invalid CUI](#invalid-cui)
+    - [Invalid DNO](#invalid-dno)
+    - [Invalid Levels](#invalid-levels)
+    - [Invalid Load Volume](#invalid-load-volume)
+    - [Invalid Max Level](#invalid-max-level)
+    - [Invalid Min Level](#invalid-min-level)
+    - [Invalid Name](#invalid-name)
+    - [Invalid Provider](#invalid-provider)
+    - [Invalid Tank](#invalid-tank)
+    - [Provider Not Found](#provider-not-found)
+    - [Tank Already Exists](#tank-already-exists)
+    - [Tank Not Found](#tank-not-found)
 
 ## Introduction
 
@@ -94,7 +114,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus" -H "accept: application/json"
@@ -113,7 +133,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX" -H "accept: application/json"
@@ -133,11 +153,26 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [Invalid CUI](#invalid-cui)
+            - [Invalid Contact](#invalid-contact)
+            - [Invalid Contact Type](#invalid-contact-type)
+            - [Invalid Coordinates](#invalid-coordinates)
+            - [Invalid DNO](#invalid-dno)
+            - [Invalid Critical Level](#invalid-critical-level)
+            - [Invalid Min Level](#invalid-min-level)
+            - [Invalid Max Level](#invalid-max-level)
+            - [Invalid Load Volume](#invalid-load-volume)
+            - [Invalid Levels](#invalid-levels)
+            - [Invalid Tank](#invalid-tank)
+            - [Invalid Provider](#invalid-provider)
+            - [Invalid Name](#invalid-name)
+            - [AGU Already Exists](#agu-already-exists)
+            - [AGU Name Already Exists](#agu-name-already-exists)
 - **Sample Call:**
     ```shell
-  curl -X POST "http://localhost:8080/api/agus/create" -H "accept: application/json" //TODO body here
+  curl -X POST "http://localhost:8080/api/agus/create" -H "accept: application/json" 
   ```    
+[comment]: <> (TODO: add body to Requests)
 
 #### Get Temperature Measures
 
@@ -155,7 +190,8 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Provider Not Found](#provider-not-found)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/temperature" -H "accept: application/json"
@@ -180,7 +216,8 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Provider Not Found](#provider-not-found)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/gas/daily" -H "accept: application/json"
@@ -201,7 +238,8 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Provider Not Found](#provider-not-found)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/gas/hourly" -H "accept: application/json"
@@ -225,7 +263,8 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Provider Not Found](#provider-not-found)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus/PT1234567890123456XX/gas/predictions" -H "accept: application/json"
@@ -242,7 +281,9 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [Bad Request](#bad-request) 
+
+          [comment]: <> (TODO Change bad request to something more meaningful)
 - **Sample Call:**
     ```shell
     curl -X GET "http://localhost:8080/api/agus/favourite" -H "accept: application/json"
@@ -263,7 +304,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/favourite" -H "accept: application/json"
@@ -284,7 +325,10 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Invalid Contact](#invalid-contact)
+            - [Invalid Contact Type](#invalid-contact-type)
+            - [Contact Already Exists](#contact-already-exists)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/contact" -H "accept: application/json"
@@ -303,7 +347,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/contact/1" -H "accept: application/json"
@@ -324,7 +368,9 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Invalid Levels](#invalid-levels)
+            - [Tank Already Exists](#tank-already-exists)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/tank" -H "accept: application/json"
@@ -346,7 +392,9 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Invalid Levels](#invalid-levels)
+            - [Tank Not Found](#tank-not-found)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/tank/1" -H "accept: application/json"
@@ -367,7 +415,8 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
+            - [Invalid Levels](#invalid-levels)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/levels" -H "accept: application/json"
@@ -388,7 +437,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Error Response:**
     - **Content:**
         - `application/json`
-            - [Bad Request](#bad-request)
+            - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/notes" -H "accept: application/json"
@@ -1190,3 +1239,83 @@ val size: Int
     "path": "/api/provider/a"
   }
 ```
+
+### AGU Already Exists
+
+- **Type:** `application/problem+json`
+
+### AGU Not Found
+
+- **Type:** `application/problem+json`
+
+### AGU Name Already Exists
+
+- **Type:** `application/problem+json`
+
+### Contact Already Exists
+
+- **Type:** `application/problem+json`
+
+### Invalid Contact
+
+- **Type:** `application/problem+json`
+
+### Invalid Contact Type
+
+- **Type:** `application/problem+json`
+
+### Invalid Coordinates
+
+- **Type:** `application/problem+json`
+
+### Invalid Critical Level
+
+- **Type:** `application/problem+json`
+
+### Invalid CUI
+
+- **Type:** `application/problem+json`
+
+### Invalid DNO
+
+- **Type:** `application/problem+json`
+
+### Invalid Levels
+
+- **Type:** `application/problem+json`
+
+### Invalid Load Volume
+
+- **Type:** `application/problem+json`
+
+### Invalid Max Level
+
+- **Type:** `application/problem+json`
+
+### Invalid Min Level
+
+- **Type:** `application/problem+json`
+
+### Invalid Name
+
+- **Type:** `application/problem+json`
+
+### Invalid Provider
+
+- **Type:** `application/problem+json`
+
+### Invalid Tank
+
+- **Type:** `application/problem+json`
+
+### Provider Not Found
+
+- **Type:** `application/problem+json`
+
+### Tank Already Exists
+
+- **Type:** `application/problem+json`
+
+### Tank Not Found
+
+- **Type:** `application/problem+json`

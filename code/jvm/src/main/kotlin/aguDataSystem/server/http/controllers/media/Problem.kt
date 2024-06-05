@@ -112,7 +112,7 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The DNO must have a name."
 		)
 
-		val ProviderError = Problem(
+		val InvalidProvider = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-provider"),
 			title = "Invalid Provider.",
 			details = "Couldn't add the provider to the periodic fetcher."
