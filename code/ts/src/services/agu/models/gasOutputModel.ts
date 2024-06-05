@@ -12,4 +12,9 @@ interface LevelsInputModel {
     critical: number;
 }
 
-export { GasOutputModel, LevelsInputModel };
+interface GetGasListOutputModel {
+    gasMeasures: GasOutputModel[];
+    size: number;
+}
+
+export { GasOutputModel, LevelsInputModel, GetGasListOutputModel };

@@ -55,7 +55,7 @@ export default function AguEdit() {
                 setState({ type: 'success', aguDetails: details });
                 setLevelValues({ min: details.levels.min, max: details.levels.max, critical: details.levels.critical });
                 setNewTank({
-                    number: details.tanks.length + 1,
+                    number: details.tanks.size + 1,
                     minLevel: 0,
                     maxLevel: 0,
                     criticalLevel: 0,
@@ -85,12 +85,15 @@ export default function AguEdit() {
                     ...state,
                     aguDetails: {
                         ...state.aguDetails,
-                        contacts: [...state.aguDetails.contacts, {
-                            id: updatedContacts.value,
-                            name: newContact.name,
-                            phone: newContact.phone,
-                            type: newContact.type
-                        }]
+                        contacts: {
+                            contacts: [...state.aguDetails.contacts.contacts, {
+                                id: updatedContacts.value,
+                                name: newContact.name,
+                                phone: newContact.phone,
+                                type: newContact.type
+                            }],
+                            size: state.aguDetails.contacts.size + 1
+                        }
                     }
                 });
                 setNewContact({ name: '', phone: '', type: '' });
@@ -116,7 +119,7 @@ export default function AguEdit() {
             } else {
                 setState({
                     ...state,
-                    aguDetails: { ...state.aguDetails, contacts: state.aguDetails.contacts.filter(contact => contact.id !== contactName) }
+                    aguDetails: { ...state.aguDetails, contacts: { contacts: state.aguDetails.contacts.contacts.filter(contact => contact.id !== contactName), size: state.aguDetails.contacts.size - 1 } }
                 });
                 setSnackbarMessage('Contact removed successfully');
                 setSnackbarSeverity('success');
@@ -142,17 +145,20 @@ export default function AguEdit() {
                     ...state,
                     aguDetails: {
                         ...state.aguDetails,
-                        tanks: [...state.aguDetails.tanks, {
-                            number: updatedTanks.value,
-                            levels: {
-                                min: newTank.minLevel,
-                                max: newTank.maxLevel,
-                                critical: newTank.criticalLevel
-                            },
-                            loadVolume: newTank.loadVolume,
-                            capacity: newTank.capacity,
-                            correctionFactor: newTank.correctionFactor
-                        }]
+                        tanks: {
+                            tanks: [...state.aguDetails.tanks.tanks, {
+                                number: updatedTanks.value.number,
+                                levels: {
+                                    min: newTank.minLevel,
+                                    max: newTank.maxLevel,
+                                    critical: newTank.criticalLevel
+                                },
+                                loadVolume: newTank.loadVolume,
+                                capacity: newTank.capacity,
+                                correctionFactor: newTank.correctionFactor
+                            }],
+                            size: state.aguDetails.tanks.size + 1
+                        }
                     }
                 });
                 setNewTank({
@@ -260,7 +266,7 @@ export default function AguEdit() {
                     <h1>Editando {state.aguDetails.name}... <BackToAguDetailsButton aguCUI={state.aguDetails.cui}/></h1>
                     <h3>Contacts</h3>
                     <List>
-                        {state.aguDetails.contacts.map(contact => (
+                        {state.aguDetails.contacts.contacts.map(contact => (
                             <ListItem key={contact.id}>
                                 <ListItemText primary={contact.name} secondary={`${contact.phone} (${contact.type})`} />
                                 <IconButton onClick={() => openConfirmDialog('contact', contact.id)}>
@@ -287,7 +293,7 @@ export default function AguEdit() {
                     <AddButton handleClick={handleAddContact} />
                     <h3>Tanks</h3>
                     <List>
-                        {state.aguDetails.tanks.map(tank => (
+                        {state.aguDetails.tanks.tanks.map(tank => (
                             <ListItem key={tank.number}>
                                 <ListItemText
                                     primary={`Tank ${tank.number}`}

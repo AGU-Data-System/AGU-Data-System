@@ -6,4 +6,9 @@ interface TemperatureOutputModel {
     [key: string]: string | number;  // Index signature to allow dynamic keys
 }
 
-export default TemperatureOutputModel;
+interface GetTemperatureListOutputModel {
+    temperatureMeasures: TemperatureOutputModel[];
+    size: number;
+}
+
+export  { TemperatureOutputModel, GetTemperatureListOutputModel };

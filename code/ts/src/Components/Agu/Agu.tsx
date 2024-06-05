@@ -63,7 +63,7 @@ export default function Agu(){
 
     return(
         <Box>
-            <AguHeader aguOrd={state.aguDetails.dno.name} aguName={state.aguDetails.name} aguCUI={state.aguDetails.cui} aguMetres={state.aguDetails.capacity} contacts={state.aguDetails.contacts} aguIsFavorite={state.aguDetails.isFavorite} />
+            <AguHeader aguOrd={state.aguDetails.dno.name} aguName={state.aguDetails.name} aguCUI={state.aguDetails.cui} aguMetres={state.aguDetails.capacity} contacts={state.aguDetails.contacts.contacts} aguIsFavorite={state.aguDetails.isFavorite} />
             <br/>
             <AguBody aguCui={state.aguDetails.cui} aguNotes={state.aguDetails.notes ? state.aguDetails.notes : ""} lvlMin={state.aguDetails.levels.min} lvlMax={state.aguDetails.levels.max} lvlCrit={state.aguDetails.levels.critical} latitude={state.aguDetails.location.latitude} longitude={state.aguDetails.location.longitude} />
         </Box>

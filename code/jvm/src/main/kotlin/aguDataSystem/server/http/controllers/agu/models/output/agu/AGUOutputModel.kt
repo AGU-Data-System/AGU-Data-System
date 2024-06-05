@@ -38,7 +38,9 @@ data class AGUOutputModel(
 	val providers: ProviderListOutputModel,
 	val isFavorite: Boolean = false,
 	val notes: String? = null,
-	val training: String?
+	val training: String?,
+	val capacity: Int = 0,
+	val correctionFactor: Double = 0.0,
 ) {
 	constructor(agu: AGU) : this(
 		cui = agu.cui,
@@ -53,6 +55,8 @@ data class AGUOutputModel(
 		providers = ProviderListOutputModel(agu.providers),
 		isFavorite = agu.isFavorite,
 		notes = agu.notes,
-		training = agu.training
+		training = agu.training,
+		capacity = agu.capacity,
+		correctionFactor = agu.correctionFactor,
 	)
 }

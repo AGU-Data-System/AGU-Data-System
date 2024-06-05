@@ -4,13 +4,13 @@ import {
     AguDetailsOutputModel,
     AguOutputModel,
     AgusBasicInfoListOutputModel,
-    ContactInputModel,
+    ContactInputModel, TankAddOutputModel,
     TankInputModel
 } from "./models/aguOutputModel";
 import { AguCreateInputModel } from "./models/createAguInputModel";
-import {Problem} from "../../utils/Problem";
-import TemperatureOutputModel from "./models/temperatureOutputModel";
-import { GasOutputModel, LevelsInputModel } from "./models/gasOutputModel";
+import { Problem } from "../../utils/Problem";
+import { GetTemperatureListOutputModel } from "./models/temperatureOutputModel";
+import { GetGasListOutputModel, LevelsInputModel } from "./models/gasOutputModel";
 
 export namespace aguService {
     export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoListOutputModel>> {
@@ -38,7 +38,7 @@ export namespace aguService {
         return fetchFunction(url, "PUT", JSON.stringify({isFavourite}));
     }
 
-    export async function getTemperatureData(aguCui: string): Promise<Either<Error | Problem, TemperatureOutputModel[]>> {
+    export async function getTemperatureData(aguCui: string): Promise<Either<Error | Problem, GetTemperatureListOutputModel>> {
         const url = `/agus/${aguCui}/temperature`;
         return fetchFunction(url, "GET");
     }
@@ -48,12 +48,12 @@ export namespace aguService {
         return fetchFunction(url, "PUT", JSON.stringify({notes}));
     }
 
-    export async function getGasData(aguCui: string): Promise<Either<Error | Problem, GasOutputModel[]>> {
+    export async function getGasData(aguCui: string): Promise<Either<Error | Problem, GetGasListOutputModel>> {
         const url = `/agus/${aguCui}/gas/daily`;
         return fetchFunction(url, "GET");
     }
 
-    export async function getHourlyGasData(aguCui: string, day: number, month: number, year: number): Promise<Either<Error | Problem, GasOutputModel[]>> {
+    export async function getHourlyGasData(aguCui: string, day: number, month: number, year: number): Promise<Either<Error | Problem, GetGasListOutputModel>> {
         const url = `/agus/${aguCui}/gas/hourly?day=${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         return fetchFunction(url, "GET");
     }
@@ -68,7 +68,7 @@ export namespace aguService {
         return fetchFunction(url, "DELETE");
     }
 
-    export async function addTank(aguCui: string, newTank: TankInputModel): Promise<Either<Error | Problem, number>> {
+    export async function addTank(aguCui: string, newTank: TankInputModel): Promise<Either<Error | Problem, TankAddOutputModel>> {
         const url = `/agus/${aguCui}/tank`;
         return fetchFunction(url, "POST", JSON.stringify(newTank));
     }

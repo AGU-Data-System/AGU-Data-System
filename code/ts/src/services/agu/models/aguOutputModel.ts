@@ -15,10 +15,11 @@ interface AguDetailsOutputModel {
     dno: {
         id: number;
         name: string;
+        region: string;
     };
     image: string;
-    contacts: ContactOutputModel[];
-    tanks: TankOutputModel[];
+    contacts: ContactListOutputModel;
+    tanks: TanksListOutputModel;
     providers: any[];
     isFavorite: boolean;
     notes: string;
@@ -62,6 +63,10 @@ interface TankInputModel {
     correctionFactor: number
 }
 
+interface TankAddOutputModel {
+    number: number;
+}
+
 interface AguOutputModel {
     cui: string;
 }
@@ -85,4 +90,15 @@ interface AgusBasicInfoListOutputModel {
     size: number;
 }
 
-export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel, AgusBasicInfoListOutputModel };
+interface ContactListOutputModel {
+    contacts: ContactOutputModel[];
+    size: number;
+}
+
+interface TanksListOutputModel {
+    tanks: TankOutputModel[];
+    size: number;
+
+}
+
+export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankAddOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel, AgusBasicInfoListOutputModel };

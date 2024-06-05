@@ -31,7 +31,7 @@ export default function BarsDataset({ data, aguCui, aguMin, aguMax, aguCrit }: {
             } else if (hourlyGasData.value instanceof Problem) {
                 setDayData([]);
             } else {
-                setDayData(hourlyGasData.value);
+                setDayData(hourlyGasData.value.gasMeasures);
             }
         };
 

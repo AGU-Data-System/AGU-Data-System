@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useRef, useEffect, useState } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
-import TemperatureOutputModel from "../../services/agu/models/temperatureOutputModel";
+import { TemperatureOutputModel } from "../../services/agu/models/temperatureOutputModel";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
 
 const formatDate = (dateString: string) => {
