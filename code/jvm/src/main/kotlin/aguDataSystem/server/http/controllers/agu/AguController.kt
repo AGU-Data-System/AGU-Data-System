@@ -2,11 +2,11 @@ package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.agu.models.input.agu.AGUCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.agu.NotesInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.agu.UpdateFavouriteAGUInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.gasLevels.GasLevelsInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.agu.UpdateFavouriteAGUInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.agu.NotesInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.tank.TankUpdateInputModel
 import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUBasicInfoListOutputModel
 import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUCreationOutputModel
@@ -372,6 +372,7 @@ class AguController(private val service: AGUService) {
 	private fun GetAGUError.resolveProblem(): ResponseEntity<*> =
 		when (this) {
 			GetAGUError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
+			GetAGUError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
 		}
 
 	/**
@@ -387,6 +388,10 @@ class AguController(private val service: AGUService) {
 				HttpStatus.NOT_FOUND.value(),
 				Problem.ProviderNotFound
 			)
+
+			GetMeasuresError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
+			GetMeasuresError.InvalidDays -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidDays)
+			GetMeasuresError.InvalidTime -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidTime)
 		}
 
 	/**
@@ -449,6 +454,17 @@ class AguController(private val service: AGUService) {
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.TankAlreadyExists
 			)
+
+			AddTankError.InvalidCapacity -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCapacity)
+			AddTankError.InvalidLoadVolume -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidLoadVolume
+			)
+
+			AddTankError.InvalidTankNumber -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidTankNumber
+			)
 		}
 
 	/**
@@ -462,6 +478,17 @@ class AguController(private val service: AGUService) {
 			UpdateTankError.AGUNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.AGUNotFound)
 			UpdateTankError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
 			UpdateTankError.TankNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.TankNotFound)
+			UpdateTankError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
+			UpdateTankError.InvalidCapacity -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCapacity)
+			UpdateTankError.InvalidLoadVolume -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidLoadVolume
+			)
+
+			UpdateTankError.InvalidTankNumber -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidTankNumber
+			)
 		}
 
 	/**

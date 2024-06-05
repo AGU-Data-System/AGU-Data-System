@@ -5,7 +5,9 @@ import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreationDTO
 import aguDataSystem.server.domain.gasLevels.GasLevels
+import aguDataSystem.server.domain.gasLevels.GasLevelsDTO
 import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.domain.tank.TankUpdateDTO
 
 object ServiceUtils {
 
@@ -14,7 +16,7 @@ object ServiceUtils {
 		region = "Test Region"
 	)
 
-	private val dummyGasLevels = GasLevels(
+	val dummyGasLevels = GasLevels(
 		min = 30,
 		max = 90,
 		critical = 10
@@ -44,6 +46,21 @@ object ServiceUtils {
 		loadVolume = 40,
 		capacity = 50,
 		correctionFactor = 1.0
+	)
+
+	val updateTankDTO = TankUpdateDTO(
+		minLevel = dummyGasLevels.min,
+		maxLevel = dummyGasLevels.max,
+		criticalLevel = dummyGasLevels.critical,
+		loadVolume = 40,
+		capacity = 80,
+		correctionFactor = 1.0
+	)
+
+	val dummyGasLevelsDTO = GasLevelsDTO(
+		min = 30,
+		max = 90,
+		critical = 10
 	)
 
 	val dummyAGUCreationDTO = AGUCreationDTO(

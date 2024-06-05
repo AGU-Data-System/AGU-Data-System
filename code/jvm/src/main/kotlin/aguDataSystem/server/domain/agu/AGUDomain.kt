@@ -86,6 +86,20 @@ class AGUDomain {
 	fun isLoadVolumeValid(loadVolume: Int): Boolean = loadVolume >= 0
 
 	/**
+	 * Checks if the capacity is valid
+	 * @param capacity the capacity to check
+	 * @return true if the capacity is valid, false otherwise
+	 */
+	fun isCapacityValid(capacity: Int): Boolean = capacity > 0
+
+	/**
+	 * Checks if the tank number is valid
+	 * @param number the tank number to check
+	 * @return true if the tank number is valid, false otherwise
+	 */
+	fun isTankNumberValid(number: Int): Boolean = number > 0
+
+	/**
 	 * Checks if a Latitude is valid
 	 * @param latitude the latitude to check
 	 * @return true if the latitude is valid, false otherwise

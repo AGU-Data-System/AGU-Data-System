@@ -147,5 +147,29 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			title = "Contact Already Exists.",
 			details = "The contact already exists."
 		)
+
+		val InvalidDays = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-days"),
+			title = "Invalid Days.",
+			details = "The days must be positive."
+		)
+
+		val InvalidTime = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-time"),
+			title = "Invalid Time.",
+			details = "The time must be between 00:00 and 23:59."
+		)
+
+		val InvalidCapacity = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-capacity"),
+			title = "Invalid Capacity.",
+			details = "The capacity must be positive."
+		)
+
+		val InvalidTankNumber = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-tank-number"),
+			title = "Invalid Tank Number.",
+			details = "The tank number must be positive."
+		)
 	}
 }

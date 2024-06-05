@@ -167,6 +167,9 @@ class AGUService(
 	 * @return the AGU
 	 */
 	fun getAGUById(cui: String): GetAGUResult {
+
+		if (!aguDomain.isCUIValid(cui)) return failure(GetAGUError.InvalidCUI)
+
 		return transactionManager.run {
 			logger.info("Getting AGU by CUI: {} from the database", cui)
 
@@ -188,6 +191,11 @@ class AGUService(
 	 * @return the temperature levels
 	 */
 	fun getTemperatureMeasures(cui: String, days: Int): GetTemperatureMeasuresResult {
+
+		if (!aguDomain.isCUIValid(cui)) return failure(GetMeasuresError.InvalidCUI)
+
+		if (days < 1) return failure(GetMeasuresError.InvalidDays)
+
 		return transactionManager.run {
 			logger.info("Getting temperature measures for AGU with CUI: {} for the last {} days", cui, days)
 
@@ -213,6 +221,14 @@ class AGUService(
 	 * @return the gas levels
 	 */
 	fun getDailyGasMeasures(cui: String, days: Int, time: LocalTime): GetGasMeasuresResult {
+		if (!aguDomain.isCUIValid(cui)) return failure(GetMeasuresError.InvalidCUI)
+
+		if (days < 1) return failure(GetMeasuresError.InvalidDays)
+
+		if (time.hour < 0 || time.hour > 23 || time.minute < 0 || time.minute > 59) {
+			return failure(GetMeasuresError.InvalidTime)
+		}
+
 		return transactionManager.run {
 			logger.info("Getting daily gas measures for AGU with CUI: {} for the last {} days", cui, days)
 			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
@@ -236,6 +252,8 @@ class AGUService(
 	 * @return the gas levels
 	 */
 	fun getHourlyGasMeasures(cui: String, day: LocalDate): GetGasMeasuresResult {
+		if (!aguDomain.isCUIValid(cui)) return failure(GetMeasuresError.InvalidCUI)
+
 		return transactionManager.run {
 			logger.info("Getting hourly gas measures for AGU with CUI: {} for the day: {}", cui, day)
 			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
@@ -260,6 +278,15 @@ class AGUService(
 	 * @return the gas levels
 	 */
 	fun getPredictionGasLevels(cui: String, days: Int, time: LocalTime): GetGasMeasuresResult {
+
+		if (!aguDomain.isCUIValid(cui)) return failure(GetMeasuresError.InvalidCUI)
+
+		if (days < 1) return failure(GetMeasuresError.InvalidDays)
+
+		if (time.hour < 0 || time.hour > 23 || time.minute < 0 || time.minute > 59) {
+			return failure(GetMeasuresError.InvalidTime)
+		}
+
 		return transactionManager.run {
 			logger.info("Getting prediction gas levels for AGU with CUI: {} for the next {} days", cui, days)
 			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetMeasuresError.AGUNotFound)
@@ -380,6 +407,18 @@ class AGUService(
 			return failure(AddTankError.InvalidLevels)
 		}
 
+		if (!aguDomain.isLoadVolumeValid(tank.loadVolume)) {
+			return failure(AddTankError.InvalidLoadVolume)
+		}
+
+		if (!aguDomain.isCapacityValid(tank.capacity)) {
+			return failure(AddTankError.InvalidCapacity)
+		}
+
+		if (!aguDomain.isTankNumberValid(tank.number)) {
+			return failure(AddTankError.InvalidTankNumber)
+		}
+
 		return transactionManager.run {
 			logger.info("Adding tank to AGU with CUI: {}", cui)
 
@@ -411,6 +450,22 @@ class AGUService(
 
 		if (!aguDomain.areLevelsValid(tankUpdateInfo.levels)) {
 			return failure(UpdateTankError.InvalidLevels)
+		}
+
+		if (!aguDomain.isCUIValid(cui)) {
+			return failure(UpdateTankError.InvalidCUI)
+		}
+
+		if (!aguDomain.isLoadVolumeValid(tankUpdateInfo.loadVolume)) {
+			return failure(UpdateTankError.InvalidLoadVolume)
+		}
+
+		if (!aguDomain.isCapacityValid(tankUpdateInfo.capacity)) {
+			return failure(UpdateTankError.InvalidCapacity)
+		}
+
+		if (!aguDomain.isTankNumberValid(number)) {
+			return failure(UpdateTankError.InvalidTankNumber)
 		}
 
 		return transactionManager.run {

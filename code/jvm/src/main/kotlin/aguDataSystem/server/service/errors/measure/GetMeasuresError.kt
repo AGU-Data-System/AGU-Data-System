@@ -9,4 +9,7 @@ package aguDataSystem.server.service.errors.measure
 sealed class GetMeasuresError {
 	data object AGUNotFound : GetMeasuresError()
 	data object ProviderNotFound : GetMeasuresError()
+	data object InvalidDays : GetMeasuresError()
+	data object InvalidTime : GetMeasuresError()
+	data object InvalidCUI : GetMeasuresError()
 }

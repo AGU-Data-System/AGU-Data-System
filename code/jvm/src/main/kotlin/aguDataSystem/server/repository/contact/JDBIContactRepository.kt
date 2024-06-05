@@ -31,7 +31,7 @@ class JDBIContactRepository(private val handle: Handle) : ContactRepository {
 		)
 			.bind("name", contact.name)
 			.bind("phone", contact.phone)
-			.bind("type", contact.type)
+			.bind("type", contact.type.name.uppercase())
 			.bind("agu_cui", cui)
 			.executeAndReturnGeneratedKeys(Contact::id.name)
 			.mapTo<Int>()
@@ -141,7 +141,7 @@ class JDBIContactRepository(private val handle: Handle) : ContactRepository {
 		)
 			.bind("cui", cui)
 			.bind("phone", phoneNumber)
-			.bind("type", type)
+			.bind("type", type.uppercase())
 			.mapTo<Int>()
 			.single() == 1
 
