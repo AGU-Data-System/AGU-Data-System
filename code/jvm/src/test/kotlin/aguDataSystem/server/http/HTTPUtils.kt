@@ -7,6 +7,9 @@ import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationI
 import aguDataSystem.server.http.controllers.agu.models.input.tank.TankUpdateInputModel
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import org.springframework.test.web.reactive.server.WebTestClient
 
 /**
@@ -14,19 +17,32 @@ import org.springframework.test.web.reactive.server.WebTestClient
  */
 object HTTPUtils {
 
+	private const val BASE_AGU_PATH = "/agus"
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to create an AGU with its creation input model
+	 * @param client the WebTestClient
+	 * @param aguCreation the AGUCreationInputModel
+	 * @return the response body
+	 */
 	fun createAGURequest(client: WebTestClient, aguCreation: AGUCreationInputModel) =
 		client.post()
-			.uri("/create")
-			.bodyValue(aguCreation)
+			.bodyValue(
+				aguCreation.toMap()
+					.also { println(it.toMapString()) }
+			)
 			.exchange()
 			.expectStatus().isCreated
 			.expectBody()
 			.returnResult()
 			.responseBody
 
+
 	fun getAGURequest(client: WebTestClient, aguId: String) =
 		client.get()
-			.uri("/$aguId")
+			.uri("$BASE_AGU_PATH/$aguId")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -35,7 +51,7 @@ object HTTPUtils {
 
 	fun getAllAGUsRequest(client: WebTestClient) =
 		client.get()
-			.uri("/")
+			.uri("$BASE_AGU_PATH/")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -44,7 +60,7 @@ object HTTPUtils {
 
 	fun getTemperatureMeasuresRequest(client: WebTestClient, aguId: String, days: Int) =
 		client.get()
-			.uri("/$aguId/temperature?days=$days")
+			.uri("$BASE_AGU_PATH/$aguId/temperature?days=$days")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -53,7 +69,7 @@ object HTTPUtils {
 
 	fun getDailyGasMeasuresRequest(client: WebTestClient, aguId: String, days: Int, time: LocalTime) =
 		client.get()
-			.uri("/$aguId/gas/daily?days=$days&time=$time")
+			.uri("$BASE_AGU_PATH/$aguId/gas/daily?days=$days&time=$time")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -62,7 +78,7 @@ object HTTPUtils {
 
 	fun getHourlyGasMeasuresRequest(client: WebTestClient, aguId: String, day: LocalDate) =
 		client.get()
-			.uri("/$aguId/gas/hourly?day=$day")
+			.uri("$BASE_AGU_PATH/$aguId/gas/hourly?day=$day")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -71,7 +87,7 @@ object HTTPUtils {
 
 	fun getPredictionGasMeasuresRequest(client: WebTestClient, aguId: String, days: Int, time: LocalTime) =
 		client.get()
-			.uri("/$aguId/gas/predictions?days=$days&time=$time")
+			.uri("$BASE_AGU_PATH/$aguId/gas/predictions?days=$days&time=$time")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -80,7 +96,7 @@ object HTTPUtils {
 
 	fun getFavoriteAGUsRequest(client: WebTestClient) =
 		client.get()
-			.uri("/favorites")
+			.uri("$BASE_AGU_PATH/favorites")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -89,7 +105,7 @@ object HTTPUtils {
 
 	fun updateFavouriteStateRequest(client: WebTestClient, aguId: String, isFavorite: Boolean) =
 		client.put()
-			.uri("/$aguId/favorite")
+			.uri("$BASE_AGU_PATH/$aguId/favorite")
 			.bodyValue(
 				"isFavorite" to isFavorite
 			)
@@ -101,7 +117,7 @@ object HTTPUtils {
 
 	fun addContactRequest(client: WebTestClient, aguId: String, contactInputModel: ContactCreationInputModel) =
 		client.put()
-			.uri("/$aguId/contact")
+			.uri("$BASE_AGU_PATH/$aguId/contact")
 			.bodyValue(
 				"contact" to contactInputModel
 			)
@@ -113,7 +129,7 @@ object HTTPUtils {
 
 	fun deleteContactRequest(client: WebTestClient, aguId: String, contactId: String) =
 		client.delete()
-			.uri("/$aguId/contact/$contactId")
+			.uri("$BASE_AGU_PATH/$aguId/contact/$contactId")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -122,7 +138,7 @@ object HTTPUtils {
 
 	fun addTankRequest(client: WebTestClient, aguId: String, tankInputModel: TankCreationInputModel) =
 		client.put()
-			.uri("/$aguId/tank")
+			.uri("$BASE_AGU_PATH/$aguId/tank")
 			.bodyValue(
 				"tank" to tankInputModel
 			)
@@ -134,7 +150,7 @@ object HTTPUtils {
 
 	fun updateTankRequest(client: WebTestClient, aguId: String, tankId: String, tankUpdateInputModel: TankUpdateInputModel) =
 		client.put()
-			.uri("/$aguId/tank/$tankId")
+			.uri("$BASE_AGU_PATH/$aguId/tank/$tankId")
 			.bodyValue(
 				"tank" to tankUpdateInputModel
 			)
@@ -146,7 +162,7 @@ object HTTPUtils {
 
 	fun changeGasLevelsRequest(client: WebTestClient, aguId: String, tankId: String, gasLevelsInputModel: GasLevelsInputModel) =
 		client.put()
-			.uri("/$aguId/tank/$tankId/gas")
+			.uri("$BASE_AGU_PATH/$aguId/tank/$tankId/gas")
 			.bodyValue(
 				"gasLevels" to gasLevelsInputModel
 			)
@@ -158,7 +174,7 @@ object HTTPUtils {
 
 	fun changeNotesRequest(client: WebTestClient, aguId: String, tankId: String, notes: String) =
 		client.put()
-			.uri("/$aguId/tank/$tankId/notes")
+			.uri("$BASE_AGU_PATH/$aguId/tank/$tankId/notes")
 			.bodyValue(
 				"notes" to notes
 			)
@@ -167,4 +183,47 @@ object HTTPUtils {
 			.expectBody()
 			.returnResult()
 			.responseBody
+
+}
+
+/**
+ * Converts an object to a map of its properties
+ * TODO fix this
+ * @receiver the object
+ * @return the map of the object's properties
+ */
+private fun Any?.toMap(): Map<String, Any?> {
+	if (this == null) return emptyMap()
+	val clazz = this::class
+
+	// Skip Java standard library classes
+	if (clazz.qualifiedName?.startsWith("java.") == true) {
+		return mapOf("value" to this.toString())
+	}
+
+	return clazz.memberProperties.associate { prop ->
+		val kProperty1 = prop as KProperty1<Any, *>
+		val value = try {
+			kProperty1.isAccessible = true
+			kProperty1.get(this)
+		} catch (e: Exception) {
+			null // Inaccessible properties are set to null
+		}
+
+		val mapValue = when (value) {
+			is Iterable<*> -> value.map { it?.toMap() }
+			is Array<*> -> value.map { it?.toMap() }
+			is Map<*, *> -> value.entries.associate { it.key.toString() to it.value?.toMap() }
+			is ByteArray -> value.toList() // convert ByteArray to List<Byte>
+			else -> if (value != null && value::class.isData) value.toMap() else value
+		}
+		prop.name to mapValue
+	}
+}
+
+/**
+ * Converts an object to a string representation of its map
+ */
+private fun Any?.toMapString(): String {
+	return this?.toMap().toString()
 }

@@ -48,6 +48,9 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+	// for reflection
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
 	// To use WebTestClient on tests
 	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 	testImplementation(kotlin("test"))
