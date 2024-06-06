@@ -19,15 +19,6 @@ type MapState =
     | { type: 'error'; message: string }
     | { type: 'success'; uagsDetails: AgusBasicInfoOutputModel[] };
 
-const NORTLATMAX = 43;
-const NORTLATMIN = 40.5;
-
-const CENTROLATMAX = 40.5;
-const CENTROLATMIN = 38.3;
-
-const SULLATMAX = 38.3;
-const SULLATMIN = 36.9;
-
 export default function LeafletMap({ filter, darkMode }: { filter: string, darkMode: boolean }) {
     const [state, setState] = useState<MapState>({ type: 'loading' });
 
@@ -45,13 +36,13 @@ export default function LeafletMap({ filter, darkMode }: { filter: string, darkM
             } else {
                 switch (filter.toLowerCase()) {
                     case 'norte':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.location.latitude <= NORTLATMAX && uag.location.latitude >= NORTLATMIN) });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.region.toLowerCase() === 'north') });
                         break;
                     case 'centro':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.location.latitude <= CENTROLATMAX && uag.location.latitude >= CENTROLATMIN) });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.region.toLowerCase() === 'center') });
                         break;
                     case 'sul':
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.location.latitude < SULLATMAX && uag.location.latitude > SULLATMIN) });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.region.toLowerCase() === 'south') });
                         break;
                     case 'sng':
                         setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.name.toLowerCase() === 'sng') });

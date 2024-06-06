@@ -77,6 +77,7 @@ interface AgusBasicInfoOutputModel {
     dno: {
         id: number;
         name: string;
+        region: string;
     };
     location: {
         name: string;

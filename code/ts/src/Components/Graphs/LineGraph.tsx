@@ -73,7 +73,7 @@ export default function LineGraph({ data }: { data: TemperatureOutputModel[] }) 
             {
                 label: 'Temperatura (°C)',
                 max: Math.ceil(maxTemperature / 10) * 10,
-                min: Math.floor(minTemperature / 10) * 10,
+                min: minTemperature < 0 ? Math.floor(minTemperature / 10) * 10 : 0,
                 zeroSegmentedLine: true,
             },
         ],
