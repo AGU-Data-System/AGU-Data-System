@@ -40,6 +40,19 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The AGU already exists with the given name."
 		)
 
+		val AGUNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "agu-not-found"),
+			title = "AGU Not Found.",
+			details = "The AGU with the given ID was not found."
+		)
+
+		val ContactAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "contact-already-exists"),
+			title = "Contact Already Exists.",
+			details = "The contact already exists."
+		)
+
+
 		val InvalidCUI = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-cui"),
 			title = "Invalid CUI.",
@@ -118,36 +131,6 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "Couldn't add the provider to the periodic fetcher."
 		)
 
-		val AGUNotFound = Problem(
-			typeUri = URI(PROBLEM_BASE_URL + "agu-not-found"),
-			title = "AGU Not Found.",
-			details = "The AGU with the given ID was not found."
-		)
-
-		val ProviderNotFound = Problem(
-			typeUri = URI(PROBLEM_BASE_URL + "provider-not-found"),
-			title = "Provider Not Found.",
-			details = "The provider with the given ID was not found."
-		)
-
-		val TankNotFound = Problem(
-			typeUri = URI(PROBLEM_BASE_URL + "tank-not-found"),
-			title = "Tank Not Found.",
-			details = "The tank with the given ID was not found."
-		)
-
-		val TankAlreadyExists = Problem(
-			typeUri = URI(PROBLEM_BASE_URL + "tank-already-exists"),
-			title = "Tank Already Exists.",
-			details = "The tank already exists."
-		)
-
-		val ContactAlreadyExists = Problem(
-			typeUri = URI(PROBLEM_BASE_URL + "contact-already-exists"),
-			title = "Contact Already Exists.",
-			details = "The contact already exists."
-		)
-
 		val InvalidDays = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-days"),
 			title = "Invalid Days.",
@@ -170,6 +153,24 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-tank-number"),
 			title = "Invalid Tank Number.",
 			details = "The tank number must be positive."
+		)
+
+		val ProviderNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "provider-not-found"),
+			title = "Provider Not Found.",
+			details = "The provider with the given ID was not found."
+		)
+
+		val TankNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "tank-not-found"),
+			title = "Tank Not Found.",
+			details = "The tank with the given ID was not found."
+		)
+
+		val TankAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "tank-already-exists"),
+			title = "Tank Already Exists.",
+			details = "The tank already exists."
 		)
 	}
 }

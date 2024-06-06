@@ -1,4 +1,4 @@
-# AGU Data System - API Documentation
+# AGU Data System — API Documentation
 
 ## Table of Contents
 
@@ -1242,6 +1242,18 @@ val size: Int
 
 ## Error Handling
 
+The problems are returned in the following format:
+
+### Problem Details
+
+- **Type:** `application/problem+json`
+- **Attributes:**
+    - **Required:**
+        - `title` - The title of the error.
+        - `details` - The details of the error.
+        - `type` - The type of the error.
+
+
 ### Bad Request
 
 - **Type:** `application/problem+json`
@@ -1254,7 +1266,7 @@ val size: Int
 - **Example:**
 
 ```json
-  {
+{
     "timestamp": "2024-03-18T12:28:34.971+00:00",
     "status": 400,
     "error": "Bad Request",
@@ -1264,96 +1276,335 @@ val size: Int
 
 ### AGU Already Exists
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "AGU Already Exists.",
+    "details": "The AGU already exists with the given CUI.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-already-exists"
+}
+```
 
 ### AGU Not Found
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "AGU Not Found.",
+    "details": "The AGU with the given CUI was not found.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-not-found"
+}     
+```
 
 ### AGU Name Already Exists
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "AGU Name Already Exists.",
+    "details": "The AGU already exists with the given name.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-name-already-exists"
+}
+```
 
 ### Contact Already Exists
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Contact Already Exists.",
+    "details": "The contact already exists.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/contact-already-exists"
+}
+```
 
 ### Invalid Capacity
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Capacity.",
+    "details": "The capacity must be positive.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-capacity"
+}
+```
 
 ### Invalid Contact
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
 
+```json
+{
+    "title": "Invalid Contact.",
+    "details": "The contact must have a name and a phone number in the format '^PT[0-9]{16}[A-Z]{2}$'.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact"
+}
+```
 ### Invalid Contact Type
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Contact Type.",
+    "details": "The contact type must be in the format '^(LOGISTIC|EMERGENCY)$'",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact-type"
+}
+```
 
 ### Invalid Coordinates
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Coordinates.",
+    "details": "The coordinates must be valid.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-coordinates"
+}
+```
 
 ### Invalid Critical Level
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Critical Level.",
+    "details": "The critical level must be valid.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-critical-level"
+}
+```
 
 ### Invalid CUI
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid CUI.",
+    "details": "The CUI must be in the format '^PT[0-9]{16}[A-Z]{2}$'.",
+    "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-cui"
+}
+```
 
 ### Invalid Days
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Days.",
+    "details": "The days must be positive.",
+    "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-days"
+}
+```
 
 ### Invalid DNO
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid DNO.",
+    "details": "The DNO must have a name.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-dno"
+}
+```
 
 ### Invalid Levels
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Levels.",
+    "details": "The levels must be valid.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-levels"
+}
+```
 
 ### Invalid Load Volume
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Load Volume.",
+    "details": "The load volume must be valid.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-load-volume"
+}
+```
 
 ### Invalid Max Level
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Max Level.",
+    "details": "The max level must be valid.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-max-level"
+}
+```
 
 ### Invalid Min Level
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Min Level.",
+    "details": "The min level must be valid.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-min-level"
+}
+```
 
 ### Invalid Name
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Name.",
+    "details": "The name must have a value.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-name"
+}
+```
 
 ### Invalid Provider
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Provider.",
+    "details": "Couldn't add the provider to the periodic fetcher.",
+    "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-provider"
+}
+```
 
 ### Invalid Tank
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Tank.",
+    "details": "The tank must have a name and a volume.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-tank"
+}
+```
 
 ### Invalid Tank number
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Tank Number.",
+    "details": "The tank number must be positive.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-tank-number"
+}
+```
 
 ### Invalid Time
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid Time.",
+    "details": "The time must be between 00:00 and 23:59.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-time"
+}
+```
 
 ### Provider Not Found
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Provider Not Found.",
+    "details": "The provider with the given ID was not found.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/provider-not-found"
+}
+```
 
 ### Tank Already Exists
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Tank Already Exists.",
+    "details": "The tank already exists.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/tank-already-exists"
+}
+```
 
 ### Tank Not Found
 
-- **Type:** `application/problem+json`
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Tank Not Found.",
+    "details": "The tank with the given ID was not found.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/tank-not-found"
+}
+```
