@@ -2,7 +2,6 @@ package aguDataSystem.server.domain.agu
 
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.company.DNO
-import aguDataSystem.server.domain.company.TransportCompany
 
 /**
  * Represents the basic information of the Autonomous Gas Unit (AGU) in the system.

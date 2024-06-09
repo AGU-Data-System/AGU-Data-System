@@ -144,6 +144,26 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
     }
 
     /**
+     * Add a transport company to an AGU
+     *
+     * @param aguCui CUI of an AGU
+     * @param transportCompanyId ID of a transport company
+     */
+    override fun addTransportCompanyToAGU(aguCui: String, transportCompanyId: Int) {
+        logger.info("Adding transport company with ID: {} to AGU with CUI: {} in the database", transportCompanyId, aguCui)
+
+        val addedCompanyId = handle.createUpdate(
+            """
+            INSERT INTO agu_transport_company (agu_cui, company_id)
+            VALUES (:aguCui, :companyId)
+            """.trimIndent()
+        )
+            .bind("aguCui", aguCui)
+            .bind("companyId", transportCompanyId)
+            .execute()
+    }
+
+    /**
      * Delete a transport company by ID
      *
      * @param id ID of a transport company

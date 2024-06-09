@@ -52,9 +52,8 @@ interface TransportCompanyRepository {
      *
      * @param aguCui CUI of an AGU
      * @param transportCompanyId ID of a transport company
-     * @return ID of the added transport company
      */
-    fun addTransportCompanyToAGU(aguCui: String, transportCompanyId: Int): Int
+    fun addTransportCompanyToAGU(aguCui: String, transportCompanyId: Int)
 
     /**
      * Delete a transport company by ID
