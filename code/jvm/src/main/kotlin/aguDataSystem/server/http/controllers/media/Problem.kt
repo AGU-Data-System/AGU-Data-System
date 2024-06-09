@@ -172,5 +172,11 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			title = "Tank Already Exists.",
 			details = "The tank already exists."
 		)
+
+		val TransportCompanyNotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "transport-company-not-found"),
+			title = "Transport Company Not Found.",
+			details = "The transport company with the given ID was not found."
+		)
 	}
 }

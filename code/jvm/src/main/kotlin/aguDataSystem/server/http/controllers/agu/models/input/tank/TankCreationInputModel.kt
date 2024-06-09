@@ -20,8 +20,7 @@ data class TankCreationInputModel(
 	val criticalLevel: Int,
 	val loadVolume: Double,
 	val capacity: Int,
-	val correctionFactor: Double,
-	//val ze: String todo: test this out
+	val correctionFactor: Double
 ) {
 
 	/**

@@ -10,6 +10,8 @@ FROM provider;
 DELETE
 FROM tank;
 DELETE
+FROM agu_transport_company;
+DELETE
 FROM agu;
 DELETE
 FROM dno;

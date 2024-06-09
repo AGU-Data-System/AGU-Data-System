@@ -25,8 +25,8 @@ COPY $DEPENDENCY/settings.gradle.kts $APP_HOME
 COPY $DEPENDENCY/build.gradle.kts $APP_HOME
 COPY $DEPENDENCY/src $APP_HOME/src
 
-# remove the scripts directory from the source code
-RUN rm -r $APP_HOME/src/main/kotlin/scripts
+# remove the script directory from the source code
+RUN rm -r $APP_HOME/src/main/kotlin/script
 
 WORKDIR $APP_HOME
 

@@ -54,7 +54,7 @@ object ControllerUtils {
 		latitude = 0.0,
 		longitude = 0.0,
 		locationName = "dummyLocation",
-		dnoCreation = dummyDNOCreationInputModel,
+		dnoName = dummyDNOCreationInputModel,
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 		image = ByteArray(0),
 		tanks = listOf(dummyTankCreationInputModel),

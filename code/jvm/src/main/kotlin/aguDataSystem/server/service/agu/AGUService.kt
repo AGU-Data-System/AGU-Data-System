@@ -103,7 +103,7 @@ class AGUService(
 				if (it.aguRepository.getCUIByName(creationAGU.name) != null)
 					return@run failure(AGUCreationError.AGUNameAlreadyExists)
 
-				val dno = it.dnoRepository.getByName(aguCreationInfo.dno.name)
+				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
 					?: return@run failure(AGUCreationError.InvalidDNO)
 
 				it.aguRepository.addAGU(aguCreationInfo, dno.id)
@@ -118,6 +118,12 @@ class AGUService(
 					it.contactRepository.addContact(aguCreationInfo.cui, contact)
 				}
 				logger.info("Contacts added to AGU with CUI: {}", creationAGU.cui)
+
+				aguCreationInfo.transportCompanies.forEach { company ->
+					val transportCompany = it.transportCompanyRepository.getTransportCompanyByName(company)
+						?: return@run failure(AGUCreationError.TransportCompanyNotFound)
+					it.transportCompanyRepository.addTransportCompanyToAGU(aguCreationInfo.cui, transportCompany.id)
+				}
 
 				it.providerRepository.addProvider(aguCreationInfo.cui, gasRes.getSuccessOrThrow(), ProviderType.GAS)
 				logger.info("Gas provider added to AGU with CUI: {}", creationAGU.cui)

@@ -26,11 +26,15 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		val aGUs = handle.createQuery(
 			"""
 			SELECT agu.cui, agu.name, agu.latitude, agu.longitude, agu.location_name,
-			dno.id as dno_id, dno.name as dno_name, dno.region
+			dno.id as dno_id, dno.name as dno_name, dno.region, transport_company.id as transport_company_id, transport_company.name as transport_company_name
 			FROM agu 
 			left join dno 
 				on agu.dno_id = dno.id
-			""".trimIndent()
+			left join transport_company_agu
+				on agu.cui = transport_company_agu.agu_cui
+			left join transport_company
+				on transport_company_agu.transport_company_id = transport_company.id
+			""".trimIndent() //TODO: Fix this is nasty
 		)
 			.mapTo<AGUBasicInfo>()
 			.list()
@@ -141,26 +145,29 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		val addedAGUCUI = handle.createUpdate(
 			"""
             INSERT INTO agu (
-            cui, name, is_favorite, min_level, max_level, critical_level, load_volume, latitude, longitude, 
-            location_name, dno_id, notes, training, image
+            cui, eic, name, is_favorite, min_level, max_level, critical_level, load_volume, correction_factor, latitude, longitude, 
+            location_name, dno_id, is_active, notes, training, image
             ) 
             VALUES (
-            :cui, :name, :isFavorite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :latitude, :longitude, 
-            :locationName, :dnoId, :notes, :training::json, :image
+            :cui, :eic, :name, :isFavorite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :correctionFactor, :latitude, :longitude, 
+            :locationName, :dnoId, :isActive, :notes, :training::json, :image
             ) returning cui
             """.trimIndent()
 		)
 			.bind("cui", aguCreationInfo.cui)
+			.bind("eic", aguCreationInfo.eic)
 			.bind("name", aguCreationInfo.name)
 			.bind("isFavorite", aguCreationInfo.isFavorite)
 			.bind("minLevel", aguCreationInfo.levels.min)
 			.bind("maxLevel", aguCreationInfo.levels.max)
 			.bind("criticalLevel", aguCreationInfo.levels.critical)
 			.bind("loadVolume", aguCreationInfo.loadVolume)
+			.bind("correctionFactor", aguCreationInfo.correctionFactor)
 			.bind("latitude", aguCreationInfo.location.latitude)
 			.bind("longitude", aguCreationInfo.location.longitude)
 			.bind("locationName", aguCreationInfo.location.name)
 			.bind("dnoId", dnoID)
+			.bind("isActive", aguCreationInfo.isActive)
 			.bind("notes", aguCreationInfo.notes)
 			.bind("training", aguCreationInfo.training)
 			.bind("image", aguCreationInfo.image)

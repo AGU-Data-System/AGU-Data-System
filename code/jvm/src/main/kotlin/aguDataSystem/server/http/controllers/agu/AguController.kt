@@ -361,6 +361,11 @@ class AguController(private val service: AGUService) {
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.AGUNameAlreadyExists
 			)
+
+			AGUCreationError.TransportCompanyNotFound -> Problem.response(
+				HttpStatus.NOT_FOUND.value(),
+				Problem.TransportCompanyNotFound
+			)
 		}
 
 	/**

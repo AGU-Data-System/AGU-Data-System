@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS contacts;
 DROP TABLE IF EXISTS measure;
 DROP TABLE IF EXISTS provider;
 DROP TABLE IF EXISTS tank;
+DROP TABLE IF EXISTS agu_transport_company;
 DROP TABLE IF EXISTS agu;
 DROP TABLE IF EXISTS dno;
 DROP TABLE IF EXISTS loads;
@@ -31,7 +32,10 @@ CREATE DOMAIN LATITUDE as numeric(9, 6) check (value >= -90 and value <= 90);
 -- Tables
 create table if not exists transport_company
 (
-    name varchar check (length(name) > 0) primary key
+    id  int generated always as identity,
+    name varchar check (length(name) > 0) unique not null,
+
+    primary key (id)
 );
 
 create table if not exists loads
@@ -51,31 +55,45 @@ create table if not exists dno
 (
     id   int generated always as identity,
     name varchar check (length(name) > 0) unique not null,
-    region varchar, --change to not null and check on size
+    region varchar check (length(region) > 0) not null,
 
     primary key (id)
 );
 
 create table if not exists agu
 (
-    cui            CUI primary key,
-    name           varchar check (length(name) > 0) unique   not null,
-    min_level      PERCENTAGE                                not null,
-    max_level      PERCENTAGE                                not null,
-    critical_level PERCENTAGE                                not null,
-    load_volume    numeric(6, 3) check (load_volume >= 0)    not null,
-    latitude       LATITUDE                                  not null,
-    longitude      LONGITUDE                                 not null,
-    location_name  varchar check (length(location_name) > 0) not null,
-    dno_id         int                                       not null,
-    is_favorite    boolean default false                     not null,
-    notes          varchar,
-    training       json,
-    image          bytea,
+    cui                 CUI primary key,
+    eic                 varchar check (length(eic) > 0)           not null,
+    name                varchar check (length(name) > 0) unique   not null,
+    min_level           PERCENTAGE                                not null,
+    max_level           PERCENTAGE                                not null,
+    critical_level      PERCENTAGE                                not null,
+    load_volume         numeric(6, 3) check (load_volume >= 0)    not null,
+    correction_factor   numeric(6, 3)                             not null,
+    latitude            LATITUDE                                  not null,
+    longitude           LONGITUDE                                 not null,
+    location_name       varchar check (length(location_name) > 0) not null,
+    dno_id              int                                       not null,
+    is_favorite         boolean default false                     not null,
+    is_active           boolean default true                      not null,
+    notes               varchar,
+    training            json,
+    image               bytea,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
     foreign key (dno_id) references dno (id)
+);
+
+create table if not exists agu_transport_company
+(
+    agu_cui         CUI,
+    company_id    varchar,
+
+    foreign key (agu_cui) references agu (cui),
+    foreign key (company_id) references transport_company (id),
+
+    primary key (agu_cui, company_id)
 );
 
 create table if not exists tank
@@ -86,7 +104,7 @@ create table if not exists tank
     max_level         PERCENTAGE                                   not null,
     critical_level    PERCENTAGE                                   not null,
     load_volume       numeric(6, 3) check (load_volume >= 0)       not null,
-    correction_factor numeric(6, 3) check (correction_factor >= 0) not null,
+    correction_factor numeric(6, 3)                                not null,
     capacity          int check (capacity >= 0)                    not null,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
@@ -168,29 +186,3 @@ from measure
          left join tank on measure.agu_cui = tank.agu_cui
 where provider.provider_type = 'gas';
 commit;
-
--- use for a rainy day
--- create table if not exists driver
--- (
---     company_name varchar,
---     name         varchar,
---
---     unique (name),
---
---     foreign key (company_name) references transport_company (name),
---
---     primary key (company_name, name)
--- );
---
--- create table if not exists car
--- (
---     company_name  varchar,
---     driver_name   varchar,
---     tank_capacity numeric(6, 3),
---     licence_plate varchar,
---
---     foreign key (company_name) references transport_company (name),
---     foreign key (driver_name) references driver (name),
---
---     primary key (company_name, licence_plate)
--- );

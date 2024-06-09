@@ -8,6 +8,7 @@ import aguDataSystem.server.repository.gas.JDBIGasRepository
 import aguDataSystem.server.repository.provider.JDBIProviderRepository
 import aguDataSystem.server.repository.tank.JDBITankRepository
 import aguDataSystem.server.repository.temperature.JDBITemperatureRepository
+import aguDataSystem.server.repository.transportCompany.JDBITransportCompanyRepository
 import org.jdbi.v3.core.Handle
 
 /**
@@ -30,6 +31,8 @@ class JDBITransaction(private val handle: Handle) : Transaction {
 	override val temperatureRepository = JDBITemperatureRepository(handle)
 
 	override val gasRepository = JDBIGasRepository(handle)
+
+	override val transportCompanyRepository = JDBITransportCompanyRepository(handle)
 
 	/**
 	 * Rolls back the transaction

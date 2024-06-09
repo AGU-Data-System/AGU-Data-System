@@ -5,6 +5,7 @@ import aguDataSystem.server.repository.jdbi.mappers.AGUMapper
 import aguDataSystem.server.repository.jdbi.mappers.ContactMapper
 import aguDataSystem.server.repository.jdbi.mappers.DNOMapper
 import aguDataSystem.server.repository.jdbi.mappers.TankMapper
+import aguDataSystem.server.repository.jdbi.mappers.TransportCompanyMapper
 import aguDataSystem.server.repository.jdbi.mappers.measures.GasMeasureMapper
 import aguDataSystem.server.repository.jdbi.mappers.measures.TemperatureMeasureMapper
 import aguDataSystem.server.repository.jdbi.mappers.provider.GasProviderMapper
@@ -39,6 +40,9 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 	// measure
 	registerRowMapper(TemperatureMeasureMapper())
 	registerRowMapper(GasMeasureMapper())
+
+	//transport company
+	registerRowMapper(TransportCompanyMapper())
 
 	return this
 }

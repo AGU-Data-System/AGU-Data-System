@@ -36,12 +36,11 @@ The physical model of the database is available in [create-tables.sql](../sql/cr
 
 To implement and manage the database, PostgresSQL was used.
 
-The [`code/sql`](../sql) folder contains all SQL scripts developed:
+The [`code/sql`](../sql) folder contains all SQL script developed:
 
 - [create-tables.sql](../sql/create-tables.sql) — Creates the database schema;
 - [delete-tables.sql](../sql/delete-tables.sql) — Deletes the database schema;
 - [drop-tables.sql](../sql/drop-tables.sql) — Drops the database schema;
-- [insert-some-agus.sql](../sql/insert-some-agus.sql) - Inserts some AGUs into the database as test doubles;
 
 ## Application Architecture
 

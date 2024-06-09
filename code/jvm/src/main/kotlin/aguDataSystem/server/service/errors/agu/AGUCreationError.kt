@@ -32,4 +32,6 @@ sealed class AGUCreationError {
 	data object InvalidContactType : AGUCreationError()
 	data object InvalidTank : AGUCreationError()
 	data object ProviderError : AGUCreationError()
+	data object TransportCompanyNotFound : AGUCreationError()
+
 }
