@@ -74,17 +74,20 @@ object RepositoryUtils {
 
 	val dummyAGU = AGUCreationInfo(
 		cui = "PT1234567890123456XX",
+		eic = "TEST-EIC",
 		name = "Test AGU",
 		levels = dummyGasLevels,
 		loadVolume = 50,
+		correctionFactor = 0.0,
 		location = dummyLocation,
-		dno = dummyDNO,
+		dnoName = dummyDNO.name,
 		isFavorite = false,
 		notes = null,
 		training = null,
 		image = ByteArray(0),
 		contacts = emptyList(),
 		tanks = emptyList(),
+		transportCompanies = emptyList(),
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 	)
 

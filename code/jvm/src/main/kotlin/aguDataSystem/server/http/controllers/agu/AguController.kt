@@ -2,10 +2,10 @@ package aguDataSystem.server.http.controllers.agu
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.agu.models.input.agu.AGUCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.agu.NotesInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.agu.UpdateFavouriteAGUInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.gasLevels.GasLevelsInputModel
+import aguDataSystem.server.http.controllers.agu.models.input.notes.NotesInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationInputModel
 import aguDataSystem.server.http.controllers.agu.models.input.tank.TankUpdateInputModel
 import aguDataSystem.server.http.controllers.agu.models.output.agu.AGUBasicInfoListOutputModel
@@ -366,6 +366,8 @@ class AguController(private val service: AGUService) {
 				HttpStatus.NOT_FOUND.value(),
 				Problem.TransportCompanyNotFound
 			)
+
+			AGUCreationError.DNONotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.DNONotFound)
 		}
 
 	/**

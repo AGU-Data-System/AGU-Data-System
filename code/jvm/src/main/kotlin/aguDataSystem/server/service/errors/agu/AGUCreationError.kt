@@ -22,6 +22,7 @@ sealed class AGUCreationError {
 	data object InvalidCUI : AGUCreationError()
 	data object InvalidName : AGUCreationError()
 	data object InvalidDNO : AGUCreationError()
+	data object DNONotFound : AGUCreationError()
 	data object InvalidCoordinates : AGUCreationError()
 	data object InvalidMinLevel : AGUCreationError()
 	data object InvalidMaxLevel : AGUCreationError()

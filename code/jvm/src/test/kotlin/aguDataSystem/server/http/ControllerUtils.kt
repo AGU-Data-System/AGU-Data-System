@@ -1,10 +1,11 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.controllers.agu.models.input.agu.AGUCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.agu.NotesInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.gasLevels.GasLevelsInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationInputModel
+import aguDataSystem.server.http.models.agu.AGUCreateRequestModel
+import aguDataSystem.server.http.models.contact.ContactCreationRequestModel
+import aguDataSystem.server.http.models.dno.DNOCreationRequestModel
+import aguDataSystem.server.http.models.gasLevels.GasLevelsRequestModel
+import aguDataSystem.server.http.models.notes.NotesRequestModel
+import aguDataSystem.server.http.models.tank.TankCreationRequestModel
 
 /**
  * Data for requests
@@ -12,39 +13,44 @@ import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationI
  */
 object ControllerUtils {
 
-	val dummyContactCreationInputModel = ContactCreationInputModel(
+	val dummyContactCreationRequestModel = ContactCreationRequestModel(
 		name = "John Doe",
 		phone = "123456789",
 		type = "logistic"
 	)
 
-	val dummyNotesInputModel = NotesInputModel(
+	val dummyNotesRequestModel = NotesRequestModel(
 		notes = "This is a note"
 	)
 
-	val dummyGasLevelsInputModel = GasLevelsInputModel(
+	val dummyDNOCreationRequestModel = DNOCreationRequestModel(
+		name = "Test DNO",
+		region = "Test Region"
+	)
+
+	val dummyGasLevelsRequestModel = GasLevelsRequestModel(
 		min = 30,
 		max = 90,
 		critical = 10
 	)
 
-	val dummyTankCreationInputModel = TankCreationInputModel(
+	val dummyTankCreationRequestModel = TankCreationRequestModel(
 		number = 1,
-		minLevel = dummyGasLevelsInputModel.min,
-		maxLevel = dummyGasLevelsInputModel.max,
-		criticalLevel = dummyGasLevelsInputModel.critical,
+		minLevel = dummyGasLevelsRequestModel.min,
+		maxLevel = dummyGasLevelsRequestModel.max,
+		criticalLevel = dummyGasLevelsRequestModel.critical,
 		loadVolume = 40.0,
 		capacity = 50,
 		correctionFactor = 1.0
 	)
 
-	val dummyAGUCreationInputModel = AGUCreationInputModel(
+	val dummyAGUCreationRequestModel = AGUCreateRequestModel(
 		cui = "PT1234567890123456XX",
 		eic = "TEST-EIC",
 		name = "Test AGU",
-		minLevel = dummyGasLevelsInputModel.min,
-		maxLevel = dummyGasLevelsInputModel.max,
-		criticalLevel = dummyGasLevelsInputModel.critical,
+		minLevel = dummyGasLevelsRequestModel.min,
+		maxLevel = dummyGasLevelsRequestModel.max,
+		criticalLevel = dummyGasLevelsRequestModel.critical,
 		loadVolume = 40.0,
 		correctionFactor = -1.0,
 		latitude = 0.0,
@@ -53,10 +59,10 @@ object ControllerUtils {
 		dnoName = "Test DNO",
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 		image = ByteArray(0),
-		tanks = listOf(dummyTankCreationInputModel),
-		contacts = listOf(dummyContactCreationInputModel),
+		tanks = listOf(dummyTankCreationRequestModel),
+		contacts = listOf(dummyContactCreationRequestModel),
 		transportCompanies = listOf("Test Transport Company 1", "Test Transport Company 2"),
 		isFavorite = false,
-		notes = dummyNotesInputModel.notes
+		notes = dummyNotesRequestModel.notes
 	)
 }

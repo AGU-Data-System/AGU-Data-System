@@ -52,6 +52,11 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The contact already exists."
 		)
 
+		val DNONotFound = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "dno-not-found"),
+			title = "DNO Not Found.",
+			details = "The DNO with the given ID or name was not found."
+		)
 
 		val InvalidCUI = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-cui"),

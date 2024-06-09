@@ -63,6 +63,7 @@
         - [Tank List Output Model](#tank-list-output-model)
         - [Tank Output Model](#tank-output-model)
 - [Error Handling](#error-handling)
+    - [Problem Details](#problem-details)
     - [Bad Request](#bad-request)
     - [AGU Already Exists](#agu-already-exists)
     - [AGU Name Already Exists](#agu-name-already-exists)
@@ -1253,7 +1254,6 @@ The problems are returned in the following format:
         - `details` - The details of the error.
         - `type` - The type of the error.
 
-
 ### Bad Request
 
 - **Type:** `application/problem+json`
@@ -1330,6 +1330,20 @@ The problems are returned in the following format:
 }
 ```
 
+### DNO Not Found
+
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "DNO Not Found.",
+    "details": "The DNO with the given ID or name was not found.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/dno-not-found"
+}
+```
+
 ### Invalid Capacity
 
 - **Structure:**
@@ -1357,6 +1371,7 @@ The problems are returned in the following format:
     "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact"
 }
 ```
+
 ### Invalid Contact Type
 
 - **Structure:**

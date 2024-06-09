@@ -1,6 +1,6 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationInputModel
+import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationRequestModel
 import aguDataSystem.server.http.HTTPUtils.createAGURequest
 import java.time.Duration
 import kotlin.test.Test
@@ -23,9 +23,8 @@ class AGUControllerTest {
 	fun `create AGU properly`() {
 		// arrange
 		// TODO url hardcoded here for testing purposes change it to the util function
-		val client = WebTestClient.bindToServer().baseUrl("$baseURL/agus/create").responseTimeout(testTimeOut).build()
-
-		val aguCreation = dummyAGUCreationInputModel
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
 
 		// act and assert
 		createAGURequest(client, aguCreation)

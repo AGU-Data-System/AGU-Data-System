@@ -103,7 +103,7 @@ class AGUServiceTest {
 
 		dnoService.createDNO(dnoCreation)
 		// act
-		val result = aguService.createAGU(creationAgu.copy(dno = dummyDNODTO.copy(name = "invalid")))
+		val result = aguService.createAGU(creationAgu.copy(dnoName = dummyDNODTO.copy(name = "invalid").name))
 
 		// assert
 		assert(result.isFailure())
@@ -388,7 +388,7 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.getAGUById(agu.getSuccessOrThrow())
@@ -409,7 +409,7 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.getAGUById("invalid")
@@ -431,7 +431,7 @@ class AGUServiceTest {
 		val days = 2
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.getTemperatureMeasures(agu.getSuccessOrThrow(), days)
@@ -470,7 +470,7 @@ class AGUServiceTest {
 			val days = -1
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getTemperatureMeasures(agu.getSuccessOrThrow(), days)
@@ -496,7 +496,7 @@ class AGUServiceTest {
 			val days = 2
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getDailyGasMeasures(agu.getSuccessOrThrow(), days, hour)
@@ -537,7 +537,7 @@ class AGUServiceTest {
 			val days = -1
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getDailyGasMeasures(agu.getSuccessOrThrow(), days, hour)
@@ -561,7 +561,7 @@ class AGUServiceTest {
 			val days = 2
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getDailyGasMeasures(agu.getSuccessOrThrow(), days, hour)
@@ -586,7 +586,7 @@ class AGUServiceTest {
 			val day = LocalDate.now()
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getHourlyGasMeasures(agu.getSuccessOrThrow(), day)
@@ -627,7 +627,7 @@ class AGUServiceTest {
 			val time = LocalTime.of(12, 0)
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getPredictionGasLevels(agu.getSuccessOrThrow(), days, time)
@@ -668,7 +668,7 @@ class AGUServiceTest {
 			val time = LocalTime.of(12, 0)
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getPredictionGasLevels(agu.getSuccessOrThrow(), days, time)
@@ -692,7 +692,7 @@ class AGUServiceTest {
 			val time = LocalTime.of(25, 0) // TODO Check test fails here due to invalid hour 0 - 23
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.getPredictionGasLevels(agu.getSuccessOrThrow(), days, time)
@@ -716,7 +716,7 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank), isFavorite = true)
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.getFavouriteAGUs()
@@ -753,7 +753,7 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.updateFavouriteState(agu.getSuccessOrThrow(), true)
@@ -792,7 +792,7 @@ class AGUServiceTest {
 		val contact = ServiceUtils.dummyLogisticContact
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.addContact(agu.getSuccessOrThrow(), contact)
@@ -884,7 +884,7 @@ class AGUServiceTest {
 		val contact = ServiceUtils.dummyLogisticContact
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 		aguService.addContact(agu.getSuccessOrThrow(), contact)
 
 		// act
@@ -908,7 +908,7 @@ class AGUServiceTest {
 		val contact = ServiceUtils.dummyLogisticContact
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 		val addedContact = aguService.addContact(agu.getSuccessOrThrow(), contact).getSuccessOrThrow()
 
 		// act
@@ -950,7 +950,7 @@ class AGUServiceTest {
 			val contactId = -1
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.deleteContact(agu.getSuccessOrThrow(), contactId)
@@ -972,7 +972,7 @@ class AGUServiceTest {
 		val tank = dummyTank.copy(number = 2)
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.addTank(agu.getSuccessOrThrow(), tank)
@@ -1012,7 +1012,7 @@ class AGUServiceTest {
 			val tank = dummyTank.copy(number = -1)
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.addTank(agu.getSuccessOrThrow(), tank)
@@ -1035,7 +1035,7 @@ class AGUServiceTest {
 			val tank = dummyTank.copy(levels = dummyGasLevels.copy(min = 100))
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.addTank(agu.getSuccessOrThrow(), tank)
@@ -1058,7 +1058,7 @@ class AGUServiceTest {
 		val tank = dummyTank
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 		aguService.addTank(agu.getSuccessOrThrow(), tank)
 
 		// act
@@ -1082,7 +1082,7 @@ class AGUServiceTest {
 		val tank = dummyTank.copy(number = 2)
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 		val addedTank = aguService.addTank(agu.getSuccessOrThrow(), tank).getSuccessOrThrow()
 
 		// act
@@ -1121,7 +1121,7 @@ class AGUServiceTest {
 			val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.updateTank(agu.getSuccessOrThrow(), -1, updateTankDTO)
@@ -1143,7 +1143,7 @@ class AGUServiceTest {
 		val tank = dummyTank.copy(number = 2)
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 		val addedTank = aguService.addTank(agu.getSuccessOrThrow(), tank).also { println(it) }.getSuccessOrThrow()
 
 		// act
@@ -1166,7 +1166,7 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.updateGasLevels(agu.getSuccessOrThrow(), dummyGasLevelsDTO)
@@ -1207,7 +1207,7 @@ class AGUServiceTest {
 			val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.updateGasLevels(agu.getSuccessOrThrow(), dummyGasLevelsDTO.copy(min = 100))
@@ -1229,7 +1229,7 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
 		val result = aguService.updateNotes(agu.getSuccessOrThrow(), "new notes")
@@ -1268,7 +1268,7 @@ class AGUServiceTest {
 			val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dno = dnoCreation))
+			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 			// act
 			val result = aguService.updateNotes(agu.getSuccessOrThrow(), "")

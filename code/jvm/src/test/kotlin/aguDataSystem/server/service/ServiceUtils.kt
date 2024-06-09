@@ -65,15 +65,18 @@ object ServiceUtils {
 
 	val dummyAGUCreationDTO = AGUCreationDTO(
 		cui = "PT6543210987654321AA",
+		eic = "TEST-EIC",
 		name = "Service Test AGU",
 		levels = dummyGasLevels,
 		loadVolume = 40,
+		correctionFactor = -1.0,
 		location = dummyLocation,
-		dno = dummyDNODTO,
+		dnoName = dummyDNODTO.name,
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 		image = ByteArray(0),
 		contacts = emptyList(),
 		tanks = emptyList(),
+		transportCompanies = emptyList(),
 		isFavorite = false,
 		notes = null,
 		training = null

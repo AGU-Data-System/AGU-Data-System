@@ -121,7 +121,7 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.levels, aguFromDb.levels)
 		assertEquals(agu.loadVolume, aguFromDb.loadVolume)
 		assertEquals(agu.location, aguFromDb.location)
-		assertEquals(agu.dno.name, aguFromDb.dno.name)
+		assertEquals(agu.dnoName, aguFromDb.dno.name)
 		assertEquals(agu.isFavorite, aguFromDb.isFavorite)
 		assertEquals(agu.notes, aguFromDb.notes)
 		assertEquals(agu.training, aguFromDb.training)

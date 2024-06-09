@@ -104,7 +104,7 @@ class AGUService(
 					return@run failure(AGUCreationError.AGUNameAlreadyExists)
 
 				val dno = it.dnoRepository.getByName(aguCreationInfo.dnoName)
-					?: return@run failure(AGUCreationError.InvalidDNO)
+					?: return@run failure(AGUCreationError.DNONotFound)
 
 				it.aguRepository.addAGU(aguCreationInfo, dno.id)
 				logger.info("AGU basic info with CUI: {} added to the database", creationAGU.cui)
