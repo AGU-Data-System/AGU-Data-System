@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 
 @Serializable
@@ -67,6 +68,7 @@ class AGUProcessor {
 	private val client = HttpClient.newHttpClient()
 	private val jsonFormatter = Json { prettyPrint = true }
 	private val logger = LoggerFactory.getLogger(AGUProcessor::class.java)
+	private val sonorgasUrl = "https://sonorgas.thinkdigital.pt/dashboards/ca824027-c206-44b9-af54-cba5dc6edde7/viewer"
 
 	fun processCSV(csvPath: String) {
 		val rows = csvReader {
@@ -75,8 +77,18 @@ class AGUProcessor {
 			autoRenameDuplicateHeaders = true
 		}.readAllWithHeader(File(csvPath))
 
+		// Fetch gas URLs
+		val gasUrls = fetchGasUrls()
+
 		rows.forEach { row ->
 			try {
+
+				// Only process AGUs that are from the "SNG" ORD
+				if (row["Nome ORD"] != "SNG") {
+					logger.info("Skipping AGU from non-SNG ORD: ${row["Nome UAG"]}")
+					return@forEach
+				}
+
 				val transportCompanies = row.filter { it.key.startsWith("Transportador (") && it.value == "true" }
 					.map { it.key.removePrefix("Transportador (").removeSuffix(")") }
 
@@ -115,10 +127,13 @@ class AGUProcessor {
 					)
 				)
 
+				val name = row["Nome UAG"]!! //TODO: Maybe change to "Nome UAG na REN" but there's some inconsistencies with the sonorgas platform
+				val gasLevelUrl = gasUrls[name]
+
 				val aguInput = AddAGUInputModel(
 					cui = row["CUI"]!!,
 					eic = row["EIC"]!!,
-					name = row["Nome UAG na REN"]!!,
+					name = name,
 					minLevel = row["UAG Min Lvl"]!!.removeSuffix("%").toInt(),
 					maxLevel = row["UAG Max Lvl"]!!.removeSuffix("%").toInt(),
 					criticalLevel = row["UAG Crit Lvl min"]!!.removeSuffix("%").toInt(),
@@ -127,18 +142,42 @@ class AGUProcessor {
 					longitude = row["Longitude"]!!.toDouble(),
 					locationName = row["Localidade"]!!,
 					dnoName = row["Nome ORD"]!!,
+					gasLevelUrl = gasLevelUrl,
 					transportCompanies = transportCompanies,
 					notes = row["Observações"],
 					correctionFactor = row["UAG Fator de Correção"]!!.toDouble(),
 					tanks = tanks,
 					contacts = contacts,
-					isActive = row["Activo/ Inactivo"] == "Activo",
+					isActive = row["Activo/ Inactivo"] == "Activo"
 				)
 				sendPostRequest(aguInput)
 			} catch (e: Exception) {
 				logger.error("Error processing row: $row", e)
 			}
 		}
+	}
+
+	private fun fetchGasUrls(): Map<String, String> {
+		val gasUrls = mutableMapOf<String, String>()
+		try {
+			val doc = Jsoup.connect(sonorgasUrl).get()
+			val rows = doc.select("#list .synoptic-list .row-head")
+
+			rows.forEach { row ->
+				val id = row.select("td[data-synoptic]").attr("data-synoptic")
+				var name = row.select("td[data-synoptic]").text().substringAfterLast("-").trim()
+
+				if (name.startsWith("UAG ")) {
+					name = name.removePrefix("UAG ").trim()
+				}
+
+				val gasUrl = "$sonorgasUrl/$id/sensors"
+				gasUrls[name] = gasUrl
+			}
+		} catch (e: Exception) {
+			logger.error("Error fetching gas URLs: ${e.message}")
+		}
+		return gasUrls
 	}
 
 	private fun sendPostRequest(aguInput: AddAGUInputModel) {
