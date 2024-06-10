@@ -1,6 +1,5 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
@@ -51,7 +50,19 @@ class JDBIDNORepositoryTest {
 	fun `addDNO with an empty DNO name`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
-		val sut = DNOCreationDTO(name = "", region = "Region 1")
+		val sut = dummyDNO.copy(name = "")
+
+		// act
+		assertFailsWith<UnableToExecuteStatementException> {
+			dnoRepository.addDNO(sut)
+		}
+	}
+
+	@Test
+	fun `addDNO with empty region`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = dummyDNO.copy(region = "")
 
 		// act
 		assertFailsWith<UnableToExecuteStatementException> {
@@ -166,5 +177,60 @@ class JDBIDNORepositoryTest {
 
 		// assert
 		assertTrue(!isDNOStored)
+	}
+
+	@Test
+	fun `getAll Correctly`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = dummyDNO
+
+		// act
+		dnoRepository.addDNO(sut)
+		val dnos = dnoRepository.getAll()
+
+		// assert
+		assertTrue(dnos.isNotEmpty())
+	}
+
+	@Test
+	fun `getAll with no DNOs`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+
+		// act
+		val dnos = dnoRepository.getAll()
+
+		// assert
+		assertTrue(dnos.isEmpty())
+	}
+
+	@Test
+	fun `deleteDNO Correctly`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = dummyDNO
+
+		// act
+		val addedDNO = dnoRepository.addDNO(sut)
+		dnoRepository.deleteDNO(addedDNO.id)
+		val dno = dnoRepository.getById(addedDNO.id)
+
+		// assert
+		assertNull(dno)
+	}
+
+	@Test
+	fun `deleteDNO with an un-existing DNO does nothing`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val sut = Int.MIN_VALUE
+
+		// act
+		dnoRepository.deleteDNO(sut)
+		val dno = dnoRepository.getById(sut)
+
+		// assert
+		assertNull(dno)
 	}
 }
