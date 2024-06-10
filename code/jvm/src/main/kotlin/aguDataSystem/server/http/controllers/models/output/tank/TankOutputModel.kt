@@ -1,7 +1,7 @@
 package aguDataSystem.server.http.controllers.models.output.tank
 
 import aguDataSystem.server.domain.tank.Tank
-import aguDataSystem.server.http.controllers.agu.models.output.gasLevels.GasLevelsOutputModel
+import aguDataSystem.server.http.controllers.models.output.gasLevels.GasLevelsOutputModel
 
 /**
  * Represents the output model for a [Tank]

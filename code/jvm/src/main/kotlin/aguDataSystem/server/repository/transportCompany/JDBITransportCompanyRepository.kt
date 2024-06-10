@@ -156,7 +156,7 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
 			aguCui
 		)
 
-		val addedCompanyId = handle.createUpdate(
+		handle.createUpdate(
 			"""
             INSERT INTO agu_transport_company (agu_cui, company_id)
             VALUES (:aguCui, :companyId)

@@ -1,13 +1,13 @@
 package aguDataSystem.server.http.controllers.models.output.agu
 
 import aguDataSystem.server.domain.agu.AGU
-import aguDataSystem.server.http.controllers.agu.models.output.contact.ContactListOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.dno.DNOOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.gasLevels.GasLevelsOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.location.LocationOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.provider.ProviderListOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.tank.TankListOutputModel
-import aguDataSystem.server.http.controllers.agu.models.output.transportCompany.TransportCompanyListOutputModel
+import aguDataSystem.server.http.controllers.models.output.contact.ContactListOutputModel
+import aguDataSystem.server.http.controllers.models.output.dno.DNOOutputModel
+import aguDataSystem.server.http.controllers.models.output.gasLevels.GasLevelsOutputModel
+import aguDataSystem.server.http.controllers.models.output.location.LocationOutputModel
+import aguDataSystem.server.http.controllers.models.output.provider.ProviderListOutputModel
+import aguDataSystem.server.http.controllers.models.output.tank.TankListOutputModel
+import aguDataSystem.server.http.controllers.models.output.transportCompany.TransportCompanyListOutputModel
 
 /**
  * Output model for AGU

@@ -3,8 +3,6 @@ package aguDataSystem.server.http.controllers.models.input.agu
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.gasLevels.GasLevels
-import aguDataSystem.server.http.controllers.agu.models.input.contact.ContactCreationInputModel
-import aguDataSystem.server.http.controllers.agu.models.input.tank.TankCreationInputModel
 import aguDataSystem.server.http.controllers.models.input.contact.ContactCreationInputModel
 import aguDataSystem.server.http.controllers.models.input.tank.TankCreationInputModel
 
