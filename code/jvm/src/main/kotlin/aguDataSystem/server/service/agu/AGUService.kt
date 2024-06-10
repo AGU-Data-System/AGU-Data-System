@@ -1,5 +1,6 @@
 package aguDataSystem.server.service.agu
 
+import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.agu.AGUDomain
@@ -15,6 +16,7 @@ import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
+import aguDataSystem.server.service.errors.agu.update.UpdateActiveStateError
 import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
 import aguDataSystem.server.service.errors.agu.update.UpdateGasLevelsError
 import aguDataSystem.server.service.errors.agu.update.UpdateNotesError
@@ -83,10 +85,10 @@ class AGUService(
 		val gasProviderInput = ProviderInput(aguCreationInfo.name, aguCreationInfo.gasLevelUrl, ProviderType.GAS)
 		val temperatureProviderInput = ProviderInput(aguCreationInfo.name, temperatureUrl, ProviderType.TEMPERATURE)
 
-		logger.info("Adding Gas provider for AGU with CUI: {}", creationAGU.cui)
+		logger.info("Adding Gas provider for AGU with CUI: {}, and with name: {}", creationAGU.cui, gasProviderInput.name)
 		val gasRes = aguDomain.addProviderRequest(gasProviderInput)
 
-		logger.info("Adding Temperature provider for AGU with CUI: {}", creationAGU.cui)
+		logger.info("Adding Temperature provider for AGU with CUI: {}, and with name: {}", creationAGU.cui, temperatureProviderInput.name)
 		val tempRes = aguDomain.addProviderRequest(temperatureProviderInput)
 
 		if (gasRes.isFailure() || tempRes.isFailure()) {
@@ -179,13 +181,7 @@ class AGUService(
 		return transactionManager.run {
 			logger.info("Getting AGU by CUI: {} from the database", cui)
 
-			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run failure(GetAGUError.AGUNotFound)
-			val tanks = it.tankRepository.getAGUTanks(cui)
-			val contacts = it.contactRepository.getContactsByAGU(cui)
-			val providers = it.providerRepository.getProviderByAGU(cui)
-
-			logger.info("Retrieved AGU by CUI from the database")
-			success(agu.copy(tanks = tanks, contacts = contacts, providers = providers))
+			success(getFullAGU(cui) ?: return@run failure(GetAGUError.AGUNotFound))
 		}
 	}
 
@@ -309,23 +305,6 @@ class AGUService(
 	}
 
 	/**
-	 * Gets the favourites AGUs and their basic information
-	 *
-	 * @return the list of favourite AGUs
-	 */
-	fun getFavouriteAGUs(): List<AGUBasicInfo> {
-		return transactionManager.run {
-			logger.info("Getting favourite AGUs from the database")
-
-			val aguList = it.aguRepository.getFavouriteAGUs()
-
-			logger.info("Retrieved: {} as favourite AGUs from the database", aguList.size)
-
-			aguList
-		}
-	}
-
-	/**
 	 * Updates the favourite status of an AGU
 	 *
 	 * @param cui the CUI of the AGU
@@ -342,7 +321,28 @@ class AGUService(
 
 			logger.info("Favourite status of AGU with CUI: {} updated to {}", cui, isFavourite)
 
-			success(it.aguRepository.getAGUByCUI(cui)!!)
+			success(getFullAGU(cui) ?: return@run failure(UpdateFavouriteStateError.AGUNotFound))
+		}
+	}
+
+	/**
+	 * Updates the active status of an AGU
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param isActive the new active status
+	 * @return the updated AGU
+	 */
+	fun updateActiveState(cui: String, isActive: Boolean): UpdateActiveStateResult {
+		return transactionManager.run {
+			logger.info("Updating active status of AGU with CUI: {} to {}", cui, isActive)
+
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(UpdateActiveStateError.AGUNotFound)
+
+			it.aguRepository.updateActiveState(cui, isActive)
+
+			logger.info("Active status of AGU with CUI: {} updated to {}", cui, isActive)
+
+			success(getFullAGU(cui) ?: return@run failure(UpdateActiveStateError.AGUNotFound))
 		}
 	}
 
@@ -487,7 +487,7 @@ class AGUService(
 
 			logger.info("Tank with number: {} changed from AGU with CUI: {}", number, cui)
 
-			success(getAGUById(cui).getSuccessOrThrow())
+			success(getFullAGU(cui) ?: return@run failure(UpdateTankError.AGUNotFound))
 		}
 	}
 
@@ -517,7 +517,7 @@ class AGUService(
 
 			logger.info("Gas levels of AGU with CUI: {} changed", cui)
 
-			success(getAGUById(cui).getSuccessOrThrow())
+			success(getFullAGU(cui) ?: return@run failure(UpdateGasLevelsError.AGUNotFound))
 		}
 	}
 
@@ -540,7 +540,27 @@ class AGUService(
 
 			logger.info("Notes of AGU with CUI: {} changed", cui)
 
-			success(getAGUById(cui).getSuccessOrThrow())
+			success(getFullAGU(cui) ?: return@run failure(UpdateNotesError.AGUNotFound))
+		}
+	}
+
+	/**
+	 * Private function to be used by the other service functions,
+	 * in order to get the full AGU details by its CUI
+	 *
+	 * @param cui the CUI of the AGU
+	 *
+	 * @return the AGU with all its details
+	 */
+	private fun getFullAGU(cui: String): AGU? {
+		return transactionManager.run {
+			val agu = it.aguRepository.getAGUByCUI(cui) ?: return@run null
+			val tanks = it.tankRepository.getAGUTanks(cui)
+			val contacts = it.contactRepository.getContactsByAGU(cui)
+			val providers = it.providerRepository.getProviderByAGU(cui)
+			val transportCompanies = it.transportCompanyRepository.getTransportCompaniesByAGU(cui)
+
+			agu.copy(tanks = tanks, contacts = contacts, providers = providers, transportCompanies = transportCompanies)
 		}
 	}
 

@@ -188,6 +188,30 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
 	}
 
 	/**
+	 * Delete a transport company from an AGU
+	 *
+	 * @param aguCui CUI of an AGU
+	 * @param transportCompanyId ID of a transport company
+	 */
+	override fun deleteTransportCompanyFromAGU(aguCui: String, transportCompanyId: Int) {
+		logger.info(
+			"Deleting transport company with ID: {} from AGU with CUI: {} in the database",
+			transportCompanyId,
+			aguCui
+		)
+
+		handle.createUpdate(
+			"""
+			DELETE FROM agu_transport_company
+			WHERE agu_cui = :aguCui AND company_id = :companyId
+			""".trimIndent()
+		)
+			.bind("aguCui", aguCui)
+			.bind("companyId", transportCompanyId)
+			.execute()
+	}
+
+	/**
 	 * Check if ID stores a transport company
 	 *
 	 * @param id ID of a transport company

@@ -14,6 +14,29 @@ import org.slf4j.LoggerFactory
 class JDBIDNORepository(private val handle: Handle) : DNORepository {
 
 	/**
+	 * Gets all DNOs
+	 *
+	 * @return the list of DNOs
+	 */
+	override fun getAll(): List<DNO> {
+
+		logger.info("Getting all DNOs")
+
+		val dnos = handle.createQuery(
+			"""
+				SELECT *
+				FROM dno
+			""".trimIndent()
+		)
+			.mapTo<DNO>()
+			.list()
+
+		logger.info("Retrieved all DNOs from the database")
+
+		return dnos
+	}
+
+	/**
 	 * Adds a DNO to the repository
 	 *
 	 * @param dnoCreation the creation model for a [DNO]
@@ -39,6 +62,31 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
 
 		return getById(id)
 			?: throw IllegalStateException("DNO not found after adding") // TODO is it right to throw an exception here?
+	}
+
+	/**
+	 * Deletes a DNO by its id
+	 *
+	 * @param id the id of the DNO
+	 */
+	override fun deleteDNO(id: Int) {
+
+		logger.info("Deleting DNO with id {}", id)
+
+		val deleted = handle.createUpdate(
+			"""
+				DELETE FROM dno
+				WHERE id = :id
+			""".trimIndent()
+		)
+			.bind("id", id)
+			.execute()
+
+		if (deleted == 1) {
+			logger.info("Deleted DNO with id {}", id)
+		} else {
+			logger.info("DNO with id {} not found", id)
+		}
 	}
 
 	/**

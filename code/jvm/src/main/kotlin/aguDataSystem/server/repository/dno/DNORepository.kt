@@ -9,11 +9,25 @@ import aguDataSystem.server.domain.company.DNOCreationDTO
 interface DNORepository {
 
 	/**
+	 * Gets all DNOs
+	 *
+	 * @return the list of DNOs
+	 */
+	fun getAll(): List<DNO>
+
+	/**
 	 * Adds a DNO to the repository
 	 *
 	 * @param dnoCreation the creation model for a [DNO]
 	 */
 	fun addDNO(dnoCreation: DNOCreationDTO): DNO
+
+	/**
+	 * Deletes a DNO by its id
+	 *
+	 * @param id the id of the DNO
+	 */
+	fun deleteDNO(id: Int)
 
 	/**
 	 * Gets DNO by its name

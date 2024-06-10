@@ -63,6 +63,14 @@ interface TransportCompanyRepository {
 	fun deleteTransportCompany(id: Int)
 
 	/**
+	 * Delete a transport company from an AGU
+	 *
+	 * @param aguCui CUI of an AGU
+	 * @param transportCompanyId ID of a transport company
+	 */
+	fun deleteTransportCompanyFromAGU(aguCui: String, transportCompanyId: Int)
+
+	/**
 	 * Check if ID stores a transport company
 	 *
 	 * @param id ID of a transport company

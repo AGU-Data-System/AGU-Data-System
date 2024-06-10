@@ -2,6 +2,7 @@ package aguDataSystem.server.domain.agu
 
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.company.TransportCompany
 
 /**
  * Represents the basic information of the Autonomous Gas Unit (AGU) in the system.
@@ -17,5 +18,5 @@ data class AGUBasicInfo(
 	val name: String,
 	val dno: DNO,
 	val location: Location,
-	//val transportCompanies: List<TransportCompany>TODO: Fix this
+	val transportCompanies: List<TransportCompany>
 )

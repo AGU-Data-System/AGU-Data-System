@@ -1,5 +1,6 @@
 package aguDataSystem.server.service.dno
 
+import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.company.DNOCreationDTO
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.errors.dno.CreateDNOError
@@ -17,6 +18,17 @@ class DNOService(
 ) {
 
 	/**
+	 * Gets the DNOs.
+	 *
+	 * @return The list of DNOs.
+	 */
+	fun getDnos(): List<DNO> {
+		return transactionManager.run {
+			it.dnoRepository.getAll()
+		}
+	}
+
+	/**
 	 * Creates a new DNO with the given [DNOCreationDTO].
 	 *
 	 * @param dnoCreation The creation model for the DNO.
@@ -32,6 +44,19 @@ class DNOService(
 
 			val dno = it.dnoRepository.addDNO(dnoCreation)
 			success(dno)
+		}
+	}
+
+	/**
+	 * Deletes a DNO by its [id].
+	 *
+	 * @param id The id of the DNO to delete.
+	 * @return The result of the operation.
+	 */
+	fun deleteDNO(id: Int) {
+		return transactionManager.run {
+			it.dnoRepository.deleteDNO(id)
+			success(Unit)
 		}
 	}
 

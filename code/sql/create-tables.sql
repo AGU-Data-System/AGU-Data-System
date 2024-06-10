@@ -63,7 +63,7 @@ create table if not exists dno
 create table if not exists agu
 (
     cui               CUI primary key,
-    eic               varchar check (length(eic) > 0)           not null,
+    eic               varchar check (length(eic) > 0)  unique   not null,
     name              varchar check (length(name) > 0) unique   not null,
     min_level         PERCENTAGE                                not null,
     max_level         PERCENTAGE                                not null,

@@ -25,7 +25,7 @@ data class ProviderInput(
 	}
 
 	constructor(name: String, url: String, type: ProviderType) : this(
-		name = name,
+		name = type.name + " - " + name,
 		url = url,
 		frequency = when (type) {
 			ProviderType.GAS -> GAS_FREQUENCY

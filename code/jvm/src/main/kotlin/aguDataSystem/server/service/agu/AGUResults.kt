@@ -5,6 +5,7 @@ import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.service.errors.agu.AGUCreationError
 import aguDataSystem.server.service.errors.agu.GetAGUError
+import aguDataSystem.server.service.errors.agu.update.UpdateActiveStateError
 import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
 import aguDataSystem.server.service.errors.agu.update.UpdateGasLevelsError
 import aguDataSystem.server.service.errors.agu.update.UpdateNotesError
@@ -39,6 +40,11 @@ typealias GetGasMeasuresResult = Either<GetMeasuresError, List<GasMeasure>>
  * Result for updating an AGU favourite state
  */
 typealias UpdateFavouriteStateResult = Either<UpdateFavouriteStateError, AGU>
+
+/**
+ * Result for updating an AGU active state
+ */
+typealias UpdateActiveStateResult = Either<UpdateActiveStateError, AGU>
 
 /**
  * Result for adding a contact to an AGU

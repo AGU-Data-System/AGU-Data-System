@@ -25,47 +25,21 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val aGUs = handle.createQuery(
 			"""
-			SELECT agu.cui, agu.name, agu.latitude, agu.longitude, agu.location_name,
-			dno.id as dno_id, dno.name as dno_name, dno.region, transport_company.id as transport_company_id, transport_company.name as transport_company_name
-			FROM agu 
-			left join dno 
-				on agu.dno_id = dno.id
-			left join transport_company_agu
-				on agu.cui = transport_company_agu.agu_cui
-			left join transport_company
-				on transport_company_agu.transport_company_id = transport_company.id
-			""".trimIndent() //TODO: Fix this is nasty
+        SELECT 
+            agu.cui, agu.name, agu.latitude, agu.longitude, agu.location_name,
+            dno.id as dno_id, dno.name as dno_name, dno.region,
+            transport_company.id as tc_id, transport_company.name as tc_name
+        FROM agu
+        LEFT JOIN dno ON agu.dno_id = dno.id
+        LEFT JOIN agu_transport_company atc ON agu.cui = atc.agu_cui
+        LEFT JOIN transport_company ON atc.company_id = transport_company.id
+        ORDER BY agu.cui
+        """.trimIndent()
 		)
 			.mapTo<AGUBasicInfo>()
 			.list()
 
 		logger.info("Retrieved {} AGUs from the database", aGUs.size)
-
-		return aGUs
-	}
-
-	/**
-	 * Get favourite AGUs
-	 *
-	 * @return List of AGUs basic info
-	 */
-	override fun getFavouriteAGUs(): List<AGUBasicInfo> {
-		logger.info("Getting favourite AGUs from the database")
-
-		val aGUs = handle.createQuery(
-			"""
-			SELECT agu.cui, agu.name, agu.latitude, agu.longitude, agu.location_name,
-			dno.id as dno_id, dno.name as dno_name, dno.region
-			FROM agu 
-			left join dno 
-				on agu.dno_id = dno.id
-			WHERE is_favorite = true
-			""".trimIndent()
-		)
-			.mapTo<AGUBasicInfo>()
-			.list()
-
-		logger.info("Retrieved {} favourite AGUs from the database", aGUs.size)
 
 		return aGUs
 	}
@@ -238,6 +212,29 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.execute()
 
 		logger.info("AGU with CUI: {}, favourite state updated in the database", cui)
+	}
+
+	/**
+	 * Update AGU active state
+	 *
+	 * @param cui CUI of AGU
+	 * @param isActive New active state
+	 */
+	override fun updateActiveState(cui: String, isActive: Boolean) {
+		logger.info("Updating AGU active state in the database")
+
+		handle.createUpdate(
+			"""
+			UPDATE agu 
+			SET is_active = :isActive
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.bind("isActive", isActive)
+			.execute()
+
+		logger.info("AGU with CUI: {}, active state updated in the database", cui)
 	}
 
 	/**

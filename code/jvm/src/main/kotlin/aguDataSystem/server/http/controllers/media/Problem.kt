@@ -183,5 +183,17 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			title = "Transport Company Not Found.",
 			details = "The transport company with the given ID was not found."
 		)
+
+		val TransportCompanyAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "transport-company-already-exists"),
+			title = "Transport Company Already Exists.",
+			details = "The transport company already exists."
+		)
+
+		val DnoAlreadyExists = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "dno-already-exists"),
+			title = "DNO Already Exists.",
+			details = "The DNO already exists with the given name."
+		)
 	}
 }
