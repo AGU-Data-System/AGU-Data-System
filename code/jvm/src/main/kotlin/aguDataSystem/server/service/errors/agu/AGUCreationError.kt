@@ -2,7 +2,7 @@ package aguDataSystem.server.service.errors.agu
 
 /**
  * Error for creating an AGU
- *
+ * TODO needs completion
  * @property InvalidCUI The CUI is invalid.
  * @property InvalidDNO The DNO is invalid.
  * @property InvalidCoordinates The coordinates are invalid.

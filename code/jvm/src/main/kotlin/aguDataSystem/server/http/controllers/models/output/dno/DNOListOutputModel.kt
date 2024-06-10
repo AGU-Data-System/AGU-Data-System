@@ -9,11 +9,11 @@ import aguDataSystem.server.domain.company.DNO
  * @property size The size of the list
  */
 data class DNOListOutputModel(
-    val dnos: List<DNOOutputModel>,
-    val size: Int
+	val dnos: List<DNOOutputModel>,
+	val size: Int
 ) {
-    constructor(dnos: List<DNO>) : this(
-        dnos = dnos.map { DNOOutputModel(it) },
-        size = dnos.size
-    )
+	constructor(dnos: List<DNO>) : this(
+		dnos = dnos.map { DNOOutputModel(it) },
+		size = dnos.size
+	)
 }

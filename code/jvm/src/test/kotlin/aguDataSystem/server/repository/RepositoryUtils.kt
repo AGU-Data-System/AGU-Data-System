@@ -82,6 +82,7 @@ object RepositoryUtils {
 		location = dummyLocation,
 		dnoName = dummyDNO.name,
 		isFavorite = false,
+		isActive = true,
 		notes = null,
 		training = null,
 		image = ByteArray(0),

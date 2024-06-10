@@ -25,9 +25,11 @@ class AGUMapper : RowMapper<AGU> {
 	override fun map(rs: ResultSet, ctx: StatementContext?): AGU {
 		return AGU(
 			cui = rs.getString("cui"),
+			eic = rs.getString("eic"),
 			name = rs.getString("name"),
 			levels = mapToGasLevels(rs),
 			loadVolume = rs.getInt("load_volume"),
+			correctionFactor = rs.getDouble("correction_factor"),
 			location = mapToLocation(rs),
 			dno = mapToDNO(rs),
 			isFavorite = rs.getBoolean("is_favorite"),
@@ -36,7 +38,8 @@ class AGUMapper : RowMapper<AGU> {
 			image = rs.getBytes("image") ?: byteArrayOf(),
 			contacts = emptyList(),
 			tanks = emptyList(),
-			providers = emptyList()
+			providers = emptyList(),
+			transportCompanies = emptyList()
 		)
 	}
 }

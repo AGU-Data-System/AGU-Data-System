@@ -12,6 +12,13 @@ import org.jdbi.v3.core.statement.StatementContext
  */
 class TransportCompanyMapper : RowMapper<TransportCompany> {
 
+	/**
+	 * Maps a row from the database to a [TransportCompany]
+	 *
+	 * @param rs the result set
+	 * @param ctx the statement context
+	 * @return the [TransportCompany] from the result set
+	 */
 	override fun map(rs: ResultSet, ctx: StatementContext?): TransportCompany {
 		return TransportCompany(
 			id = rs.getInt("id"),

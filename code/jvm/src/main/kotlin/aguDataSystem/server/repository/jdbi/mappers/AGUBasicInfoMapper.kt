@@ -4,9 +4,9 @@ import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.company.TransportCompany
+import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import java.sql.ResultSet
 
 /**
  * Maps the row of the result set to an [AGUBasicInfo]
@@ -36,20 +36,14 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 			longitude = rs.getDouble("longitude"),
 			name = rs.getString("location_name")
 		)
-
+		// TODO move this to mapper utils
 		val transportCompanies = mutableListOf<TransportCompany>()
 
 		do {
 			val tcId = rs.getInt("tc_id")
-			val tcName = rs.getString("tc_name")
-			if (tcName != null) {
-				transportCompanies.add(TransportCompany(id = tcId, name = tcName))
-			}
-		} while (rs.next() && rs.getString("cui") == cui)
-
-		if (!rs.isAfterLast) {
-			rs.previous()
-		}
+			val tcName = rs.getString("tc_name") ?: break
+			transportCompanies.add(TransportCompany(id = tcId, name = tcName))
+		} while (rs.next() && (rs.getString("cui") == cui))
 
 		return AGUBasicInfo(
 			cui = cui,

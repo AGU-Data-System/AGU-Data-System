@@ -9,11 +9,11 @@ import aguDataSystem.server.domain.company.TransportCompany
  * @property name The name of the transport company
  */
 data class TransportCompanyOutputModel(
-    val id: Int,
-    val name: String
+	val id: Int,
+	val name: String
 ) {
-    constructor(transportCompany: TransportCompany) : this(
-        id = transportCompany.id,
-        name = transportCompany.name
-    )
+	constructor(transportCompany: TransportCompany) : this(
+		id = transportCompany.id,
+		name = transportCompany.name
+	)
 }

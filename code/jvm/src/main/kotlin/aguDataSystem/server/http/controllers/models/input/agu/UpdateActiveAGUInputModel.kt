@@ -8,5 +8,5 @@ import aguDataSystem.server.domain.agu.AGU
  * @property isActive The new active status of the AGU
  */
 data class UpdateActiveAGUInputModel(
-    val isActive: Boolean
+	val isActive: Boolean
 )

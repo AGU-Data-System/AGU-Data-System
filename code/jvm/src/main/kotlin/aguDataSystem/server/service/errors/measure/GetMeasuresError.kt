@@ -3,8 +3,9 @@ package aguDataSystem.server.service.errors.measure
 /**
  * Error for getting measures
  *
- * @property AGUNotFound The AGU was not found.
- * @property ProviderNotFound The provider was not found.
+ * @property AGUNotFound The AGU was not found
+ * @property ProviderNotFound The provider was not found
+ * TODO Needs completion
  */
 sealed class GetMeasuresError {
 	data object AGUNotFound : GetMeasuresError()

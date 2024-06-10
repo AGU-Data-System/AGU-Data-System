@@ -20,7 +20,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property image The image of the AGU.
  * @property contacts The contacts of the AGU.
  * @property tanks The tanks of the AGU.
- * @property transportCompanies The transport companies that the AGU is associated with.
+ * @property transportCompanies The transport companies name that the AGU is associated with.
  * @property isFavorite Whether the AGU is a favorite.
  * @property isActive Whether the AGU is active.
  * @property notes The notes of the AGU.

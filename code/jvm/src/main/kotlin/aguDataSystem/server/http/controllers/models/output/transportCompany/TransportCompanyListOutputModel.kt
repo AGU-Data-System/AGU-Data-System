@@ -9,11 +9,11 @@ import aguDataSystem.server.domain.company.TransportCompany
  * @param size The size of the list
  */
 data class TransportCompanyListOutputModel(
-    val transportCompanies: List<TransportCompanyOutputModel>,
-    val size: Int
+	val transportCompanies: List<TransportCompanyOutputModel>,
+	val size: Int
 ) {
-    constructor(transportCompanies: List<TransportCompany>) : this(
-        transportCompanies = transportCompanies.map { TransportCompanyOutputModel(it) },
-        size = transportCompanies.size
-    )
+	constructor(transportCompanies: List<TransportCompany>) : this(
+		transportCompanies = transportCompanies.map { TransportCompanyOutputModel(it) },
+		size = transportCompanies.size
+	)
 }

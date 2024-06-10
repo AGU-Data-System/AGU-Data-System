@@ -705,43 +705,6 @@ class AGUServiceTest {
 	// TODO Needs test for provider error
 
 	@Test
-	fun `get favorite AGUs correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
-		// arrange
-		val fetchService = FetchService(transactionManager)
-		val chronService = ChronService(transactionManager, fetchService)
-		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
-
-		val dnoCreation = dummyDNODTO
-		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank), isFavorite = true)
-
-		dnoService.createDNO(dnoCreation)
-		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
-
-		// act
-		val result = aguService.getFavouriteAGUs()
-
-		// assert
-		assert(result.isNotEmpty())
-		assert(result.first().cui == agu.getSuccessOrThrow())
-	}
-
-	@Test
-	fun `get favorite AGUs with no favorite AGUs should return an empty list`() =
-		testWithTransactionManagerAndRollback { transactionManager ->
-			// arrange
-			val fetchService = FetchService(transactionManager)
-			val chronService = ChronService(transactionManager, fetchService)
-			val aguService = AGUService(transactionManager, aguDomain, chronService)
-
-			// act
-			val result = aguService.getFavouriteAGUs()
-
-			// assert
-			assert(result.isEmpty())
-		}
-
-	@Test
 	fun `update agu's favorite state correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)

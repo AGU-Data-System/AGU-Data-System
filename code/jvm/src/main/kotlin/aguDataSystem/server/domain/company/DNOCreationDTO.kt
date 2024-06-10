@@ -1,7 +1,7 @@
 package aguDataSystem.server.domain.company
 
 /**
- * Represents the input model for creating a new [DNO]
+ * Represents a DTO model for creating a new [DNO]
  *
  * @property name The name of the [DNO]
  * @property region The region of the [DNO]

@@ -44,14 +44,6 @@ interface AGURepository {
 	fun addAGU(aguCreationInfo: AGUCreationInfo, dnoID: Int): String
 
 	/**
-	 * Update AGU
-	 *
-	 * @param agu AGU to update
-	 * @return AGU
-	 */
-	fun updateAGU(agu: AGU): AGU
-
-	/**
 	 * Update AGU favourite state
 	 *
 	 * @param cui CUI of AGU

@@ -165,6 +165,12 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
 			.bind("aguCui", aguCui)
 			.bind("companyId", transportCompanyId)
 			.execute()
+
+		logger.info(
+			"Transport company with ID: {} added to AGU with CUI: {} in the database",
+			transportCompanyId,
+			aguCui
+		)
 	}
 
 	/**

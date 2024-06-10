@@ -153,43 +153,6 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		return addedAGUCUI
 	}
 
-	/**
-	 * Update AGU
-	 *
-	 * @param agu AGU to update
-	 * @return AGU
-	 */
-	override fun updateAGU(agu: AGU): AGU {
-		logger.info("Updating AGU in the database")
-
-		handle.createUpdate(
-			"""
-            UPDATE agu 
-            SET name = :name, is_favorite = :isFavorite, min_level = :minLevel, max_level = :maxLevel, 
-            critical_level = :criticalLevel, load_volume = :loadVolume, latitude = :latitude, longitude = :longitude, 
-            location_name = :locationName, dno_id = :dnoId, notes = :notes, training = :training::json, image = :image
-            WHERE cui = :cui
-            """.trimIndent()
-		)
-			.bind("cui", agu.cui)
-			.bind("name", agu.name)
-			.bind("isFavorite", agu.isFavorite)
-			.bind("minLevel", agu.levels.min)
-			.bind("maxLevel", agu.levels.max)
-			.bind("criticalLevel", agu.levels.critical)
-			.bind("loadVolume", agu.loadVolume)
-			.bind("latitude", agu.location.latitude)
-			.bind("longitude", agu.location.longitude)
-			.bind("locationName", agu.location.name)
-			.bind("dnoId", agu.dno.id)
-			.bind("notes", agu.notes)
-			.bind("training", agu.training)
-			.bind("image", agu.image)
-			.execute()
-
-		logger.info("AGU with CUI: {}, updated in the database", agu.cui)
-		return agu
-	}
 
 	/**
 	 * Update AGU favourite state

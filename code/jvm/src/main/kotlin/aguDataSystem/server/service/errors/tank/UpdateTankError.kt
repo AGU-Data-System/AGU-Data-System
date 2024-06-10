@@ -1,7 +1,8 @@
 package aguDataSystem.server.service.errors.tank
 
 /**
- * Represents the possible errors that can occur when updating a tank.
+ * Represents the possible errors that can occur when updating a tank
+ * TODO Needs completion
  */
 sealed class UpdateTankError {
 	data object AGUNotFound : UpdateTankError()
