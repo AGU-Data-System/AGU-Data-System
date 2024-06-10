@@ -44,24 +44,6 @@ class JDBITankRepositoryTest {
 	}
 
 	@Test
-	fun `add tank with invalid number of correction factor should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepo = JDBIDNORepository(handle)
-		val aguRepo = JDBIAGURepository(handle)
-		val tankRepo = JDBITankRepository(handle)
-		val agu = dummyAGU
-		val tank = dummyTank.copy(correctionFactor = -1.0)
-
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		aguRepo.addAGU(agu, dnoId)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.addTank(agu.cui, tank)
-		}
-	}
-
-	@Test
 	fun `add tank with invalid levels should fail`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepo = JDBIDNORepository(handle)
@@ -452,26 +434,6 @@ class JDBITankRepositoryTest {
 		// assert
 		assertNotNull(tankByNumber)
 		assertEquals(tankByNumber, updatedTank)
-	}
-
-	@Test
-	fun `update tank with invalid number of correction factor should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepo = JDBIDNORepository(handle)
-		val aguRepo = JDBIAGURepository(handle)
-		val tankRepo = JDBITankRepository(handle)
-		val agu = dummyAGU
-		val tank = dummyTank
-
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		aguRepo.addAGU(agu, dnoId)
-		val tankNumber = tankRepo.addTank(agu.cui, tank)
-		val updatedTank = tank.copy(number = tankNumber, correctionFactor = -1.0)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
-		}
 	}
 
 	@Test

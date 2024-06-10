@@ -84,11 +84,11 @@ class AGUServiceTest {
 		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
 
 		// act
-		val result = aguService.createAGU(creationAgu).also(::println)
+		val result = aguService.createAGU(creationAgu)
 
 		// assert
 		assert(result.isFailure())
-		assert(result.getFailureOrThrow() is AGUCreationError.InvalidDNO)
+		assert(result.getFailureOrThrow() is AGUCreationError.DNONotFound)
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class AGUServiceTest {
 
 		// assert
 		assert(result.isFailure())
-		assert(result.getFailureOrThrow() is AGUCreationError.InvalidDNO)
+		assert(result.getFailureOrThrow() is AGUCreationError.DNONotFound)
 	}
 
 	@Test
@@ -610,7 +610,7 @@ class AGUServiceTest {
 
 			// assert
 			assert(result.isFailure())
-			assert(result.getFailureOrThrow() is GetMeasuresError.AGUNotFound)
+			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidCUI)
 		}
 
 	@Test
@@ -1069,7 +1069,7 @@ class AGUServiceTest {
 
 		// assert
 		assert(result.isFailure())
-		assert(result.getFailureOrThrow() is UpdateTankError.AGUNotFound)
+		assert(result.getFailureOrThrow() is UpdateTankError.InvalidCUI)
 	}
 
 	@Test
@@ -1091,7 +1091,7 @@ class AGUServiceTest {
 
 			// assert
 			assert(result.isFailure())
-			assert(result.getFailureOrThrow() is UpdateTankError.TankNotFound)
+			assert(result.getFailureOrThrow() is UpdateTankError.InvalidTankNumber)
 		}
 
 	@Test
@@ -1107,7 +1107,7 @@ class AGUServiceTest {
 
 		dnoService.createDNO(dnoCreation)
 		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
-		val addedTank = aguService.addTank(agu.getSuccessOrThrow(), tank).also { println(it) }.getSuccessOrThrow()
+		val addedTank = aguService.addTank(agu.getSuccessOrThrow(), tank).getSuccessOrThrow()
 
 		// act
 		val result = aguService.updateTank(agu.getSuccessOrThrow(), addedTank, updateTankDTO.copy(minLevel = 100))

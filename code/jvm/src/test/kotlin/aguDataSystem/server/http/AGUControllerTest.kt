@@ -22,7 +22,6 @@ class AGUControllerTest {
 	@Test
 	fun `create AGU properly`() {
 		// arrange
-		// TODO url hardcoded here for testing purposes change it to the util function
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val aguCreation = dummyAGUCreationRequestModel
 

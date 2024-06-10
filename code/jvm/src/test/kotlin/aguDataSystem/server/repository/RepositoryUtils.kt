@@ -47,7 +47,7 @@ object RepositoryUtils {
 		type = ContactType.EMERGENCY
 	)
 
-	private val dummyGasLevels = GasLevels(
+	val dummyGasLevels = GasLevels(
 		min = 20,
 		max = 85,
 		critical = 20
