@@ -34,3 +34,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### xlsx and csv files ###
+*.xlsx
+*.csv
