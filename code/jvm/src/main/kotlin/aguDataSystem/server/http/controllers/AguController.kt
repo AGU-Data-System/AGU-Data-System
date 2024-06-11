@@ -337,7 +337,6 @@ class AguController(private val service: AGUService) {
 				Problem.InvalidCriticalLevel
 			)
 
-			AGUCreationError.InvalidDNO -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidDNO)
 			AGUCreationError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
 			AGUCreationError.InvalidLoadVolume -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
@@ -373,6 +372,7 @@ class AguController(private val service: AGUService) {
 			)
 
 			AGUCreationError.DNONotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.DNONotFound)
+			AGUCreationError.InvalidEIC -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidEIC)
 		}
 
 	/**

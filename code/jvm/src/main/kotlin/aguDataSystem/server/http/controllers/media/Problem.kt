@@ -160,6 +160,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The tank number must be positive."
 		)
 
+		val InvalidEIC = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-eic"),
+			title = "Invalid EIC.",
+			details = "The EIC must not be blank."
+		)
+
 		val ProviderNotFound = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "provider-not-found"),
 			title = "Provider Not Found.",

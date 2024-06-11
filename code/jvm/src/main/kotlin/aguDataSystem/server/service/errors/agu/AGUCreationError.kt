@@ -4,7 +4,6 @@ package aguDataSystem.server.service.errors.agu
  * Error for creating an AGU
  * TODO needs completion
  * @property InvalidCUI The CUI is invalid.
- * @property InvalidDNO The DNO is invalid.
  * @property InvalidCoordinates The coordinates are invalid.
  * @property InvalidMinLevel The minimum level is invalid.
  * @property InvalidMaxLevel The maximum level is invalid.
@@ -20,8 +19,8 @@ sealed class AGUCreationError {
 	data object AGUAlreadyExists : AGUCreationError()
 	data object AGUNameAlreadyExists : AGUCreationError()
 	data object InvalidCUI : AGUCreationError()
+	data object InvalidEIC : AGUCreationError()
 	data object InvalidName : AGUCreationError()
-	data object InvalidDNO : AGUCreationError()
 	data object DNONotFound : AGUCreationError()
 	data object InvalidCoordinates : AGUCreationError()
 	data object InvalidMinLevel : AGUCreationError()
@@ -34,5 +33,4 @@ sealed class AGUCreationError {
 	data object InvalidTank : AGUCreationError()
 	data object ProviderError : AGUCreationError()
 	data object TransportCompanyNotFound : AGUCreationError()
-
 }

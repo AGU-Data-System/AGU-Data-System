@@ -72,7 +72,7 @@ class AGUProcessor {
 
 	fun processCSV(csvPath: String) {
 		val rows = csvReader {
-			charset = "UTF-8"
+			charset = "UTF-16"
 			this.insufficientFieldsRowBehaviour = InsufficientFieldsRowBehaviour.IGNORE
 			autoRenameDuplicateHeaders = true
 		}.readAllWithHeader(File(csvPath))

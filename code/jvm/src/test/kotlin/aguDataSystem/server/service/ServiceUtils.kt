@@ -3,6 +3,7 @@ package aguDataSystem.server.service
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUCreationDTO
 import aguDataSystem.server.domain.company.DNOCreationDTO
+import aguDataSystem.server.domain.company.TransportCompanyCreationDTO
 import aguDataSystem.server.domain.contact.ContactCreationDTO
 import aguDataSystem.server.domain.gasLevels.GasLevels
 import aguDataSystem.server.domain.gasLevels.GasLevelsDTO
@@ -61,6 +62,10 @@ object ServiceUtils {
 		min = 30,
 		max = 90,
 		critical = 10
+	)
+
+	val dummyTransportCompany = TransportCompanyCreationDTO(
+		name = "Transport Company"
 	)
 
 	val dummyAGUCreationDTO = AGUCreationDTO(

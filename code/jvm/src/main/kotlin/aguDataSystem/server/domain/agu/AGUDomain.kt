@@ -58,6 +58,13 @@ class AGUDomain {
 	fun isCUIValid(cui: String): Boolean = cuiRegex.matches(cui)
 
 	/**
+	 * Checks if the given EIC is valid
+	 * @param eic the EIC to check
+	 * @return true if the EIC is valid, false otherwise
+	 */
+	fun isEICValid(eic: String): Boolean = eic.isNotBlank()
+
+	/**
 	 * Checks if the given phone number is valid
 	 * @param phone the phone number to check
 	 * @return true if the phone number is valid, false otherwise

@@ -373,6 +373,44 @@ class AGUServiceTest {
 			assert(result.getFailureOrThrow() is AGUCreationError.AGUNameAlreadyExists)
 		}
 
+	@Test
+	fun `create agu with un existing transport companies`() =
+		testWithTransactionManagerAndRollback { transactionManager ->
+			// arrange
+			val fetchService = FetchService(transactionManager)
+			val chronService = ChronService(transactionManager, fetchService)
+			val dnoService = DNOService(transactionManager)
+			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val creationAgu =
+				dummyAGUCreationDTO.copy(tanks = listOf(dummyTank), transportCompanies = listOf("invalid"))
+
+			dnoService.createDNO(dummyDNODTO)
+			// act
+			val result = aguService.createAGU(creationAgu)
+
+			// assert
+			assert(result.isFailure())
+			assert(result.getFailureOrThrow() is AGUCreationError.TransportCompanyNotFound)
+		}
+
+	@Test
+	fun `create agu with empty eic should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank), eic = "")
+
+		dnoService.createDNO(dummyDNODTO)
+		// act
+		val result = aguService.createAGU(creationAgu)
+
+		// assert
+		assert(result.isFailure())
+		assert(result.getFailureOrThrow() is AGUCreationError.InvalidEIC)
+	}
+
 	//needs test for provider error
 	// good luck guys
 	// TODO

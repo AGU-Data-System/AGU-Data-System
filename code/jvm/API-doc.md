@@ -77,6 +77,7 @@
     - [Invalid CUI](#invalid-cui)
     - [invalid Days](#invalid-days)
     - [Invalid DNO](#invalid-dno)
+    - [Invalid EIC](#invalid-eic)
     - [Invalid Levels](#invalid-levels)
     - [Invalid Load Volume](#invalid-load-volume)
     - [Invalid Max Level](#invalid-max-level)
@@ -1453,6 +1454,20 @@ The problems are returned in the following format:
     "title": "Invalid DNO.",
     "details": "The DNO must have a name.",
     "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-dno"
+}
+```
+
+### Invalid EIC
+
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+```json
+{
+    "title": "Invalid EIC.",
+    "details": "The EIC must not be blank.",
+    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-eic"
 }
 ```
 

@@ -586,6 +586,10 @@ class AGUService(
 			return failure(AGUCreationError.InvalidCUI)
 		}
 
+		if (!aguDomain.isEICValid(aguDTO.eic)) {
+			return failure(AGUCreationError.InvalidEIC)
+		}
+
 		if (!(aguDomain.areCoordinatesValid(aguDTO.location.latitude, aguDTO.location.longitude))) {
 			return failure(AGUCreationError.InvalidCoordinates)
 		}

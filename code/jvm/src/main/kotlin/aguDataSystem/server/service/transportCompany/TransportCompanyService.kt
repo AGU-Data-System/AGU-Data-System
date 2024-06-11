@@ -24,8 +24,7 @@ class TransportCompanyService(
 	 */
 	fun getTransportCompanies(): List<TransportCompany> {
 		return transactionManager.run {
-			val transportCompanies = it.transportCompanyRepository.getTransportCompanies()
-			transportCompanies
+			it.transportCompanyRepository.getTransportCompanies()
 		}
 	}
 
@@ -36,7 +35,6 @@ class TransportCompanyService(
 	 * @return the result of the operation
 	 */
 	fun getTransportCompaniesOfAGU(aguCui: String): GetTransportCompaniesOfAGUResult {
-
 		return transactionManager.run {
 			if (!it.aguRepository.isAGUStored(aguCui))
 				return@run failure(GetTransportCompaniesOfAGUError.AGUNotFound)
