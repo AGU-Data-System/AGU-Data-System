@@ -3,7 +3,11 @@ package aguDataSystem.server.repository.agu
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.agu.AGUCreationInfo
+import aguDataSystem.server.domain.company.TransportCompany
 import aguDataSystem.server.domain.gasLevels.GasLevels
+import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToDNO
+import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToLocation
+import java.sql.ResultSet
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import org.slf4j.LoggerFactory
@@ -17,31 +21,70 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 	/**
 	 * Get all AGUs
-	 *
+	 * TODO do better
 	 * @return List of AGUs basic info
 	 */
 	override fun getAGUsBasicInfo(): List<AGUBasicInfo> {
 		logger.info("Getting all AGUs from the database")
 
-		val aGUs = handle.createQuery(
-			"""
-        SELECT 
-            agu.cui, agu.name, agu.latitude, agu.longitude, agu.location_name,
-            dno.id as dno_id, dno.name as dno_name, dno.region,
-            transport_company.id as tc_id, transport_company.name as tc_name
-        FROM agu
-        LEFT JOIN dno ON agu.dno_id = dno.id
-        LEFT JOIN agu_transport_company atc ON agu.cui = atc.agu_cui
-        LEFT JOIN transport_company ON atc.company_id = transport_company.id
-        ORDER BY agu.cui
+		val sql = """
+            SELECT 
+                agu.cui, agu.name, agu.latitude, agu.longitude, agu.location_name,
+                dno.id as dno_id, dno.name as dno_name, dno.region,
+                transport_company.id as tc_id, transport_company.name as tc_name
+            FROM agu
+            LEFT JOIN dno ON agu.dno_id = dno.id
+            LEFT JOIN agu_transport_company atc ON agu.cui = atc.agu_cui
+            LEFT JOIN transport_company ON atc.company_id = transport_company.id
+            ORDER BY agu.cui, transport_company.id
         """.trimIndent()
-		)
-			.mapTo<AGUBasicInfo>()
-			.list()
 
-		logger.info("Retrieved {} AGUs from the database", aGUs.size)
+		val agubasicInfoMap = mutableMapOf<String, AGUBasicInfo>()
 
-		return aGUs
+		handle.inTransaction<Any, Exception> { conn ->
+			val stmt = conn.connection.createStatement(
+				ResultSet.TYPE_SCROLL_INSENSITIVE,
+				ResultSet.CONCUR_READ_ONLY
+			)
+
+			val rs = stmt.executeQuery(sql)
+
+			while (rs.next()) {
+				val cui = rs.getString("cui")
+				val name = rs.getString("name")
+				val dno = mapToDNO(rs)
+				val location = mapToLocation(rs)
+
+				val tcId = rs.getInt("tc_id")
+				val tcName = rs.getString("tc_name")
+				val transportCompany = if (tcName != null) TransportCompany(id = tcId, name = tcName) else null
+
+				if (agubasicInfoMap.containsKey(cui)) {
+					transportCompany?.let {
+						agubasicInfoMap[cui]?.transportCompanies?.add(it)
+					}
+				} else {
+					val transportCompanies = mutableListOf<TransportCompany>()
+					transportCompany?.let {
+						transportCompanies.add(it)
+					}
+					val aguBasicInfo = AGUBasicInfo(
+						cui = cui,
+						name = name,
+						dno = dno,
+						location = location,
+						transportCompanies = transportCompanies
+					)
+					agubasicInfoMap[cui] = aguBasicInfo
+				}
+			}
+
+			rs.close()
+			stmt.close()
+
+			return@inTransaction agubasicInfoMap.values.toList()
+		}
+		return agubasicInfoMap.values.toList()
 	}
 
 	/**

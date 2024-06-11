@@ -2,6 +2,7 @@ package aguDataSystem.server.repository.jdbi.mappers
 
 import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.company.DNO
+import aguDataSystem.server.domain.company.TransportCompany
 import aguDataSystem.server.domain.gasLevels.GasLevels
 import java.sql.ResultSet
 
@@ -49,6 +50,19 @@ object MapperUtils {
 			id = rs.getInt("dno_id"),
 			name = rs.getString("dno_name"),
 			region = rs.getString("region")
+		)
+	}
+
+	/**
+	 * Maps the result set to a transport company
+	 *
+	 * @param rs the result set
+	 * @return the transport company
+	 */
+	fun mapToTransportCompany(rs: ResultSet): TransportCompany {
+		return TransportCompany(
+			id = rs.getInt("tc_id"),
+			name = rs.getString("tc_name")
 		)
 	}
 }

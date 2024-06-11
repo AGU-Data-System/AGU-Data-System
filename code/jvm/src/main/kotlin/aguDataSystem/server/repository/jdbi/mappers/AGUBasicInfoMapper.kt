@@ -1,9 +1,10 @@
 package aguDataSystem.server.repository.jdbi.mappers
 
-import aguDataSystem.server.domain.Location
 import aguDataSystem.server.domain.agu.AGUBasicInfo
-import aguDataSystem.server.domain.company.DNO
 import aguDataSystem.server.domain.company.TransportCompany
+import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToDNO
+import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToLocation
+import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToTransportCompany
 import java.sql.ResultSet
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -26,31 +27,22 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 	override fun map(rs: ResultSet, ctx: StatementContext?): AGUBasicInfo {
 		val cui = rs.getString("cui")
 		val name = rs.getString("name")
-		val dno = DNO(
-			id = rs.getInt("dno_id"),
-			name = rs.getString("dno_name"),
-			region = rs.getString("region")
-		)
-		val location = Location(
-			latitude = rs.getDouble("latitude"),
-			longitude = rs.getDouble("longitude"),
-			name = rs.getString("location_name")
-		)
-		// TODO move this to mapper utils
-		val transportCompanies = mutableListOf<TransportCompany>()
+		val dno = mapToDNO(rs)
+		val location = mapToLocation(rs)
+
+		val transportCompanies = setOf<TransportCompany>()
 
 		do {
-			val tcId = rs.getInt("tc_id")
-			val tcName = rs.getString("tc_name") ?: break
-			transportCompanies.add(TransportCompany(id = tcId, name = tcName))
-		} while (rs.next() && (rs.getString("cui") == cui))
+			rs.getString("tc_name") ?: break
+			transportCompanies.plus(mapToTransportCompany(rs))
+		} while (rs.next() && (rs.getString("cui") == cui).also { transportCompanies.plus(mapToTransportCompany(rs)) })
 
 		return AGUBasicInfo(
 			cui = cui,
 			name = name,
 			dno = dno,
 			location = location,
-			transportCompanies = transportCompanies
+			transportCompanies = transportCompanies.toMutableList()
 		)
 	}
 }

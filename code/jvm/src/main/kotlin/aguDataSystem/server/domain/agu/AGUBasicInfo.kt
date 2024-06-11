@@ -18,5 +18,5 @@ data class AGUBasicInfo(
 	val name: String,
 	val dno: DNO,
 	val location: Location,
-	val transportCompanies: List<TransportCompany>
+	val transportCompanies: MutableList<TransportCompany>
 )
