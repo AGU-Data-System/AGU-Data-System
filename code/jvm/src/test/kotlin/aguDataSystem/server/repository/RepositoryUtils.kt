@@ -10,6 +10,7 @@ import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.domain.tank.TankUpdateInfo
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -19,8 +20,8 @@ object RepositoryUtils {
 
 	val dummyGasMeasures = List(10) {
 		GasMeasure(
-			timestamp = LocalDateTime.now().truncateNanos(),
-			predictionFor = LocalDateTime.now().plusDays(it.toLong()).truncateNanos(),
+			timestamp = LocalDate.now().atStartOfDay().truncateNanos(),
+			predictionFor = LocalDate.now().atStartOfDay().plusDays(it.toLong()).truncateNanos(),
 			level = 50 - (it * 2),
 			tankNumber = 1
 		)
@@ -28,12 +29,14 @@ object RepositoryUtils {
 
 	val dummyTemperatureMeasures = List(10) {
 		TemperatureMeasure(
-			timestamp = LocalDateTime.now().truncateNanos(),
-			predictionFor = LocalDateTime.now().plusDays(it.toLong()).truncateNanos(),
+			timestamp = LocalDate.now().atStartOfDay().truncateNanos(),
+			predictionFor = LocalDate.now().atStartOfDay().plusDays(it.toLong()).truncateNanos(),
 			min = it,
 			max = 10 + it
 		)
 	}
+
+	val dummyTransportCompanyName = "Test Transport Company"
 
 	val dummyLogisticContact = ContactCreation(
 		name = "John Doe",

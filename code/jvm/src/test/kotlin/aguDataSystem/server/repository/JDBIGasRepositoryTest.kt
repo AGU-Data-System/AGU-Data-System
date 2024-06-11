@@ -34,7 +34,11 @@ class JDBIGasRepositoryTest {
 		val dno = dummyDNO
 		val tank = dummyTank
 		val providerId = 1
-		val gasMeasures = dummyGasMeasures
+		val gasMeasures = dummyGasMeasures.mapIndexed { idx, elem ->
+			elem.copy(
+				predictionFor = elem.predictionFor?.minusDays(idx.toLong())?.plusHours(idx.toLong())
+			)
+		}.onEach(::println)
 		val day = gasMeasures.first().timestamp.toLocalDate()
 
 		val dnoId = dnoRepository.addDNO(dno).id
@@ -45,8 +49,7 @@ class JDBIGasRepositoryTest {
 		// act
 		gasRepository.addGasMeasuresToProvider(providerId, gasMeasures)
 
-		val sut = gasRepository.getGasMeasures(providerId, day)
-		// TODO check this
+		val sut = gasRepository.getGasMeasures(providerId, day).also(::println)
 
 		// assert
 		assert(gasMeasures.containsAll(sut))

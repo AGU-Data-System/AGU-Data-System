@@ -127,7 +127,8 @@ class AGUProcessor {
 					)
 				)
 
-				val name = row["Nome UAG"]!! //TODO: Maybe change to "Nome UAG na REN" but there's some inconsistencies with the sonorgas platform
+				val name =
+					row["Nome UAG"]!! //TODO: Maybe change to "Nome UAG na REN" but there's some inconsistencies with the sonorgas platform
 				val gasLevelUrl = gasUrls[name]
 
 				val aguInput = AddAGUInputModel(

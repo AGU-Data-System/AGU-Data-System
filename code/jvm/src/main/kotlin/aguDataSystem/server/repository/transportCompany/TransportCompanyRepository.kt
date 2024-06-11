@@ -46,7 +46,6 @@ interface TransportCompanyRepository {
 	 */
 	fun addTransportCompany(name: String): Int
 
-
 	/**
 	 * Add a transport company to an AGU
 	 *

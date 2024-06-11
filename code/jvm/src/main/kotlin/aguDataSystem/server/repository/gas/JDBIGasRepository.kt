@@ -81,8 +81,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
             FROM measure
             WHERE 
                 measure.provider_id = :providerId AND 
-                measure.prediction_for >= :day AND 
-                measure.prediction_for < :nextDay
+                measure.prediction_for >= :day 
         ),
         ranked_measures AS (
             SELECT 
@@ -102,7 +101,6 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 		)
 			.bind("providerId", providerId)
 			.bind("day", day)
-			.bind("nextDay", day.plusDays(1))
 			.mapTo<GasMeasure>()
 			.list()
 
@@ -110,7 +108,6 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 		return measures
 	}
-
 
 	/**
 	 * Gets the gas prediction measures of a provider for a set number of days at the closest to a specific time

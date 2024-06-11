@@ -156,7 +156,7 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
 			aguCui
 		)
 
-		handle.createUpdate(
+		val updates = handle.createUpdate(
 			"""
             INSERT INTO agu_transport_company (agu_cui, company_id)
             VALUES (:aguCui, :companyId)
@@ -166,11 +166,18 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
 			.bind("companyId", transportCompanyId)
 			.execute()
 
-		logger.info(
-			"Transport company with ID: {} added to AGU with CUI: {} in the database",
-			transportCompanyId,
-			aguCui
-		)
+		if (updates == 0) {
+			logger.warn(
+				"Transport company with ID: {} not added to AGU with CUI: {} in the database",
+				transportCompanyId,
+				aguCui
+			)
+		} else
+			logger.info(
+				"Transport company with ID: {} added to AGU with CUI: {} in the database",
+				transportCompanyId,
+				aguCui
+			)
 	}
 
 	/**

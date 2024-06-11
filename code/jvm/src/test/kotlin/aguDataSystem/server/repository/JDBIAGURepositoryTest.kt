@@ -694,68 +694,72 @@ class JDBIAGURepositoryTest {
 		}
 
 	@Test
-	fun `update gas levels of AGU with negative min level should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
+	fun `update gas levels of AGU with negative min level should throw exception`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val aguRepo = JDBIAGURepository(handle)
+			val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dnoId)
+			val dnoId = dnoRepo.addDNO(dummyDNO).id
+			val agu = dummyAGU
+			val result = aguRepo.addAGU(agu, dnoId)
 
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.updateGasLevels(result, dummyGasLevels.copy(min = -1))
+			// act & assert
+			assertFailsWith<UnableToExecuteStatementException> {
+				aguRepo.updateGasLevels(result, dummyGasLevels.copy(min = -1))
+			}
 		}
-	}
 
 	@Test
-	fun `update gas levels of AGU with negative max level should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
+	fun `update gas levels of AGU with negative max level should throw exception`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val aguRepo = JDBIAGURepository(handle)
+			val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dnoId)
+			val dnoId = dnoRepo.addDNO(dummyDNO).id
+			val agu = dummyAGU
+			val result = aguRepo.addAGU(agu, dnoId)
 
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.updateGasLevels(result, dummyGasLevels.copy(max = -1))
+			// act & assert
+			assertFailsWith<UnableToExecuteStatementException> {
+				aguRepo.updateGasLevels(result, dummyGasLevels.copy(max = -1))
+			}
 		}
-	}
 
 	@Test
-	fun `update gas levels with critical level over min should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
+	fun `update gas levels with critical level over min should throw exception`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val aguRepo = JDBIAGURepository(handle)
+			val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dnoId)
+			val dnoId = dnoRepo.addDNO(dummyDNO).id
+			val agu = dummyAGU
+			val result = aguRepo.addAGU(agu, dnoId)
 
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.updateGasLevels(result, dummyGasLevels.copy(critical = dummyGasLevels.min + 1))
+			// act & assert
+			assertFailsWith<UnableToExecuteStatementException> {
+				aguRepo.updateGasLevels(result, dummyGasLevels.copy(critical = dummyGasLevels.min + 1))
+			}
 		}
-	}
 
 	@Test
-	fun `update gas levels with critical level over max should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
+	fun `update gas levels with critical level over max should throw exception`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val aguRepo = JDBIAGURepository(handle)
+			val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dnoId)
+			val dnoId = dnoRepo.addDNO(dummyDNO).id
+			val agu = dummyAGU
+			val result = aguRepo.addAGU(agu, dnoId)
 
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.updateGasLevels(result, dummyGasLevels.copy(critical = dummyGasLevels.max + 1))
+			// act & assert
+			assertFailsWith<UnableToExecuteStatementException> {
+				aguRepo.updateGasLevels(result, dummyGasLevels.copy(critical = dummyGasLevels.max + 1))
+			}
 		}
-	}
 
 	@Test
 	fun `update gas levels with min level over max should throw exception`() = testWithHandleAndRollback { handle ->
@@ -806,20 +810,21 @@ class JDBIAGURepositoryTest {
 	}
 
 	@Test
-	fun `update gas levels with critical level over 100 should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
+	fun `update gas levels with critical level over 100 should throw exception`() =
+		testWithHandleAndRollback { handle ->
+			// arrange
+			val aguRepo = JDBIAGURepository(handle)
+			val dnoRepo = JDBIDNORepository(handle)
 
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		val agu = dummyAGU
-		val result = aguRepo.addAGU(agu, dnoId)
+			val dnoId = dnoRepo.addDNO(dummyDNO).id
+			val agu = dummyAGU
+			val result = aguRepo.addAGU(agu, dnoId)
 
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.updateGasLevels(result, dummyGasLevels.copy(critical = 101))
+			// act & assert
+			assertFailsWith<UnableToExecuteStatementException> {
+				aguRepo.updateGasLevels(result, dummyGasLevels.copy(critical = 101))
+			}
 		}
-	}
 
 	@Test
 	fun `update notes correctly`() = testWithHandleAndRollback { handle ->
