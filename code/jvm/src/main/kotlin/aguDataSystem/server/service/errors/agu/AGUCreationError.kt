@@ -2,8 +2,13 @@ package aguDataSystem.server.service.errors.agu
 
 /**
  * Error for creating an AGU
- * TODO needs completion
+ *
+ * @property AGUAlreadyExists The AGU already exists.
+ * @property AGUNameAlreadyExists The AGU name already exists.
  * @property InvalidCUI The CUI is invalid.
+ * @property InvalidEIC The EIC is invalid.
+ * @property InvalidName The name is invalid.
+ * @property DNONotFound The DNO was not found.
  * @property InvalidCoordinates The coordinates are invalid.
  * @property InvalidMinLevel The minimum level is invalid.
  * @property InvalidMaxLevel The maximum level is invalid.
@@ -14,6 +19,7 @@ package aguDataSystem.server.service.errors.agu
  * @property InvalidContactType The contact type is invalid.
  * @property InvalidTank The tank is invalid.
  * @property ProviderError There was an error with the provider.
+ * @property TransportCompanyNotFound The transport company was not found.
  */
 sealed class AGUCreationError {
 	data object AGUAlreadyExists : AGUCreationError()

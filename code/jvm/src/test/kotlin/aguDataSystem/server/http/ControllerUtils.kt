@@ -9,7 +9,6 @@ import aguDataSystem.server.http.models.tank.TankCreationRequestModel
 
 /**
  * Data for requests
- * TODO - needs to be tested with different models than input models
  */
 object ControllerUtils {
 

@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 /**
  * Represents a Gas Load.
  *
- * @property reference The reference of the load. TODO check data type
+ * @property reference The reference of the load.
  * @property timeOfTheDay The time of the day when the load was made. TODO check data type
  * @property amount The amount of the load.
  * @property distance The distance of the load.
