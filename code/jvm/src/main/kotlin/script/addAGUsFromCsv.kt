@@ -59,7 +59,7 @@ data class ContactCreationInputModel(
 fun main() {
 	runBlocking {
 		val aguProcessor = AGUProcessor()
-		aguProcessor.processCSV("code/jvm/src/main/kotlin/script/UAGS GL UAG ISEL 27.05.xlsx") // TODO: Change to actual path
+		aguProcessor.processCSV("code/jvm/src/main/kotlin/script/UAGS GL UAG ISEL 27.05.csv") // TODO: Change to actual path
 	}
 }
 
@@ -72,7 +72,7 @@ class AGUProcessor {
 
 	fun processCSV(csvPath: String) {
 		val rows = csvReader {
-			charset = "UTF-16"
+			charset = "UTF-16BE"
 			this.insufficientFieldsRowBehaviour = InsufficientFieldsRowBehaviour.IGNORE
 			autoRenameDuplicateHeaders = true
 		}.readAllWithHeader(File(csvPath))
@@ -114,15 +114,15 @@ class AGUProcessor {
 				)
 				contacts.add(
 					ContactCreationInputModel(
-						name = row["Nome Contacto Emergencia"]!!,
-						phone = row["Nº Contacto Emergencia"]!!,
+						name = row["Nome Contacto Emergencia "]!!,
+						phone = row["Nº Contacto  Emergencia "]!!,
 						type = "emergency"
 					)
 				)
 				contacts.add(
 					ContactCreationInputModel(
-						name = row["Nome substituto"]!!,
-						phone = row["Nº Contacto Emergencia substituto"]!!,
+						name = row["Nome substituto "]!!,
+						phone = row["Nº Contacto  Emergencia substituto"]!!,
 						type = "emergency"
 					)
 				)
