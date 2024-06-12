@@ -1,9 +1,9 @@
 package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.company.TransportCompany
+import aguDataSystem.server.repository.RepositoryUtils.DUMMY_TRANSPORT_COMPANY_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
-import aguDataSystem.server.repository.RepositoryUtils.dummyTransportCompanyName
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.transportCompany.JDBITransportCompanyRepository
@@ -26,7 +26,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `add transport company correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 		// act
 		val id = repository.addTransportCompany(tCompany)
@@ -53,7 +53,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `add transport company twice should throw exception`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 		// act
 		repository.addTransportCompany(tCompany)
@@ -68,7 +68,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `get transport company by name correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		repository.addTransportCompany(tCompany)
 
 		// act
@@ -84,7 +84,7 @@ class JDBITransportCompanyRepositoryTest {
 		testWithHandleAndRollback { handle ->
 			// arrange
 			val repository = JDBITransportCompanyRepository(handle)
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 			repository.addTransportCompany(tCompany)
 
 			// act
@@ -98,7 +98,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `get transport company with empty name should return null`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		repository.addTransportCompany(tCompany)
 
 		// act
@@ -112,7 +112,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `get transport company by id correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		val id = repository.addTransportCompany(tCompany)
 
 		// act
@@ -127,7 +127,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `get transport company by id with non existing id should return null`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		repository.addTransportCompany(tCompany)
 
 		// act
@@ -145,7 +145,7 @@ class JDBITransportCompanyRepositoryTest {
 		val transportRepository = JDBITransportCompanyRepository(handle)
 		val dno = dummyDNO
 		val agu = dummyAGU
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -170,7 +170,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -194,7 +194,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -213,7 +213,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `delete transport company correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		val id = repository.addTransportCompany(tCompany)
 
 		// act
@@ -228,7 +228,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `delete transport company with non existing id should do nothing`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		repository.addTransportCompany(tCompany)
 		val dummyId = Int.MIN_VALUE
 
@@ -245,8 +245,8 @@ class JDBITransportCompanyRepositoryTest {
 	fun `get all transport companies correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany1 = dummyTransportCompanyName
-		val tCompany2 = dummyTransportCompanyName + "2"
+		val tCompany1 = DUMMY_TRANSPORT_COMPANY_NAME
+		val tCompany2 = DUMMY_TRANSPORT_COMPANY_NAME + "2"
 		repository.addTransportCompany(tCompany1)
 		repository.addTransportCompany(tCompany2)
 
@@ -280,7 +280,7 @@ class JDBITransportCompanyRepositoryTest {
 		val transportRepository = JDBITransportCompanyRepository(handle)
 		val dno = dummyDNO
 		val agu = dummyAGU
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -304,7 +304,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
@@ -325,7 +325,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
@@ -346,7 +346,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -366,7 +366,7 @@ class JDBITransportCompanyRepositoryTest {
 		val transportRepository = JDBITransportCompanyRepository(handle)
 		val dno = dummyDNO
 		val agu = dummyAGU
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -390,7 +390,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -414,7 +414,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -438,7 +438,7 @@ class JDBITransportCompanyRepositoryTest {
 			val transportRepository = JDBITransportCompanyRepository(handle)
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -457,7 +457,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `isTransportCompanyStoredById correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		val id = repository.addTransportCompany(tCompany)
 
 		// act
@@ -472,7 +472,7 @@ class JDBITransportCompanyRepositoryTest {
 		testWithHandleAndRollback { handle ->
 			// arrange
 			val repository = JDBITransportCompanyRepository(handle)
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 			repository.addTransportCompany(tCompany)
 
 			// act
@@ -486,7 +486,7 @@ class JDBITransportCompanyRepositoryTest {
 	fun `isTransportCompanyStoredByName correctly`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val repository = JDBITransportCompanyRepository(handle)
-		val tCompany = dummyTransportCompanyName
+		val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 		repository.addTransportCompany(tCompany)
 
 		// act
@@ -501,7 +501,7 @@ class JDBITransportCompanyRepositoryTest {
 		testWithHandleAndRollback { handle ->
 			// arrange
 			val repository = JDBITransportCompanyRepository(handle)
-			val tCompany = dummyTransportCompanyName
+			val tCompany = DUMMY_TRANSPORT_COMPANY_NAME
 			repository.addTransportCompany(tCompany)
 
 			// act

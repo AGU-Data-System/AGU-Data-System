@@ -35,16 +35,15 @@ object ServiceUtils {
 		type = "logistic"
 	)
 
-	private val dummyEmergencyContact = ContactCreationDTO(
-		name = "dummyEmergencyContact",
-		phone = "987654321",
-		type = "emergency"
-	)
+//	private val dummyEmergencyContact = ContactCreationDTO(
+//		name = "dummyEmergencyContact",
+//		phone = "987654321",
+//		type = "emergency"
+//	)
 
 	val dummyTank = Tank(
 		number = 1,
 		levels = dummyGasLevels,
-		loadVolume = 40,
 		capacity = 50,
 		correctionFactor = 1.0
 	)
@@ -53,7 +52,6 @@ object ServiceUtils {
 		minLevel = dummyGasLevels.min,
 		maxLevel = dummyGasLevels.max,
 		criticalLevel = dummyGasLevels.critical,
-		loadVolume = 40,
 		capacity = 80,
 		correctionFactor = 1.0
 	)
@@ -80,9 +78,10 @@ object ServiceUtils {
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 		image = ByteArray(0),
 		contacts = emptyList(),
-		tanks = emptyList(),
+		tanks = listOf(dummyTank),
 		transportCompanies = emptyList(),
 		isFavorite = false,
+		isActive = true,
 		notes = null,
 		training = null
 	)

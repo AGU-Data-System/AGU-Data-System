@@ -80,24 +80,6 @@ class JDBITankRepositoryTest {
 	}
 
 	@Test
-	fun `add tank with invalid load volume should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepo = JDBIDNORepository(handle)
-		val aguRepo = JDBIAGURepository(handle)
-		val tankRepo = JDBITankRepository(handle)
-		val agu = dummyAGU
-		val tank = dummyTank.copy(loadVolume = -1)
-
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		aguRepo.addAGU(agu, dnoId)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.addTank(agu.cui, tank)
-		}
-	}
-
-	@Test
 	fun `add tank with invalid capacity should fail`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val dnoRepo = JDBIDNORepository(handle)
@@ -472,49 +454,6 @@ class JDBITankRepositoryTest {
 		aguRepo.addAGU(agu, dnoId)
 		val tankNumber = tankRepo.addTank(agu.cui, tank)
 		val updatedTank = tank.copy(number = tankNumber, levels = tank.levels.copy(min = 100, max = 50, critical = 100))
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
-		}
-	}
-
-	@Test
-	fun `update tank's load volume correctly`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepo = JDBIDNORepository(handle)
-		val aguRepo = JDBIAGURepository(handle)
-		val tankRepo = JDBITankRepository(handle)
-		val agu = dummyAGU
-		val tank = dummyTank
-
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		aguRepo.addAGU(agu, dnoId)
-		val tankNumber = tankRepo.addTank(agu.cui, tank)
-		val updatedTank = tank.copy(number = tankNumber, loadVolume = 100)
-
-		// act
-		tankRepo.updateTank(agu.cui, updatedTank.number, updatedTank.toUpdateInfo())
-		val tankByNumber = tankRepo.getTankByNumber(agu.cui, updatedTank.number)
-
-		// assert
-		assertNotNull(tankByNumber)
-		assertEquals(tankByNumber, updatedTank)
-	}
-
-	@Test
-	fun `update tank with invalid load volume should fail`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val dnoRepo = JDBIDNORepository(handle)
-		val aguRepo = JDBIAGURepository(handle)
-		val tankRepo = JDBITankRepository(handle)
-		val agu = dummyAGU
-		val tank = dummyTank
-
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		aguRepo.addAGU(agu, dnoId)
-		val tankNumber = tankRepo.addTank(agu.cui, tank)
-		val updatedTank = tank.copy(number = tankNumber, loadVolume = -1)
 
 		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {

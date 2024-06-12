@@ -27,6 +27,7 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 	override fun map(rs: ResultSet, ctx: StatementContext?): AGUBasicInfo {
 		val cui = rs.getString("cui")
 		val name = rs.getString("name")
+		val eic = rs.getString("eic")
 		val dno = mapToDNO(rs)
 		val location = mapToLocation(rs)
 
@@ -39,6 +40,7 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 
 		return AGUBasicInfo(
 			cui = cui,
+			eic = eic,
 			name = name,
 			dno = dno,
 			location = location,

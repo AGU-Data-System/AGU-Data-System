@@ -36,7 +36,7 @@ object RepositoryUtils {
 		)
 	}
 
-	val dummyTransportCompanyName = "Test Transport Company"
+	const val DUMMY_TRANSPORT_COMPANY_NAME = "Test Transport Company"
 
 	val dummyLogisticContact = ContactCreation(
 		name = "John Doe",
@@ -59,7 +59,6 @@ object RepositoryUtils {
 	val dummyTank = Tank(
 		number = 1,
 		levels = dummyGasLevels,
-		loadVolume = 50,
 		capacity = 100,
 		correctionFactor = 0.0
 	)
@@ -114,7 +113,6 @@ object RepositoryUtils {
 	fun Tank.toUpdateInfo(): TankUpdateInfo {
 		return TankUpdateInfo(
 			levels = this.levels,
-			loadVolume = this.loadVolume,
 			capacity = this.capacity,
 			correctionFactor = this.correctionFactor
 		)

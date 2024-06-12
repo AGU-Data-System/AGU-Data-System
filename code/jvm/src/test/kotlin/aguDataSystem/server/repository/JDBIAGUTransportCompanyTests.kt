@@ -1,8 +1,8 @@
 package aguDataSystem.server.repository
 
+import aguDataSystem.server.repository.RepositoryUtils.DUMMY_TRANSPORT_COMPANY_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
-import aguDataSystem.server.repository.RepositoryUtils.dummyTransportCompanyName
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.transportCompany.JDBITransportCompanyRepository
@@ -24,7 +24,7 @@ class JDBIAGUTransportCompanyTests {
 
 		val dno = dummyDNO
 		val agu = dummyAGU
-		val transportCompany = dummyTransportCompanyName
+		val transportCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -51,7 +51,7 @@ class JDBIAGUTransportCompanyTests {
 
 			val dno = dummyDNO
 			val agu = dummyAGU
-			val transportCompany = dummyTransportCompanyName
+			val transportCompany = DUMMY_TRANSPORT_COMPANY_NAME
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			val aguCui = aguRepository.addAGU(agu, dnoId)
@@ -61,7 +61,7 @@ class JDBIAGUTransportCompanyTests {
 
 			val agu2 = dummyAGU.copy(cui = "PT6543210987654321XX", name = "AGU2", eic = "EIC2")
 			val aguCui2 = aguRepository.addAGU(agu2, dnoId)
-			val transportCompany2 = dummyTransportCompanyName + "2"
+			val transportCompany2 = DUMMY_TRANSPORT_COMPANY_NAME + "2"
 			val transportCompanyId2 = transportCompanyRepository.addTransportCompany(transportCompany2)
 
 			transportCompanyRepository.addTransportCompanyToAGU(agu2.cui, transportCompanyId2)

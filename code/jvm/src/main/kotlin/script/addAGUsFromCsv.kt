@@ -184,7 +184,12 @@ class AGUProcessor {
 		}
 	}
 
-	private fun extractContact(nameField: String, phoneField: String, type: String, row: Map<String, String>): ContactCreationInputModel? {
+	private fun extractContact(
+		nameField: String,
+		phoneField: String,
+		type: String,
+		row: Map<String, String>
+	): ContactCreationInputModel? {
 		val name = row[nameField]
 		val phone = row[phoneField]
 		return if (name != null && name != "-" && phone != null && phone != "-") {

@@ -110,6 +110,9 @@ class AGUService(
 				if (getAGUById(creationAGU.cui).isSuccess())
 					return@run failure(AGUCreationError.AGUAlreadyExists)
 
+				if (getAGUsBasicInfo().any { aguBasicInfo -> aguBasicInfo.eic == creationAGU.eic })
+					return@run failure(AGUCreationError.AGUAlreadyExists)
+
 				if (it.aguRepository.getCUIByName(creationAGU.name) != null)
 					return@run failure(AGUCreationError.AGUNameAlreadyExists)
 
@@ -349,7 +352,7 @@ class AGUService(
 			it.aguRepository.updateActiveState(cui, isActive)
 
 			logger.info("Active status of AGU with CUI: {} updated to {}", cui, isActive)
-
+			// TODO something is off here
 			success(getFullAGU(cui) ?: return@run failure(UpdateActiveStateError.AGUNotFound))
 		}
 	}
@@ -599,6 +602,14 @@ class AGUService(
 		}
 
 		aguDTO.tanks.forEach { tank ->
+			if (!aguDomain.isCapacityValid(tank.capacity)) {
+				return failure(AGUCreationError.InvalidTank)
+			}
+
+			if (!aguDomain.isTankNumberValid(tank.number)) {
+				return failure(AGUCreationError.InvalidTank)
+			}
+
 			ensureLevels(tank.levels)?.let {
 				return it
 			}
