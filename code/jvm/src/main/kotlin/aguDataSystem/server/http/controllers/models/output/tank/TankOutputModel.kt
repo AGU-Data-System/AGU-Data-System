@@ -8,21 +8,18 @@ import aguDataSystem.server.http.controllers.models.output.gasLevels.GasLevelsOu
  *
  * @property number The tank number
  * @property levels The gas levels
- * @property loadVolume The load volume
  * @property capacity The tank capacity
  * @property correctionFactor The correction factor
  */
 data class TankOutputModel(
 	val number: Int,
 	val levels: GasLevelsOutputModel,
-	val loadVolume: Int,
 	val capacity: Int,
 	val correctionFactor: Double
 ) {
 	constructor(tank: Tank) : this(
 		number = tank.number,
 		levels = GasLevelsOutputModel(tank.levels),
-		loadVolume = tank.loadVolume,
 		capacity = tank.capacity,
 		correctionFactor = tank.correctionFactor
 	)

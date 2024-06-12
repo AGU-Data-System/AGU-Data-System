@@ -43,7 +43,7 @@ data class AGUCreationInputModel(
 	val locationName: String,
 	val dnoName: String,
 	val gasLevelUrl: String,
-	val image: ByteArray,
+	val image: ByteArray? = null,
 	val tanks: List<TankCreationInputModel>,
 	val contacts: List<ContactCreationInputModel>,
 	val transportCompanies: List<String>,

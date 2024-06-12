@@ -25,8 +25,8 @@ class JDBITankRepository(private val handle: Handle) : TankRepository {
 
 		val tankNumber = handle.createUpdate(
 			"""
-                INSERT INTO tank (agu_cui, number, min_level, max_level, critical_level, load_volume, capacity, correction_factor)
-                VALUES (:agu_cui, :number, :min_level, :max_level, :critical_level, :load_volume, :capacity, :correction_factor)
+                INSERT INTO tank (agu_cui, number, min_level, max_level, critical_level, capacity, correction_factor)
+                VALUES (:agu_cui, :number, :min_level, :max_level, :critical_level, :capacity, :correction_factor)
             """.trimIndent()
 		)
 			.bind("agu_cui", cui)
@@ -34,7 +34,6 @@ class JDBITankRepository(private val handle: Handle) : TankRepository {
 			.bind("min_level", tank.levels.min)
 			.bind("max_level", tank.levels.max)
 			.bind("critical_level", tank.levels.critical)
-			.bind("load_volume", tank.loadVolume)
 			.bind("capacity", tank.capacity)
 			.bind("correction_factor", tank.correctionFactor)
 			.executeAndReturnGeneratedKeys(Tank::number.name)
@@ -144,7 +143,6 @@ class JDBITankRepository(private val handle: Handle) : TankRepository {
                 SET min_level = :min_level, 
                 max_level = :max_level, 
                 critical_level = :critical_level,
-                load_volume = :load_volume, 
                 capacity = :capacity,
                 correction_factor = :correction_factor
                 WHERE agu_cui = :cui AND number = :number
@@ -153,7 +151,6 @@ class JDBITankRepository(private val handle: Handle) : TankRepository {
 			.bind("min_level", tankUpdateInfo.levels.min)
 			.bind("max_level", tankUpdateInfo.levels.max)
 			.bind("critical_level", tankUpdateInfo.levels.critical)
-			.bind("load_volume", tankUpdateInfo.loadVolume)
 			.bind("capacity", tankUpdateInfo.capacity)
 			.bind("correction_factor", tankUpdateInfo.correctionFactor)
 			.bind("cui", cui)

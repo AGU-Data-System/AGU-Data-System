@@ -7,7 +7,6 @@ import aguDataSystem.server.domain.gasLevels.GasLevels
  * @property minLevel the minimum level
  * @property maxLevel the maximum level
  * @property criticalLevel the critical level
- * @property loadVolume the load volume
  * @property capacity the capacity
  * @property correctionFactor the correction factor
  */
@@ -15,7 +14,6 @@ data class TankUpdateDTO(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
-	val loadVolume: Int,
 	val capacity: Int,
 	val correctionFactor: Double
 ) {
@@ -32,7 +30,6 @@ data class TankUpdateDTO(
 			max = this.maxLevel,
 			critical = this.criticalLevel
 		),
-		loadVolume = this.loadVolume,
 		capacity = this.capacity,
 		correctionFactor = this.correctionFactor
 	)

@@ -36,14 +36,14 @@ data class AGUCreationDTO(
 	val location: Location,
 	val dnoName: String,
 	val gasLevelUrl: String,
-	val image: ByteArray,
+	val image: ByteArray? = null,
 	val contacts: List<ContactCreationDTO>,
 	val tanks: List<Tank>,
 	val transportCompanies: List<String>,
 	val isFavorite: Boolean = false,
 	val isActive: Boolean = true,
-	val notes: String?,
-	val training: String?,
+	val notes: String? = null,
+	val training: String? = null,
 ) {
 
 	/**

@@ -24,7 +24,6 @@ class TankMapper : RowMapper<Tank> {
 		return Tank(
 			number = rs.getInt("number"),
 			levels = mapToGasLevels(rs),
-			loadVolume = rs.getInt("load_volume"),
 			capacity = rs.getInt("capacity"),
 			correctionFactor = rs.getDouble("correction_factor"),
 		)

@@ -2,6 +2,7 @@ package aguDataSystem.server.http.controllers
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.media.Problem
+import aguDataSystem.server.http.controllers.models.input.agu.AGUCreationInputModel
 import aguDataSystem.server.http.controllers.models.input.agu.UpdateActiveAGUInputModel
 import aguDataSystem.server.http.controllers.models.input.agu.UpdateFavouriteAGUInputModel
 import aguDataSystem.server.http.controllers.models.input.contact.ContactCreationInputModel
@@ -83,7 +84,7 @@ class AguController(private val service: AGUService) {
 	 * @return the created AGU
 	 */
 	@PostMapping(URIs.Agu.CREATE)
-	fun create(@RequestBody aguInput: aguDataSystem.server.http.controllers.models.input.agu.AGUCreationInputModel): ResponseEntity<*> {
+	fun create(@RequestBody aguInput: AGUCreationInputModel): ResponseEntity<*> {
 		return when (val res = service.createAGU(aguInput.toAGUCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
 			is Success -> ResponseEntity.created(URIs.Agu.byID(res.value)).body(AGUCreationOutputModel(res.value))

@@ -29,14 +29,14 @@ data class AddAGUInputModel(
 	val longitude: Double,
 	val locationName: String,
 	val dnoName: String,
-	val gasLevelUrl: String? = null,
-	val image: ByteArray? = null,
+	val gasLevelUrl: String?,
+	val image: ByteArray?,
 	val tanks: List<TankCreationInputModel> = emptyList(),
 	val contacts: List<ContactCreationInputModel> = emptyList(),
 	val transportCompanies: List<String> = emptyList(),
-	val isFavorite: Boolean = false,
-	val isActive: Boolean = true,
-	val notes: String? = null,
+	val isFavorite: Boolean,
+	val isActive: Boolean,
+	val notes: String?,
 )
 
 @Serializable
@@ -72,7 +72,7 @@ class AGUProcessor {
 
 	fun processCSV(csvPath: String) {
 		val rows = csvReader {
-			charset = "UTF-16BE"
+			charset = "UTF-8"
 			this.insufficientFieldsRowBehaviour = InsufficientFieldsRowBehaviour.IGNORE
 			autoRenameDuplicateHeaders = true
 		}.readAllWithHeader(File(csvPath))
@@ -81,76 +81,42 @@ class AGUProcessor {
 		val gasUrls = fetchGasUrls()
 
 		rows.forEach { row ->
-			try {
 
-				// Only process AGUs that are from the "SNG" ORD
+			try {
 				if (row["Nome ORD"] != "SNG") {
 					logger.info("Skipping AGU from non-SNG ORD: ${row["Nome UAG"]}")
 					return@forEach
 				}
 
-				val transportCompanies = row.filter { it.key.startsWith("Transportador (") && it.value == "true" }
-					.map { it.key.removePrefix("Transportador (").removeSuffix(")") }
-
-				val tanks = (1..3).mapNotNull { i ->
-					if (row["Volume Tk$i (m3)"].isNullOrBlank()) null
-					else TankCreationInputModel(
-						number = i,
-						minLevel = row["UAG Min Lvl Tk$i"]!!.toInt(),
-						criticalLevel = row["UAG Crit Lvl Tk$i"]!!.toInt(),
-						maxLevel = row["UAG MaxLvl Tk$i"]!!.toInt(),
-						correctionFactor = row["UAG Fator de Correção Tk$i"]!!.toDouble(),
-						capacity = row["Volume Tk$i (m3)"]!!.toDouble()
-					)
-				}
-
-				val contacts = mutableListOf<ContactCreationInputModel>()
-				contacts.add(
-					ContactCreationInputModel(
-						name = row["Nome Contacto Logistica"]!!,
-						phone = row["Nº Contacto Logistica"]!!,
-						type = "logistic"
-					)
-				)
-				contacts.add(
-					ContactCreationInputModel(
-						name = row["Nome Contacto Emergencia "]!!,
-						phone = row["Nº Contacto  Emergencia "]!!,
-						type = "emergency"
-					)
-				)
-				contacts.add(
-					ContactCreationInputModel(
-						name = row["Nome substituto "]!!,
-						phone = row["Nº Contacto  Emergencia substituto"]!!,
-						type = "emergency"
-					)
-				)
-
-				val name =
-					row["Nome UAG"]!! //TODO: Maybe change to "Nome UAG na REN" but there's some inconsistencies with the sonorgas platform
-				val gasLevelUrl = gasUrls[name]
+				val transportCompanies = extractTransportCompanies(row)
+				val tanks = extractTanks(row)
+				val contacts = extractContacts(row)
+				val name = row["Nome UAG"]!!
+				val gasLevelUrl = gasUrls.entries.find { it.key.contains(name, ignoreCase = true) }?.value
 
 				val aguInput = AddAGUInputModel(
 					cui = row["CUI"]!!,
 					eic = row["EIC"]!!,
 					name = name,
-					minLevel = row["UAG Min Lvl"]!!.removeSuffix("%").toInt(),
-					maxLevel = row["UAG Max Lvl"]!!.removeSuffix("%").toInt(),
-					criticalLevel = row["UAG Crit Lvl min"]!!.removeSuffix("%").toInt(),
+					minLevel = row["UAG Min Lvl"]!!.toPercentageInt(),
+					maxLevel = row["UAG Max Lvl"]!!.toPercentageInt(),
+					criticalLevel = row["UAG Crit Lvl min"]!!.toPercentageInt(),
 					loadVolume = row["% carga no Vol Total (cist. 20 ton)"]!!.toDouble(),
 					latitude = row["Latitude"]!!.toDouble(),
 					longitude = row["Longitude"]!!.toDouble(),
 					locationName = row["Localidade"]!!,
 					dnoName = row["Nome ORD"]!!,
 					gasLevelUrl = gasLevelUrl,
+					image = null,
 					transportCompanies = transportCompanies,
 					notes = row["Observações"],
 					correctionFactor = row["UAG Fator de Correção"]!!.toDouble(),
 					tanks = tanks,
 					contacts = contacts,
-					isActive = row["Activo/ Inactivo"] == "Activo"
+					isActive = row["Activo/ Inactivo"] == "Activo",
+					isFavorite = false
 				)
+				logger.info("Processing input model: $aguInput")
 				sendPostRequest(aguInput)
 			} catch (e: Exception) {
 				logger.error("Error processing row: $row", e)
@@ -166,7 +132,7 @@ class AGUProcessor {
 
 			rows.forEach { row ->
 				val id = row.select("td[data-synoptic]").attr("data-synoptic")
-				var name = row.select("td[data-synoptic]").text().substringAfterLast("-").trim()
+				var name = row.select("td[data-synoptic]").text().substringAfter("-").trim()
 
 				if (name.startsWith("UAG ")) {
 					name = name.removePrefix("UAG ").trim()
@@ -182,10 +148,12 @@ class AGUProcessor {
 	}
 
 	private fun sendPostRequest(aguInput: AddAGUInputModel) {
+		val body = jsonFormatter.encodeToString(aguInput)
+		logger.info("Sending POST request to $apiUrl with body: $body")
 		val request = HttpRequest.newBuilder()
 			.uri(URI.create(apiUrl))
 			.header("Content-Type", "application/json")
-			.POST(BodyPublishers.ofString(jsonFormatter.encodeToString(aguInput)))
+			.POST(BodyPublishers.ofString(body))
 			.build()
 
 		try {
@@ -195,5 +163,48 @@ class AGUProcessor {
 		} catch (e: Exception) {
 			logger.error("Error sending POST request: ${e.message}")
 		}
+	}
+
+	private fun extractTransportCompanies(row: Map<String, String>): List<String> {
+		return row.filter { it.key.startsWith("Transportador ") && it.value.toBoolean() }
+			.map { it.key.removePrefix("Transportador ").trim() }
+	}
+
+	private fun extractTanks(row: Map<String, String>): List<TankCreationInputModel> {
+		return (1..3).mapNotNull { i ->
+			if (row["Volume Tk$i (m3) "] == "-") null
+			else TankCreationInputModel(
+				number = i,
+				minLevel = row["UAG Min Lvl Tk$i"]!!.toPercentageInt(),
+				criticalLevel = row["UAG Crit Lvl min Tk$i"]!!.toPercentageInt(),
+				maxLevel = row["UAG Max Lvl Tk$i"]!!.toPercentageInt(),
+				correctionFactor = row["UAG Fator de Correção Tk$i"]!!.toDouble(),
+				capacity = row["Volume Tk$i (m3) "]!!.toDouble()
+			)
+		}
+	}
+
+	private fun extractContact(nameField: String, phoneField: String, type: String, row: Map<String, String>): ContactCreationInputModel? {
+		val name = row[nameField]
+		val phone = row[phoneField]
+		return if (name != null && name != "-" && phone != null && phone != "-") {
+			ContactCreationInputModel(name = name.trim(), phone = phone.filter { !it.isWhitespace() }, type = type)
+		} else {
+			null
+		}
+	}
+
+
+	private fun extractContacts(row: Map<String, String>): List<ContactCreationInputModel> {
+		return listOfNotNull(
+			extractContact("Nome Contacto Logistica", "Nº Contacto Logistica", "logistic", row),
+			extractContact("Nome Contacto Emergencia ", "Nº Contacto  Emergencia ", "emergency", row),
+			extractContact("Nome substituto ", "Nº Contacto  Emergencia substituto", "emergency", row)
+		)
+	}
+
+
+	private fun String.toPercentageInt(): Int {
+		return this.removeSuffix("%").toDouble().toInt()
 	}
 }

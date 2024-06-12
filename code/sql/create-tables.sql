@@ -103,7 +103,6 @@ create table if not exists tank
     min_level         PERCENTAGE                             not null,
     max_level         PERCENTAGE                             not null,
     critical_level    PERCENTAGE                             not null,
-    load_volume       numeric(6, 3) check (load_volume >= 0) not null,
     correction_factor numeric(6, 3)                          not null,
     capacity          int check (capacity >= 0)              not null,
 

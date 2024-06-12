@@ -10,7 +10,6 @@ import aguDataSystem.server.domain.tank.Tank
  * @param minLevel the minimum level of the tank
  * @param maxLevel the maximum level of the tank
  * @param criticalLevel the critical level of the tank
- * @param loadVolume the load volume of the tank
  * @param capacity the capacity of the tank
  */
 data class TankCreationInputModel(
@@ -18,7 +17,6 @@ data class TankCreationInputModel(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
-	val loadVolume: Double,
 	val capacity: Int,
 	val correctionFactor: Double
 ) {
@@ -36,7 +34,6 @@ data class TankCreationInputModel(
 			max = this.maxLevel,
 			critical = this.criticalLevel
 		),
-		loadVolume = this.loadVolume.toInt(),
 		capacity = this.capacity,
 		correctionFactor = this.correctionFactor
 	)

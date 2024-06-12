@@ -421,10 +421,6 @@ class AGUService(
 			return failure(AddTankError.InvalidLevels)
 		}
 
-		if (!aguDomain.isLoadVolumeValid(tank.loadVolume)) {
-			return failure(AddTankError.InvalidLoadVolume)
-		}
-
 		if (!aguDomain.isCapacityValid(tank.capacity)) {
 			return failure(AddTankError.InvalidCapacity)
 		}
@@ -468,10 +464,6 @@ class AGUService(
 
 		if (!aguDomain.isCUIValid(cui)) {
 			return failure(UpdateTankError.InvalidCUI)
-		}
-
-		if (!aguDomain.isLoadVolumeValid(tankUpdateInfo.loadVolume)) {
-			return failure(UpdateTankError.InvalidLoadVolume)
 		}
 
 		if (!aguDomain.isCapacityValid(tankUpdateInfo.capacity)) {
