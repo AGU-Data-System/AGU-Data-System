@@ -29,7 +29,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val sql = """
             SELECT 
-                agu.cui, agu.eic, agu.name, agu.latitude, agu.longitude, agu.location_name,
+                agu.cui, agu.eic, agu.name, agu.latitude, agu.longitude, agu.location_name, agu.is_favorite,
                 dno.id as dno_id, dno.name as dno_name, dno.region,
                 transport_company.id as tc_id, transport_company.name as tc_name
             FROM agu
@@ -53,6 +53,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 				val cui = rs.getString("cui")
 				val name = rs.getString("name")
 				val eic = rs.getString("eic")
+				val isFavorite = rs.getBoolean("is_favorite")
 				val dno = mapToDNO(rs)
 				val location = mapToLocation(rs)
 
@@ -73,6 +74,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 						cui = cui,
 						eic = eic,
 						name = name,
+						isFavorite = isFavorite,
 						dno = dno,
 						location = location,
 						transportCompanies = transportCompanies

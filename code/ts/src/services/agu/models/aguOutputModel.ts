@@ -73,7 +73,9 @@ interface AguOutputModel {
 
 interface AgusBasicInfoOutputModel {
     cui: string;
+    eic: string;
     name: string;
+    isFavorite: boolean;
     dno: {
         id: number;
         name: string;
@@ -84,6 +86,12 @@ interface AgusBasicInfoOutputModel {
         latitude: number;
         longitude: number;
     };
+    transportCompanies: TransportCompaniesOutputModel[];
+}
+
+interface TransportCompaniesOutputModel {
+    id: number;
+    name: string;
 }
 
 interface AgusBasicInfoListOutputModel {

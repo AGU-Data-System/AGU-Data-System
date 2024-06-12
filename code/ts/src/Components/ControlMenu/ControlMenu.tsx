@@ -2,6 +2,7 @@ import * as React from "react";
 import {Button, Card, CardContent, Divider} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {useNavigate} from "react-router-dom";
+import {useState} from "react";
 
 export function ControlMenuLeft() {
     const navigate = useNavigate();
@@ -42,6 +43,18 @@ export function ControlMenuLeft() {
 }
 
 export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) => void }) {
+    const [activeButton, setActiveButton] = useState<string>("");
+
+    const handleClick = (filter: string) => {
+        if (activeButton === filter) {
+            setFilter("");
+            setActiveButton("");
+            return;
+        }
+        setFilter(filter);
+        setActiveButton(filter);
+    }
+
     return (
         <Card>
             <CardContent>
@@ -61,14 +74,14 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         variant="contained"
                         sx={{
                             margin: '8px',
-                            backgroundColor: 'rgb(255, 165, 0)',
+                            backgroundColor: activeButton === "norte" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
                             height: '100%',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: 'rgba(255,165,0,0.49)',
                             },
                         }}
-                        onClick={() => setFilter("norte")}
+                        onClick={() => handleClick("norte")}
                     >
                         Norte
                     </Button>
@@ -76,14 +89,14 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         variant="contained"
                         sx={{
                             margin: '8px',
-                            backgroundColor: 'rgb(255, 165, 0)',
+                            backgroundColor: activeButton === "centro" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
                             height: '100%',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: 'rgba(255,165,0,0.49)',
                             },
                         }}
-                        onClick={() => setFilter("centro")}
+                        onClick={() => handleClick("centro")}
                     >
                         Centro
                     </Button>
@@ -91,14 +104,14 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         variant="contained"
                         sx={{
                             margin: '8px',
-                            backgroundColor: 'rgb(255, 165, 0)',
+                            backgroundColor: activeButton === "sul" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
                             height: '100%',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: 'rgba(255,165,0,0.49)',
                             },
                         }}
-                        onClick={() => setFilter("sul")}
+                        onClick={() => handleClick("sul")}
                     >
                         Sul
                     </Button>
@@ -115,14 +128,14 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         variant="contained"
                         sx={{
                             margin: '8px',
-                            backgroundColor: 'rgb(255, 165, 0)',
+                            backgroundColor: activeButton === "sng" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
                             height: '100%',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: 'rgba(255,165,0,0.49)',
                             },
                         }}
-                        onClick={() => setFilter("sng")}
+                        onClick={() => handleClick("sng")}
                     >
                         Sonorgás
                     </Button>
@@ -130,14 +143,14 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         variant="contained"
                         sx={{
                             margin: '8px',
-                            backgroundColor: 'rgb(255, 165, 0)',
+                            backgroundColor: activeButton === "tgg" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
                             height: '100%',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: 'rgba(255,165,0,0.49)',
                             },
                         }}
-                        onClick={() => setFilter("tgg")}
+                        onClick={() => handleClick("tgg")}
                     >
                         Tagusgás
                     </Button>
@@ -145,14 +158,14 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         variant="contained"
                         sx={{
                             margin: '8px',
-                            backgroundColor: 'rgb(255, 165, 0)',
+                            backgroundColor: activeButton === "dur" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
                             height: '100%',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: 'rgba(255,165,0,0.49)',
                             },
                         }}
-                        onClick={() => setFilter("dur")}
+                        onClick={() => handleClick("dur")}
                     >
                         Duriensegás
                     </Button>

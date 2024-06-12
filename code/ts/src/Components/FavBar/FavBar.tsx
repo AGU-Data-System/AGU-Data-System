@@ -22,13 +22,13 @@ export default function FavBar() {
     useEffect(() => {
         setState({ type: 'loading' });
         const getFavAgus = async () => {
-            const favAugs = await aguService.getFavouriteAgus();
+            const favAugs = await aguService.getAGUs();
             if (favAugs.value instanceof Error) {
                 setState({ type: 'error', message: favAugs.value.message });
             } else if (favAugs.value instanceof Problem) {
                 setState({ type: 'error', message: favAugs.value.detail });
             } else {
-                setState({type: 'success', uagsDetails: favAugs.value.agusBasicInfo});
+                setState({type: 'success', uagsDetails: favAugs.value.agusBasicInfo.filter(uag => uag.isFavorite)});
             }
         }
         getFavAgus();

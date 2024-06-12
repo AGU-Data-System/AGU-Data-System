@@ -28,11 +28,6 @@ export namespace aguService {
         return fetchFunction(url, "POST", JSON.stringify(aguData));
     }
 
-    export async function getFavouriteAgus(): Promise<Either<Error | Problem, AgusBasicInfoListOutputModel>> {
-        const url = `/agus/favourites`;
-        return fetchFunction(url, "GET");
-    }
-
     export async function updateFavouriteOnAGU(aguCui: string, isFavourite: boolean): Promise<Either<Error | Problem, void>> {
         const url = `/agus/${aguCui}/favourite`;
         return fetchFunction(url, "PUT", JSON.stringify({isFavourite}));

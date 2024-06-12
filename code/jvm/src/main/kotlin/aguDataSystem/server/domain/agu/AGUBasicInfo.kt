@@ -18,6 +18,7 @@ data class AGUBasicInfo(
 	val cui: String,
 	val eic: String,
 	val name: String,
+	val isFavorite: Boolean,
 	val dno: DNO,
 	val location: Location,
 	val transportCompanies: MutableList<TransportCompany>
