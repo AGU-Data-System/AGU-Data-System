@@ -59,7 +59,7 @@ data class ContactCreationInputModel(
 fun main() {
 	runBlocking {
 		val aguProcessor = AGUProcessor()
-		aguProcessor.processCSV("code/jvm/src/main/kotlin/script/UAGS GL UAG ISEL 27.05.csv") // TODO: Change to actual path
+		aguProcessor.processCSV("code/jvm/src/main/kotlin/script/UAGS_GL_UAG_ISEL_27.05.csv") // TODO: Change to actual path
 	}
 }
 

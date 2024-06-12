@@ -1,8 +1,8 @@
 begin transaction;
 
 -- Drop views
-DROP VIEW IF EXISTS temperature_readings;
-DROP VIEW IF EXISTS gas_readings;
+DROP VIEW IF EXISTS temperature_measures;
+DROP VIEW IF EXISTS gas_measures;
 
 -- Drop tables
 DROP TABLE IF EXISTS contacts;
