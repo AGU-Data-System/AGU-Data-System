@@ -1,6 +1,7 @@
 package aguDataSystem.server.service.errors.contact
 
 import aguDataSystem.server.domain.contact.Contact
+import aguDataSystem.server.service.errors.contact.DeleteContactError.AGUNotFound
 
 /**
  * Represents the possible errors that can occur when deleting a [Contact]

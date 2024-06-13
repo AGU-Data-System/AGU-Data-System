@@ -26,10 +26,6 @@ object URIs {
 		const val PREDICTION_GAS_LEVELS = "/{aguCui}/gas/predictions"
 		const val FAVOURITE_AGU = "/{aguCui}/favourite"
 		const val ACTIVE_AGU = "/{aguCui}/active"
-		const val CONTACT = "/{aguCui}/contact"
-		const val CONTACT_BY_ID = "/{aguCui}/contact/{contactId}"
-		const val TANK = "/{aguCui}/tank"
-		const val TANK_BY_ID = "/{aguCui}/tank/{tankNumber}"
 		const val LEVELS = "/{aguCui}/levels"
 		const val NOTES = "/{aguCui}/notes"
 
@@ -41,12 +37,30 @@ object URIs {
 		fun predictionGasLevels(cui: String) = UriTemplate(ROOT + PREDICTION_GAS_LEVELS).expand(cui)
 		fun putFavouriteAGUs(cui: String) = UriTemplate(ROOT + FAVOURITE_AGU).expand(cui)
 		fun putActiveAGUs(cui: String) = UriTemplate(ROOT + ACTIVE_AGU).expand(cui)
-		fun contact(cui: String) = UriTemplate(ROOT + CONTACT).expand(cui)
-		fun contactByID(cui: String, id: Int) = UriTemplate(ROOT + CONTACT_BY_ID).expand(cui, id)
-		fun tank(cui: String) = UriTemplate(ROOT + TANK).expand(cui)
-		fun tankByID(cui: String, id: Int) = UriTemplate(ROOT + TANK_BY_ID).expand(cui, id)
 		fun levels(cui: String) = UriTemplate(ROOT + LEVELS).expand(cui)
 		fun notes(cui: String) = UriTemplate(ROOT + NOTES).expand(cui)
+	}
+
+	/**
+	 * Contains the URIs for the tank endpoints
+	 */
+	object Tank {
+		const val ROOT = "$PREFIX/{aguCui}/tank"
+		const val BY_ID = "/{tankNumber}"
+
+		fun tank(cui: String) = UriTemplate(ROOT).expand(cui)
+		fun tankByID(cui: String, id: Int) = UriTemplate(ROOT + BY_ID).expand(cui, id)
+	}
+
+	/**
+	 * Contains the URIs for the contact endpoints
+	 */
+	object Contact {
+		const val ROOT = "$PREFIX/{aguCui}/contact"
+		const val BY_ID = "/{contactId}"
+
+		fun contact(cui: String) = UriTemplate(ROOT).expand(cui)
+		fun contactByID(cui: String, id: Int) = UriTemplate(ROOT + BY_ID).expand(cui, id)
 	}
 
 	/**

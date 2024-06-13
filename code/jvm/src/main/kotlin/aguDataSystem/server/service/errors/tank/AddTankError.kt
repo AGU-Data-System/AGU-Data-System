@@ -1,6 +1,12 @@
 package aguDataSystem.server.service.errors.tank
 
 import aguDataSystem.server.domain.tank.Tank
+import aguDataSystem.server.service.errors.tank.AddTankError.AGUNotFound
+import aguDataSystem.server.service.errors.tank.AddTankError.InvalidCapacity
+import aguDataSystem.server.service.errors.tank.AddTankError.InvalidLevels
+import aguDataSystem.server.service.errors.tank.AddTankError.InvalidLoadVolume
+import aguDataSystem.server.service.errors.tank.AddTankError.InvalidTankNumber
+import aguDataSystem.server.service.errors.tank.AddTankError.TankAlreadyExists
 
 /**
  * Represents the possible errors that can occur when adding a [Tank]

@@ -90,4 +90,11 @@ interface AGURepository {
 	 * @param model New training model
 	 */
 	fun updateTrainingModel(cui: String, model: String?)
+
+	/**
+	 * Deletes the AGU based on it's CUI
+	 *
+	 * @param cui the AGU's CUI
+	 */
+	fun deleteAGU(cui: String)
 }

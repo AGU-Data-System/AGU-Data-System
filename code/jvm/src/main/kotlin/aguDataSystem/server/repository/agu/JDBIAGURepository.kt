@@ -341,6 +341,27 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		logger.info("Training model of AGU with CUI: {} updated in the database", cui)
 	}
 
+	/**
+	 * Deletes the AGU based on it's CUI
+	 *
+	 * @param cui the AGU's CUI
+	 */
+	override fun deleteAGU(cui: String) {
+		logger.info("Deleting AGU with CUI: {} from the database", cui)
+
+		handle.createUpdate(
+			"""
+			DELETE FROM agu 
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.execute()
+
+		logger.info("AGU with CUI: {} deleted from the database", cui)
+	}
+
+
 	companion object {
 		private val logger = LoggerFactory.getLogger(JDBIAGURepository::class.java)
 	}

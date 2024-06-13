@@ -15,6 +15,7 @@ import aguDataSystem.server.domain.tank.TankUpdateDTO
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.errors.agu.AGUCreationError
+import aguDataSystem.server.service.errors.agu.DeleteAGUError
 import aguDataSystem.server.service.errors.agu.GetAGUError
 import aguDataSystem.server.service.errors.agu.update.UpdateActiveStateError
 import aguDataSystem.server.service.errors.agu.update.UpdateFavouriteStateError
@@ -24,6 +25,7 @@ import aguDataSystem.server.service.errors.contact.AddContactError
 import aguDataSystem.server.service.errors.contact.DeleteContactError
 import aguDataSystem.server.service.errors.measure.GetMeasuresError
 import aguDataSystem.server.service.errors.tank.AddTankError
+import aguDataSystem.server.service.errors.tank.DeleteTankError
 import aguDataSystem.server.service.errors.tank.UpdateTankError
 import aguDataSystem.utils.failure
 import aguDataSystem.utils.getSuccessOrThrow
@@ -193,6 +195,24 @@ class AGUService(
 			logger.info("Getting AGU by CUI: {} from the database", cui)
 
 			success(getFullAGU(cui) ?: return@run failure(GetAGUError.AGUNotFound))
+		}
+	}
+
+	/**
+	 * Delete an AGU by its CUI
+	 *
+	 * @param cui the CUI of the AGU
+	 * @return the result of the deletion
+	 */
+	fun deleteAGU(cui: String): DeleteAGUResult {
+		if (!aguDomain.isCUIValid(cui)) return failure(DeleteAGUError.InvalidCUI)
+
+		return transactionManager.run {
+			logger.info("Deleting AGU with CUI: {} from the database", cui)
+
+			it.aguRepository.deleteAGU(cui)
+
+			success(Unit)
 		}
 	}
 
@@ -491,6 +511,28 @@ class AGUService(
 			logger.info("Tank with number: {} changed from AGU with CUI: {}", number, cui)
 
 			success(getFullAGU(cui) ?: return@run failure(UpdateTankError.AGUNotFound))
+		}
+	}
+
+	/**
+	 * Deletes a tank from an AGU
+	 */
+	fun deleteTank(cui: String, number: Int): DeleteTankResult {
+
+		if (!aguDomain.isCUIValid(cui)) {
+			return failure(DeleteTankError.InvalidCUI)
+		}
+
+		return transactionManager.run {
+			logger.info("Deleting tank with number: {} from AGU with CUI: {}", number, cui)
+
+			it.aguRepository.getAGUByCUI(cui) ?: return@run failure(DeleteTankError.AGUNotFound)
+
+			it.tankRepository.deleteTank(cui, number)
+
+			logger.info("Tank with number: {} deleted from AGU with CUI: {}", number, cui)
+
+			success(Unit)
 		}
 	}
 

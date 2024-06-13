@@ -2,6 +2,7 @@ package aguDataSystem.server.service.errors.transportCompany
 
 import aguDataSystem.server.domain.agu.AGU
 import aguDataSystem.server.domain.company.TransportCompany
+import aguDataSystem.server.service.errors.transportCompany.GetTransportCompaniesOfAGUError.AGUNotFound
 
 /**
  * Represents the possible errors that occur when obtaining [TransportCompany]s of an [AGU]

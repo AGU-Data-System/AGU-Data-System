@@ -82,7 +82,7 @@ create table if not exists agu
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
-    foreign key (dno_id) references dno (id)
+    foreign key (dno_id) references dno (id) on delete cascade
 );
 
 create table if not exists agu_transport_company
@@ -90,8 +90,8 @@ create table if not exists agu_transport_company
     agu_cui    CUI,
     company_id int,
 
-    foreign key (agu_cui) references agu (cui),
-    foreign key (company_id) references transport_company (id),
+    foreign key (agu_cui) references agu (cui) on delete cascade,
+    foreign key (company_id) references transport_company (id) on delete cascade,
 
     primary key (agu_cui, company_id)
 );
@@ -108,7 +108,7 @@ create table if not exists tank
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
-    foreign key (agu_cui) references agu (cui),
+    foreign key (agu_cui) references agu (cui) on delete cascade,
     primary key (agu_cui, number)
 );
 
@@ -150,7 +150,7 @@ create table if not exists contacts
     type    varchar check (type ~* '^(emergency|logistic)$') not null,
     agu_cui CUI,
 
-    foreign key (agu_cui) references agu (cui),
+    foreign key (agu_cui) references agu (cui) on delete cascade,
     primary key (agu_cui, id)
 
 );

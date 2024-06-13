@@ -1,6 +1,8 @@
 package aguDataSystem.server.service.errors.transportCompany
 
 import aguDataSystem.server.domain.company.TransportCompany
+import aguDataSystem.server.service.errors.transportCompany.AddTransportCompanyError.InvalidName
+import aguDataSystem.server.service.errors.transportCompany.AddTransportCompanyError.TransportCompanyAlreadyExists
 
 /**
  * Represents the possible errors that can occur when Adding [TransportCompany]
