@@ -1,7 +1,7 @@
-package aguDataSystem.server.http.models.agu
+package aguDataSystem.server.http.models.request.agu
 
-import aguDataSystem.server.http.models.contact.ContactCreationRequestModel
-import aguDataSystem.server.http.models.tank.TankCreationRequestModel
+import aguDataSystem.server.http.models.request.contact.ContactCreationRequestModel
+import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
 import kotlinx.serialization.Serializable
 
 /**

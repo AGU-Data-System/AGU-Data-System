@@ -89,7 +89,7 @@ class TransportCompanyController(private val service: TransportCompanyService) {
 	 * @param aguCui the CUI of the AGU to add the transport company to
 	 * @param transportCompanyId the ID of the transport company to add
 	 */
-	@PutMapping(URIs.TransportCompany.BY_CUI_AND_ID)
+	@PutMapping(URIs.TransportCompany.BY_ID_AND_CUI)
 	fun addTransportCompanyToAGU(
 		@PathVariable aguCui: String,
 		@PathVariable transportCompanyId: Int
@@ -105,7 +105,7 @@ class TransportCompanyController(private val service: TransportCompanyService) {
 	 * @param aguCui the CUI of the AGU to delete the transport company from
 	 * @param transportCompanyId the ID of the transport company to delete
 	 */
-	@DeleteMapping(URIs.TransportCompany.BY_CUI_AND_ID)
+	@DeleteMapping(URIs.TransportCompany.BY_ID_AND_CUI)
 	fun deleteTransportCompanyFromAGU(
 		@PathVariable aguCui: String,
 		@PathVariable transportCompanyId: Int

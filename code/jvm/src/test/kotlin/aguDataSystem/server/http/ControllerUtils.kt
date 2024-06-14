@@ -1,11 +1,11 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.models.agu.AGUCreateRequestModel
-import aguDataSystem.server.http.models.contact.ContactCreationRequestModel
-import aguDataSystem.server.http.models.dno.DNOCreationRequestModel
-import aguDataSystem.server.http.models.gasLevels.GasLevelsRequestModel
-import aguDataSystem.server.http.models.notes.NotesRequestModel
-import aguDataSystem.server.http.models.tank.TankCreationRequestModel
+import aguDataSystem.server.http.models.request.agu.AGUCreateRequestModel
+import aguDataSystem.server.http.models.request.contact.ContactCreationRequestModel
+import aguDataSystem.server.http.models.request.dno.DNOCreationRequestModel
+import aguDataSystem.server.http.models.request.gasLevels.GasLevelsRequestModel
+import aguDataSystem.server.http.models.request.notes.NotesRequestModel
+import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
 
 /**
  * Data for requests
@@ -43,6 +43,8 @@ object ControllerUtils {
 		correctionFactor = 1.0
 	)
 
+	val dummyTransportCompanyNames = listOf("Test Transport Company 1", "Test Transport Company 2")
+
 	val dummyAGUCreationRequestModel = AGUCreateRequestModel(
 		cui = "PT1234567890123456XX",
 		eic = "TEST-EIC",
@@ -60,7 +62,7 @@ object ControllerUtils {
 		image = ByteArray(0),
 		tanks = listOf(dummyTankCreationRequestModel),
 		contacts = listOf(dummyContactCreationRequestModel),
-		transportCompanies = listOf("Test Transport Company 1", "Test Transport Company 2"),
+		transportCompanies = emptyList(),
 		isFavorite = false,
 		notes = dummyNotesRequestModel.notes
 	)

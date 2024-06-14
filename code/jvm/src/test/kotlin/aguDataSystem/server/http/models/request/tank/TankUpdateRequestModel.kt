@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.models.tank
+package aguDataSystem.server.http.models.request.tank
 
 import kotlinx.serialization.Serializable
 

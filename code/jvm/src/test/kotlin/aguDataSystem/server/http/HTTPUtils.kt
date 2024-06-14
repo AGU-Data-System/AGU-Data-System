@@ -1,14 +1,17 @@
 package aguDataSystem.server.http
 
 
-import aguDataSystem.server.http.models.agu.AGUCreateRequestModel
-import aguDataSystem.server.http.models.contact.ContactCreationRequestModel
-import aguDataSystem.server.http.models.dno.DNOCreationRequestModel
-import aguDataSystem.server.http.models.gasLevels.GasLevelsRequestModel
-import aguDataSystem.server.http.models.notes.NotesRequestModel
-import aguDataSystem.server.http.models.tank.TankCreationRequestModel
-import aguDataSystem.server.http.models.tank.TankUpdateRequestModel
-import aguDataSystem.server.http.models.transportCompany.TransportCompanyRequestModel
+import aguDataSystem.server.http.models.request.agu.AGUCreateRequestModel
+import aguDataSystem.server.http.models.request.contact.ContactCreationRequestModel
+import aguDataSystem.server.http.models.request.dno.DNOCreationRequestModel
+import aguDataSystem.server.http.models.request.gasLevels.GasLevelsRequestModel
+import aguDataSystem.server.http.models.request.notes.NotesRequestModel
+import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
+import aguDataSystem.server.http.models.request.tank.TankUpdateRequestModel
+import aguDataSystem.server.http.models.request.transportCompany.TransportCompanyRequestModel
+import aguDataSystem.server.http.models.response.agu.AGUCreationResponse
+import aguDataSystem.server.http.models.response.agu.AGUResponse
+import aguDataSystem.server.http.models.response.dno.DNOResponse
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.serialization.json.Json
@@ -21,6 +24,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 object HTTPUtils {
 
 	private const val BASE_AGU_PATH = "/agus"
+	private const val BASE_DNO_PATH = "/dnos"
 
 	/**
 	 * Util function:
@@ -41,7 +45,7 @@ object HTTPUtils {
 			.expectStatus().isCreated
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -58,7 +62,7 @@ object HTTPUtils {
 			.expectStatus().isOk
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -74,7 +78,7 @@ object HTTPUtils {
 			.expectStatus().isOk
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -233,6 +237,15 @@ object HTTPUtils {
 			.responseBody
 
 	// Contact
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a contact to an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param contactModel the contact model
+	 * @return the response body
+	 */
 	fun addContactRequest(client: WebTestClient, aguId: String, contactModel: ContactCreationRequestModel) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/contact")
@@ -245,6 +258,15 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a contact from an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param contactId the contact ID
+	 * @return the response body
+	 */
 	fun deleteContactRequest(client: WebTestClient, aguId: String, contactId: Int) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/$aguId/contact/$contactId")
@@ -255,30 +277,54 @@ object HTTPUtils {
 			.responseBody
 
 	// DNO
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to get all DNOs
+	 *
+	 * @param client the WebTestClient
+	 * @return the response body
+	 */
 	fun getAllDNOsRequest(client: WebTestClient) =
 		client.get()
-			.uri("$BASE_AGU_PATH/dnos")
+			.uri(BASE_DNO_PATH)
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to create a DNO
+	 * @param client the WebTestClient
+	 * @param dno the DNO creation model
+	 * @return the response body
+	 */
 	fun createDNORequest(client: WebTestClient, dno: DNOCreationRequestModel) =
 		client.post()
-			.uri("$BASE_AGU_PATH/dnos")
+			.uri(BASE_DNO_PATH)
 			.bodyValue(
 				Json.encodeToJsonElement(dno)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isCreated
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a DNO
+	 * @param client the WebTestClient
+	 * @param dnoId the DNO ID
+	 * @return the response body
+	 */
 	fun deleteDNORequest(client: WebTestClient, dnoId: Int) =
 		client.delete()
-			.uri("$BASE_AGU_PATH/dnos/$dnoId")
+			.uri("$BASE_DNO_PATH/$dnoId")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -286,6 +332,14 @@ object HTTPUtils {
 			.responseBody
 
 	// Transport Company
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to get all transport companies
+	 * @param client the WebTestClient
+	 * @return the response body
+	 */
 	fun getAllTransportCompaniesRequest(client: WebTestClient) =
 		client.get()
 			.uri("$BASE_AGU_PATH/transport-companies")
@@ -295,6 +349,14 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to get the transport companies of an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @return the response body
+	 */
 	fun getTransportCompaniesOfAGURequest(client: WebTestClient, aguId: String) =
 		client.get()
 			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId")
@@ -304,6 +366,14 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a transport company
+	 * @param client the WebTestClient
+	 * @param transportCompany the transport company model
+	 * @return the response body
+	 */
 	fun addTransportCompanyRequest(client: WebTestClient, transportCompany: TransportCompanyRequestModel) =
 		client.post()
 			.uri("$BASE_AGU_PATH/transport-companies")
@@ -316,6 +386,14 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a transport company
+	 * @param client the WebTestClient
+	 * @param transportCompanyId the transport company ID
+	 * @return the response body
+	 */
 	fun deleteTransportCompanyRequest(client: WebTestClient, transportCompanyId: Int) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/transport-companies/$transportCompanyId")
@@ -325,6 +403,15 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a transport company to an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param transportCompanyId the transport company ID
+	 * @return the response body
+	 */
 	fun addTransportCompanyToAGURequest(client: WebTestClient, aguId: String, transportCompanyId: Int) =
 		client.put()
 			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId/$transportCompanyId")
@@ -334,6 +421,15 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to remove a transport company from an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param transportCompanyId the transport company ID
+	 * @return the response body
+	 */
 	fun removeTransportCompanyFromAGURequest(client: WebTestClient, aguId: String, transportCompanyId: Int) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId/$transportCompanyId")
@@ -344,6 +440,15 @@ object HTTPUtils {
 			.responseBody
 
 	// Tank
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a tank to an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param tankModel the tank model
+	 * @return the response body
+	 */
 	fun addTankRequest(client: WebTestClient, aguId: String, tankModel: TankCreationRequestModel) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/tank")
@@ -356,6 +461,16 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to update a tank
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param tankId the tank ID
+	 * @param tankUpdateModel the tank update model
+	 * @return the response body
+	 */
 	fun updateTankRequest(
 		client: WebTestClient,
 		aguId: String,
@@ -373,6 +488,15 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody
 
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a tank from an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param tankId the tank ID
+	 * @return the response body
+	 */
 	fun deleteTankRequest(client: WebTestClient, aguId: String, tankId: Int) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/$aguId/tank/$tankId")
@@ -383,6 +507,17 @@ object HTTPUtils {
 			.responseBody
 
 	// Clean
+	/**
+	 * Util function:
+	 *
+	 * Cleans the test by deleting the AGU, DNO, contacts, transport companies and tanks
+	 * @param client the WebTestClient
+	 * @param idAGU the AGU ID
+	 * @param idDNO the DNO ID
+	 * @param idsTransportCompany the transport companies IDs
+	 * @param idsContact the contact IDs'
+	 * @param idsTank the tanks IDs
+	 */
 	fun cleanTest(
 		client: WebTestClient,
 		idAGU: String,
@@ -403,4 +538,32 @@ object HTTPUtils {
 		// dno
 		deleteDNORequest(client, idDNO)
 	}
+
+	// deserialize responses
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a DNO response
+	 * @receiver the response body
+	 * @return the AGU response
+	 */
+	fun ByteArray.toDNOResponse() = Json.decodeFromString<DNOResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to an AGU response
+	 * @receiver the response body
+	 * @return the AGU response
+	 */
+	fun ByteArray.toAGUCreationResponse() = Json.decodeFromString<AGUCreationResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to an AGU response
+	 * @receiver the response body
+	 * @return the AGU response
+	 */
+	fun ByteArray.toAGUResponse() = Json.decodeFromString<AGUResponse>(this.decodeToString())
 }

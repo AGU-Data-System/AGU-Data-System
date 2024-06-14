@@ -1,4 +1,4 @@
-package aguDataSystem.server.http.models.agu
+package aguDataSystem.server.http.models.request.agu
 
 import kotlinx.serialization.Serializable
 

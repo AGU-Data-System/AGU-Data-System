@@ -1,19 +1,25 @@
 package aguDataSystem.server.http.controllers.models.output.provider
 
 import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.provider.ProviderType
 
 /**
  * Output model for a list of providers
  *
- * @param providers The list of providers
+ * @param gasProviders The list of gas providers
+ * @param temperatureProviders The list of temperature providers
  * @param size The size of the list
  */
 data class ProviderListOutputModel(
-	val providers: List<ProviderOutputModel>,
+	val gasProviders: List<GasProviderOutputModel>,
+	val temperatureProviders: List<TemperatureProviderOutputModel>,
 	val size: Int
 ) {
 	constructor(providers: List<Provider>) : this(
-		providers = providers.map { ProviderOutputModel(it) },
-		size = providers.size
+		gasProviders = providers.filter { provider -> provider.getProviderType() == ProviderType.GAS }
+			.map { provider -> GasProviderOutputModel(provider) },
+		temperatureProviders = providers.filter { provider -> provider.getProviderType() == ProviderType.TEMPERATURE }
+			.map { provider -> TemperatureProviderOutputModel(provider) },
+		size = providers.size // TODO should we use the size of the filtered lists? or the original list?
 	)
 }

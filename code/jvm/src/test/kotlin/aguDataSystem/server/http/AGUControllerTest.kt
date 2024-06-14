@@ -5,6 +5,9 @@ import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
 import aguDataSystem.server.http.HTTPUtils.cleanTest
 import aguDataSystem.server.http.HTTPUtils.createAGURequest
 import aguDataSystem.server.http.HTTPUtils.createDNORequest
+import aguDataSystem.server.http.HTTPUtils.getAGURequest
+import aguDataSystem.server.http.HTTPUtils.toAGUCreationResponse
+import aguDataSystem.server.http.HTTPUtils.toAGUResponse
 import java.time.Duration
 import kotlin.test.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -28,11 +31,20 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
-		val dnoID = createDNORequest(client, dno)!!.size // wrong at so many levels
+		createDNORequest(client, dno)
 
 		// act and assert
-		createAGURequest(client, aguCreation)
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
-		cleanTest(client, dummyAGUCreationRequestModel.cui, dnoID)
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = allAgu.dno.id,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id },
+			idsContact = allAgu.contacts.contacts.map { it.id },
+			idsTank = allAgu.tanks.tanks.map { it.number }
+		)
 	}
 }

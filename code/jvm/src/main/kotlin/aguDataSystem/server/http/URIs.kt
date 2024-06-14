@@ -70,11 +70,11 @@ object URIs {
 		const val ROOT = "$PREFIX/transport-companies"
 		const val BY_ID = "/{transportCompanyId}"
 		const val ALL_BY_CUI = "/agu/{aguCui}"
-		const val BY_CUI_AND_ID = "/agu/{aguCui}/{transportCompanyId}"
+		const val BY_ID_AND_CUI = "{transportCompanyId}/agu/{aguCui}/"
 
 		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
 		fun allByCUI(cui: String) = UriTemplate(ROOT + ALL_BY_CUI).expand(cui)
-		fun byCUIAndID(cui: String, id: Int) = UriTemplate(ROOT + BY_CUI_AND_ID).expand(cui, id)
+		fun byCUIAndID(cui: String, id: Int) = UriTemplate(ROOT + BY_ID_AND_CUI).expand(cui, id)
 	}
 
 	/**
