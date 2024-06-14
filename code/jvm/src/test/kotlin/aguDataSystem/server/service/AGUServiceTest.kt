@@ -1273,7 +1273,7 @@ class AGUServiceTest {
 
 		// assert
 		assert(result.isSuccess())
-		assert(result.getSuccessOrThrow().isFavorite)
+		assert(result.getSuccessOrThrow().isFavourite)
 	}
 
 	@Test

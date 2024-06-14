@@ -21,7 +21,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property contacts contacts of the AGU
  * @property tanks tanks of the AGU
  * @property transportCompanies transport companies that this AGU is associated with
- * @property isFavorite whether the AGU is a favorite
+ * @property isFavourite whether the AGU is a favorite
  * @property isActive whether the AGU is active
  * @property notes notes of the AGU
  * @property training training of the AGU
@@ -40,7 +40,7 @@ data class AGUCreationDTO(
 	val contacts: List<ContactCreationDTO>,
 	val tanks: List<Tank>,
 	val transportCompanies: List<String>,
-	val isFavorite: Boolean = false,
+	val isFavourite: Boolean = false,
 	val isActive: Boolean = true,
 	val notes: String? = null,
 	val training: String? = null,
@@ -66,7 +66,7 @@ data class AGUCreationDTO(
 		contacts = this.contacts.map { it.toContactCreation() },
 		tanks = this.tanks,
 		transportCompanies = this.transportCompanies,
-		isFavorite = this.isFavorite,
+		isFavourite = this.isFavourite,
 		isActive = this.isActive,
 		notes = this.notes,
 		training = this.training

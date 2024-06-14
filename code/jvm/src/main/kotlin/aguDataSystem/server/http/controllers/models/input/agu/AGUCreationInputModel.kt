@@ -25,7 +25,7 @@ import aguDataSystem.server.http.controllers.models.input.tank.TankCreationInput
  * @param image the image of the AGU
  * @param tanks the tanks of the AGU
  * @param contacts the contacts of the AGU
- * @param isFavorite the favorite status of the AGU
+ * @param isFavourite the favorite status of the AGU
  * @param isActive the active status of the AGU
  * @param notes the notes of the AGU
  */
@@ -47,7 +47,7 @@ data class AGUCreationInputModel(
 	val tanks: List<TankCreationInputModel>,
 	val contacts: List<ContactCreationInputModel>,
 	val transportCompanies: List<String>,
-	val isFavorite: Boolean = false,
+	val isFavourite: Boolean = false,
 	val isActive: Boolean = true,
 	val notes: String? = null,
 ) {
@@ -80,7 +80,7 @@ data class AGUCreationInputModel(
 		contacts = this.contacts.map { contactCreationInputModel -> contactCreationInputModel.toContactCreationDTO() },
 		tanks = this.tanks.map { tankInputModel -> tankInputModel.toTank() },
 		transportCompanies = this.transportCompanies,
-		isFavorite = this.isFavorite,
+		isFavourite = this.isFavourite,
 		isActive = this.isActive,
 		notes = this.notes,
 		training = null

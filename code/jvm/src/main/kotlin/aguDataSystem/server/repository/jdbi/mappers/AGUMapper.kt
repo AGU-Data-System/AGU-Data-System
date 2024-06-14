@@ -32,7 +32,7 @@ class AGUMapper : RowMapper<AGU> {
 			correctionFactor = rs.getDouble("correction_factor"),
 			location = mapToLocation(rs),
 			dno = mapToDNO(rs),
-			isFavorite = rs.getBoolean("is_favorite"),
+			isFavourite = rs.getBoolean("is_favorite"),
 			notes = rs.getString("notes"),
 			training = rs.getString("training"),
 			image = rs.getBytes("image") ?: byteArrayOf(),

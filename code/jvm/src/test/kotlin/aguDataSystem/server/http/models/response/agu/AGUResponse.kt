@@ -1,5 +1,6 @@
 package aguDataSystem.server.http.models.response.agu
 
+import aguDataSystem.server.http.models.response.ByteArrayAsEmptyArraySerializer
 import aguDataSystem.server.http.models.response.contact.ContactListResponse
 import aguDataSystem.server.http.models.response.dno.DNOResponse
 import aguDataSystem.server.http.models.response.gasLevels.GasLevelsResponse
@@ -41,6 +42,7 @@ data class AGUResponse(
 	val correctionFactor: Double,
 	val location: LocationResponse,
 	val dno: DNOResponse,
+	@Serializable(with = ByteArrayAsEmptyArraySerializer::class)
 	val image: ByteArray,
 	val contacts: ContactListResponse,
 	val tanks: TankListResponse,

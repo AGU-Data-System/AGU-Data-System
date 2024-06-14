@@ -209,7 +209,23 @@ class AGUService(
 
 		return transactionManager.run {
 			logger.info("Deleting AGU with CUI: {} from the database", cui)
+			logger.info("Deleting AGU tanks from the database")
+			val tanks = it.tankRepository.getAGUTanks(cui)
+			tanks.forEach { tank ->
+				it.tankRepository.deleteTank(cui, tank.number)
+			}
 
+			logger.info("Deleting AGU contacts from the database")
+			val contacts = it.contactRepository.getContactsByAGU(cui)
+			contacts.forEach { contact ->
+				it.contactRepository.deleteContact(cui, contact.id)
+			}
+
+			logger.info("Deleting AGU providers from the database")
+			val providers = it.providerRepository.getProviderByAGU(cui)
+			providers.forEach { provider ->
+				it.providerRepository.deleteProviderById(provider.id, cui)
+			}
 			it.aguRepository.deleteAGU(cui)
 
 			success(Unit)

@@ -465,7 +465,7 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.loadVolume, aguFromDb.loadVolume)
 		assertEquals(agu.location, aguFromDb.location)
 		assertEquals(agu.dnoName, aguFromDb.dno.name)
-		assertEquals(agu.isFavorite, aguFromDb.isFavorite)
+		assertEquals(agu.isFavourite, aguFromDb.isFavourite)
 		assertEquals(agu.notes, aguFromDb.notes)
 		assertEquals(agu.training, aguFromDb.training)
 		assertEquals(
@@ -595,7 +595,7 @@ class JDBIAGURepositoryTest {
 
 		// assert
 		assertNotNull(aguFromDb)
-		assertTrue(aguFromDb.isFavorite)
+		assertTrue(aguFromDb.isFavourite)
 	}
 
 	@Test
@@ -627,7 +627,7 @@ class JDBIAGURepositoryTest {
 
 		// assert
 		assertNotNull(aguFromDb)
-		assertFalse(aguFromDb.isFavorite)
+		assertFalse(aguFromDb.isFavourite)
 	}
 
 	@Test

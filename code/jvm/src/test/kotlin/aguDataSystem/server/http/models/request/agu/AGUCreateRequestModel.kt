@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
  * @param image The image of the AGU
  * @param tanks The tanks of the AGU
  * @param contacts The contacts of the AGU
- * @param isFavorite The favorite status of the AGU
+ * @param isFavourite The favorite status of the AGU
  * @param notes The notes of the AGU
  */
 @Serializable
@@ -43,6 +43,6 @@ data class AGUCreateRequestModel(
 	val tanks: List<TankCreationRequestModel>,
 	val contacts: List<ContactCreationRequestModel>,
 	val transportCompanies: List<String>,
-	val isFavorite: Boolean,
+	val isFavourite: Boolean,
 	val notes: String?,
 )

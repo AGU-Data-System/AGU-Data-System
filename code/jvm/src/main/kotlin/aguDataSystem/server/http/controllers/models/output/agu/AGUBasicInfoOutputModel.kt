@@ -17,7 +17,7 @@ data class AGUBasicInfoOutputModel(
 	val cui: String,
 	val eic: String,
 	val name: String,
-	val isFavorite: Boolean,
+	val isFavourite: Boolean,
 	val dno: DNOOutputModel,
 	val location: LocationOutputModel,
 	val transportCompanies: List<TransportCompanyOutputModel>
@@ -26,7 +26,7 @@ data class AGUBasicInfoOutputModel(
 		cui = agu.cui,
 		eic = agu.eic,
 		name = agu.name,
-		isFavorite = agu.isFavorite,
+		isFavourite = agu.isFavourite,
 		dno = DNOOutputModel(agu.dno),
 		location = LocationOutputModel(agu.location),
 		transportCompanies = agu.transportCompanies.map { TransportCompanyOutputModel(it) }

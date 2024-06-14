@@ -53,7 +53,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 				val cui = rs.getString("cui")
 				val name = rs.getString("name")
 				val eic = rs.getString("eic")
-				val isFavorite = rs.getBoolean("is_favorite")
+				val isFavourite = rs.getBoolean("is_favorite")
 				val dno = mapToDNO(rs)
 				val location = mapToLocation(rs)
 
@@ -74,7 +74,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 						cui = cui,
 						eic = eic,
 						name = name,
-						isFavorite = isFavorite,
+						isFavourite = isFavourite,
 						dno = dno,
 						location = location,
 						transportCompanies = transportCompanies
@@ -170,7 +170,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             location_name, dno_id, is_active, notes, training, image
             ) 
             VALUES (
-            :cui, :eic, :name, :isFavorite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :correctionFactor, :latitude, :longitude, 
+            :cui, :eic, :name, :isFavourite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :correctionFactor, :latitude, :longitude, 
             :locationName, :dnoId, :isActive, :notes, :training::json, :image
             ) returning cui
             """.trimIndent()
@@ -178,7 +178,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.bind("cui", aguCreationInfo.cui)
 			.bind("eic", aguCreationInfo.eic)
 			.bind("name", aguCreationInfo.name)
-			.bind("isFavorite", aguCreationInfo.isFavorite)
+			.bind("isFavourite", aguCreationInfo.isFavourite)
 			.bind("minLevel", aguCreationInfo.levels.min)
 			.bind("maxLevel", aguCreationInfo.levels.max)
 			.bind("criticalLevel", aguCreationInfo.levels.critical)
@@ -205,20 +205,20 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 	 * Update AGU favourite state
 	 *
 	 * @param cui CUI of AGU
-	 * @param isFavorite New favourite state
+	 * @param isFavourite New favourite state
 	 */
-	override fun updateFavouriteState(cui: String, isFavorite: Boolean) {
+	override fun updateFavouriteState(cui: String, isFavourite: Boolean) {
 		logger.info("Updating AGU favourite state in the database")
 
 		handle.createUpdate(
 			"""
 			UPDATE agu 
-			SET is_favorite = :isFavorite
+			SET is_favorite = :isFavourite
 			WHERE cui = :cui
 			""".trimIndent()
 		)
 			.bind("cui", cui)
-			.bind("isFavorite", isFavorite)
+			.bind("isFavourite", isFavourite)
 			.execute()
 
 		logger.info("AGU with CUI: {}, favourite state updated in the database", cui)

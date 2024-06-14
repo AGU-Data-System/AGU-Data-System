@@ -83,7 +83,7 @@ object RepositoryUtils {
 		correctionFactor = 0.0,
 		location = dummyLocation,
 		dnoName = dummyDNO.name,
-		isFavorite = false,
+		isFavourite = false,
 		isActive = true,
 		notes = null,
 		training = null,

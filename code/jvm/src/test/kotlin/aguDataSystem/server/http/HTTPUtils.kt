@@ -39,7 +39,6 @@ object HTTPUtils {
 			.uri("$BASE_AGU_PATH/create")
 			.bodyValue(
 				Json.encodeToJsonElement(aguCreationModel)
-					.also { println(it) }
 			)
 			.exchange()
 			.expectStatus().isCreated
@@ -61,7 +60,7 @@ object HTTPUtils {
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
-			.returnResult()
+			.returnResult().also(::println)
 			.responseBody!!
 
 	/**
@@ -176,13 +175,13 @@ object HTTPUtils {
 	 * Sends a request to update the favourite state of an AGU
 	 * @param client the WebTestClient
 	 * @param aguId the AGU ID
-	 * @param isFavorite the new favourite state
+	 * @param isFavourite the new favourite state
 	 */
-	fun updateFavouriteStateRequest(client: WebTestClient, aguId: String, isFavorite: Boolean) =
+	fun updateFavouriteStateRequest(client: WebTestClient, aguId: String, isFavourite: Boolean) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/favorite")
 			.bodyValue(
-				Json.encodeToJsonElement(isFavorite)
+				Json.encodeToJsonElement(isFavourite)
 			)
 			.exchange()
 			.expectStatus().isOk
@@ -520,23 +519,21 @@ object HTTPUtils {
 	 */
 	fun cleanTest(
 		client: WebTestClient,
-		idAGU: String,
-		idDNO: Int,
-		idsTransportCompany: List<Int> = emptyList(),
-		idsContact: List<Int> = emptyList(),
-		idsTank: List<Int> = emptyList()
+		idAGU: String? = null,
+		idDNO: Int? = null,
+		idsTransportCompany: List<Int> = emptyList()
 	) {
-		idsContact.forEach { deleteContactRequest(client, idAGU, it) }
+		if (idAGU == null) {
+			idsTransportCompany.forEach { deleteTransportCompanyRequest(client, it) }
+		}
 
-		idsTransportCompany.forEach { deleteTransportCompanyRequest(client, it) }
+		if (idAGU != null) {
+			deleteAGURequest(client, idAGU)
+		}
 
-		idsTank.forEach { deleteTankRequest(client, idAGU, it) }
-
-		// agu
-		deleteAGURequest(client, idAGU)
-
-		// dno
-		deleteDNORequest(client, idDNO)
+		if (idDNO != null) {
+			deleteDNORequest(client, idDNO)
+		}
 	}
 
 	// deserialize responses

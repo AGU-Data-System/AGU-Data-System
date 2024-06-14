@@ -47,9 +47,9 @@ interface AGURepository {
 	 * Update AGU favourite state
 	 *
 	 * @param cui CUI of AGU
-	 * @param isFavorite New favourite state
+	 * @param isFavourite New favourite state
 	 */
-	fun updateFavouriteState(cui: String, isFavorite: Boolean)
+	fun updateFavouriteState(cui: String, isFavourite: Boolean)
 
 	/**
 	 * Update AGU active state

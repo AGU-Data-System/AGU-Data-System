@@ -21,7 +21,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property contacts The contacts of the AGU.
  * @property tanks The tanks of the AGU.
  * @property transportCompanies The transport companies name that the AGU is associated with.
- * @property isFavorite Whether the AGU is a favorite.
+ * @property isFavourite Whether the AGU is a favorite.
  * @property isActive Whether the AGU is active.
  * @property notes The notes of the AGU.
  * @property training The training of the AGU.
@@ -40,7 +40,7 @@ data class AGUCreationInfo(
 	val contacts: List<ContactCreation>,
 	val tanks: List<Tank>,
 	val transportCompanies: List<String>,
-	val isFavorite: Boolean = false,
+	val isFavourite: Boolean = false,
 	val isActive: Boolean = true,
 	val notes: String? = null,
 	val training: String? = null,

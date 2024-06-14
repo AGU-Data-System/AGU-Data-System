@@ -28,7 +28,7 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 		val cui = rs.getString("cui")
 		val name = rs.getString("name")
 		val eic = rs.getString("eic")
-		val isFavorite = rs.getBoolean("is_favorite")
+		val isFavourite = rs.getBoolean("is_favorite")
 		val dno = mapToDNO(rs)
 		val location = mapToLocation(rs)
 
@@ -43,7 +43,7 @@ class AGUBasicInfoMapper : RowMapper<AGUBasicInfo> {
 			cui = cui,
 			eic = eic,
 			name = name,
-			isFavorite = isFavorite,
+			isFavourite = isFavourite,
 			dno = dno,
 			location = location,
 			transportCompanies = transportCompanies.toMutableList()

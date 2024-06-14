@@ -25,7 +25,7 @@ import aguDataSystem.server.http.controllers.models.output.transportCompany.Tran
  * @param tanks The tanks of the AGU
  * @param providers The providers of the AGU
  * @param transportCompanies The transport companies of the AGU
- * @param isFavorite The favorite status of the AGU
+ * @param isFavourite The favorite status of the AGU
  * @param isActive The active status of the AGU
  * @param notes The notes of the AGU
  * @param training The training of the AGU
@@ -44,7 +44,7 @@ data class AGUOutputModel(
 	val tanks: TankListOutputModel,
 	val providers: ProviderListOutputModel,
 	val transportCompanies: TransportCompanyListOutputModel,
-	val isFavorite: Boolean = false,
+	val isFavourite: Boolean = false,
 	val isActive: Boolean = true,
 	val notes: String? = null,
 	val training: String?,
@@ -64,7 +64,7 @@ data class AGUOutputModel(
 		tanks = TankListOutputModel(agu.tanks),
 		providers = ProviderListOutputModel(agu.providers),
 		transportCompanies = TransportCompanyListOutputModel(agu.transportCompanies),
-		isFavorite = agu.isFavorite,
+		isFavourite = agu.isFavourite,
 		isActive = agu.isActive,
 		notes = agu.notes,
 		training = agu.training,

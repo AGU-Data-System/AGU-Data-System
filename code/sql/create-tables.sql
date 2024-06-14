@@ -63,7 +63,7 @@ create table if not exists dno
 create table if not exists agu
 (
     cui               CUI primary key,
-    eic               varchar check (length(eic) > 0)  unique   not null,
+    eic               varchar check (length(eic) > 0) unique    not null,
     name              varchar check (length(name) > 0) unique   not null,
     min_level         PERCENTAGE                                not null,
     max_level         PERCENTAGE                                not null,
@@ -99,12 +99,12 @@ create table if not exists agu_transport_company
 create table if not exists tank
 (
     agu_cui           CUI,
-    number            int check (number >= 0)                not null,
-    min_level         PERCENTAGE                             not null,
-    max_level         PERCENTAGE                             not null,
-    critical_level    PERCENTAGE                             not null,
-    correction_factor numeric(6, 3)                          not null,
-    capacity          int check (capacity >= 0)              not null,
+    number            int check (number >= 0)   not null,
+    min_level         PERCENTAGE                not null,
+    max_level         PERCENTAGE                not null,
+    critical_level    PERCENTAGE                not null,
+    correction_factor numeric(6, 3)             not null,
+    capacity          int check (capacity >= 0) not null,
 
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
@@ -136,7 +136,7 @@ create table if not exists measure
     constraint prediction_in_future check (prediction_for::date >= timestamp::date),
 
     foreign key (agu_cui) references agu (cui),
-    foreign key (provider_id) references provider (id),
+    foreign key (provider_id) references provider (id) on delete cascade,
     foreign key (agu_cui, tank_number) references tank (agu_cui, number),
 
     primary key (timestamp, agu_cui, provider_id, tag, prediction_for)

@@ -42,9 +42,7 @@ class AGUControllerTest {
 			client = client,
 			idAGU = allAgu.cui,
 			idDNO = allAgu.dno.id,
-			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id },
-			idsContact = allAgu.contacts.contacts.map { it.id },
-			idsTank = allAgu.tanks.tanks.map { it.number }
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
 		)
 	}
 }

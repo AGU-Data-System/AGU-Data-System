@@ -80,7 +80,7 @@ object ServiceUtils {
 		contacts = emptyList(),
 		tanks = listOf(dummyTank),
 		transportCompanies = emptyList(),
-		isFavorite = false,
+		isFavourite = false,
 		isActive = true,
 		notes = null,
 		training = null

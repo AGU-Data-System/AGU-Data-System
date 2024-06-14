@@ -34,7 +34,7 @@ data class AddAGUInputModel(
 	val tanks: List<TankCreationInputModel> = emptyList(),
 	val contacts: List<ContactCreationInputModel> = emptyList(),
 	val transportCompanies: List<String> = emptyList(),
-	val isFavorite: Boolean,
+	val isFavourite: Boolean,
 	val isActive: Boolean,
 	val notes: String?,
 )
@@ -182,7 +182,7 @@ class AGUProcessor {
 					tanks = tanks,
 					contacts = contacts,
 					isActive = row[isActive] == "Activo",
-					isFavorite = false
+					isFavourite = false
 				)
 				logger.info("Processing input model: $aguInput")
 				sendPostRequest(aguInput)
