@@ -23,7 +23,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
  */
 object HTTPUtils {
 
-	private const val BASE_AGU_PATH = "/agus"
+	const val BASE_AGU_PATH = "/agus"
 	private const val BASE_DNO_PATH = "/dnos"
 
 	/**
@@ -514,8 +514,6 @@ object HTTPUtils {
 	 * @param idAGU the AGU ID
 	 * @param idDNO the DNO ID
 	 * @param idsTransportCompany the transport companies IDs
-	 * @param idsContact the contact IDs'
-	 * @param idsTank the tanks IDs
 	 */
 	fun cleanTest(
 		client: WebTestClient,

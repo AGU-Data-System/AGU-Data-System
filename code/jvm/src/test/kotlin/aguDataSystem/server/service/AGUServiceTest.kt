@@ -760,7 +760,7 @@ class AGUServiceTest {
 			val creationAgu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank), transportCompanies = listOf(""))
 
 			// act
-			val result = aguService.createAGU(creationAgu).also(::println)
+			val result = aguService.createAGU(creationAgu)
 
 			// assert
 			assert(result.isFailure())
@@ -1524,7 +1524,7 @@ class AGUServiceTest {
 			val dnoService = DNOService(transactionManager)
 			val contact = ServiceUtils.dummyLogisticContact.copy(phone = "")
 			dnoService.createDNO(dummyDNODTO)
-			val aguCui = aguService.createAGU(dummyAGUCreationDTO).also(::println).getSuccessOrThrow()
+			val aguCui = aguService.createAGU(dummyAGUCreationDTO).getSuccessOrThrow()
 
 			// act
 			val result = aguService.addContact(aguCui, contact)
