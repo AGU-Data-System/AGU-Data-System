@@ -2,9 +2,9 @@ package aguDataSystem.server.http
 
 import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationRequestModel
 import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
-import aguDataSystem.server.http.HTTPUtils.BASE_AGU_PATH
 import aguDataSystem.server.http.HTTPUtils.cleanTest
 import aguDataSystem.server.http.HTTPUtils.createAGURequest
+import aguDataSystem.server.http.HTTPUtils.createAGURequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.createDNORequest
 import aguDataSystem.server.http.HTTPUtils.getAGURequest
 import aguDataSystem.server.http.HTTPUtils.toAGUCreationResponse
@@ -12,10 +12,9 @@ import aguDataSystem.server.http.HTTPUtils.toAGUResponse
 import aguDataSystem.server.http.HTTPUtils.toDNOResponse
 import java.time.Duration
 import kotlin.test.Test
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -62,16 +61,7 @@ class AGUControllerTest {
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel)
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, aguCreation, HttpStatus.BAD_REQUEST)
 
 		// clean
 		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -89,18 +79,11 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(cui = "invalid", eic = "newEIC", name = "newName")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(cui = "invalid", eic = "newEIC", name = "newName"))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
+
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -112,18 +95,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(cui = "", eic = "newEIC", name = "newName")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(cui = "", eic = "newEIC", name = "newName"))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -137,18 +112,10 @@ class AGUControllerTest {
 		val dno = dummyDNOCreationRequestModel
 		createDNORequest(client, dno)
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val sut = dummyAGUCreationRequestModel.copy(cui = aguCreation.cui, eic = "newEIC", name = "newName")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(cui = aguCreation.cui, eic = "newEIC", name = "newName"))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -166,18 +133,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(eic = "")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(eic = ""))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -191,18 +150,10 @@ class AGUControllerTest {
 		val dno = dummyDNOCreationRequestModel
 		createDNORequest(client, dno)
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val sut = dummyAGUCreationRequestModel.copy(cui = "PT6543210987654321XX", eic = aguCreation.eic, name = "newName")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(name = "newName", cui = "PT6543210987654321XX"))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -220,18 +171,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(name = "")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(name = ""))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -245,18 +188,10 @@ class AGUControllerTest {
 		val dno = dummyDNOCreationRequestModel
 		createDNORequest(client, dno)
 		createAGURequest(client, aguCreation)
+		val sut = dummyAGUCreationRequestModel.copy(cui = "PT6543210987654321XX", eic = "newEIC")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(cui = "PT6543210987654321XX", eic = "newEIC"))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		val allAgu = getAGURequest(client, aguCreation.cui).toAGUResponse()
@@ -274,18 +209,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(minLevel = -1)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(minLevel = -1))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -297,18 +224,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(maxLevel = -1)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(maxLevel = -1))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -320,18 +239,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(criticalLevel = -1)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(criticalLevel = -1))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -343,18 +254,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(minLevel = dummyAGUCreationRequestModel.criticalLevel - 1)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(minLevel = dummyAGUCreationRequestModel.criticalLevel -1))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -366,41 +269,25 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(criticalLevel = dummyAGUCreationRequestModel.maxLevel + 1)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(criticalLevel = dummyAGUCreationRequestModel.maxLevel + 1))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
 	}
 
 	@Test
-	fun `create AGu with min level over max level should fail`() {
+	fun `create AGU with min level over max level should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(minLevel = dummyAGUCreationRequestModel.maxLevel + 1)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(minLevel = dummyAGUCreationRequestModel.maxLevel + 1))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -412,18 +299,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(loadVolume = -1.0)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(loadVolume = -1.0))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -435,18 +314,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(latitude = -91.0)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(latitude = -91.0))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -458,18 +329,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(longitude = -181.0)
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(longitude = -181.0))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -481,18 +344,10 @@ class AGUControllerTest {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(dnoName = "")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(dnoName = ""))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -502,90 +357,73 @@ class AGUControllerTest {
 	fun `create AGU with un existing DNO should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel.copy(dnoName = "un existing")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel)
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
+
+		// clean
+		// no clean needed
 	}
 
 	@Test
 	fun `create AGU with invalid gas URL should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(gasLevelUrl = "invalid")
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(gasLevelUrl = "invalid"))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoId)
 	}
 
 	@Test
 	fun `create AGU with invalid contact type should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(contacts = dummyAGUCreationRequestModel.contacts.map { it.copy(type = "invalid") })
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(contacts = dummyAGUCreationRequestModel.contacts.map { it.copy(type = "invalid") }))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoId)
 	}
 
 	@Test
 	fun `create AGU with invalid contact phone should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(contacts = dummyAGUCreationRequestModel.contacts.map { it.copy(phone = "invalid") })
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(contacts = dummyAGUCreationRequestModel.contacts.map { it.copy(phone = "invalid") }))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoId)
 	}
 
 	@Test
 	fun `create AGU with invalid contact name should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = dummyAGUCreationRequestModel.copy(contacts = dummyAGUCreationRequestModel.contacts.map { it.copy(name = "") })
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(dummyAGUCreationRequestModel.copy(contacts = dummyAGUCreationRequestModel.contacts.map { it.copy(name = "") }))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoId)
 	}
 
 	@Test
@@ -595,18 +433,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = emptyList())
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = emptyList()))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -619,18 +449,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(number = -1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(number = -1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -643,18 +465,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(capacity = -1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(capacity = -1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -667,18 +481,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(minLevel = -1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(minLevel = -1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -691,18 +497,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(maxLevel = -1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(maxLevel = -1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -715,18 +513,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(criticalLevel = -1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(criticalLevel = -1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -739,18 +529,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(criticalLevel = aguCreation.tanks.first().maxLevel + 1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(criticalLevel = aguCreation.tanks.first().maxLevel + 1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -763,18 +545,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(minLevel = aguCreation.tanks.first().maxLevel + 1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(minLevel = aguCreation.tanks.first().maxLevel + 1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -787,18 +561,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(minLevel = aguCreation.tanks.first().criticalLevel + 1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(minLevel = aguCreation.tanks.first().criticalLevel + 1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -811,18 +577,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(maxLevel = aguCreation.tanks.first().criticalLevel - 1)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(maxLevel = aguCreation.tanks.first().criticalLevel - 1))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -835,18 +593,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(loadVolume = -1.0)))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(loadVolume = -1.0))))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -859,18 +609,10 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(transportCompanies = listOf("un existing"))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(transportCompanies = aguCreation.transportCompanies.map { "un existing" }))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
@@ -883,23 +625,12 @@ class AGUControllerTest {
 		val aguCreation = dummyAGUCreationRequestModel
 		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val sut = aguCreation.copy(transportCompanies = listOf(""))
 
 		// act and assert
-		client.post()
-			.uri("$BASE_AGU_PATH/create")
-			.bodyValue(
-				Json.encodeToJsonElement(aguCreation.copy(transportCompanies = aguCreation.transportCompanies.map{ "" }))
-			)
-			.exchange()
-			.expectStatus().is4xxClientError
-			.expectBody()
-			.returnResult()
-			.responseBody!!
+		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
 
 		// clean
-		cleanTest(
-			client = client,
-			idDNO = dnoId
-		)
+		cleanTest(client = client, idDNO = dnoId)
 	}
 }

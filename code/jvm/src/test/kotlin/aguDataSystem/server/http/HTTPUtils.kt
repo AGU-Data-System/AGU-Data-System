@@ -16,6 +16,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.test.web.reactive.server.WebTestClient
 
 /**
@@ -35,13 +37,25 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun createAGURequest(client: WebTestClient, aguCreationModel: AGUCreateRequestModel) =
+		createAGURequestWithStatusCode(client, aguCreationModel, HttpStatus.CREATED)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to create an AGU with its creation input model and expects an error
+	 * @param client the WebTestClient
+	 * @param aguCreationModel the AGUCreationInputModel
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun createAGURequestWithStatusCode(client: WebTestClient, aguCreationModel: AGUCreateRequestModel, status: HttpStatusCode) =
 		client.post()
 			.uri("$BASE_AGU_PATH/create")
 			.bodyValue(
 				Json.encodeToJsonElement(aguCreationModel)
 			)
 			.exchange()
-			.expectStatus().isCreated
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
 			.responseBody!!
@@ -60,7 +74,7 @@ object HTTPUtils {
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
-			.returnResult().also(::println)
+			.returnResult()
 			.responseBody!!
 
 	/**
