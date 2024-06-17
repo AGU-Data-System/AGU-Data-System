@@ -192,16 +192,28 @@ object HTTPUtils {
 	 * @param isFavourite the new favourite state
 	 */
 	fun updateFavouriteStateRequest(client: WebTestClient, aguId: String, isFavourite: Boolean) =
+		updateFavouriteStateRequestWithStatusCode(client, aguId, isFavourite, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to update the favourite state of an AGU and expects an status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param isFavourite the new favourite state
+	 * @param status the expected status
+	 */
+	fun updateFavouriteStateRequestWithStatusCode(client: WebTestClient, aguId: String, isFavourite: Boolean, status: HttpStatusCode) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/favorite")
 			.bodyValue(
 				Json.encodeToJsonElement(isFavourite)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:

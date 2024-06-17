@@ -10,8 +10,11 @@ import aguDataSystem.server.http.HTTPUtils.getAGURequest
 import aguDataSystem.server.http.HTTPUtils.toAGUCreationResponse
 import aguDataSystem.server.http.HTTPUtils.toAGUResponse
 import aguDataSystem.server.http.HTTPUtils.toDNOResponse
+import aguDataSystem.server.http.HTTPUtils.updateFavouriteStateRequest
+import aguDataSystem.server.http.HTTPUtils.updateFavouriteStateRequestWithStatusCode
 import java.time.Duration
 import kotlin.test.Test
+import kotlin.test.assertNotEquals
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
@@ -632,5 +635,91 @@ class AGUControllerTest {
 
 		// clean
 		cleanTest(client = client, idDNO = dnoId)
+	}
+
+	@Test
+	fun `update AGU favorite state correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+
+		// act
+		val updatedAGU = updateFavouriteStateRequest(client, createdAGU.cui, !aguCreation.isFavourite).toAGUResponse()
+
+		// assert
+		assertNotEquals(updatedAGU.isFavourite, aguCreation.isFavourite)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU favorite state with invalid CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+
+		// act and assert
+		updateFavouriteStateRequestWithStatusCode(client, "invalid", !sut.isFavourite, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU favorite state with empty CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+
+		// act and assert
+		updateFavouriteStateRequestWithStatusCode(client, "", !sut.isFavourite, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU favorite state with un-existing AGU should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+
+		// act and assert
+		updateFavouriteStateRequestWithStatusCode(client, "PT6543210987654321XX", !sut.isFavourite, HttpStatus.BAD_REQUEST)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoID)
 	}
 }
