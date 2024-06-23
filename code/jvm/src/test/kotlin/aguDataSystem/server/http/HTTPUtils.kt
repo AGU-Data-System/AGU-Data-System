@@ -14,6 +14,7 @@ import aguDataSystem.server.http.models.response.agu.AGUCreationResponse
 import aguDataSystem.server.http.models.response.agu.AGUResponse
 import aguDataSystem.server.http.models.response.contact.ContactResponse
 import aguDataSystem.server.http.models.response.dno.DNOResponse
+import aguDataSystem.server.http.models.response.tank.TankResponse
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.serialization.json.Json
@@ -652,16 +653,33 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addTankRequest(client: WebTestClient, aguId: String, tankModel: TankCreationRequestModel) =
+		addTankRequestWithStatusCode(client, aguId, tankModel, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a tank to an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param tankModel the tank model
+	 * @param status the expected status
+	 */
+	fun addTankRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		tankModel: TankCreationRequestModel,
+		status: HttpStatusCode
+	) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/tank")
 			.bodyValue(
 				Json.encodeToJsonElement(tankModel)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -678,6 +696,25 @@ object HTTPUtils {
 		aguId: String,
 		tankId: String,
 		tankUpdateModel: TankUpdateRequestModel
+	) = updateTankRequestWithStatusCode(client, aguId, tankId, tankUpdateModel, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to update a tank in an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param tankId the tank ID
+	 * @param tankUpdateModel the tank update model
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun updateTankRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		tankId: String,
+		tankUpdateModel: TankUpdateRequestModel,
+		status: HttpStatusCode
 	) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/tank/$tankId")
@@ -685,10 +722,10 @@ object HTTPUtils {
 				Json.encodeToJsonElement(tankUpdateModel)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -700,13 +737,31 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun deleteTankRequest(client: WebTestClient, aguId: String, tankId: Int) =
+		deleteTankRequestWithStatusCode(client, aguId, tankId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a tank from an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param tankId the tank ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun deleteTankRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		tankId: Int,
+		status: HttpStatusCode
+	) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/$aguId/tank/$tankId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	// Clean
 	/**
@@ -792,4 +847,12 @@ object HTTPUtils {
 	 */
 	fun ByteArray.toContactResponse() = Json.decodeFromString<ContactResponse>(this.decodeToString())
 
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a Tank response
+	 * @receiver the response body
+	 * @return the Tank response
+	 */
+	fun ByteArray.toTankResponse() = Json.decodeFromString<TankResponse>(this.decodeToString())
 }

@@ -6,6 +6,7 @@ import aguDataSystem.server.http.models.request.dno.DNOCreationRequestModel
 import aguDataSystem.server.http.models.request.gasLevels.GasLevelsRequestModel
 import aguDataSystem.server.http.models.request.notes.NotesRequestModel
 import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
+import aguDataSystem.server.http.models.request.tank.TankUpdateRequestModel
 
 /**
  * Data for requests
@@ -41,6 +42,15 @@ object ControllerUtils {
 		loadVolume = 40.0,
 		capacity = 50,
 		correctionFactor = 1.0
+	)
+
+	val dummyTankUpdateRequestModel = TankUpdateRequestModel(
+		minLevel = 10,
+		maxLevel = 90,
+		criticalLevel = 5,
+		loadVolume = 500.0,
+		capacity = 1000,
+		correctionFactor = 1.05
 	)
 
 	val dummyTransportCompanyNames = listOf("Test Transport Company 1", "Test Transport Company 2")

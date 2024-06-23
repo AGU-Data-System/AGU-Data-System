@@ -4,11 +4,13 @@ import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationRequestModel
 import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
 import aguDataSystem.server.http.HTTPUtils.changeGasLevelsRequest
 import aguDataSystem.server.http.HTTPUtils.changeGasLevelsRequestWithStatusCode
+import aguDataSystem.server.http.HTTPUtils.changeNotesRequest
 import aguDataSystem.server.http.HTTPUtils.changeNotesRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.cleanTest
 import aguDataSystem.server.http.HTTPUtils.createAGURequest
 import aguDataSystem.server.http.HTTPUtils.createAGURequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.createDNORequest
+import aguDataSystem.server.http.HTTPUtils.deleteAGURequest
 import aguDataSystem.server.http.HTTPUtils.deleteAGURequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.getAGURequest
 import aguDataSystem.server.http.HTTPUtils.getAGURequestWithStatusCode
@@ -1067,8 +1069,7 @@ class AGUControllerTest {
 		val newNotes = NotesRequestModel("Updated notes")
 
 		// act
-		val updatedAGU =
-			changeNotesRequestWithStatusCode(client, createdAGU.cui, newNotes, HttpStatus.OK).toAGUResponse()
+		val updatedAGU = changeNotesRequest(client, createdAGU.cui, newNotes).toAGUResponse()
 
 		// assert
 		assertNotEquals(updatedAGU.notes, systemAGU.notes)
@@ -1163,7 +1164,7 @@ class AGUControllerTest {
 		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
 
 		// act
-		deleteAGURequestWithStatusCode(client, createdAGU.cui, HttpStatus.OK)
+		deleteAGURequest(client, createdAGU.cui)
 
 		// assert
 		val allAgu = getAllAGUsRequest(client).toAllAGUResponse()
