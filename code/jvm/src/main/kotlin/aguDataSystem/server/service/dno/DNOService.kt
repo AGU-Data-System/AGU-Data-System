@@ -53,7 +53,7 @@ class DNOService(
 	 * @param id The id of the DNO to delete.
 	 * @return The result of the operation.
 	 */
-	fun deleteDNO(id: Int) {
+	fun deleteDNO(id: Int): DeleteDNOResult {
 		return transactionManager.run {
 			it.dnoRepository.deleteDNO(id)
 			success(Unit)

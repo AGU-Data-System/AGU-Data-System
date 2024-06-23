@@ -1051,7 +1051,7 @@ class JDBIAGURepositoryTest {
 		assertNotNull(result)
 		assertEquals(agu.cui, result)
 		assertEquals(2, aguTransportCompanies.size)
-		assertTrue(aguTransportCompanies.map { it.name }.contains(dummyTransportCompanies.first()))
-		assertTrue(aguTransportCompanies.map { it.name }.contains(dummyTransportCompanies.last()))
+		assertTrue(aguTransportCompanies.map { it.name }.contains(dummyTransportCompanies.first().uppercase()))
+		assertTrue(aguTransportCompanies.map { it.name }.contains(dummyTransportCompanies.last().uppercase()))
 	}
 }

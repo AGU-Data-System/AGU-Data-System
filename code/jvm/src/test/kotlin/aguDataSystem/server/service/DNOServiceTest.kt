@@ -146,4 +146,33 @@ class DNOServiceTest {
 		assert(result.isFailure())
 		assert(result.getFailureOrThrow() is GetDNOError.DNONotFound)
 	}
+
+	@Test
+	fun `delete DNO by valid id`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val dnoService = DNOService(transactionManager)
+		val creationDno = dummyDNO
+		val dno = dnoService.createDNO(creationDno).getSuccessOrThrow()
+
+		// act
+		val deleteResult = dnoService.deleteDNO(dno.id)
+
+		// assert
+		assert(deleteResult.isSuccess())
+		val getResult = dnoService.getDNOById(dno.id)
+		assert(getResult.isFailure())
+		assert(getResult.getFailureOrThrow() is GetDNOError.DNONotFound)
+	}
+
+	@Test
+	fun `delete DNO by invalid id`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val dnoService = DNOService(transactionManager)
+
+		// act
+		val result = dnoService.deleteDNO(Int.MIN_VALUE)
+
+		// assert
+		assert(result.isSuccess())
+	}
 }

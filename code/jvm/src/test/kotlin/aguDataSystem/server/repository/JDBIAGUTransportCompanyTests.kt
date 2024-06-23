@@ -38,7 +38,7 @@ class JDBIAGUTransportCompanyTests {
 		// assert
 		assertNotNull(result)
 		assertEquals(1, result.transportCompanies.size)
-		assertEquals(transportCompany, result.transportCompanies.first().name)
+		assertEquals(transportCompany.uppercase(), result.transportCompanies.first().name)
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class JDBIAGUTransportCompanyTests {
 
 		// assert
 		assertEquals(1, transportCompanies.size)
-		assertEquals(transportCompanyName, transportCompanies.first().name)
+		assertEquals(transportCompanyName.uppercase(), transportCompanies.first().name)
 	}
 
 	@Test

@@ -19,3 +19,8 @@ typealias GetDNOByNameResult = Either<GetDNOError, DNO>
  * Represents the possible results of getting all DNOs.
  */
 typealias GetDNOByIdError = Either<GetDNOError, DNO>
+
+/**
+ * Represents the possible results of getting all DNOs.
+ */
+typealias DeleteDNOResult = Either<GetDNOError, Unit>

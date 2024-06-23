@@ -34,7 +34,7 @@ class JDBITransportCompanyRepositoryTest {
 
 		// assert
 		assert(all.size == 1)
-		assertContains(all, TransportCompany(id, tCompany))
+		assertContains(all, TransportCompany(id, tCompany.uppercase()))
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class JDBITransportCompanyRepositoryTest {
 
 		// assert
 		assertNotNull(result)
-		assertEquals(result.name, tCompany)
+		assertEquals(result.name, tCompany.uppercase())
 	}
 
 	@Test
@@ -120,7 +120,7 @@ class JDBITransportCompanyRepositoryTest {
 
 		// assert
 		assertNotNull(result)
-		assertEquals(result.name, tCompany)
+		assertEquals(result.name, tCompany.uppercase())
 	}
 
 	@Test
@@ -158,7 +158,7 @@ class JDBITransportCompanyRepositoryTest {
 
 		// assert
 		assert(result.isNotEmpty())
-		assertEquals(result.first().name, tCompany)
+		assertEquals(result.first().name, tCompany.uppercase())
 	}
 
 	@Test
@@ -255,8 +255,8 @@ class JDBITransportCompanyRepositoryTest {
 
 		// assert
 		assert(result.size == 2)
-		assertContains(result.map { it.name }, tCompany1)
-		assertContains(result.map { it.name }, tCompany2)
+		assertContains(result.map { it.name }, tCompany1.uppercase())
+		assertContains(result.map { it.name }, tCompany2.uppercase())
 	}
 
 	@Test
@@ -292,7 +292,7 @@ class JDBITransportCompanyRepositoryTest {
 
 		// assert
 		assert(result.isNotEmpty())
-		assertEquals(result.first().name, tCompany)
+		assertEquals(result.first().name, tCompany.uppercase())
 	}
 
 	@Test

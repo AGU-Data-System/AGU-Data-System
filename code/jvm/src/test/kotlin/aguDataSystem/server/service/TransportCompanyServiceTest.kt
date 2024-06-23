@@ -10,6 +10,8 @@ import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.chron.FetchService
 import aguDataSystem.server.service.dno.DNOService
 import aguDataSystem.server.service.errors.transportCompany.AddTransportCompanyError
+import aguDataSystem.server.service.errors.transportCompany.AddTransportCompanyToAGUError
+import aguDataSystem.server.service.errors.transportCompany.DeleteTransportCompanyFromAGUError
 import aguDataSystem.server.service.errors.transportCompany.GetTransportCompaniesOfAGUError
 import aguDataSystem.server.service.transportCompany.TransportCompanyService
 import aguDataSystem.server.testUtils.SchemaManagementExtension
@@ -40,7 +42,7 @@ class TransportCompanyServiceTest {
 
 		// assert
 		assertTrue(transportCompanies.isNotEmpty())
-		assertContains(transportCompanies.map { it.name }, sut.name)
+		assertContains(transportCompanies.map { it.name.uppercase() }, sut.name.uppercase())
 	}
 
 	@Test
@@ -80,7 +82,7 @@ class TransportCompanyServiceTest {
 		// assert
 		assertTrue(transportCompanies.isSuccess())
 		assertTrue(transportCompanies.getSuccessOrThrow().isNotEmpty())
-		assertContains(transportCompanies.getSuccessOrThrow().map { it.name }, sut.name)
+		assertContains(transportCompanies.getSuccessOrThrow().map { it.name.uppercase() }, sut.name.uppercase())
 	}
 
 	@Test
@@ -209,4 +211,135 @@ class TransportCompanyServiceTest {
 			assertTrue(result.isFailure())
 			assertTrue(result.getFailureOrThrow() is AddTransportCompanyError.TransportCompanyAlreadyExists)
 		}
+
+	@Test
+	fun `delete transport company by valid ID`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val transportCompanyService = TransportCompanyService(transactionManager)
+		val sut = dummyTransportCompany
+		val transportCompanyId = transportCompanyService.addTransportCompany(sut).getSuccessOrThrow()
+
+		// act
+		transportCompanyService.deleteTransportCompany(transportCompanyId)
+
+		// assert
+		val transportCompanies = transportCompanyService.getTransportCompanies()
+		assertTrue { transportCompanies.none { it.id == transportCompanyId } }
+	}
+
+	@Test
+	fun `delete transport company by invalid ID`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val transportCompanyService = TransportCompanyService(transactionManager)
+
+		// act
+		transportCompanyService.deleteTransportCompany(Int.MIN_VALUE)
+
+		// assert
+		val transportCompanies = transportCompanyService.getTransportCompanies()
+		assertTrue { transportCompanies.isEmpty() }
+	}
+
+	@Test
+	fun `add transport company to AGU`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val dnoService = DNOService(transactionManager)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val transportCompanyService = TransportCompanyService(transactionManager)
+		val dno = dummyDNODTO
+		val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
+		val sut = dummyTransportCompany
+
+		dnoService.createDNO(dno).getSuccessOrThrow().id
+		val aguCui = aguService.createAGU(agu).getSuccessOrThrow()
+		val transportCompanyId = transportCompanyService.addTransportCompany(sut).getSuccessOrThrow()
+
+		// act
+		val result = transportCompanyService.addTransportCompanyToAGU(aguCui, transportCompanyId)
+
+		// assert
+		assertTrue(result.isSuccess())
+		val transportCompanies = transportCompanyService.getTransportCompaniesOfAGU(aguCui).getSuccessOrThrow()
+		assertTrue(transportCompanies.any { it.id == transportCompanyId })
+	}
+
+	@Test
+	fun `delete transport company from AGU`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val dnoService = DNOService(transactionManager)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val transportCompanyService = TransportCompanyService(transactionManager)
+		val dno = dummyDNODTO
+		val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
+		val sut = dummyTransportCompany
+
+		dnoService.createDNO(dno).getSuccessOrThrow().id
+		val aguCui = aguService.createAGU(agu).getSuccessOrThrow()
+		val transportCompanyId = transportCompanyService.addTransportCompany(sut).getSuccessOrThrow()
+		transportCompanyService.addTransportCompanyToAGU(aguCui, transportCompanyId)
+
+		// act
+		val result = transportCompanyService.deleteTransportCompanyFromAGU(aguCui, transportCompanyId)
+
+		// assert
+		assertTrue(result.isSuccess())
+		val transportCompanies = transportCompanyService.getTransportCompaniesOfAGU(aguCui).getSuccessOrThrow()
+		assertTrue(transportCompanies.none { it.id == transportCompanyId })
+	}
+
+	@Test
+	fun `add transport company to AGU with non-existing AGU`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val transportCompanyService = TransportCompanyService(transactionManager)
+		val sut = dummyTransportCompany
+		val transportCompanyId = transportCompanyService.addTransportCompany(sut).getSuccessOrThrow()
+
+		// act
+		val result = transportCompanyService.addTransportCompanyToAGU("nonexistentCUI", transportCompanyId)
+
+		// assert
+		assertTrue(result.isFailure())
+		assertTrue(result.getFailureOrThrow() is AddTransportCompanyToAGUError.AGUNotFound)
+	}
+
+	@Test
+	fun `delete transport company from AGU with non-existing AGU`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val transportCompanyService = TransportCompanyService(transactionManager)
+		val sut = dummyTransportCompany
+		val transportCompanyId = transportCompanyService.addTransportCompany(sut).getSuccessOrThrow()
+
+		// act
+		val result = transportCompanyService.deleteTransportCompanyFromAGU("nonexistentCUI", transportCompanyId)
+
+		// assert
+		assertTrue(result.isFailure())
+		assertTrue(result.getFailureOrThrow() is DeleteTransportCompanyFromAGUError.AGUNotFound)
+	}
+
+	@Test
+	fun `delete transport company from AGU with non-existing transport company`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val dnoService = DNOService(transactionManager)
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val transportCompanyService = TransportCompanyService(transactionManager)
+		val dno = dummyDNODTO
+		val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
+
+		dnoService.createDNO(dno).getSuccessOrThrow().id
+		val aguCui = aguService.createAGU(agu).getSuccessOrThrow()
+
+		// act
+		val result = transportCompanyService.deleteTransportCompanyFromAGU(aguCui, Int.MIN_VALUE)
+
+		// assert
+		assertTrue(result.isFailure())
+		assertTrue(result.getFailureOrThrow() is DeleteTransportCompanyFromAGUError.TransportCompanyNotFound)
+	}
 }

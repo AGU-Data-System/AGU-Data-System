@@ -59,6 +59,82 @@ class AGUServiceTest {
 	}
 
 	@Test
+	fun `create AGU with lower boundary latitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val dnoCreation = dummyDNODTO
+
+		dnoService.createDNO(dnoCreation)
+
+		// act
+		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(latitude = -90.0))
+		val result = aguService.createAGU(creationAgu)
+
+		// assert
+		assert(result.isSuccess())
+	}
+
+	@Test
+	fun `create AGU with upper boundary latitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val dnoCreation = dummyDNODTO
+
+		dnoService.createDNO(dnoCreation)
+		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(latitude = 90.0))
+
+		// act
+		val result = aguService.createAGU(creationAgu)
+
+		// assert
+		assert(result.isSuccess())
+	}
+
+	@Test
+	fun `create AGU with upper boundary longitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val dnoCreation = dummyDNODTO
+
+		dnoService.createDNO(dnoCreation)
+		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(longitude = 180.0))
+
+		// act
+		val result = aguService.createAGU(creationAgu)
+
+		// assert
+		assert(result.isSuccess())
+	}
+
+	@Test
+	fun `create AGU with lower boundary longitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
+		// arrange
+		val fetchService = FetchService(transactionManager)
+		val chronService = ChronService(transactionManager, fetchService)
+		val dnoService = DNOService(transactionManager)
+		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val dnoCreation = dummyDNODTO
+
+		dnoService.createDNO(dnoCreation)
+		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(longitude = -180.0))
+
+		// act
+		val result = aguService.createAGU(creationAgu)
+
+		// assert
+		assert(result.isSuccess())
+	}
+
+	@Test
 	fun `create AGU twice should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
@@ -1026,29 +1102,30 @@ class AGUServiceTest {
 			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidDays)
 		}
 
-	@Test
-	fun `get daily gas measures at a certain hour for several days with invalid hour`() =
-		testWithTransactionManagerAndRollback { transactionManager ->
-			// arrange
-			val fetchService = FetchService(transactionManager)
-			val chronService = ChronService(transactionManager, fetchService)
-			val dnoService = DNOService(transactionManager)
-			val aguService = AGUService(transactionManager, aguDomain, chronService)
-			val dnoCreation = dummyDNODTO
-			val creationAgu = dummyAGUCreationDTO
-			val hour = LocalTime.of(25, 0) // TODO Check test fails here due to invalid hour 0 - 23
-			val days = 2
-
-			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
-
-			// act
-			val result = aguService.getDailyGasMeasures(agu.getSuccessOrThrow(), days, hour)
-
-			// assert
-			assert(result.isFailure())
-			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidTime)
-		}
+	// Not possible to test this case as the hour is validated by the LocalTime class
+//	@Test
+//	fun `get daily gas measures at a certain hour for several days with invalid hour`() =
+//		testWithTransactionManagerAndRollback { transactionManager ->
+//			// arrange
+//			val fetchService = FetchService(transactionManager)
+//			val chronService = ChronService(transactionManager, fetchService)
+//			val dnoService = DNOService(transactionManager)
+//			val aguService = AGUService(transactionManager, aguDomain, chronService)
+//			val dnoCreation = dummyDNODTO
+//			val creationAgu = dummyAGUCreationDTO
+//			val hour = LocalTime.of(25, 0) // TODO Check test fails here due to invalid hour 0 - 23
+//			val days = 2
+//
+//			dnoService.createDNO(dnoCreation)
+//			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
+//
+//			// act
+//			val result = aguService.getDailyGasMeasures(agu.getSuccessOrThrow(), days, hour)
+//
+//			// assert
+//			assert(result.isFailure())
+//			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidTime)
+//		}
 
 	// TODO Needs test for provider error
 
@@ -1228,29 +1305,30 @@ class AGUServiceTest {
 			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidDays)
 		}
 
-	@Test
-	fun `get prediction gas measures for several days at a certain hour with invalid hour`() =
-		testWithTransactionManagerAndRollback { transactionManager ->
-			// arrange
-			val fetchService = FetchService(transactionManager)
-			val chronService = ChronService(transactionManager, fetchService)
-			val dnoService = DNOService(transactionManager)
-			val aguService = AGUService(transactionManager, aguDomain, chronService)
-			val dnoCreation = dummyDNODTO
-			val creationAgu = dummyAGUCreationDTO
-			val days = 2
-			val time = LocalTime.of(25, 0) // TODO Check test fails here due to invalid hour 0 - 23
-
-			dnoService.createDNO(dnoCreation)
-			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
-
-			// act
-			val result = aguService.getPredictionGasLevels(agu.getSuccessOrThrow(), days, time)
-
-			// assert
-			assert(result.isFailure())
-			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidTime)
-		}
+	// Not possible to test this case as the hour is validated by the LocalTime class
+//	@Test
+//	fun `get prediction gas measures for several days at a certain hour with invalid hour`() =
+//		testWithTransactionManagerAndRollback { transactionManager ->
+//			// arrange
+//			val fetchService = FetchService(transactionManager)
+//			val chronService = ChronService(transactionManager, fetchService)
+//			val dnoService = DNOService(transactionManager)
+//			val aguService = AGUService(transactionManager, aguDomain, chronService)
+//			val dnoCreation = dummyDNODTO
+//			val creationAgu = dummyAGUCreationDTO
+//			val days = 2
+//			val time = LocalTime.of(25, 0) // TODO Check test fails here due to invalid hour 0 - 23
+//
+//			dnoService.createDNO(dnoCreation)
+//			val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
+//
+//			// act
+//			val result = aguService.getPredictionGasLevels(agu.getSuccessOrThrow(), days, time)
+//
+//			// assert
+//			assert(result.isFailure())
+//			assert(result.getFailureOrThrow() is GetMeasuresError.InvalidTime)
+//		}
 
 	// TODO Needs test for provider error
 
