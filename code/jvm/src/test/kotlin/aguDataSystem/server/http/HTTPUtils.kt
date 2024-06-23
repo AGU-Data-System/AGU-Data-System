@@ -12,6 +12,7 @@ import aguDataSystem.server.http.models.request.tank.TankUpdateRequestModel
 import aguDataSystem.server.http.models.request.transportCompany.TransportCompanyRequestModel
 import aguDataSystem.server.http.models.response.agu.AGUCreationResponse
 import aguDataSystem.server.http.models.response.agu.AGUResponse
+import aguDataSystem.server.http.models.response.contact.ContactResponse
 import aguDataSystem.server.http.models.response.dno.DNOResponse
 import java.time.LocalDate
 import java.time.LocalTime
@@ -26,7 +27,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
  */
 object HTTPUtils {
 
-	const val BASE_AGU_PATH = "/agus"
+	private const val BASE_AGU_PATH = "/agus"
 	private const val BASE_DNO_PATH = "/dnos"
 
 	/**
@@ -374,7 +375,6 @@ object HTTPUtils {
 			.returnResult()
 			.responseBody!!
 
-
 	// Contact
 	/**
 	 * Util function:
@@ -386,16 +386,32 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addContactRequest(client: WebTestClient, aguId: String, contactModel: ContactCreationRequestModel) =
-		client.put()
+		addContactRequestWithStatusCode(client, aguId, contactModel, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a contact to an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param contact the contact model
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun addContactRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		contact: ContactCreationRequestModel,
+		status: HttpStatus
+	) =
+		client.post()
 			.uri("$BASE_AGU_PATH/$aguId/contact")
-			.bodyValue(
-				Json.encodeToJsonElement(contactModel)
-			)
+			.bodyValue(Json.encodeToJsonElement(contact))
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -407,13 +423,31 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun deleteContactRequest(client: WebTestClient, aguId: String, contactId: Int) =
+		deleteContactRequestWithStatusCode(client, aguId, contactId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a contact from an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param contactId the contact ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun deleteContactRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		contactId: Int,
+		status: HttpStatusCode
+	) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/$aguId/contact/$contactId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	// DNO
 	/**
@@ -748,4 +782,14 @@ object HTTPUtils {
 	 * @return the list of DNO responses
 	 */
 	fun ByteArray.toAllDNOResponse() = Json.decodeFromString<List<DNOResponse>>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a contact response
+	 * @receiver the response body
+	 * @return the contact response
+	 */
+	fun ByteArray.toContactResponse() = Json.decodeFromString<ContactResponse>(this.decodeToString())
+
 }
