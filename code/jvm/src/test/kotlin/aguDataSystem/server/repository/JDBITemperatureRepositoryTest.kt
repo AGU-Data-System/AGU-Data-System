@@ -66,7 +66,7 @@ class JDBITemperatureRepositoryTest {
 			aguRepository.addAGU(agu, dnoId)
 			providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 
-			// act
+			// act & assert
 			assertFailsWith<UnableToExecuteStatementException> {
 				temperatureRepository.addTemperatureMeasuresToProvider(providerId, invalidTemperatureMeasures)
 			}
@@ -86,7 +86,7 @@ class JDBITemperatureRepositoryTest {
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
 
-		// act
+		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
 			temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 		}
@@ -179,7 +179,6 @@ class JDBITemperatureRepositoryTest {
 			// assert
 			assertEquals(emptyList(), sut)
 		}
-
 
 	@Test
 	fun `get temperature measures for a past day`() = testWithHandleAndRollback { handle ->

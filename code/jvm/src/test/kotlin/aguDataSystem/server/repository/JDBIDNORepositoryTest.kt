@@ -52,7 +52,7 @@ class JDBIDNORepositoryTest {
 		val dnoRepository = JDBIDNORepository(handle)
 		val sut = dummyDNO.copy(name = "")
 
-		// act
+		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
 			dnoRepository.addDNO(sut)
 		}
@@ -64,7 +64,7 @@ class JDBIDNORepositoryTest {
 		val dnoRepository = JDBIDNORepository(handle)
 		val sut = dummyDNO.copy(region = "")
 
-		// act
+		// act & assert
 		assertFailsWith<UnableToExecuteStatementException> {
 			dnoRepository.addDNO(sut)
 		}

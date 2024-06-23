@@ -2,11 +2,13 @@ package aguDataSystem.server.repository
 
 import aguDataSystem.server.domain.contact.ContactCreation
 import aguDataSystem.server.domain.gasLevels.GasLevels
+import aguDataSystem.server.repository.RepositoryUtils.DUMMY_TRANSPORT_COMPANY_NAME
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
 import aguDataSystem.server.repository.RepositoryUtils.dummyGasLevels
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
+import aguDataSystem.server.repository.transportCompany.JDBITransportCompanyRepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
 import kotlin.test.Test
@@ -965,5 +967,91 @@ class JDBIAGURepositoryTest {
 		// assert
 		assertNotNull(aguFromDb)
 		assertEquals("", aguFromDb.notes)
+	}
+
+	@Test
+	fun `delete AGU correctly`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
+		val agu = dummyAGU
+		val result = aguRepo.addAGU(agu, dnoId)
+
+		// act
+		aguRepo.deleteAGU(result)
+		val aguFromDb = aguRepo.getAGUByCUI(result)
+
+		// assert
+		assertNull(aguFromDb)
+	}
+
+	@Test
+	fun `delete AGU with invalid CUI should do nothing`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+
+		// act
+		aguRepo.deleteAGU("invalid")
+		val aguFromDb = aguRepo.getAGUByCUI("invalid")
+
+		// assert
+		assertNull(aguFromDb)
+	}
+
+	@Test
+	fun `get training model correctly`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
+		val agu = dummyAGU.copy(training = Json.encodeToString("test training model"))
+		val result = aguRepo.addAGU(agu, dnoId)
+
+		// act
+		val trainingModel = aguRepo.getTraining(result)
+
+		// assert
+		assertNotNull(trainingModel)
+		assertEquals("test training model", Json.decodeFromString(trainingModel))
+	}
+
+	@Test
+	fun `get training model with invalid CUI should return null`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+
+		// act
+		val trainingModel = aguRepo.getTraining("invalid")
+
+		// assert
+		assertNull(trainingModel)
+	}
+
+	@Test
+	fun `add AGU with transport companies correctly`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val aguRepo = JDBIAGURepository(handle)
+		val dnoRepo = JDBIDNORepository(handle)
+		val transportCompanyRepo = JDBITransportCompanyRepository(handle)
+		val dummyTransportCompanies = listOf(DUMMY_TRANSPORT_COMPANY_NAME, DUMMY_TRANSPORT_COMPANY_NAME + 2)
+
+		val dnoId = dnoRepo.addDNO(dummyDNO).id
+		val tcIds = dummyTransportCompanies.map { transportCompanyRepo.addTransportCompany(name = it) }
+		val agu = dummyAGU
+
+		// act
+		val result = aguRepo.addAGU(agu, dnoId)
+		tcIds.forEach { id -> transportCompanyRepo.addTransportCompanyToAGU(result, id) }
+		val aguTransportCompanies = transportCompanyRepo.getTransportCompaniesByAGU(result)
+
+		// assert
+		assertNotNull(result)
+		assertEquals(agu.cui, result)
+		assertEquals(2, aguTransportCompanies.size)
+		assertTrue(aguTransportCompanies.map { it.name }.contains(dummyTransportCompanies.first()))
+		assertTrue(aguTransportCompanies.map { it.name }.contains(dummyTransportCompanies.last()))
 	}
 }

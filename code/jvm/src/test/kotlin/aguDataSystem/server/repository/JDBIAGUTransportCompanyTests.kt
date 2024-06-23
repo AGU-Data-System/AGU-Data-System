@@ -74,4 +74,48 @@ class JDBIAGUTransportCompanyTests {
 			assertEquals(1, result.first { it.cui == aguCui }.transportCompanies.size)
 			assertEquals(1, result.first { it.cui == aguCui2 }.transportCompanies.size)
 		}
+
+	@Test
+	fun `add transport company to AGU and retrieve`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val transportCompanyRepository = JDBITransportCompanyRepository(handle)
+
+		val dnoId = dnoRepository.addDNO(dummyDNO).id
+		val aguCui = aguRepository.addAGU(dummyAGU, dnoId)
+		val transportCompanyName = DUMMY_TRANSPORT_COMPANY_NAME
+		val transportCompanyId = transportCompanyRepository.addTransportCompany(transportCompanyName)
+
+		// act
+		transportCompanyRepository.addTransportCompanyToAGU(aguCui, transportCompanyId)
+		val transportCompanies = transportCompanyRepository.getTransportCompaniesByAGU(aguCui)
+
+		// assert
+		assertEquals(1, transportCompanies.size)
+		assertEquals(transportCompanyName, transportCompanies.first().name)
+	}
+
+	@Test
+	fun `remove transport company from AGU`() = testWithHandleAndRollback { handle ->
+		// arrange
+		val dnoRepository = JDBIDNORepository(handle)
+		val aguRepository = JDBIAGURepository(handle)
+		val transportCompanyRepository = JDBITransportCompanyRepository(handle)
+
+		val dnoId = dnoRepository.addDNO(dummyDNO).id
+		val aguCui = aguRepository.addAGU(dummyAGU, dnoId)
+		val transportCompanyName = DUMMY_TRANSPORT_COMPANY_NAME
+		val transportCompanyId = transportCompanyRepository.addTransportCompany(transportCompanyName)
+
+		transportCompanyRepository.addTransportCompanyToAGU(aguCui, transportCompanyId)
+		assertEquals(1, transportCompanyRepository.getTransportCompaniesByAGU(aguCui).size)
+
+		// act
+		transportCompanyRepository.deleteTransportCompanyFromAGU(aguCui, transportCompanyId)
+		val transportCompanies = transportCompanyRepository.getTransportCompaniesByAGU(aguCui)
+
+		// assert
+		assertEquals(0, transportCompanies.size)
+	}
 }

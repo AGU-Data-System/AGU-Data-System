@@ -156,7 +156,6 @@ create table if not exists contacts
 );
 
 -- Views
-
 create or replace view temperature_measures as
 select provider.id,
        provider.agu_cui,
