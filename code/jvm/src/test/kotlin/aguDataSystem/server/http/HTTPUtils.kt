@@ -2,6 +2,7 @@ package aguDataSystem.server.http
 
 
 import aguDataSystem.server.http.models.request.agu.AGUCreateRequestModel
+import aguDataSystem.server.http.models.request.agu.UpdateActiveAGURequestModel
 import aguDataSystem.server.http.models.request.contact.ContactCreationRequestModel
 import aguDataSystem.server.http.models.request.dno.DNOCreationRequestModel
 import aguDataSystem.server.http.models.request.gasLevels.GasLevelsRequestModel
@@ -73,10 +74,22 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun getAGURequest(client: WebTestClient, aguId: String) =
+		getAGURequestWithStatusCode(client, aguId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to get an AGU by its ID and expects a status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun getAGURequestWithStatusCode(client: WebTestClient, aguId: String, status: HttpStatusCode) =
 		client.get()
 			.uri("$BASE_AGU_PATH/$aguId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
 			.responseBody!!
@@ -106,13 +119,29 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun deleteAGURequest(client: WebTestClient, aguId: String) =
+		deleteAGURequestWithStatusCode(client, aguId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete an AGU by its ID and expects a status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun deleteAGURequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		status: HttpStatusCode
+	) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/$aguId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -227,7 +256,46 @@ object HTTPUtils {
 	/**
 	 * Util function:
 	 *
-	 * Sends a request to change the levels of an AGU
+	 * Sends a request to update the active state of an AGU
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param isActive the new active state
+	 * @return the response body
+	 */
+	fun updateActiveStateRequest(client: WebTestClient, aguId: String, isActive: Boolean) =
+		updateActiveStateRequestWithStatusCode(client, aguId, isActive, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to update the active state of an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param isActive the new active state
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun updateActiveStateRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		isActive: Boolean,
+		status: HttpStatusCode
+	) =
+		client.put()
+			.uri("$BASE_AGU_PATH/$aguId/active")
+			.bodyValue(
+				Json.encodeToJsonElement(UpdateActiveAGURequestModel(isActive))
+			)
+			.exchange()
+			.expectStatus().isEqualTo(status)
+			.expectBody()
+			.returnResult()
+			.responseBody!!
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to change the gas levels of an AGU
 	 * @param client the WebTestClient
 	 * @param aguId the AGU ID
 	 * @param gasLevelsModel the gas levels model
@@ -238,37 +306,74 @@ object HTTPUtils {
 		aguId: String,
 		gasLevelsModel: GasLevelsRequestModel
 	) =
+		changeGasLevelsRequestWithStatusCode(client, aguId, gasLevelsModel, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to change the levels of an AGU and expects an status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param gasLevelsModel the gas levels model
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun changeGasLevelsRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		gasLevelsModel: GasLevelsRequestModel,
+		status: HttpStatusCode
+	) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/levels")
 			.bodyValue(
 				Json.encodeToJsonElement(gasLevelsModel)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
 	 *
-	 * Sends a request to update the notes of an AGU
+	 * Sends a request to change the notes of an AGU
 	 * @param client the WebTestClient
 	 * @param aguId the AGU ID
 	 * @param notes the new notes
 	 * @return the response body
 	 */
 	fun changeNotesRequest(client: WebTestClient, aguId: String, notes: NotesRequestModel) =
+		changeNotesRequestWithStatusCode(client, aguId, notes, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to update the notes of an AGU and expects a status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param notesModel the new notes model
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun changeNotesRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		notesModel: NotesRequestModel,
+		status: HttpStatusCode
+	) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/notes")
 			.bodyValue(
-				Json.encodeToJsonElement(notes)
+				Json.encodeToJsonElement(notesModel)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
+
 
 	// Contact
 	/**
@@ -596,4 +701,14 @@ object HTTPUtils {
 	 * @return the AGU response
 	 */
 	fun ByteArray.toAGUResponse() = Json.decodeFromString<AGUResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a list of AGU responses
+	 * @receiver the response body
+	 * @return the list of AGU responses
+	 */
+	fun ByteArray.toAllAGUResponse() = Json.decodeFromString<List<AGUResponse>>(this.decodeToString())
+
 }

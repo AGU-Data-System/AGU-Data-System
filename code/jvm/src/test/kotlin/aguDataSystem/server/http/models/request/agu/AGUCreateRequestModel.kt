@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
  * @param latitude The latitude of the AGU
  * @param longitude The longitude of the AGU
  * @param locationName The name of the location of the AGU
- * @param dnoCreation The DNO creation request model
+ * @param dnoName The DNO name that the AGU is associated with
  * @param gasLevelUrl The URL of the gas level of the AGU
  * @param image The image of the AGU
  * @param tanks The tanks of the AGU
@@ -44,5 +44,6 @@ data class AGUCreateRequestModel(
 	val contacts: List<ContactCreationRequestModel>,
 	val transportCompanies: List<String>,
 	val isFavourite: Boolean,
+	val isActive: Boolean,
 	val notes: String?,
 )

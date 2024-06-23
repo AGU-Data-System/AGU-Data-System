@@ -63,6 +63,7 @@ object ControllerUtils {
 		tanks = listOf(dummyTankCreationRequestModel),
 		contacts = listOf(dummyContactCreationRequestModel),
 		transportCompanies = emptyList(),
+		isActive = true,
 		isFavourite = false,
 		notes = dummyNotesRequestModel.notes
 	)

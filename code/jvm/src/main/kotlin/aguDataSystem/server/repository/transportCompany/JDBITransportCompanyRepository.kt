@@ -105,7 +105,7 @@ class JDBITransportCompanyRepository(private val handle: Handle) : TransportComp
             WHERE name = :name
             """.trimIndent()
 		)
-			.bind("name", name)
+			.bind("name", name.uppercase())
 			.mapTo<TransportCompany>()
 			.singleOrNull()
 

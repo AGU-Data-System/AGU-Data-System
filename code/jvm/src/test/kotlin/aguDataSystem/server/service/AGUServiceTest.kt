@@ -59,80 +59,84 @@ class AGUServiceTest {
 	}
 
 	@Test
-	fun `create AGU with lower boundary latitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
-		// arrange
-		val fetchService = FetchService(transactionManager)
-		val chronService = ChronService(transactionManager, fetchService)
-		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNODTO
+	fun `create AGU with lower boundary latitude values`() =
+		testWithTransactionManagerAndRollback { transactionManager ->
+			// arrange
+			val fetchService = FetchService(transactionManager)
+			val chronService = ChronService(transactionManager, fetchService)
+			val dnoService = DNOService(transactionManager)
+			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val dnoCreation = dummyDNODTO
 
-		dnoService.createDNO(dnoCreation)
+			dnoService.createDNO(dnoCreation)
 
-		// act
-		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(latitude = -90.0))
-		val result = aguService.createAGU(creationAgu)
+			// act
+			val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(latitude = -90.0))
+			val result = aguService.createAGU(creationAgu)
 
-		// assert
-		assert(result.isSuccess())
-	}
-
-	@Test
-	fun `create AGU with upper boundary latitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
-		// arrange
-		val fetchService = FetchService(transactionManager)
-		val chronService = ChronService(transactionManager, fetchService)
-		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNODTO
-
-		dnoService.createDNO(dnoCreation)
-		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(latitude = 90.0))
-
-		// act
-		val result = aguService.createAGU(creationAgu)
-
-		// assert
-		assert(result.isSuccess())
-	}
+			// assert
+			assert(result.isSuccess())
+		}
 
 	@Test
-	fun `create AGU with upper boundary longitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
-		// arrange
-		val fetchService = FetchService(transactionManager)
-		val chronService = ChronService(transactionManager, fetchService)
-		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNODTO
+	fun `create AGU with upper boundary latitude values`() =
+		testWithTransactionManagerAndRollback { transactionManager ->
+			// arrange
+			val fetchService = FetchService(transactionManager)
+			val chronService = ChronService(transactionManager, fetchService)
+			val dnoService = DNOService(transactionManager)
+			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val dnoCreation = dummyDNODTO
 
-		dnoService.createDNO(dnoCreation)
-		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(longitude = 180.0))
+			dnoService.createDNO(dnoCreation)
+			val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(latitude = 90.0))
 
-		// act
-		val result = aguService.createAGU(creationAgu)
+			// act
+			val result = aguService.createAGU(creationAgu)
 
-		// assert
-		assert(result.isSuccess())
-	}
+			// assert
+			assert(result.isSuccess())
+		}
 
 	@Test
-	fun `create AGU with lower boundary longitude values`() = testWithTransactionManagerAndRollback { transactionManager ->
-		// arrange
-		val fetchService = FetchService(transactionManager)
-		val chronService = ChronService(transactionManager, fetchService)
-		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNODTO
+	fun `create AGU with upper boundary longitude values`() =
+		testWithTransactionManagerAndRollback { transactionManager ->
+			// arrange
+			val fetchService = FetchService(transactionManager)
+			val chronService = ChronService(transactionManager, fetchService)
+			val dnoService = DNOService(transactionManager)
+			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val dnoCreation = dummyDNODTO
 
-		dnoService.createDNO(dnoCreation)
-		val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(longitude = -180.0))
+			dnoService.createDNO(dnoCreation)
+			val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(longitude = 180.0))
 
-		// act
-		val result = aguService.createAGU(creationAgu)
+			// act
+			val result = aguService.createAGU(creationAgu)
 
-		// assert
-		assert(result.isSuccess())
-	}
+			// assert
+			assert(result.isSuccess())
+		}
+
+	@Test
+	fun `create AGU with lower boundary longitude values`() =
+		testWithTransactionManagerAndRollback { transactionManager ->
+			// arrange
+			val fetchService = FetchService(transactionManager)
+			val chronService = ChronService(transactionManager, fetchService)
+			val dnoService = DNOService(transactionManager)
+			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val dnoCreation = dummyDNODTO
+
+			dnoService.createDNO(dnoCreation)
+			val creationAgu = dummyAGUCreationDTO.copy(location = dummyAGUCreationDTO.location.copy(longitude = -180.0))
+
+			// act
+			val result = aguService.createAGU(creationAgu)
+
+			// assert
+			assert(result.isSuccess())
+		}
 
 	@Test
 	fun `create AGU twice should fail`() = testWithTransactionManagerAndRollback { transactionManager ->

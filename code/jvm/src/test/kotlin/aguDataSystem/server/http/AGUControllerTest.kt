@@ -2,19 +2,33 @@ package aguDataSystem.server.http
 
 import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationRequestModel
 import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
+import aguDataSystem.server.http.HTTPUtils.changeGasLevelsRequest
+import aguDataSystem.server.http.HTTPUtils.changeGasLevelsRequestWithStatusCode
+import aguDataSystem.server.http.HTTPUtils.changeNotesRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.cleanTest
 import aguDataSystem.server.http.HTTPUtils.createAGURequest
 import aguDataSystem.server.http.HTTPUtils.createAGURequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.createDNORequest
+import aguDataSystem.server.http.HTTPUtils.deleteAGURequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.getAGURequest
+import aguDataSystem.server.http.HTTPUtils.getAGURequestWithStatusCode
+import aguDataSystem.server.http.HTTPUtils.getAllAGUsRequest
 import aguDataSystem.server.http.HTTPUtils.toAGUCreationResponse
 import aguDataSystem.server.http.HTTPUtils.toAGUResponse
+import aguDataSystem.server.http.HTTPUtils.toAllAGUResponse
 import aguDataSystem.server.http.HTTPUtils.toDNOResponse
+import aguDataSystem.server.http.HTTPUtils.updateActiveStateRequest
+import aguDataSystem.server.http.HTTPUtils.updateActiveStateRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.updateFavouriteStateRequest
 import aguDataSystem.server.http.HTTPUtils.updateFavouriteStateRequestWithStatusCode
+import aguDataSystem.server.http.models.request.gasLevels.GasLevelsRequestModel
+import aguDataSystem.server.http.models.request.notes.NotesRequestModel
 import java.time.Duration
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
@@ -747,4 +761,550 @@ class AGUControllerTest {
 		// clean
 		cleanTest(client = client, idDNO = dnoID)
 	}
+
+	@Test
+	fun `update AGU active state correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		// act
+		val updatedAGU = updateActiveStateRequest(client, createdAGU.cui, !systemAGU.isActive).toAGUResponse()
+
+		// assert
+		assertNotEquals(updatedAGU.isActive, systemAGU.isActive)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU active state with invalid CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+
+		// act and assert
+		updateActiveStateRequestWithStatusCode(client, "invalid", !sut.isActive, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU active state with empty CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+
+		// act and assert
+		updateActiveStateRequestWithStatusCode(client, "", !sut.isActive, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU active state with un-existing AGU should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+
+		// act and assert
+		updateActiveStateRequestWithStatusCode(
+			client,
+			"PT6543210987654321XX",
+			!sut.isActive,
+			HttpStatus.BAD_REQUEST
+		)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoID)
+	}
+
+	@Test
+	fun `change AGU gas levels correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = 10, max = 20, critical = 15)
+
+		// act
+		val updatedAGU = changeGasLevelsRequest(client, createdAGU.cui, newGasLevels).toAGUResponse()
+
+		// assert
+		assertEquals(updatedAGU.levels.min, newGasLevels.min)
+		assertEquals(updatedAGU.levels.max, newGasLevels.max)
+		assertEquals(updatedAGU.levels.critical, newGasLevels.critical)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with invalid CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val newGasLevels = GasLevelsRequestModel(min = 10, max = 20, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, "invalid", newGasLevels, HttpStatus.BAD_REQUEST)
+	}
+
+	@Test
+	fun `change AGU gas levels with empty CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val newGasLevels = GasLevelsRequestModel(min = 10, max = 20, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, "", newGasLevels, HttpStatus.BAD_REQUEST)
+	}
+
+	@Test
+	fun `change AGU gas levels with un-existing AGU should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val newGasLevels = GasLevelsRequestModel(min = 10, max = 20, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(
+			client,
+			"PT6543210987654321XX",
+			newGasLevels,
+			HttpStatus.BAD_REQUEST
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with invalid min level should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = -1, max = 20, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, createdAGU.cui, newGasLevels, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with invalid max level should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = 10, max = -1, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, createdAGU.cui, newGasLevels, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with invalid critical level should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = 10, max = 20, critical = -1)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, createdAGU.cui, newGasLevels, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with critical over min level should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = 20, max = 25, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, createdAGU.cui, newGasLevels, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with critical over max level should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = 5, max = 15, critical = 20)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, createdAGU.cui, newGasLevels, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `change AGU gas levels with min level over max level should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val newGasLevels = GasLevelsRequestModel(min = 20, max = 10, critical = 15)
+
+		// act and assert
+		changeGasLevelsRequestWithStatusCode(client, createdAGU.cui, newGasLevels, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU notes correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		val newNotes = NotesRequestModel("Updated notes")
+
+		// act
+		val updatedAGU =
+			changeNotesRequestWithStatusCode(client, createdAGU.cui, newNotes, HttpStatus.OK).toAGUResponse()
+
+		// assert
+		assertNotEquals(updatedAGU.notes, systemAGU.notes)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU notes with invalid CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+		val newNotes = NotesRequestModel("Updated notes")
+
+		// act and assert
+		changeNotesRequestWithStatusCode(client, "invalid", newNotes, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU notes with empty CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+		val newNotes = NotesRequestModel("Updated notes")
+
+		// act and assert
+		changeNotesRequestWithStatusCode(client, "", newNotes, HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `update AGU notes with un-existing AGU should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val newNotes = NotesRequestModel("Updated notes")
+
+		// act and assert
+		changeNotesRequestWithStatusCode(
+			client,
+			sut.cui,
+			newNotes,
+			HttpStatus.BAD_REQUEST
+		)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoID)
+	}
+
+	@Test
+	fun `delete AGU correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		// act
+		deleteAGURequestWithStatusCode(client, createdAGU.cui, HttpStatus.OK)
+
+		// assert
+		val allAgu = getAllAGUsRequest(client).toAllAGUResponse()
+		assertFalse(allAgu.contains(systemAGU))
+
+		// clean
+		cleanTest(
+			client = client,
+			idDNO = dnoId,
+			idsTransportCompany = systemAGU.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `delete AGU with invalid CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+
+		// act and assert
+		deleteAGURequestWithStatusCode(client, "invalid", HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `delete AGU with empty CUI should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, sut).toAGUCreationResponse()
+
+		// act and assert
+		deleteAGURequestWithStatusCode(client, "", HttpStatus.BAD_REQUEST)
+
+		// clean
+		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
+		cleanTest(
+			client = client,
+			idAGU = allAgu.cui,
+			idDNO = dnoID,
+			idsTransportCompany = allAgu.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `delete AGU with un-existing AGU should fail`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val sut = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoID = createDNORequest(client, dno).toDNOResponse().id
+
+		// act and assert
+		deleteAGURequestWithStatusCode(client, sut.cui, HttpStatus.BAD_REQUEST)
+
+		// clean
+		cleanTest(client = client, idDNO = dnoID)
+	}
+
+	@Test
+	fun `get all AGUs correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU1 = createAGURequest(client, aguCreation).toAGUCreationResponse()
+		val createdAGU2 = createAGURequest(
+			client,
+			aguCreation.copy(cui = "PT6543210987654321YY", eic = "newEIC", name = "newName")
+		).toAGUCreationResponse()
+
+		// act
+		val allAgu = getAllAGUsRequest(client).toAllAGUResponse()
+
+		// assert
+		assertTrue(allAgu.any { it.cui == createdAGU1.cui })
+		assertTrue(allAgu.any { it.cui == createdAGU2.cui })
+
+		// clean
+		cleanTest(
+			client = client,
+			idDNO = dnoId,
+			idsTransportCompany = allAgu.flatMap { it.transportCompanies.transportCompanies.map { company -> company.id } }
+		)
+	}
+
+	@Test
+	fun `get AGU by ID correctly`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val aguCreation = dummyAGUCreationRequestModel
+		val dno = dummyDNOCreationRequestModel
+		val dnoId = createDNORequest(client, dno).toDNOResponse().id
+		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
+
+		// act
+		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
+
+		// assert
+		assertEquals(systemAGU.cui, createdAGU.cui)
+
+		// clean
+		cleanTest(
+			client = client,
+			idAGU = systemAGU.cui,
+			idDNO = dnoId,
+			idsTransportCompany = systemAGU.transportCompanies.transportCompanies.map { it.id }
+		)
+	}
+
+	@Test
+	fun `get AGU by invalid ID should return not found`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+
+		// act and assert
+		getAGURequestWithStatusCode(client, "invalid", HttpStatus.BAD_REQUEST)
+	}
+
+	@Test
+	fun `get AGU by empty ID should return not found`() {
+		// arrange
+		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+
+		// act and assert
+		getAGURequestWithStatusCode(client, dummyAGUCreationRequestModel.cui, HttpStatus.NOT_FOUND)
+	}
+
+	// TODO tests to getPredictionGasMeasures, getHourlyGasMeasures, getDailyGasMeasures, getTemperatureMeasures
 }
