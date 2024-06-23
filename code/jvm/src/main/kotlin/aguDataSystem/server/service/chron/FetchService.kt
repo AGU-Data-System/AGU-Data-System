@@ -21,6 +21,7 @@ import java.time.LocalDateTime
 import kotlin.math.roundToInt
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonArray
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -88,7 +89,7 @@ class FetchService(
 	 * @param url The URL to make the request to
 	 * @return The response body
 	 */
-	fun fetch(url: String): Response {
+	fun fetch(url: String, body: String? = null): Response {
 		val client = HttpClient.newHttpClient()
 		val request = HttpRequest.newBuilder()
 			.uri(URI.create(url))
@@ -188,6 +189,49 @@ class FetchService(
 			}
 		}
 		return gasMeasures
+	}
+
+	/**
+	 * Generates a training model for the prediction module.
+	 * TODO ITS A DAMM SKETCH
+	 * @param temps The temperature measures
+	 * @param consumptions The gas consumptions
+	 * @return The training model
+	 */
+	fun generateTraining(temps: List<TemperatureMeasure>, consumptions: List<Int>): String? {
+		val body = Json.encodeToJsonElement(mapOf("temps" to temps, "consumptions" to consumptions)).toString()
+		val training = fetch(Environment.getPredictionUrl(), body)
+		return if (training.statusCode == HttpStatus.OK.value()) training.body else null
+	}
+
+	/**
+	 * Generates predictions for the gas consumption.
+	 *
+	 * TODO ITS A DAMM SKETCH
+	 * @param pastTemps The past temperature measures
+	 * @param futureTemps The future temperature measures
+	 * @param map The gas consumptions
+	 * @param training The training model
+	 * @return The gas consumption predictions
+	 */
+	fun generatePredictions(
+		pastTemps: List<TemperatureMeasure>,
+		futureTemps: List<TemperatureMeasure>,
+		map: List<Int>,
+		training: String
+	): List<Double> {
+		val body = Json.encodeToJsonElement(
+			mapOf(
+				"pastTemps" to pastTemps,
+				"futureTemps" to futureTemps,
+				"consumptions" to map,
+				"training" to training
+			)
+		).toString()
+		val predictions = fetch(Environment.getPredictionUrl(), body)
+		return if (predictions.statusCode == HttpStatus.OK.value()) {
+			Json.decodeFromString<List<Double>>(predictions.body)
+		} else emptyList()
 	}
 
 	/**

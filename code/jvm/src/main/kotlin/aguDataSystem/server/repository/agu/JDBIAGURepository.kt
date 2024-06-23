@@ -361,6 +361,34 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		logger.info("AGU with CUI: {} deleted from the database", cui)
 	}
 
+	/**
+	 * Gets the training model for an AGU
+	 *
+	 * @param cui the AGU's CUI
+	 * @return the training model
+	 */
+	override fun getTraining(cui: String): String? {
+		logger.info("Getting training model for AGU with CUI: {} from the database", cui)
+
+		val training = handle.createQuery(
+			"""
+			SELECT training FROM agu 
+			WHERE cui = :cui
+			""".trimIndent()
+		)
+			.bind("cui", cui)
+			.mapTo<String>()
+			.singleOrNull()
+
+		if (training == null) {
+			logger.info("Training model not found for AGU with CUI: {}", cui)
+		} else {
+			logger.info("Retrieved training model for AGU with CUI from the database")
+		}
+
+		return training
+	}
+
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(JDBIAGURepository::class.java)

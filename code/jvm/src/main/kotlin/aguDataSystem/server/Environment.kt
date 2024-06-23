@@ -18,7 +18,7 @@ object Environment {
 	/**
 	 * Get the prediction url
 	 */
-	fun getPredictionUrl(): String? =
+	fun getPredictionUrl(): String/*?*/ =
 		System.getenv(KEY_PREDICTION_URL) // ?: throw Exception("Missing env var $KEY_PREDICTION_URL")
 
 	private const val KEY_DB_URL = "DB_URL"

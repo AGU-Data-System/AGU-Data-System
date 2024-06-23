@@ -48,7 +48,11 @@ object HTTPUtils {
 	 * @param status the expected status
 	 * @return the response body
 	 */
-	fun createAGURequestWithStatusCode(client: WebTestClient, aguCreationModel: AGUCreateRequestModel, status: HttpStatusCode) =
+	fun createAGURequestWithStatusCode(
+		client: WebTestClient,
+		aguCreationModel: AGUCreateRequestModel,
+		status: HttpStatusCode
+	) =
 		client.post()
 			.uri("$BASE_AGU_PATH/create")
 			.bodyValue(
@@ -203,7 +207,12 @@ object HTTPUtils {
 	 * @param isFavourite the new favourite state
 	 * @param status the expected status
 	 */
-	fun updateFavouriteStateRequestWithStatusCode(client: WebTestClient, aguId: String, isFavourite: Boolean, status: HttpStatusCode) =
+	fun updateFavouriteStateRequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		isFavourite: Boolean,
+		status: HttpStatusCode
+	) =
 		client.put()
 			.uri("$BASE_AGU_PATH/$aguId/favorite")
 			.bodyValue(

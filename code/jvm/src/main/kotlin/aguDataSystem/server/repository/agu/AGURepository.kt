@@ -97,4 +97,12 @@ interface AGURepository {
 	 * @param cui the AGU's CUI
 	 */
 	fun deleteAGU(cui: String)
+
+	/**
+	 * Gets the training model for an AGU
+	 *
+	 * @param cui the AGU's CUI
+	 * @return the training model
+	 */
+	fun getTraining(cui: String): String?
 }
