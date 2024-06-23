@@ -37,7 +37,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AGUControllerTest {
+class AGUControllerTests {
 
 	// One of the very few places where we use property injection
 	@LocalServerPort

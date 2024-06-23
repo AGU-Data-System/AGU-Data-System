@@ -7,6 +7,7 @@ import aguDataSystem.server.http.models.request.gasLevels.GasLevelsRequestModel
 import aguDataSystem.server.http.models.request.notes.NotesRequestModel
 import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
 import aguDataSystem.server.http.models.request.tank.TankUpdateRequestModel
+import aguDataSystem.server.http.models.request.transportCompany.TransportCompanyRequestModel
 
 /**
  * Data for requests
@@ -53,7 +54,9 @@ object ControllerUtils {
 		correctionFactor = 1.05
 	)
 
-	val dummyTransportCompanyNames = listOf("Test Transport Company 1", "Test Transport Company 2")
+	val dummyTransportCompanyCreationRequestModel = TransportCompanyRequestModel(
+		name = "Test Transport Company"
+	)
 
 	val dummyAGUCreationRequestModel = AGUCreateRequestModel(
 		cui = "PT1234567890123456XX",

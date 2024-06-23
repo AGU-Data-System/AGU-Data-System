@@ -15,6 +15,8 @@ import aguDataSystem.server.http.models.response.agu.AGUResponse
 import aguDataSystem.server.http.models.response.contact.ContactResponse
 import aguDataSystem.server.http.models.response.dno.DNOResponse
 import aguDataSystem.server.http.models.response.tank.TankResponse
+import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyListResponse
+import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyResponse
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.serialization.json.Json
@@ -550,7 +552,7 @@ object HTTPUtils {
 			.expectStatus().isOk
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -561,13 +563,25 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun getTransportCompaniesOfAGURequest(client: WebTestClient, aguId: String) =
+		getTransportCompaniesOfAGURequestWithStatusCode(client, aguId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to get the transport companies of an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun getTransportCompaniesOfAGURequestWithStatusCode(client: WebTestClient, aguId: String, status: HttpStatusCode) =
 		client.get()
 			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -578,16 +592,32 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addTransportCompanyRequest(client: WebTestClient, transportCompany: TransportCompanyRequestModel) =
+		addTransportCompanyRequestWithStatusCode(client, transportCompany, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a transport company and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param transportCompany the transport company model
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun addTransportCompanyRequestWithStatusCode(
+		client: WebTestClient,
+		transportCompany: TransportCompanyRequestModel,
+		status: HttpStatusCode
+	) =
 		client.post()
 			.uri("$BASE_AGU_PATH/transport-companies")
 			.bodyValue(
 				Json.encodeToJsonElement(transportCompany)
 			)
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -598,10 +628,26 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun deleteTransportCompanyRequest(client: WebTestClient, transportCompanyId: Int) =
+		deleteTransportCompanyRequestWithStatusCode(client, transportCompanyId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a transport company and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param transportCompanyId the transport company ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun deleteTransportCompanyRequestWithStatusCode(
+		client: WebTestClient,
+		transportCompanyId: Int,
+		status: HttpStatusCode
+	) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/transport-companies/$transportCompanyId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
 			.responseBody
@@ -616,10 +662,28 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addTransportCompanyToAGURequest(client: WebTestClient, aguId: String, transportCompanyId: Int) =
+		addTransportCompanyToAGURequestWithStatusCode(client, aguId, transportCompanyId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to add a transport company to an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param transportCompanyId the transport company ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun addTransportCompanyToAGURequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		transportCompanyId: Int,
+		status: HttpStatusCode
+	) =
 		client.put()
 			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId/$transportCompanyId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
 			.responseBody
@@ -634,10 +698,28 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun removeTransportCompanyFromAGURequest(client: WebTestClient, aguId: String, transportCompanyId: Int) =
+		removeTransportCompanyFromAGURequestWithStatusCode(client, aguId, transportCompanyId, HttpStatus.OK)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to remove a transport company from an AGU and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param aguId the AGU ID
+	 * @param transportCompanyId the transport company ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun removeTransportCompanyFromAGURequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		transportCompanyId: Int,
+		status: HttpStatusCode
+	) =
 		client.delete()
 			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId/$transportCompanyId")
 			.exchange()
-			.expectStatus().isOk
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
 			.responseBody
@@ -855,4 +937,24 @@ object HTTPUtils {
 	 * @return the Tank response
 	 */
 	fun ByteArray.toTankResponse() = Json.decodeFromString<TankResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a TransportCompanyListResponse
+	 * @receiver the response body
+	 * @return the TransportCompanyListResponse
+	 */
+	fun ByteArray.toTransportCompanyListResponse() =
+		Json.decodeFromString<TransportCompanyListResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a TransportCompanyResponse
+	 * @receiver the response body
+	 * @return the TransportCompanyResponse
+	 */
+	fun ByteArray.toTransportCompanyResponse() =
+		Json.decodeFromString<TransportCompanyResponse>(this.decodeToString())
 }
