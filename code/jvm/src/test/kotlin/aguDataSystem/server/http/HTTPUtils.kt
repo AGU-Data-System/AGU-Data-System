@@ -230,7 +230,7 @@ object HTTPUtils {
 	/**
 	 * Util function:
 	 *
-	 * Sends a request to update the favourite state of an AGU and expects an status code
+	 * Sends a request to update the favourite state of an AGU and expects a status code
 	 * @param client the WebTestClient
 	 * @param aguId the AGU ID
 	 * @param isFavourite the new favourite state
@@ -311,7 +311,7 @@ object HTTPUtils {
 	/**
 	 * Util function:
 	 *
-	 * Sends a request to change the levels of an AGU and expects an status code
+	 * Sends a request to change the levels of an AGU and expects a status code
 	 * @param client the WebTestClient
 	 * @param aguId the AGU ID
 	 * @param gasLevelsModel the gas levels model
@@ -431,7 +431,7 @@ object HTTPUtils {
 			.expectStatus().isOk
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
 
 	/**
 	 * Util function:
@@ -442,13 +442,25 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun createDNORequest(client: WebTestClient, dno: DNOCreationRequestModel) =
+		createDNORequestWithStatusCode(client, dno, HttpStatus.CREATED)
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to create a DNO and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param dno the DNO creation model
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun createDNORequestWithStatusCode(client: WebTestClient, dno: DNOCreationRequestModel, status: HttpStatusCode) =
 		client.post()
 			.uri(BASE_DNO_PATH)
 			.bodyValue(
 				Json.encodeToJsonElement(dno)
 			)
 			.exchange()
-			.expectStatus().isCreated
+			.expectStatus().isEqualTo(status)
 			.expectBody()
 			.returnResult()
 			.responseBody!!
@@ -468,10 +480,27 @@ object HTTPUtils {
 			.expectStatus().isOk
 			.expectBody()
 			.returnResult()
-			.responseBody
+			.responseBody!!
+
+	/**
+	 * Util function:
+	 *
+	 * Sends a request to delete a DNO and expects a specific status code
+	 * @param client the WebTestClient
+	 * @param dnoId the DNO ID
+	 * @param status the expected status
+	 * @return the response body
+	 */
+	fun deleteDNORequestWithStatusCode(client: WebTestClient, dnoId: Int, status: HttpStatusCode) =
+		client.delete()
+			.uri("$BASE_DNO_PATH/$dnoId")
+			.exchange()
+			.expectStatus().isEqualTo(status)
+			.expectBody()
+			.returnResult()
+			.responseBody!!
 
 	// Transport Company
-
 	/**
 	 * Util function:
 	 *
@@ -711,4 +740,12 @@ object HTTPUtils {
 	 */
 	fun ByteArray.toAllAGUResponse() = Json.decodeFromString<List<AGUResponse>>(this.decodeToString())
 
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a list of DNO responses
+	 * @receiver the response body
+	 * @return the list of DNO responses
+	 */
+	fun ByteArray.toAllDNOResponse() = Json.decodeFromString<List<DNOResponse>>(this.decodeToString())
 }
