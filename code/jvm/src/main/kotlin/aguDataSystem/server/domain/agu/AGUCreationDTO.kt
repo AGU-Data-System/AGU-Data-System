@@ -12,7 +12,6 @@ import aguDataSystem.server.domain.tank.Tank
  * @property eic EIC of the AGU
  * @property name name of the AGU
  * @property levels gas levels of the AGU
- * @property loadVolume load volume of the AGU
  * @property correctionFactor correction factor of the AGU
  * @property location location of the AGU
  * @property dnoName DNO name associated with the AGU
@@ -31,7 +30,6 @@ data class AGUCreationDTO(
 	val eic: String,
 	val name: String,
 	val levels: GasLevels,
-	val loadVolume: Int,
 	val correctionFactor: Double,
 	val location: Location,
 	val dnoName: String,
@@ -57,7 +55,6 @@ data class AGUCreationDTO(
 		eic = this.eic,
 		name = this.name,
 		levels = this.levels,
-		loadVolume = this.loadVolume,
 		correctionFactor = this.correctionFactor,
 		location = this.location,
 		dnoName = this.dnoName,

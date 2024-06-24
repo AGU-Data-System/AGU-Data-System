@@ -315,21 +315,6 @@ class AGUControllerTests {
 	}
 
 	@Test
-	fun `create AGU with invalid load Volume should fail`() {
-		// arrange
-		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dno = newTestDNO()
-		val dnoId = createDNORequest(client, dno).toDNOResponse().id
-		val aguCreation = newTestAGU(dnoName = dno.name).copy(loadVolume = -1.0)
-
-		// act and assert
-		createAGURequestWithStatusCode(client, aguCreation, HttpStatus.BAD_REQUEST)
-
-		// clean
-		cleanTest(client = client, idDNO = dnoId)
-	}
-
-	@Test
 	fun `create AGU with invalid latitude should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
@@ -619,22 +604,6 @@ class AGUControllerTests {
 	}
 
 	@Test
-	fun `create AGU with invalid tank load volume should fail`() {
-		// arrange
-		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dno = newTestDNO()
-		val aguCreation = newTestAGU(dnoName = dno.name)
-		val sut = aguCreation.copy(tanks = listOf(aguCreation.tanks.first().copy(loadVolume = -1.0)))
-		val dnoId = createDNORequest(client, dno).toDNOResponse().id
-
-		// act and assert
-		createAGURequestWithStatusCode(client, sut, HttpStatus.BAD_REQUEST)
-
-		// clean
-		cleanTest(client = client, idDNO = dnoId)
-	}
-
-	@Test
 	fun `create AGU with un existing transport companies should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
@@ -724,7 +693,7 @@ class AGUControllerTests {
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		updateFavouriteStateRequestWithStatusCode(client, "", !aguCreation.isFavourite, HttpStatus.NOT_FOUND)
+		updateFavouriteStateRequestWithStatusCode(client, "", !aguCreation.isFavourite, HttpStatus.METHOD_NOT_ALLOWED)
 
 		// clean
 		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -816,7 +785,7 @@ class AGUControllerTests {
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		updateActiveStateRequestWithStatusCode(client, "", !aguCreation.isActive, HttpStatus.BAD_REQUEST)
+		updateActiveStateRequestWithStatusCode(client, "", !aguCreation.isActive, HttpStatus.METHOD_NOT_ALLOWED)
 
 		// clean
 		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -894,7 +863,7 @@ class AGUControllerTests {
 		val newGasLevels = GasLevelsRequestModel(min = 10, max = 20, critical = 15)
 
 		// act and assert
-		changeGasLevelsRequestWithStatusCode(client, "", newGasLevels, HttpStatus.BAD_REQUEST)
+		changeGasLevelsRequestWithStatusCode(client, "", newGasLevels, HttpStatus.METHOD_NOT_ALLOWED)
 	}
 
 	@Test
@@ -1112,7 +1081,7 @@ class AGUControllerTests {
 		val newNotes = NotesRequestModel("Updated notes")
 
 		// act and assert
-		changeNotesRequestWithStatusCode(client, "", newNotes, HttpStatus.BAD_REQUEST)
+		changeNotesRequestWithStatusCode(client, "", newNotes, HttpStatus.METHOD_NOT_ALLOWED)
 
 		// clean
 		val allAgu = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -1249,9 +1218,11 @@ class AGUControllerTests {
 		// clean
 		cleanTest(
 			client = client,
-			idDNO = dnoId,
+			idAGU = createdAGU1.cui,
 			idsTransportCompany = allAgu.agusBasicInfo.flatMap { it.transportCompanies.map { company -> company.id } }
 		)
+
+		cleanTest(client = client, idAGU = createdAGU2.cui, idDNO = dnoId)
 	}
 
 	@Test

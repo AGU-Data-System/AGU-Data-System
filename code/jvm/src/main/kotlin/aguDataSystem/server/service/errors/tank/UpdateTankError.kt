@@ -7,7 +7,6 @@ package aguDataSystem.server.service.errors.tank
  * @property InvalidLevels The levels are invalid
  * @property TankNotFound The tank was not found
  * @property InvalidCUI The CUI is invalid
- * @property InvalidLoadVolume The load volume is invalid
  * @property InvalidCapacity The capacity is invalid
  * @property InvalidTankNumber The tank number is invalid
  */
@@ -16,7 +15,6 @@ sealed class UpdateTankError {
 	data object InvalidLevels : UpdateTankError()
 	data object TankNotFound : UpdateTankError()
 	data object InvalidCUI : UpdateTankError()
-	data object InvalidLoadVolume : UpdateTankError()
 	data object InvalidCapacity : UpdateTankError()
 	data object InvalidTankNumber : UpdateTankError()
 }

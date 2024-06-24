@@ -68,7 +68,6 @@ create table if not exists agu
     min_level         PERCENTAGE                                not null,
     max_level         PERCENTAGE                                not null,
     critical_level    PERCENTAGE                                not null,
-    load_volume       numeric(6, 3) check (load_volume >= 0)    not null,
     correction_factor numeric(6, 3)                             not null,
     latitude          LATITUDE                                  not null,
     longitude         LONGITUDE                                 not null,

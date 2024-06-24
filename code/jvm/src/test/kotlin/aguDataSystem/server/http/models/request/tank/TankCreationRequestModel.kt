@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
  * @param minLevel the minimum level of the tank
  * @param maxLevel the maximum level of the tank
  * @param criticalLevel the critical level of the tank
- * @param loadVolume the load volume of a load in the tank
  * @param capacity the capacity of the tank
  * @param correctionFactor the correction factor of the tank
  */
@@ -19,7 +18,6 @@ data class TankCreationRequestModel(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
-	val loadVolume: Double,
 	val capacity: Int,
 	val correctionFactor: Double,
 )

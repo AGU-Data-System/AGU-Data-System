@@ -17,7 +17,6 @@ import kotlinx.serialization.Serializable
  * @property eic the EIC of the AGU
  * @property name the name of the AGU
  * @property levels the gas levels of the AGU
- * @property loadVolume the load volume of the AGU
  * @property correctionFactor the correction factor of the AGU
  * @property location the location of the AGU
  * @property dno the DNO of the AGU
@@ -38,7 +37,6 @@ data class AGUResponse(
 	val eic: String,
 	val name: String,
 	val levels: GasLevelsResponse,
-	val loadVolume: Int,
 	val correctionFactor: Double,
 	val location: LocationResponse,
 	val dno: DNOResponse,

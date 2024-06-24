@@ -79,7 +79,6 @@ object RepositoryUtils {
 		eic = "TEST-EIC",
 		name = "Test AGU",
 		levels = dummyGasLevels,
-		loadVolume = 50,
 		correctionFactor = 0.0,
 		location = dummyLocation,
 		dnoName = dummyDNO.name,

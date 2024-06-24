@@ -99,11 +99,6 @@ class TankController(private val service: AGUService) {
 			)
 
 			AddTankError.InvalidCapacity -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCapacity)
-			AddTankError.InvalidLoadVolume -> Problem.response(
-				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidLoadVolume
-			)
-
 			AddTankError.InvalidTankNumber -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.InvalidTankNumber
@@ -123,11 +118,6 @@ class TankController(private val service: AGUService) {
 			UpdateTankError.TankNotFound -> Problem.response(HttpStatus.NOT_FOUND.value(), Problem.TankNotFound)
 			UpdateTankError.InvalidCUI -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCUI)
 			UpdateTankError.InvalidCapacity -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidCapacity)
-			UpdateTankError.InvalidLoadVolume -> Problem.response(
-				HttpStatus.BAD_REQUEST.value(),
-				Problem.InvalidLoadVolume
-			)
-
 			UpdateTankError.InvalidTankNumber -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),
 				Problem.InvalidTankNumber

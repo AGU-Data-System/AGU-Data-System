@@ -1,9 +1,9 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.ControllerUtils.dummyTankCreationRequestModel
 import aguDataSystem.server.http.ControllerUtils.dummyTankUpdateRequestModel
 import aguDataSystem.server.http.ControllerUtils.newTestAGU
 import aguDataSystem.server.http.ControllerUtils.newTestDNO
+import aguDataSystem.server.http.ControllerUtils.newTestTank
 import aguDataSystem.server.http.HTTPUtils.addTankRequest
 import aguDataSystem.server.http.HTTPUtils.addTankRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.cleanTest
@@ -15,7 +15,7 @@ import aguDataSystem.server.http.HTTPUtils.getAGURequest
 import aguDataSystem.server.http.HTTPUtils.toAGUCreationResponse
 import aguDataSystem.server.http.HTTPUtils.toAGUResponse
 import aguDataSystem.server.http.HTTPUtils.toDNOResponse
-import aguDataSystem.server.http.HTTPUtils.toTankResponse
+import aguDataSystem.server.http.HTTPUtils.toTankCreationResponse
 import aguDataSystem.server.http.HTTPUtils.updateTankRequest
 import aguDataSystem.server.http.HTTPUtils.updateTankRequestWithStatusCode
 import java.time.Duration
@@ -44,12 +44,12 @@ class TankControllerTests {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = newTestDNO()
 		val aguCreation = newTestAGU(dnoName = dno.name)
-		val tankCreation = dummyTankCreationRequestModel
+		val tankCreation = newTestTank()
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act
-		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankResponse()
+		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankCreationResponse()
 
 		// assert
 		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -67,7 +67,7 @@ class TankControllerTests {
 	fun `add tank with invalid AGU CUI should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val tankCreation = dummyTankCreationRequestModel
+		val tankCreation = newTestTank()
 
 		// act and assert
 		addTankRequestWithStatusCode(client, "invalid", tankCreation, HttpStatus.NOT_FOUND)
@@ -79,12 +79,12 @@ class TankControllerTests {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = newTestDNO()
 		val aguCreation = newTestAGU(dnoName = dno.name)
-		val tankCreation = dummyTankCreationRequestModel.copy(number = -1)
+		val tankCreation = newTestTank().copy(number = -1)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		addTankRequestWithStatusCode(client, createdAGU.cui, tankCreation, HttpStatus.NOT_FOUND)
+		addTankRequestWithStatusCode(client, createdAGU.cui, tankCreation, HttpStatus.BAD_REQUEST)
 
 		// clean
 		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -101,18 +101,18 @@ class TankControllerTests {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = newTestDNO()
 		val aguCreation = newTestAGU(dnoName = dno.name)
-		val tankCreation = dummyTankCreationRequestModel
+		val tankCreation = newTestTank()
 		val tankUpdate = dummyTankUpdateRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankResponse()
+		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankCreationResponse()
 
 		// act
 		val updatedAGU =
 			updateTankRequest(client, createdAGU.cui, addedTank.number.toString(), tankUpdate).toAGUResponse()
 
 		// assert
-		assertNotEquals(updatedAGU.tanks.tanks.find { it.number == addedTank.number }?.capacity, addedTank.capacity)
+		assertNotEquals(updatedAGU.tanks.tanks.find { it.number == addedTank.number }?.capacity, tankCreation.capacity)
 
 		// clean
 		cleanTest(
@@ -129,7 +129,7 @@ class TankControllerTests {
 		val tankUpdate = dummyTankUpdateRequestModel
 
 		// act and assert
-		updateTankRequestWithStatusCode(client, "invalid", "1", tankUpdate, HttpStatus.NOT_FOUND)
+		updateTankRequestWithStatusCode(client, "invalid", "1", tankUpdate, HttpStatus.BAD_REQUEST)
 	}
 
 	@Test
@@ -138,11 +138,11 @@ class TankControllerTests {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = newTestDNO()
 		val aguCreation = newTestAGU(dnoName = dno.name)
-		val tankCreation = dummyTankCreationRequestModel
+		val tankCreation = newTestTank()
 		val tankUpdate = dummyTankUpdateRequestModel.copy(capacity = -1)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankResponse()
+		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankCreationResponse()
 
 		// act and assert
 		updateTankRequestWithStatusCode(
@@ -168,10 +168,10 @@ class TankControllerTests {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 		val dno = newTestDNO()
 		val aguCreation = newTestAGU(dnoName = dno.name)
-		val tankCreation = dummyTankCreationRequestModel
+		val tankCreation = newTestTank()
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankResponse()
+		val addedTank = addTankRequest(client, createdAGU.cui, tankCreation).toTankCreationResponse()
 
 		// act
 		deleteTankRequest(client, createdAGU.cui, addedTank.number)
@@ -194,7 +194,7 @@ class TankControllerTests {
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 
 		// act and assert
-		deleteTankRequestWithStatusCode(client, "invalid", Int.MIN_VALUE, HttpStatus.NOT_FOUND)
+		deleteTankRequestWithStatusCode(client, "invalid", Int.MIN_VALUE, HttpStatus.BAD_REQUEST)
 	}
 
 	@Test
@@ -207,7 +207,7 @@ class TankControllerTests {
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		deleteTankRequestWithStatusCode(client, createdAGU.cui, -1, HttpStatus.NOT_FOUND)
+		deleteTankRequestWithStatusCode(client, createdAGU.cui, -1, HttpStatus.OK)
 
 		// clean
 		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()

@@ -2,7 +2,7 @@ package aguDataSystem.server.http
 
 import aguDataSystem.server.http.ControllerUtils.newTestAGU
 import aguDataSystem.server.http.ControllerUtils.newTestDNO
-import aguDataSystem.server.http.ControllerUtils.newTransportCompany
+import aguDataSystem.server.http.ControllerUtils.newTestTransportCompany
 import aguDataSystem.server.http.HTTPUtils.addTransportCompanyRequest
 import aguDataSystem.server.http.HTTPUtils.addTransportCompanyRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.addTransportCompanyToAGURequest
@@ -43,6 +43,8 @@ class TransportCompanyControllerTests {
 	fun `get all transport companies correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
+		val transportCompanyCreation = newTestTransportCompany()
+		addTransportCompanyRequest(client, transportCompanyCreation)
 
 		// act
 		val response = getAllTransportCompaniesRequest(client).toTransportCompanyListResponse()
@@ -55,7 +57,7 @@ class TransportCompanyControllerTests {
 	fun `add transport company correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = newTransportCompany()
+		val transportCompanyCreation = newTestTransportCompany()
 
 		// act
 		val createdTransportCompany =
@@ -72,7 +74,7 @@ class TransportCompanyControllerTests {
 	fun `add transport company with invalid name should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = newTransportCompany().copy(name = "")
+		val transportCompanyCreation = newTestTransportCompany().copy(name = "")
 
 		// act and assert
 		addTransportCompanyRequestWithStatusCode(client, transportCompanyCreation, HttpStatus.BAD_REQUEST)
@@ -82,7 +84,7 @@ class TransportCompanyControllerTests {
 	fun `delete transport company correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = newTransportCompany()
+		val transportCompanyCreation = newTestTransportCompany()
 		val createdTransportCompany =
 			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 		// act
@@ -101,7 +103,7 @@ class TransportCompanyControllerTests {
 		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val transportCompanyCreation = newTransportCompany()
+		val transportCompanyCreation = newTestTransportCompany()
 		val createdTransportCompany =
 			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 
@@ -126,7 +128,7 @@ class TransportCompanyControllerTests {
 		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val transportCompanyCreation = newTransportCompany()
+		val transportCompanyCreation = newTestTransportCompany()
 		val createdTransportCompany =
 			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 		addTransportCompanyToAGURequest(client, createdAGU.cui, createdTransportCompany.id)
@@ -148,7 +150,7 @@ class TransportCompanyControllerTests {
 	fun `add transport company to AGU with invalid CUI should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = newTransportCompany()
+		val transportCompanyCreation = newTestTransportCompany()
 		val createdTransportCompany =
 			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 
@@ -185,7 +187,7 @@ class TransportCompanyControllerTests {
 	fun `remove transport company from AGU with invalid CUI should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = newTransportCompany()
+		val transportCompanyCreation = newTestTransportCompany()
 		val createdTransportCompany =
 			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 

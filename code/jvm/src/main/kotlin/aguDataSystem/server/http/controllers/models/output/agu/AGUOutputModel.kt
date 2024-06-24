@@ -16,7 +16,6 @@ import aguDataSystem.server.http.controllers.models.output.transportCompany.Tran
  * @param eic The EIC of the AGU
  * @param name The name of the AGU
  * @param levels The gas levels of the AGU
- * @param loadVolume The load volume of the AGU
  * @param correctionFactor The correction factor of the AGU
  * @param location The location of the AGU
  * @param dno The DNO of the AGU
@@ -35,7 +34,6 @@ data class AGUOutputModel(
 	val eic: String,
 	val name: String,
 	val levels: GasLevelsOutputModel,
-	val loadVolume: Int,
 	val correctionFactor: Double,
 	val location: LocationOutputModel,
 	val dno: DNOOutputModel,
@@ -55,7 +53,6 @@ data class AGUOutputModel(
 		eic = agu.eic,
 		name = agu.name,
 		levels = GasLevelsOutputModel(agu.levels),
-		loadVolume = agu.loadVolume,
 		correctionFactor = agu.correctionFactor,
 		location = LocationOutputModel(agu.location),
 		dno = DNOOutputModel(agu.dno),

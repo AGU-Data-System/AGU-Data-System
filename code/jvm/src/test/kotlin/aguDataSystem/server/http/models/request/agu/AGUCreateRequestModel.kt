@@ -12,7 +12,6 @@ import kotlinx.serialization.Serializable
  * @param minLevel The minimum gas level of the AGU
  * @param maxLevel The maximum gas level of the AGU
  * @param criticalLevel The critical gas level of the AGU
- * @param loadVolume The load volume of the AGU
  * @param latitude The latitude of the AGU
  * @param longitude The longitude of the AGU
  * @param locationName The name of the location of the AGU
@@ -32,7 +31,6 @@ data class AGUCreateRequestModel(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
-	val loadVolume: Double,
 	val correctionFactor: Double,
 	val latitude: Double,
 	val longitude: Double,

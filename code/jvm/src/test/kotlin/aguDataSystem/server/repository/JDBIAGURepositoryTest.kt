@@ -307,21 +307,6 @@ class JDBIAGURepositoryTest {
 	}
 
 	@Test
-	fun `add agu with negative load volume should throw exception`() = testWithHandleAndRollback { handle ->
-		// arrange
-		val aguRepo = JDBIAGURepository(handle)
-		val dnoRepo = JDBIDNORepository(handle)
-
-		val dnoId = dnoRepo.addDNO(dummyDNO).id
-		val agu = dummyAGU.copy(loadVolume = -1)
-
-		// act & assert
-		assertFailsWith<UnableToExecuteStatementException> {
-			aguRepo.addAGU(agu, dnoId)
-		}
-	}
-
-	@Test
 	fun `add agu with negative lower bound latitude should throw exception`() = testWithHandleAndRollback { handle ->
 		// arrange
 		val aguRepo = JDBIAGURepository(handle)
@@ -464,7 +449,6 @@ class JDBIAGURepositoryTest {
 		assertEquals(agu.cui, aguFromDb.cui)
 		assertEquals(agu.name, aguFromDb.name)
 		assertEquals(agu.levels, aguFromDb.levels)
-		assertEquals(agu.loadVolume, aguFromDb.loadVolume)
 		assertEquals(agu.location, aguFromDb.location)
 		assertEquals(agu.dnoName, aguFromDb.dno.name)
 		assertEquals(agu.isFavourite, aguFromDb.isFavourite)

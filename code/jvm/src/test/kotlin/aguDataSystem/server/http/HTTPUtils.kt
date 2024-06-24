@@ -13,9 +13,11 @@ import aguDataSystem.server.http.models.request.transportCompany.TransportCompan
 import aguDataSystem.server.http.models.response.agu.AGUBasicInfoListResponse
 import aguDataSystem.server.http.models.response.agu.AGUCreationResponse
 import aguDataSystem.server.http.models.response.agu.AGUResponse
+import aguDataSystem.server.http.models.response.contact.ContactCreationResponse
 import aguDataSystem.server.http.models.response.contact.ContactResponse
 import aguDataSystem.server.http.models.response.dno.DNOListResponse
 import aguDataSystem.server.http.models.response.dno.DNOResponse
+import aguDataSystem.server.http.models.response.tank.TankCreationResponse
 import aguDataSystem.server.http.models.response.tank.TankResponse
 import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyCreationResponse
 import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyListResponse
@@ -251,7 +253,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.put()
-			.uri("$BASE_AGU_PATH/$aguId/favorite") // for some reason, if aguId is empty, the uri is http://localhost:8080/api/agus/favorite
+			.uri("$BASE_AGU_PATH/$aguId/favourite") // for some reason, if aguId is empty, the uri is http://localhost:8080/api/agus/favorite
 			.bodyValue(
 				Json.encodeToJsonElement(isFavourite)
 			)
@@ -393,7 +395,7 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addContactRequest(client: WebTestClient, aguId: String, contactModel: ContactCreationRequestModel) =
-		addContactRequestWithStatusCode(client, aguId, contactModel, HttpStatus.OK)
+		addContactRequestWithStatusCode(client, aguId, contactModel, HttpStatus.CREATED)
 
 	/**
 	 * Util function:
@@ -580,7 +582,7 @@ object HTTPUtils {
 	 */
 	fun getTransportCompaniesOfAGURequestWithStatusCode(client: WebTestClient, aguId: String, status: HttpStatusCode) =
 		client.get()
-			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId")
+			.uri("$BASE_TRANSPORT_COMPANY_PATH/agu/$aguId")
 			.exchange()
 			.expectStatus().isEqualTo(status)
 			.expectBody()
@@ -685,7 +687,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.put()
-			.uri("$BASE_TRANSPORT_COMPANY_PATH/agu/$aguId/$transportCompanyId")
+			.uri("$BASE_TRANSPORT_COMPANY_PATH/$transportCompanyId/agu/$aguId")
 			.exchange()
 			.expectStatus().isEqualTo(status)
 			.expectBody()
@@ -721,7 +723,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.delete()
-			.uri("$BASE_TRANSPORT_COMPANY_PATH/agu/$aguId/$transportCompanyId")
+			.uri("$BASE_TRANSPORT_COMPANY_PATH/$transportCompanyId/agu/$aguId")
 			.exchange()
 			.expectStatus().isEqualTo(status)
 			.expectBody()
@@ -739,7 +741,7 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addTankRequest(client: WebTestClient, aguId: String, tankModel: TankCreationRequestModel) =
-		addTankRequestWithStatusCode(client, aguId, tankModel, HttpStatus.OK)
+		addTankRequestWithStatusCode(client, aguId, tankModel, HttpStatus.CREATED)
 
 	/**
 	 * Util function:
@@ -756,7 +758,7 @@ object HTTPUtils {
 		tankModel: TankCreationRequestModel,
 		status: HttpStatusCode
 	) =
-		client.put()
+		client.post()
 			.uri("$BASE_AGU_PATH/$aguId/tank")
 			.bodyValue(
 				Json.encodeToJsonElement(tankModel)
@@ -936,11 +938,29 @@ object HTTPUtils {
 	/**
 	 * Util function:
 	 *
+	 * Deserializes the response body to a contact creation response
+	 * @receiver the response body
+	 * @return the contact creation response
+	 */
+	fun ByteArray.toContactCreationResponse() = Json.decodeFromString<ContactCreationResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
 	 * Deserializes the response body to a Tank response
 	 * @receiver the response body
 	 * @return the Tank response
 	 */
 	fun ByteArray.toTankResponse() = Json.decodeFromString<TankResponse>(this.decodeToString())
+
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a TankCreationResponse
+	 * @receiver the response body
+	 * @return the TankCreationResponse
+	 */
+	fun ByteArray.toTankCreationResponse() = Json.decodeFromString<TankCreationResponse>(this.decodeToString())
 
 	/**
 	 * Util function:
@@ -962,6 +982,13 @@ object HTTPUtils {
 	fun ByteArray.toTransportCompanyResponse() =
 		Json.decodeFromString<TransportCompanyResponse>(this.decodeToString())
 
+	/**
+	 * Util function:
+	 *
+	 * Deserializes the response body to a TransportCompanyCreationResponse
+	 * @receiver the response body
+	 * @return the TransportCompanyCreationResponse
+	 */
 	fun ByteArray.toTransportCompanyCreationResponse() =
 		Json.decodeFromString<TransportCompanyCreationResponse>(this.decodeToString())
 

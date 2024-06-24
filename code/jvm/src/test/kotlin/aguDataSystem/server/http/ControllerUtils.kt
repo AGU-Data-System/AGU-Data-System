@@ -8,6 +8,7 @@ import aguDataSystem.server.http.models.request.notes.NotesRequestModel
 import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
 import aguDataSystem.server.http.models.request.tank.TankUpdateRequestModel
 import aguDataSystem.server.http.models.request.transportCompany.TransportCompanyRequestModel
+import kotlin.math.pow
 
 /**
  * Data for requests
@@ -15,8 +16,9 @@ import aguDataSystem.server.http.models.request.transportCompany.TransportCompan
 object ControllerUtils {
 
 	private const val NUMBER_LENGTH = 16
+	private const val PHONE_NUMBER_LENGTH = 9
 
-	val dummyContactCreationRequestModel = ContactCreationRequestModel(
+	private val dummyContactCreationRequestModel = ContactCreationRequestModel(
 		name = "John Doe",
 		phone = "123456789",
 		type = "logistic"
@@ -42,7 +44,6 @@ object ControllerUtils {
 		minLevel = dummyGasLevelsRequestModel.min,
 		maxLevel = dummyGasLevelsRequestModel.max,
 		criticalLevel = dummyGasLevelsRequestModel.critical,
-		loadVolume = 40.0,
 		capacity = 50,
 		correctionFactor = 1.0
 	)
@@ -51,7 +52,6 @@ object ControllerUtils {
 		minLevel = 10,
 		maxLevel = 90,
 		criticalLevel = 5,
-		loadVolume = 500.0,
 		capacity = 1000,
 		correctionFactor = 1.05
 	)
@@ -67,7 +67,6 @@ object ControllerUtils {
 		minLevel = dummyGasLevelsRequestModel.min,
 		maxLevel = dummyGasLevelsRequestModel.max,
 		criticalLevel = dummyGasLevelsRequestModel.critical,
-		loadVolume = 40.0,
 		correctionFactor = -1.0,
 		latitude = 0.0,
 		longitude = 0.0,
@@ -76,7 +75,7 @@ object ControllerUtils {
 		gasLevelUrl = "https://jsonplaceholder.typicode.com/todos/1",
 		image = ByteArray(0),
 		tanks = listOf(dummyTankCreationRequestModel),
-		contacts = listOf(dummyContactCreationRequestModel),
+		contacts = listOf(newTestContact()),
 		transportCompanies = emptyList(),
 		isActive = true,
 		isFavourite = false,
@@ -86,11 +85,11 @@ object ControllerUtils {
 	/**
 	 * Generate a random number
 	 */
-	fun generateRandomNumber(): Long {
+	private fun generateRandomNumber(): Long {
 		require(NUMBER_LENGTH > 0) { "Digit count must be greater than zero" }
 
-		val minValue = Math.pow(10.0, (NUMBER_LENGTH - 1).toDouble()).toLong()
-		val maxValue = Math.pow(10.0, NUMBER_LENGTH.toDouble()).toLong() - 1
+		val minValue = 10.0.pow((NUMBER_LENGTH - 1).toDouble()).toLong()
+		val maxValue = 10.0.pow(NUMBER_LENGTH.toDouble()).toLong() - 1
 
 		return (minValue..maxValue).random()
 	}
@@ -101,7 +100,7 @@ object ControllerUtils {
 	fun newTestDNO() = dummyDNOCreationRequestModel.copy(name = "DNO Test ${generateRandomNumber()}")
 
 	/**
-	 * Create a new test AGU
+	 * Creates a new test AGU
 	 */
 	fun newTestAGU(dnoName: String) = dummyAGUCreationRequestModel.copy(
 		name = "AGU Test ${generateRandomNumber()}",
@@ -111,9 +110,24 @@ object ControllerUtils {
 	)
 
 	/**
-	 * Creates a new test transport company
+	 * Creates a test transport company with a randomized name
 	 */
-	fun newTransportCompany() = dummyTransportCompanyCreationRequestModel.copy(
+	fun newTestTransportCompany() = dummyTransportCompanyCreationRequestModel.copy(
 		name = "Transport Company Test ${generateRandomNumber()}"
+	)
+
+	/**
+	 * Creates a test contact with a randomized name and phone number
+	 */
+	fun newTestContact() = dummyContactCreationRequestModel.copy(
+		name = "Contact Test ${generateRandomNumber()}",
+		phone = generateRandomNumber().toString().take(PHONE_NUMBER_LENGTH),
+	)
+
+	/**
+	 * Creates a test tank with a number incremented by 1
+	 */
+	fun newTestTank() = dummyTankCreationRequestModel.copy(
+		number = dummyTankCreationRequestModel.number + 1
 	)
 }

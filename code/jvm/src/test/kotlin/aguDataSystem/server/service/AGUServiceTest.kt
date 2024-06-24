@@ -431,25 +431,6 @@ class AGUServiceTest {
 		}
 
 	@Test
-	fun `create AGU with invalid load volume`() = testWithTransactionManagerAndRollback { transactionManager ->
-		// arrange
-		val fetchService = FetchService(transactionManager)
-		val chronService = ChronService(transactionManager, fetchService)
-		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
-		val dnoCreation = dummyDNODTO
-		val creationAgu = dummyAGUCreationDTO
-
-		dnoService.createDNO(dnoCreation)
-		// act
-		val result = aguService.createAGU(creationAgu.copy(loadVolume = -1))
-
-		// assert
-		assert(result.isFailure())
-		assert(result.getFailureOrThrow() is AGUCreationError.InvalidLoadVolume)
-	}
-
-	@Test
 	fun `create AGU with invalid latitude`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)

@@ -166,11 +166,11 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 		val addedAGUCUI = handle.createUpdate(
 			"""
             INSERT INTO agu (
-            cui, eic, name, is_favorite, min_level, max_level, critical_level, load_volume, correction_factor, latitude, longitude, 
+            cui, eic, name, is_favorite, min_level, max_level, critical_level, correction_factor, latitude, longitude, 
             location_name, dno_id, is_active, notes, training, image
             ) 
             VALUES (
-            :cui, :eic, :name, :isFavourite, :minLevel, :maxLevel, :criticalLevel, :loadVolume, :correctionFactor, :latitude, :longitude, 
+            :cui, :eic, :name, :isFavourite, :minLevel, :maxLevel, :criticalLevel, :correctionFactor, :latitude, :longitude, 
             :locationName, :dnoId, :isActive, :notes, :training::json, :image
             ) returning cui
             """.trimIndent()
@@ -182,7 +182,6 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			.bind("minLevel", aguCreationInfo.levels.min)
 			.bind("maxLevel", aguCreationInfo.levels.max)
 			.bind("criticalLevel", aguCreationInfo.levels.critical)
-			.bind("loadVolume", aguCreationInfo.loadVolume)
 			.bind("correctionFactor", aguCreationInfo.correctionFactor)
 			.bind("latitude", aguCreationInfo.location.latitude)
 			.bind("longitude", aguCreationInfo.location.longitude)

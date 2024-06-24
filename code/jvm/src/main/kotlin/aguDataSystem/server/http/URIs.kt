@@ -45,7 +45,7 @@ object URIs {
 	 * Contains the URIs for the tank endpoints
 	 */
 	object Tank {
-		const val ROOT = "$PREFIX/{aguCui}/tank"
+		const val ROOT = "${Agu.ROOT}/{aguCui}/tank"
 		const val BY_ID = "/{tankNumber}"
 
 		fun tank(cui: String) = UriTemplate(ROOT).expand(cui)
@@ -56,7 +56,7 @@ object URIs {
 	 * Contains the URIs for the contact endpoints
 	 */
 	object Contact {
-		const val ROOT = "$PREFIX/{aguCui}/contact"
+		const val ROOT = "${Agu.ROOT}/{aguCui}/contact"
 		const val BY_ID = "/{contactId}"
 
 		fun contact(cui: String) = UriTemplate(ROOT).expand(cui)
@@ -70,7 +70,7 @@ object URIs {
 		const val ROOT = "$PREFIX/transport-companies"
 		const val BY_ID = "/{transportCompanyId}"
 		const val ALL_BY_CUI = "/agu/{aguCui}"
-		const val BY_ID_AND_CUI = "{transportCompanyId}/agu/{aguCui}/"
+		const val BY_ID_AND_CUI = "/{transportCompanyId}/agu/{aguCui}"
 
 		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
 		fun allByCUI(cui: String) = UriTemplate(ROOT + ALL_BY_CUI).expand(cui)
