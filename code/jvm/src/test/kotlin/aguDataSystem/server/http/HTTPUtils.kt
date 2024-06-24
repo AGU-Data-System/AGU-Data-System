@@ -10,11 +10,14 @@ import aguDataSystem.server.http.models.request.notes.NotesRequestModel
 import aguDataSystem.server.http.models.request.tank.TankCreationRequestModel
 import aguDataSystem.server.http.models.request.tank.TankUpdateRequestModel
 import aguDataSystem.server.http.models.request.transportCompany.TransportCompanyRequestModel
+import aguDataSystem.server.http.models.response.agu.AGUBasicInfoListResponse
 import aguDataSystem.server.http.models.response.agu.AGUCreationResponse
 import aguDataSystem.server.http.models.response.agu.AGUResponse
 import aguDataSystem.server.http.models.response.contact.ContactResponse
+import aguDataSystem.server.http.models.response.dno.DNOListResponse
 import aguDataSystem.server.http.models.response.dno.DNOResponse
 import aguDataSystem.server.http.models.response.tank.TankResponse
+import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyCreationResponse
 import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyListResponse
 import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyResponse
 import java.time.LocalDate
@@ -32,6 +35,7 @@ object HTTPUtils {
 
 	private const val BASE_AGU_PATH = "/agus"
 	private const val BASE_DNO_PATH = "/dnos"
+	private const val BASE_TRANSPORT_COMPANY_PATH = "/transport-companies"
 
 	/**
 	 * Util function:
@@ -107,7 +111,7 @@ object HTTPUtils {
 	 */
 	fun getAllAGUsRequest(client: WebTestClient) =
 		client.get()
-			.uri("$BASE_AGU_PATH/")
+			.uri(BASE_AGU_PATH)
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -247,7 +251,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.put()
-			.uri("$BASE_AGU_PATH/$aguId/favorite")
+			.uri("$BASE_AGU_PATH/$aguId/favorite") // for some reason, if aguId is empty, the uri is http://localhost:8080/api/agus/favorite
 			.bodyValue(
 				Json.encodeToJsonElement(isFavourite)
 			)
@@ -286,7 +290,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.put()
-			.uri("$BASE_AGU_PATH/$aguId/active")
+			.uri("$BASE_AGU_PATH/$aguId/active") // for some reason, if aguId is empty, the uri is http://localhost:8080/api/agus/active
 			.bodyValue(
 				Json.encodeToJsonElement(UpdateActiveAGURequestModel(isActive))
 			)
@@ -329,7 +333,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.put()
-			.uri("$BASE_AGU_PATH/$aguId/levels")
+			.uri("$BASE_AGU_PATH/$aguId/levels") // for some reason, if aguId is empty, the uri is http://localhost:8080/api/agus/levels
 			.bodyValue(
 				Json.encodeToJsonElement(gasLevelsModel)
 			)
@@ -547,7 +551,7 @@ object HTTPUtils {
 	 */
 	fun getAllTransportCompaniesRequest(client: WebTestClient) =
 		client.get()
-			.uri("$BASE_AGU_PATH/transport-companies")
+			.uri(BASE_TRANSPORT_COMPANY_PATH)
 			.exchange()
 			.expectStatus().isOk
 			.expectBody()
@@ -592,7 +596,7 @@ object HTTPUtils {
 	 * @return the response body
 	 */
 	fun addTransportCompanyRequest(client: WebTestClient, transportCompany: TransportCompanyRequestModel) =
-		addTransportCompanyRequestWithStatusCode(client, transportCompany, HttpStatus.OK)
+		addTransportCompanyRequestWithStatusCode(client, transportCompany, HttpStatus.CREATED)
 
 	/**
 	 * Util function:
@@ -609,7 +613,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.post()
-			.uri("$BASE_AGU_PATH/transport-companies")
+			.uri(BASE_TRANSPORT_COMPANY_PATH)
 			.bodyValue(
 				Json.encodeToJsonElement(transportCompany)
 			)
@@ -645,7 +649,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.delete()
-			.uri("$BASE_AGU_PATH/transport-companies/$transportCompanyId")
+			.uri("$BASE_TRANSPORT_COMPANY_PATH/$transportCompanyId")
 			.exchange()
 			.expectStatus().isEqualTo(status)
 			.expectBody()
@@ -681,7 +685,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.put()
-			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId/$transportCompanyId")
+			.uri("$BASE_TRANSPORT_COMPANY_PATH/agu/$aguId/$transportCompanyId")
 			.exchange()
 			.expectStatus().isEqualTo(status)
 			.expectBody()
@@ -717,7 +721,7 @@ object HTTPUtils {
 		status: HttpStatusCode
 	) =
 		client.delete()
-			.uri("$BASE_AGU_PATH/transport-companies/agu/$aguId/$transportCompanyId")
+			.uri("$BASE_TRANSPORT_COMPANY_PATH/agu/$aguId/$transportCompanyId")
 			.exchange()
 			.expectStatus().isEqualTo(status)
 			.expectBody()
@@ -909,7 +913,7 @@ object HTTPUtils {
 	 * @receiver the response body
 	 * @return the list of AGU responses
 	 */
-	fun ByteArray.toAllAGUResponse() = Json.decodeFromString<List<AGUResponse>>(this.decodeToString())
+	fun ByteArray.toAllAGUResponse() = Json.decodeFromString<AGUBasicInfoListResponse>(this.decodeToString())
 
 	/**
 	 * Util function:
@@ -918,7 +922,7 @@ object HTTPUtils {
 	 * @receiver the response body
 	 * @return the list of DNO responses
 	 */
-	fun ByteArray.toAllDNOResponse() = Json.decodeFromString<List<DNOResponse>>(this.decodeToString())
+	fun ByteArray.toAllDNOResponse() = Json.decodeFromString<DNOListResponse>(this.decodeToString())
 
 	/**
 	 * Util function:
@@ -957,4 +961,8 @@ object HTTPUtils {
 	 */
 	fun ByteArray.toTransportCompanyResponse() =
 		Json.decodeFromString<TransportCompanyResponse>(this.decodeToString())
+
+	fun ByteArray.toTransportCompanyCreationResponse() =
+		Json.decodeFromString<TransportCompanyCreationResponse>(this.decodeToString())
+
 }

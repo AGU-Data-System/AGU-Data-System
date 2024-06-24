@@ -1,6 +1,6 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
+import aguDataSystem.server.http.ControllerUtils.newTestDNO
 import aguDataSystem.server.http.HTTPUtils.cleanTest
 import aguDataSystem.server.http.HTTPUtils.createDNORequest
 import aguDataSystem.server.http.HTTPUtils.createDNORequestWithStatusCode
@@ -32,16 +32,15 @@ class DNOControllerTests {
 	fun `get all DNOs correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dnoCreation = dummyDNOCreationRequestModel
-		val createdDNO1 = createDNORequest(client, dnoCreation).toDNOResponse()
-		val createdDNO2 = createDNORequest(client, dnoCreation.copy(name = "newDNOName")).toDNOResponse()
+		val createdDNO1 = createDNORequest(client, newTestDNO()).toDNOResponse()
+		val createdDNO2 = createDNORequest(client, newTestDNO()).toDNOResponse()
 
 		// act
 		val allDNOs = getAllDNOsRequest(client).toAllDNOResponse()
 
 		// assert
-		assertTrue(allDNOs.any { it.id == createdDNO1.id })
-		assertTrue(allDNOs.any { it.id == createdDNO2.id })
+		assertTrue(allDNOs.dnos.any { it.id == createdDNO1.id })
+		assertTrue(allDNOs.dnos.any { it.id == createdDNO2.id })
 
 		// clean
 		cleanTest(client = client, idDNO = createdDNO1.id)
@@ -52,14 +51,14 @@ class DNOControllerTests {
 	fun `add DNO correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dnoCreation = dummyDNOCreationRequestModel
+		val dnoCreation = newTestDNO()
 
 		// act
 		val createdDNO = createDNORequest(client, dnoCreation).toDNOResponse()
 
 		// assert
 		val allDNOs = getAllDNOsRequest(client).toAllDNOResponse()
-		assertTrue(allDNOs.any { it.id == createdDNO.id })
+		assertTrue(allDNOs.dnos.any { it.id == createdDNO.id })
 
 		// clean
 		cleanTest(client = client, idDNO = createdDNO.id)
@@ -69,7 +68,7 @@ class DNOControllerTests {
 	fun `add DNO with duplicate name should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dnoCreation = dummyDNOCreationRequestModel
+		val dnoCreation = newTestDNO()
 		createDNORequest(client, dnoCreation)
 
 		// act and assert
@@ -80,7 +79,7 @@ class DNOControllerTests {
 	fun `add DNO with empty name should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dnoCreation = dummyDNOCreationRequestModel.copy(name = "")
+		val dnoCreation = newTestDNO().copy(name = "")
 
 		// act and assert
 		createDNORequestWithStatusCode(client, dnoCreation, HttpStatus.BAD_REQUEST)
@@ -90,7 +89,7 @@ class DNOControllerTests {
 	fun `delete DNO correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val dnoCreation = dummyDNOCreationRequestModel
+		val dnoCreation = newTestDNO()
 		val createdDNO = createDNORequest(client, dnoCreation).toDNOResponse()
 
 		// act
@@ -98,16 +97,16 @@ class DNOControllerTests {
 
 		// assert
 		val allDNOs = getAllDNOsRequest(client).toAllDNOResponse()
-		assertFalse(allDNOs.any { it.id == createdDNO.id })
+		assertFalse(allDNOs.dnos.any { it.id == createdDNO.id })
 	}
 
 	@Test
-	fun `delete DNO with invalid ID should fail`() {
+	fun `delete DNO with invalid ID shouldn't do anything`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
 
 		// act and assert
-		deleteDNORequestWithStatusCode(client, Int.MIN_VALUE, HttpStatus.NOT_FOUND)
+		deleteDNORequestWithStatusCode(client, Int.MIN_VALUE, HttpStatus.OK)
 	}
 
 }

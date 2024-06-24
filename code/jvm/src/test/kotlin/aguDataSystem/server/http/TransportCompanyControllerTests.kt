@@ -1,8 +1,8 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationRequestModel
-import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
-import aguDataSystem.server.http.ControllerUtils.dummyTransportCompanyCreationRequestModel
+import aguDataSystem.server.http.ControllerUtils.newTestAGU
+import aguDataSystem.server.http.ControllerUtils.newTestDNO
+import aguDataSystem.server.http.ControllerUtils.newTransportCompany
 import aguDataSystem.server.http.HTTPUtils.addTransportCompanyRequest
 import aguDataSystem.server.http.HTTPUtils.addTransportCompanyRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.addTransportCompanyToAGURequest
@@ -18,8 +18,8 @@ import aguDataSystem.server.http.HTTPUtils.removeTransportCompanyFromAGURequest
 import aguDataSystem.server.http.HTTPUtils.removeTransportCompanyFromAGURequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.toAGUCreationResponse
 import aguDataSystem.server.http.HTTPUtils.toDNOResponse
+import aguDataSystem.server.http.HTTPUtils.toTransportCompanyCreationResponse
 import aguDataSystem.server.http.HTTPUtils.toTransportCompanyListResponse
-import aguDataSystem.server.http.HTTPUtils.toTransportCompanyResponse
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertNotEquals
@@ -55,11 +55,11 @@ class TransportCompanyControllerTests {
 	fun `add transport company correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel
+		val transportCompanyCreation = newTransportCompany()
 
 		// act
 		val createdTransportCompany =
-			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyResponse()
+			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 
 		// assert
 		assertNotEquals(createdTransportCompany.id, 0)
@@ -72,7 +72,7 @@ class TransportCompanyControllerTests {
 	fun `add transport company with invalid name should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel.copy(name = "")
+		val transportCompanyCreation = newTransportCompany().copy(name = "")
 
 		// act and assert
 		addTransportCompanyRequestWithStatusCode(client, transportCompanyCreation, HttpStatus.BAD_REQUEST)
@@ -82,10 +82,9 @@ class TransportCompanyControllerTests {
 	fun `delete transport company correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel
+		val transportCompanyCreation = newTransportCompany()
 		val createdTransportCompany =
-			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyResponse()
-
+			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 		// act
 		deleteTransportCompanyRequestWithStatusCode(client, createdTransportCompany.id, HttpStatus.OK)
 
@@ -98,13 +97,13 @@ class TransportCompanyControllerTests {
 	fun `add transport company to AGU correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel
+		val transportCompanyCreation = newTransportCompany()
 		val createdTransportCompany =
-			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyResponse()
+			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 
 		// act
 		addTransportCompanyToAGURequest(client, createdAGU.cui, createdTransportCompany.id)
@@ -123,14 +122,13 @@ class TransportCompanyControllerTests {
 	fun `remove transport company from AGU correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
-		createDNORequest(client, dno)
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel
+		val transportCompanyCreation = newTransportCompany()
 		val createdTransportCompany =
-			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyResponse()
+			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 		addTransportCompanyToAGURequest(client, createdAGU.cui, createdTransportCompany.id)
 
 		// act
@@ -150,16 +148,17 @@ class TransportCompanyControllerTests {
 	fun `add transport company to AGU with invalid CUI should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel
+		val transportCompanyCreation = newTransportCompany()
 		val createdTransportCompany =
-			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyResponse()
+			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
+
 
 		// act and assert
 		addTransportCompanyToAGURequestWithStatusCode(
 			client,
 			"invalid",
 			createdTransportCompany.id,
-			HttpStatus.BAD_REQUEST
+			HttpStatus.NOT_FOUND
 		)
 
 		// clean
@@ -170,14 +169,13 @@ class TransportCompanyControllerTests {
 	fun `add transport company to AGU with invalid transport company ID should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
-		createDNORequest(client, dno)
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		addTransportCompanyToAGURequestWithStatusCode(client, createdAGU.cui, -1, HttpStatus.BAD_REQUEST)
+		addTransportCompanyToAGURequestWithStatusCode(client, createdAGU.cui, -1, HttpStatus.NOT_FOUND)
 
 		// clean
 		cleanTest(client, idAGU = createdAGU.cui, idDNO = dnoId)
@@ -187,16 +185,16 @@ class TransportCompanyControllerTests {
 	fun `remove transport company from AGU with invalid CUI should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val transportCompanyCreation = dummyTransportCompanyCreationRequestModel
+		val transportCompanyCreation = newTransportCompany()
 		val createdTransportCompany =
-			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyResponse()
+			addTransportCompanyRequest(client, transportCompanyCreation).toTransportCompanyCreationResponse()
 
 		// act and assert
 		removeTransportCompanyFromAGURequestWithStatusCode(
 			client,
 			"invalid",
 			createdTransportCompany.id,
-			HttpStatus.BAD_REQUEST
+			HttpStatus.NOT_FOUND
 		)
 
 		// clean
@@ -207,14 +205,13 @@ class TransportCompanyControllerTests {
 	fun `remove transport company from AGU with invalid transport company ID should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
-		createDNORequest(client, dno)
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		removeTransportCompanyFromAGURequestWithStatusCode(client, createdAGU.cui, -1, HttpStatus.BAD_REQUEST)
+		removeTransportCompanyFromAGURequestWithStatusCode(client, createdAGU.cui, -1, HttpStatus.NOT_FOUND)
 
 		// clean
 		cleanTest(client, idAGU = createdAGU.cui, idDNO = dnoId)

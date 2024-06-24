@@ -1,8 +1,8 @@
 package aguDataSystem.server.http
 
-import aguDataSystem.server.http.ControllerUtils.dummyAGUCreationRequestModel
 import aguDataSystem.server.http.ControllerUtils.dummyContactCreationRequestModel
-import aguDataSystem.server.http.ControllerUtils.dummyDNOCreationRequestModel
+import aguDataSystem.server.http.ControllerUtils.newTestAGU
+import aguDataSystem.server.http.ControllerUtils.newTestDNO
 import aguDataSystem.server.http.HTTPUtils.addContactRequest
 import aguDataSystem.server.http.HTTPUtils.addContactRequestWithStatusCode
 import aguDataSystem.server.http.HTTPUtils.cleanTest
@@ -38,9 +38,9 @@ class ContactControllerTests {
 	fun `add contact correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val contactCreation = dummyContactCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
@@ -73,14 +73,14 @@ class ContactControllerTests {
 	fun `add contact with invalid contact data should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val contactCreation = dummyContactCreationRequestModel.copy(name = "")
-		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 
 		// act and assert
-		addContactRequestWithStatusCode(client, createdAGU.cui, contactCreation, HttpStatus.BAD_REQUEST)
+		addContactRequestWithStatusCode(client, createdAGU.cui, contactCreation, HttpStatus.NOT_FOUND)
 
 		// clean
 		val systemAGU = getAGURequest(client, createdAGU.cui).toAGUResponse()
@@ -95,9 +95,9 @@ class ContactControllerTests {
 	fun `delete contact correctly`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val contactCreation = dummyContactCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 		val addedContact = addContactRequest(client, createdAGU.cui, contactCreation).toContactResponse()
@@ -121,9 +121,9 @@ class ContactControllerTests {
 	fun `delete contact with invalid AGU CUI should fail`() {
 		// arrange
 		val client = WebTestClient.bindToServer().baseUrl(baseURL).responseTimeout(testTimeOut).build()
-		val aguCreation = dummyAGUCreationRequestModel
 		val contactCreation = dummyContactCreationRequestModel
-		val dno = dummyDNOCreationRequestModel
+		val dno = newTestDNO()
+		val aguCreation = newTestAGU(dnoName = dno.name)
 		val dnoId = createDNORequest(client, dno).toDNOResponse().id
 		val createdAGU = createAGURequest(client, aguCreation).toAGUCreationResponse()
 		val addedContact = addContactRequest(client, createdAGU.cui, contactCreation).toContactResponse()

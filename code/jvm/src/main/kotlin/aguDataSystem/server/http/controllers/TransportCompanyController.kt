@@ -3,6 +3,7 @@ package aguDataSystem.server.http.controllers
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.media.Problem
 import aguDataSystem.server.http.controllers.models.input.transportCompany.TransportCompanyCreationInputModel
+import aguDataSystem.server.http.controllers.models.output.transportCompany.TransportCompanyCreationOutputModel
 import aguDataSystem.server.http.controllers.models.output.transportCompany.TransportCompanyListOutputModel
 import aguDataSystem.server.service.errors.transportCompany.AddTransportCompanyError
 import aguDataSystem.server.service.errors.transportCompany.AddTransportCompanyToAGUError
@@ -68,7 +69,8 @@ class TransportCompanyController(private val service: TransportCompanyService) {
 		return when (val res =
 			service.addTransportCompany(transportCompanyCreationInputModel.toTransportCompanyCreationDTO())) {
 			is Failure -> res.value.resolveProblem()
-			is Success -> ResponseEntity.created(URIs.TransportCompany.byID(res.value)).body(res.value)
+			is Success -> ResponseEntity.created(URIs.TransportCompany.byID(res.value))
+				.body(TransportCompanyCreationOutputModel(res.value))
 		}
 	}
 
