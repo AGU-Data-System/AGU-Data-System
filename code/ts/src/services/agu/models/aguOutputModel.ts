@@ -21,7 +21,7 @@ interface AguDetailsOutputModel {
     contacts: ContactListOutputModel;
     tanks: TanksListOutputModel;
     providers: any[];
-    isFavorite: boolean;
+    isFavourite: boolean;
     notes: string;
     training: any;
     capacity: number;
@@ -48,7 +48,6 @@ interface TankOutputModel {
         max: number;
         critical: number;
     };
-    loadVolume: number;
     capacity: number;
     correctionFactor: number;
 }
@@ -58,7 +57,6 @@ interface TankInputModel {
     minLevel: number,
     maxLevel: number,
     criticalLevel: number,
-    loadVolume: number,
     capacity: number
     correctionFactor: number
 }
@@ -75,7 +73,7 @@ interface AgusBasicInfoOutputModel {
     cui: string;
     eic: string;
     name: string;
-    isFavorite: boolean;
+    isFavourite: boolean;
     dno: {
         id: number;
         name: string;

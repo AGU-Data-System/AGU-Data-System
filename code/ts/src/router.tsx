@@ -7,6 +7,7 @@ import Home from './Components/Home';
 import Agu from './Components/Agu/Agu';
 import AguCreate from './Components/Agu/AguCreate';
 import AguEdit from './Components/Agu/AguEdit';
+import WeeklyPlan from "./Components/WeeklyPlan/WeeklyPlan";
 
 interface RouterProps {
     isDarkMode: boolean;
@@ -34,6 +35,10 @@ const createRouter = (isDarkMode: boolean, toggleTheme: () => void) =>
                 {
                     path: '/uag/:aguId/edit',
                     element: <AguEdit />,
+                },
+                {
+                    path: '/weekly-plan',
+                    element: <WeeklyPlan />,
                 },
             ],
         },

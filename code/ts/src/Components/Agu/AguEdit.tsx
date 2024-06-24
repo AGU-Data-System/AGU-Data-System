@@ -23,7 +23,6 @@ export default function AguEdit() {
         minLevel: 0,
         maxLevel: 0,
         criticalLevel: 0,
-        loadVolume: 0,
         capacity: 0,
         correctionFactor: 0
     });
@@ -59,7 +58,6 @@ export default function AguEdit() {
                     minLevel: 0,
                     maxLevel: 0,
                     criticalLevel: 0,
-                    loadVolume: 0,
                     capacity: 0,
                     correctionFactor: 0
                 });
@@ -153,7 +151,6 @@ export default function AguEdit() {
                                     max: newTank.maxLevel,
                                     critical: newTank.criticalLevel
                                 },
-                                loadVolume: newTank.loadVolume,
                                 capacity: newTank.capacity,
                                 correctionFactor: newTank.correctionFactor
                             }],
@@ -166,7 +163,6 @@ export default function AguEdit() {
                     minLevel: 0,
                     maxLevel: 0,
                     criticalLevel: 0,
-                    loadVolume: 0,
                     capacity: 0,
                     correctionFactor: 0
                 });
@@ -297,7 +293,7 @@ export default function AguEdit() {
                             <ListItem key={tank.number}>
                                 <ListItemText
                                     primary={`Tank ${tank.number}`}
-                                    secondary={`Min: ${tank.levels.min}, Max: ${tank.levels.max}, Critical: ${tank.levels.critical}, Load Volume: ${tank.loadVolume}, Capacity: ${tank.capacity}, Correction Factor: ${tank.correctionFactor}`}
+                                    secondary={`Min: ${tank.levels.min}, Max: ${tank.levels.max}, Critical: ${tank.levels.critical}, Capacity: ${tank.capacity}, Correction Factor: ${tank.correctionFactor}`}
                                 />
                                 <IconButton onClick={() => handleEditTankClick(
                                     {
@@ -305,7 +301,6 @@ export default function AguEdit() {
                                         minLevel: tank.levels.min,
                                         maxLevel: tank.levels.max,
                                         criticalLevel: tank.levels.critical,
-                                        loadVolume: tank.loadVolume,
                                         capacity: tank.capacity,
                                         correctionFactor: tank.correctionFactor
                                     }
@@ -333,11 +328,6 @@ export default function AguEdit() {
                                             onChange={e => setEditTankData({ ...editTankData, criticalLevel: Number(e.target.value) })}
                                         />
                                         <TextField
-                                            label="Load Volume"
-                                            value={editTankData.loadVolume}
-                                            onChange={e => setEditTankData({ ...editTankData, loadVolume: Number(e.target.value) })}
-                                        />
-                                        <TextField
                                             label="Capacity"
                                             value={editTankData.capacity}
                                             onChange={e => setEditTankData({ ...editTankData, capacity: Number(e.target.value) })}
@@ -356,7 +346,7 @@ export default function AguEdit() {
                     <TextField
                         label="Number"
                         value={newTank.number}
-                        onChange={e => setNewTank({ ...newTank, number: Number(e.target.value) })}
+                        disabled={true}
                     />
                     <TextField
                         label="Min Level"
@@ -372,11 +362,6 @@ export default function AguEdit() {
                         label="Critical Level"
                         value={newTank.criticalLevel}
                         onChange={e => setNewTank({ ...newTank, criticalLevel: Number(e.target.value) })}
-                    />
-                    <TextField
-                        label="Load Volume"
-                        value={newTank.loadVolume}
-                        onChange={e => setNewTank({ ...newTank, loadVolume: Number(e.target.value) })}
                     />
                     <TextField
                         label="Capacity"

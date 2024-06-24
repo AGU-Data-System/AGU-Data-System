@@ -54,17 +54,17 @@ export namespace aguService {
     }
 
     export async function addContact(aguCui: string, newContact: ContactInputModel): Promise<Either<Error | Problem, number>> {
-        const url = `/agus/${aguCui}/contact`;
+        const url = `/${aguCui}/contact`;
         return fetchFunction(url, "POST", JSON.stringify(newContact));
     }
 
     export async function deleteContact(aguCui: string, contactId: number): Promise<Either<Error | Problem, void>> {
-        const url = `/agus/${aguCui}/contact/${contactId}`;
+        const url = `/${aguCui}/contact/${contactId}`;
         return fetchFunction(url, "DELETE");
     }
 
     export async function addTank(aguCui: string, newTank: TankInputModel): Promise<Either<Error | Problem, TankAddOutputModel>> {
-        const url = `/agus/${aguCui}/tank`;
+        const url = `/${aguCui}/tank`;
         return fetchFunction(url, "POST", JSON.stringify(newTank));
     }
 
@@ -74,7 +74,7 @@ export namespace aguService {
     }
 
     export async function updateTank(aguCui: string, tankNumber: number, tankData: TankInputModel): Promise<Either<Error | Problem, AguDetailsOutputModel>> {
-        const url = `/agus/${aguCui}/tank/${tankNumber}`;
+        const url = `/${aguCui}/tank/${tankNumber}`;
         return fetchFunction(url, "PUT", JSON.stringify(tankData));
     }
 }

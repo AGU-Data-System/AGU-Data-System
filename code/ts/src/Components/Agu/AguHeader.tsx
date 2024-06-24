@@ -11,9 +11,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
 
 export default function AguHeader(
-    { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavorite }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavorite: boolean }
+    { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavourite }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavourite: boolean }
 ) {
-    const [isFavorite, setIsFavorite] = useState<boolean>(aguIsFavorite);
+    const [isFavorite, setIsFavorite] = useState<boolean>(aguIsFavourite);
     const [waitFetch, setWaitFetch] = useState<boolean>(false);
     const navigate = useNavigate();
 
