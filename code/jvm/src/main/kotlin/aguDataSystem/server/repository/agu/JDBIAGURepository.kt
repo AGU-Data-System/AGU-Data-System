@@ -240,7 +240,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 			""".trimIndent()
 		)
 			.bind("cui", cui)
-			.bind("isActive", isActive)
+			.bind("isActive", isActive) // doesnt work with string
 			.execute()
 
 		logger.info("AGU with CUI: {}, active state updated to: {} in the database", cui, isActive)
