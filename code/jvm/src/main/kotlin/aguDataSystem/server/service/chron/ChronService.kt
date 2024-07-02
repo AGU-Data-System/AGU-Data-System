@@ -46,6 +46,7 @@ class ChronService(
 	fun initialize() {
 		logger.info("Initializing Chron Service")
 		scheduleChron()
+		schedulePredictionAndLoadChronTask()
 		logger.info("Chron Service initialized")
 	}
 
@@ -93,7 +94,7 @@ class ChronService(
 	 *
 	 * Still sketchy, needs to be implemented
 	 */
-	@Scheduled(cron = "0 0 0 * * SAT") // Every Saturday at midnight
+	@Scheduled(cron = "0 0 0 * * SAT") // TODO: This should be a normal request with availability to train one or all AGUs
 	fun scheduleTrainingChronTask(agu: AGUBasicInfo) {
 		// TODO: needs to get the training frequency or be set with an annotation
 		//  get the temperature for the past n days
@@ -136,6 +137,12 @@ class ChronService(
 		}
 	}
 
+	/**
+	 * Schedules the prediction chron task.
+	 *
+	 * This task will be responsible for predicting the consumption of each AGU as well as the needed loads according to the prediction levels.
+	 * This task is scheduled to run every day at 08:30.
+	 */
 	fun schedulePredictionAndLoadChronTask() {
 		chronScheduler.scheduleAtFixedRate({
 			val allAGUs = transactionManager.run {
@@ -145,6 +152,10 @@ class ChronService(
 				predictionService.processAGU(agu)
 			}
 		},
+			Duration.between(LocalTime.now(), LocalTime.of(8, 30)).toMillis(), //TODO: Currently set to run at 08:30, could be configurable.
+			Duration.ofDays(1).toMillis(),
+			TimeUnit.MILLISECONDS
+		)
 	}
 
 	/**

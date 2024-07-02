@@ -86,7 +86,8 @@ create table if not exists agu
 --     foreign key (company_name) references transport_company (name)
 -- );
 
-create table if not exists load
+-- TODO: Create delivered_loads table
+create table if not exists scheduled_load
 (
     id                  int generated always as identity,
     agu_cui             CUI,
@@ -94,11 +95,9 @@ create table if not exists load
     time_of_day         varchar check (time_of_day in ('morning', 'afternoon')) not null,
     amount              numeric(6, 3) default 1.0 not null,
     is_manual           boolean default false not null,
-    unload_timestamp    timestamp with time zone,
-    company_name        varchar,
+    is_confirmed        boolean default false not null,
 
     foreign key (agu_cui) references agu (cui),
-    foreign key (company_name) references transport_company (name),
     primary key (id)
 );
 

@@ -15,4 +15,5 @@ sealed class Load{
 	abstract val aguCui: String
 	abstract val date: LocalDate
 	abstract val timeOfDay: TimeOfDay
+	abstract val amount: Double
 }
