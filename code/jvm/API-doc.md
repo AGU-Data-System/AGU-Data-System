@@ -9,22 +9,37 @@
         - [Get All AGUs](#get-all-agus)
         - [Get AGU by id](#get-agu-by-id)
         - [Create AGU](#create-agu)
+        - [Delete AGU](#delete-agu)
         - [Get Temperature Measures](#get-temperature-measures)
         - [Get Daily Gas Measures](#get-daily-gas-measures)
         - [Get Hourly Gas Measures](#get-hourly-gas-measures)
         - [Get Prediction Gas Measures](#get-prediction-gas-measures)
-        - [Get Favourite AGUs](#get-favourite-agus)
         - [Update Favourite State](#update-favourite-state)
+        - [Update Active State ](#update-active-state)
+        - [Update Gas Levels](#update-gas-levels)
+        - [Change Notes](#change-notes)
+    - [Contact](#contact)
         - [Add Contact](#add-contact)
         - [Delete Contact](#delete-contact)
+    - [DNO](#dno)
+        - [Get All DNOs](#get-all-dnos)
+        - [Add DNO](#add-dno)
+        - [Delete DNO](#delete-dno)
+    - [Tank](#tank)
         - [Add tank](#add-tank)
         - [Update Tank](#update-tank)
-        - [Change Gas Levels](#change-gas-levels)
-        - [Change Notes](#change-notes)
+        - [Delete Tank](#delete-tank)
+    - [Transport Company](#transport-company)
+        - [Get all Transport Companies](#get-all-transport-companies)
+        - [Add Transport Company](#add-transport-company)
+        - [Delete Transport Company](#delete-transport-company)
+        - [Get transport companies of AGU](#get-transport-companies-of-agu)
+        - [Add transport company to AGU](#add-transport-company-to-agu)
+        - [Delete transport company from AGU](#delete-transport-company-from-agu)
 - [Input Models](#input-models)
     - [AGU Input Models](#agu-input-models)
         - [AGU Creation Input Model](#agu-creation-input-model)
-        - [Notes Input Model](#notes-input-model)
+        - [Update Active AGU Input Model](#update-active-agu-input-model)
         - [Update Favourite AGU Input Model](#update-favorite-agu-input-model)
     - [Contact Input Models](#contact-input-models)
         - [Contact Creation Input Model](#contact-creation-input-model)
@@ -32,9 +47,13 @@
         - [DNO Creation Input Model](#dno-creation-input-model)
     - [Gas Levels Input Models](#gas-levels-input-models)
         - [Gas Levels Input Model](#gas-levels-input-model)
+    - [Notes Input Models](#notes-input-models)
+        - [Notes Input Model](#notes-input-model)
     - [Tank Input Models](#tank-input-models)
         - [Tank Creation Input Model](#tank-creation-input-model)
         - [Update Tank Input Model](#update-tank-input-model)
+    - [Transport Company Input Models](#transport-company-input-models)
+        - [Transport Company Creation Input Model](#transport-company-creation-input-model)
 - [Output Models](#output-models)
     - [AGU Output Models](#agu-output-models)
         - [AGU Basic Info Output Model](#agu-basic-info-output-model)
@@ -47,6 +66,7 @@
         - [Contact Output Model](#contact-output-model)
     - [DNO Output Models](#dno-output-models)
         - [DNO Output Model](#dno-output-model)
+        - [DNO List Output Model](#dno-list-output-model)
     - [Gas Levels Output Models](#gas-levels-output-models)
         - [Gas Levels Output Model](#gas-levels-output-model)
     - [Location Output Models](#location-output-models)
@@ -54,14 +74,19 @@
     - [Provider Output Models](#provider-output-models)
         - [Gas Measure List Output Model](#gas-measure-list-output-model)
         - [Gas Measure Output Model](#gas-measure-output-model)
+        - [Gas Provider Output Model](#gas-provider-output-model)
         - [Provider List Output Model](#provider-list-output-model)
-        - [Provider Output Model](#provider-output-model)
         - [Temperature Measure List Output Model](#temperature-measure-list-output-model)
         - [Temperature Measure Output Model](#temperature-measure-output-model)
+        - [Temperature Provider Output Model](#temperature-provider-output-model)
     - [Tank Output Models](#tank-output-models)
         - [Add Tank Output Model](#add-tank-output-model)
         - [Tank List Output Model](#tank-list-output-model)
         - [Tank Output Model](#tank-output-model)
+    - [Transport Company Output Models](#transport-company-output-models)
+        - [Transport Company Creation Output Model](#transport-company-creation-output-model)
+        - [Transport Company Output Model](#transport-company-output-model)
+        - [Transport Company List Output Model](#transport-company-list-output-model)
 - [Error Handling](#error-handling)
     - [Problem Details](#problem-details)
     - [Bad Request](#bad-request)
@@ -69,6 +94,8 @@
     - [AGU Name Already Exists](#agu-name-already-exists)
     - [AGU Not Found](#agu-not-found)
     - [Contact Already Exists](#contact-already-exists)
+    - [DNO Already Exists](#dno-already-exists)
+    - [DNO Not Found](#dno-not-found)
     - [Invalid Capacity](#invalid-capacity)
     - [Invalid Contact](#invalid-contact)
     - [Invalid Contact Type](#invalid-contact-type)
@@ -79,7 +106,6 @@
     - [Invalid DNO](#invalid-dno)
     - [Invalid EIC](#invalid-eic)
     - [Invalid Levels](#invalid-levels)
-    - [Invalid Load Volume](#invalid-load-volume)
     - [Invalid Max Level](#invalid-max-level)
     - [Invalid Min Level](#invalid-min-level)
     - [Invalid Name](#invalid-name)
@@ -90,6 +116,8 @@
     - [Provider Not Found](#provider-not-found)
     - [Tank Already Exists](#tank-already-exists)
     - [Tank Not Found](#tank-not-found)
+    - [Transport Company Already Exists](#transport-company-already-exists)
+    - [Transport Company Not Found](#transport-company-not-found)
 
 ## Introduction
 
@@ -175,12 +203,33 @@ AGU Endpoint is responsible for managing AGUs in the system.
             - [Invalid Name](#invalid-name)
             - [AGU Already Exists](#agu-already-exists)
             - [AGU Name Already Exists](#agu-name-already-exists)
+            - [Transport Company Not Found](#transport-company-not-found)
+            - [DNO Not Found](#dno-not-found)
+            - [Invalid EIC](#invalid-eic)
 - **Sample Call:**
     ```shell
   curl -X POST "http://localhost:8080/api/agus/create" -H "accept: application/json" 
   ```    
 
 [comment]: <> (TODO: add body to Requests)
+
+#### Delete AGU
+
+- **URL:** `/api/agus/{cui}`
+- **Method:** `DELETE`
+- **Path Variables:**
+    - `cui` - The unique id of the AGU.
+- **Success Response:**
+    - **Content:**
+        - `nothing`
+- **Error Response:**
+- **Content:**
+    - `application/json`
+        - [Invalid CUI](#invalid-cui)
+- **Sample Call:**
+    ```shell
+    curl -X DELETE "http://localhost:8080/api/agus/PT1234567890123456XX" -H "accept: application/json"
+    ```
 
 #### Get Temperature Measures
 
@@ -309,7 +358,7 @@ AGU Endpoint is responsible for managing AGUs in the system.
 #### Update Favourite State
 
 - **URL:** `/api/agus/{aguCui}/favourite`
-- **Method:** `POST`
+- **Method:** `PUT`
 - **Path Variables:**
     - `aguCui` - The unique id of the AGU.
 - **Request Body:**
@@ -324,8 +373,74 @@ AGU Endpoint is responsible for managing AGUs in the system.
             - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
-    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/favourite" -H "accept: application/json"
+    curl -X PUT "http://localhost:8080/api/agus/PT1234567890123456XX/favourite" -H "accept: application/json"
     ```
+
+#### Update Active State
+
+- **URL:** `/api/agus/{aguCui}/active`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Update Active AGU Input Model](#update-active-agu-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Not Found](#agu-not-found)
+- **Sample Call:**
+    ```shell
+    curl -X PUT "http://localhost:8080/api/agus/PT1234567890123456XX/active" -H "accept: application/json"
+    ```
+
+#### Update Gas Levels
+
+- **URL:** `/api/agus/{aguCui}/levels`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Gas Levels Input Model](#gas-levels-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Not Found](#agu-not-found)
+            - [Invalid Levels](#invalid-levels)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/levels" -H "accept: application/json"
+    ```
+
+#### Change Notes
+
+- **URL:** `/api/agus/{aguCui}/notes`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Request Body:**
+    - [Notes Input Model](#notes-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Output Model](#agu-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Not Found](#agu-not-found)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/notes" -H "accept: application/json"
+    ```
+
+### Contact
 
 #### Add Contact
 
@@ -369,6 +484,58 @@ AGU Endpoint is responsible for managing AGUs in the system.
     ```shell
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/contact/1" -H "accept: application/json"
     ```
+
+### DNO
+
+#### Get All DNOs
+
+- **URL:** `/api/dnos`
+- **Method:** `GET`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [DNO List Output Model](#dno-list-output-model)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/dnos" -H "accept: application/json"
+    ```
+
+#### Add DNO
+
+- **URL:** `/api/dnos`
+- **Method:** `POST`
+- **Request Body:**
+    - `application/json`
+        - [DNO Creation Input Model](#dno-creation-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [DNO Output Model](#dno-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Invalid Name](#invalid-name)
+            - [DNO Already Exists](#dno-already-exists)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/dnos" -H "accept: application/json"
+    ```
+
+#### Delete DNO
+
+- **URL:** `/api/dnos/{dnoId}`
+- **Method:** `DELETE`
+- **Path Variables:**
+    - `dnoId` - The id of the DNO.
+- **Success Response:**
+    - **Content:**
+        - `nothing`
+- **Sample Call:**
+    ```shell
+    curl -X DELETE "http://localhost:8080/api/dnos/1" -H "accept: application/json"
+    ```
+
+### Tank
 
 #### Add tank
 
@@ -424,47 +591,133 @@ AGU Endpoint is responsible for managing AGUs in the system.
     curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/tank/1" -H "accept: application/json"
     ```
 
-#### Change Gas Levels
+#### Delete Tank
 
-- **URL:** `/api/agus/{aguCui}/levels`
-- **Method:** `PUT`
+- **URL:** `/api/agus/{aguCui}/tank/{tankNumber}`
+- **Method:** `DELETE`
 - **Path Variables:**
     - `aguCui` - The unique id of the AGU.
-- **Request Body:**
-    - [Gas Levels Input Model](#gas-levels-input-model)
+    - `tankNumber` - The number of the Tank to delete
 - **Success Response:**
     - **Content:**
-        - `application/json`
-            - [AGU Output Model](#agu-output-model)
+        - `nothing`
 - **Error Response:**
     - **Content:**
         - `application/json`
             - [AGU Not Found](#agu-not-found)
-            - [Invalid Levels](#invalid-levels)
+            - [Invalid CUI](#invalid-cui)
 - **Sample Call:**
     ```shell
-    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/levels" -H "accept: application/json"
+    curl -X DELETE "http://localhost:8080/api/agus/PT1234567890123456XX/tank/1" -H "accept: application/json"
     ```
 
-#### Change Notes
+### Transport Company
 
-- **URL:** `/api/agus/{aguCui}/notes`
-- **Method:** `PUT`
-- **Path Variables:**
-    - `aguCui` - The unique id of the AGU.
-- **Request Body:**
-    - [Notes Input Model](#notes-input-model)
+#### Get all Transport Companies
+
+- **URL:** `/api/transport-companies`
+- **Method:** `GET`
 - **Success Response:**
     - **Content:**
         - `application/json`
-            - [AGU Output Model](#agu-output-model)
+            - [Transport Company List Output Model](#transport-company-list-output-model)
+- **Sample Call:**
+    ```shell
+    curl -X GET "http://localhost:8080/api/transport-companies" -H "accept: application/json"
+    ```
+
+#### Add Transport Company
+
+- **URL:** `/api/transport-companies`
+- **Method:** `POST`
+- **Request Body:**
+    - `application/json`
+        - [Transport Company Creation Input Model](#transport-company-creation-input-model)
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Transport Company Output Model](#transport-company-output-model)
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [Invalid Name](#invalid-name)
+            - [Transport Company Already Exists](#transport-company-already-exists)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/transport-companies" -H "accept: application/json"
+    ```
+
+#### Delete Transport Company
+
+- **URL:** `/api/transport-companies/{transportCompanyId}`
+- **Method:** `DELETE`
+- **Path Variables:**
+    - `transportCompanyId` - The id of the Transport Company.
+- **Success Response:**
+    - **Content:**
+        - `nothing`
+- **Sample Call:**
+    ```shell
+    curl -X DELETE "http://localhost:8080/api/transport-companies/1" -H "accept: application/json"
+    ```
+
+#### Get Transport Companies of AGU
+
+- **URL:** `/api/transport-companies/agu/{aguCui}`
+- **Method:** `GET`
+- **Path Variables:**
+    - `aguCui` - The unique id of the AGU.
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Transport Company List Output Model](#transport-company-list-output-model)
 - **Error Response:**
     - **Content:**
         - `application/json`
             - [AGU Not Found](#agu-not-found)
 - **Sample Call:**
     ```shell
-    curl -X POST "http://localhost:8080/api/agus/PT1234567890123456XX/notes" -H "accept: application/json"
+    curl -X GET "http://localhost:8080/api/transport-companies/agu/PT1234567890123456XX" -H "accept: application/json"
+    ```
+
+#### Add transport company to AGU
+
+- **URL:** `/api/transport-companies/{transportCompanyId}/agu/{aguCui}`
+- **Method:** `POST`
+- **Path Variables:**
+    - `transportCompanyId` - The id of the Transport Company.
+    - `aguCui` - The unique id of the AGU.
+- **Success Response:**
+    - **Content:**
+        - `nothing`
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Not Found](#agu-not-found)
+            - [Transport Company Not Found](#transport-company-not-found)
+- **Sample Call:**
+    ```shell
+    curl -X POST "http://localhost:8080/api/transport-companies/1/agu/PT1234567890123456XX" -H "accept: application/json"
+    ```
+
+#### Delete transport company from AGU
+
+- **URL:** `/api/transport-companies/{transportCompanyId}/agu/{aguCui}`
+- **Method:** `DELETE`
+- **Path Variables:**
+    - `transportCompanyId` - The id of the Transport Company.
+    - `aguCui` - The unique id of the AGU.
+- **Success Response:**
+    - **Content:**
+        - `nothing`
+- **Error Response:**
+    - **Content:**
+        - `application/json`
+            - [AGU Not Found](#agu-not-found)
+            - [Transport Company Not Found](#transport-company-not-found)
+- **Sample Call:**
+    ```shell
+    curl -X DELETE "http://localhost:8080/api/transport-companies/1/agu/PT1234567890123456XX" -H "accept: application/json"
     ```
 
 ## Input Models
@@ -477,76 +730,83 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Attributes:**
     - **Required:**
         - `cui`: The CUI of the AGU.
+        - `eic`: The EIC of the AGU.
         - `name`: The name of the AGU.
         - `minLevel`: The minimum level of the AGU.
         - `maxLevel`: The maximum level of the AGU.
         - `criticalLevel`: The critical level of the AGU.
-        - `loadVolume`: The load volume of the AGU.
+        - `correctionFactor`: The correction factor of the AGU.
         - `latitude`: The latitude of the AGU.
         - `longitude`: The longitude of the AGU.
         - `locationName`: The location name of the AGU.
-        - `dnoCreation`: [DNO Creation Input Model](#dno-creation-input-model).
+        - `dnoName`: The name of the DNO of the AGU.
         - `gasLevelUrl`: The gas level URL of the AGU.
         - `image`: The image of the AGU.
-        - `tanks`: [Tank Creation Input Model](#tank-creation-input-model) list.
-        - `contacts`: [Contact Creation Input Model](#contact-creation-input-model) list.
-        - `isFavorite`: The favorite status of the AGU.
-    - **Optional:**
-        - `notes`: The notes of the AGU.
+        - `tanks`: The tanks of the AGU.
+        - `contacts`: The contacts of the AGU.
+        - `transportCompanies`: The transport companies of the AGU.
+        - `isFavourite`: The favorite status of the AGU.
+        - `isActive`: The active status of the AGU.
+        - **Optional:**
+            - `notes`: The notes of the AGU.
 
 - **Example:**
 
-```json
-{
-    "cui": "string",
-    "name": "string",
-    "minLevel": 0,
-    "maxLevel": 0,
-    "criticalLevel": 0,
-    "loadVolume": 0,
-    "latitude": 0,
-    "longitude": 0,
-    "locationName": "string",
-    "dnoCreation": {
+    ```json
+    {
+        "cui": "string",
+        "eic": "string",
         "name": "string",
-        "region": "string"
-    },
-    "gasLevelUrl": "string",
-    "image": "byte[]",
-    "tanks": [
-        {
-            "name": "string",
-            "capacity": 0,
-            "level": 0,
-            "isCritical": true
-        }
-    ],
-    "contacts": [
-        {
-            "name": "string",
-            "phone": "string",
-            "email": "string"
-        }
-    ],
-    "isFavorite": true,
-    "notes": "string"
-}
-```
+        "minLevel": 0,
+        "maxLevel": 0,
+        "criticalLevel": 0,
+        "correctionFactor": 0.0,
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "locationName": "string",
+        "dnoName": "string",
+        "gasLevelUrl": "string",
+        "image": "byte[]",
+        "tanks": [
+            {
+                "number": 0,
+                "minLevel": 0,
+                "maxLevel": 0,
+                "criticalLevel": 0,
+                "capacity": 0,
+                "correctionFactor": 0.0
+            }
+        ],
+        "contacts": [
+            {
+                "name": "string",
+                "phone": "string",
+                "type": "emergency"
+            }
+        ],
+        "transportCompanies": [
+            "string",
+            "string"
+        ],
+        "isFavourite": true,
+        "isActive": true,
+        "notes": "string"
+    }
+    ```
 
-#### Notes Input Model
+#### Update Active AGU Input Model
 
 - **Type:** `application/json`
 - **Attributes:**
     - **Required:**
-        - `notes`: The notes of the AGU.
-
+        - `isActive`: The active status of the AGU.
 - **Example:**
 
-```json
-{
-    "notes": "string"
-}
-```
+    ```json
+    {
+        "isActive": true
+    }
+    ```
 
 #### Update Favorite AGU Input Model
 
@@ -557,11 +817,11 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "isFavourite": true
-}
-```
+    ```json
+    {
+        "isFavourite": true
+    }
+    ```
 
 ### Contact Input Models
 
@@ -572,17 +832,17 @@ AGU Endpoint is responsible for managing AGUs in the system.
     - **Required:**
         - `name`: The name of the contact.
         - `phone`: The phone of the contact.
-        - `email`: The email of the contact.
+        - `type`: The type of the contact.
 
 - **Example:**
 
-```json
-{
-    "name": "string",
-    "phone": "string",
-    "email": "string"
-}
-```
+    ```json
+    {
+        "name": "string",
+        "phone": "string",
+        "type": "emergency"
+    }
+    ```
 
 ### DNO Input Models
 
@@ -595,12 +855,12 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `region`: The region of the DNO.
 - **Example:**
 
-```json
-{
-    "name": "string",
-    "region": "string"
-}
-```
+    ```json
+    {
+        "name": "string",
+        "region": "string"
+    }
+    ```
 
 ### Gas Levels Input Models
 
@@ -615,13 +875,30 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "min": 0,
-    "max": 0,
-    "critical": 0
-}
-```
+    ```json
+    {
+        "min": 0,
+        "max": 0,
+        "critical": 0
+    }
+    ```
+
+### Notes Input Models
+
+#### Notes Input Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `notes`: The notes of the AGU.
+
+- **Example:**
+
+    ```json
+    {
+        "notes": "string"
+    }
+    ```
 
 ### Tank Input Models
 
@@ -634,23 +911,21 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `minLevel`: The minimum level of the tank.
         - `maxLevel`: The maximum level of the tank.
         - `criticalLevel`: The critical level of the tank.
-        - `loadVolume`: The load volume of the tank.
         - `capacity`: The capacity of the tank.
         - `correctionFactor`: The correction factor of the tank.
 
 - **Example:**
 
-```json
-{
-    "number": 0,
-    "minLevel": 0,
-    "maxLevel": 0,
-    "criticalLevel": 0,
-    "loadVolume": 0.0,
-    "capacity": 0,
-    "correctionFactor": 0.0
-}
-```
+    ```json
+    {
+        "number": 0,
+        "minLevel": 0,
+        "maxLevel": 0,
+        "criticalLevel": 0,
+        "capacity": 0,
+        "correctionFactor": 0.0
+    }
+    ```
 
 #### Update Tank Input Model
 
@@ -660,22 +935,36 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `minLevel`: The minimum level of the tank.
         - `maxLevel`: The maximum level of the tank.
         - `criticalLevel`: The critical level of the tank.
-        - `loadVolume`: The load volume of the tank.
         - `capacity`: The capacity of the tank.
         - `correctionFactor`: The correction factor of the tank.
 
 - **Example:**
 
-```json
-{
-    "minLevel": 0,
-    "maxLevel": 0,
-    "criticalLevel": 0,
-    "loadVolume": 0.0,
-    "capacity": 0,
-    "correctionFactor": 0.0
-}
-```
+    ```json
+    {
+        "minLevel": 0,
+        "maxLevel": 0,
+        "criticalLevel": 0,
+        "capacity": 0,
+        "correctionFactor": 0.0
+    }
+    ```
+
+### Transport Company Input Models
+
+#### Transport Company Creation Input Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `name`: The name of the transport company.
+- **Example:**
+
+    ```json
+    {
+        "name": "string"
+    }
+    ```
 
 ## Output Models
 
@@ -687,27 +976,41 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Attributes:**
     - **Required:**
         - `cui`: The CUI of the AGU.
+        - `eic`: The EIC of the AGU.
         - `name`: The name of the AGU.
+        - `isFavourite`: If the agu is a favorite.
         - `dno`: [DNO Output Model](#dno-output-model).
         - `location`: [Location Output Model](#location-output-model).
+        - `transportCompanies`: [Transport Company List Output Model](#transport-company-list-output-model).
 
 - **Example:**
 
-```json
-{
-    "cui": "string",
-    "name": "string",
-    "dno": {
-        "id": 0,
-        "name": "string"
-    },
-    "location": {
+    ```json
+    {
+        "cui": "string",
+        "eic": "string",
         "name": "string",
-        "latitude": 0.0,
-        "longitude": 0.0
+        "isFavourite": true,
+        "dno": {
+            "id": 0,
+            "name": "string"
+        },
+        "location": {
+            "name": "string",
+            "latitude": 0.0,
+            "longitude": 0.0
+        },
+        "transportCompanies": {
+            "transportCompanies": [
+                {
+                    "id": 0,
+                    "name": "string"
+                }
+            ],
+            "size": 1
+        }
     }
-}
-```
+    ```
 
 #### AGU Basic Info List Output Model
 
@@ -719,26 +1022,37 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "agusBasicInfo": [
-        {
-            "cui": "string",
-            "name": "string",
-            "dno": {
-                "id": 0,
-                "name": "string"
-            },
-            "location": {
+    ```json
+    {
+        "agusBasicInfo": [
+            {
+                "cui": "string",
+                "eic": "string",
                 "name": "string",
-                "latitude": 0.0,
-                "longitude": 0.0
+                "isFavourite": true,
+                "dno": {
+                    "id": 0,
+                    "name": "string"
+                },
+                "location": {
+                    "name": "string",
+                    "latitude": 0.0,
+                    "longitude": 0.0
+                },
+                "transportCompanies": {
+                    "transportCompanies": [
+                        {
+                            "id": 0,
+                            "name": "string"
+                        }
+                    ],
+                    "size": 1
+                }
             }
-        }
-    ],
-    "size": 1
-}
-```
+        ],
+        "size": 1
+    }
+    ```
 
 #### AGU Creation Output Model
 
@@ -749,11 +1063,11 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "cui": "string"
-}
-```
+    ```json
+    {
+        "cui": "string"
+    }
+    ```
 
 #### AGU Output Model
 
@@ -761,106 +1075,122 @@ AGU Endpoint is responsible for managing AGUs in the system.
 - **Attributes:**
     - **Required:**
         - `cui`: The CUI of the AGU.
+        - `eic`: The EIC of the AGU.
         - `name`: The name of the AGU.
         - `levels`: [Gas Levels Output Model](#gas-levels-output-model).
-        - `loadVolume`: The load volume of the AGU.
+        - `correctionFactor`: The correction factor of the AGU.
         - `location`: [Location Output Model](#location-output-model).
         - `dno`: [DNO Output Model](#dno-output-model).
         - `image`: The image of the AGU.
         - `contacts`: [Contact List Output Model](#contact-list-output-model).
         - `tanks`: [Tank List Output Model](#tank-list-output-model).
         - `providers`: [Provider List Output Model](#provider-list-output-model).
+        - `transportCompanies`: [Transport Company Output Model](#transport-company-output-model) list.
         - `isFavorite`: The favorite status of the AGU.
-    - **Optional:**
-        - `notes`: The notes of the AGU.
-        - `training`: The training of the AGU.
+        - `isActive`: The active status of the AGU.
+        - `capacity`: The capacity of the AGU.
+        - **Optional:**
+            - `notes`: The notes of the AGU.
+            - `training`: The training of the AGU.
 
 - **Example:**
 
-```json
-{
-    "cui": "string",
-    "name": "string",
-    "levels": {
-        "min": 0,
-        "max": 0,
-        "critical": 0
-    },
-    "loadVolume": 0,
-    "location": {
+    ```json
+    {
+        "cui": "string",
+        "eic": "string",
         "name": "string",
-        "latitude": 0.0,
-        "longitude": 0.0
-    },
-    "dno": {
-        "id": 0,
-        "name": "string"
-    },
-    "image": "byte[]",
-    "contacts": {
-        "contacts": [
-            {
-                "id": 0,
-                "name": "string",
-                "phone": "string",
-                "type": "emergency"
-            }
-        ],
-        "size": 1
-    },
-    "tanks": {
-        "tanks": [
-            {
-                "number": 0,
-                "levels": {
-                    "min": 0,
-                    "max": 0,
-                    "critical": 0
-                },
-                "loadVolume": 0,
-                "capacity": 0,
-                "correctionFactor": 0.0
-            }
-        ],
-        "size": 1
-    },
-    "providers": {
-        "providers": [
-            {
-                "id": 0,
-                "measures": {
-                    "gasMeasures": {
-                        "gasMeasures": [
-                            {
-                                "id": 0,
-                                "date": "2024-03-18T12:28:34.971+00:00",
-                                "level": 0
-                            }
-                        ],
-                        "size": 1
+        "levels": {
+            "min": 0,
+            "max": 0,
+            "critical": 0
+        },
+        "correctionFactor": 0.0,
+        "location": {
+            "name": "string",
+            "latitude": 0.0,
+            "longitude": 0.0
+        },
+        "dno": {
+            "id": 0,
+            "name": "string"
+        },
+        "image": "byte[]",
+        "contacts": {
+            "contacts": [
+                {
+                    "id": 0,
+                    "name": "string",
+                    "phone": "string",
+                    "type": "emergency"
+                }
+            ],
+            "size": 1
+        },
+        "tanks": {
+            "tanks": [
+                {
+                    "number": 0,
+                    "levels": {
+                        "min": 0,
+                        "max": 0,
+                        "critical": 0
                     },
-                    "temperatureMeasures": {
-                        "temperatureMeasures": [
-                            {
-                                "timestamp": "2024-03-18T12:28:34.971+00:00",
-                                "predictionFor": "2024-03-18T12:28:34.971+00:00",
-                                "min": 0,
-                                "max": 0
-                            }
-                        ],
-                        "size": 1
-                    }
-                },
-                "lastFetch": "2024-03-18T12:28:34.971+00:00",
-                "type": "string"
-            }
-        ],
-        "size": 1
-    },
-    "isFavorite": true,
-    "notes": "string"
-}
-```
+                    "capacity": 0,
+                    "correctionFactor": 0.0
+                }
+            ],
+            "size": 1
+        },
+        "providers": {
+            "providers": [
+                {
+                    "id": 0,
+                    "measures": {
+                        "gasMeasures": {
+                            "gasMeasures": [
+                                {
+                                    "id": 0,
+                                    "date": "2024-03-18T12:28:34.971+00:00",
+                                    "level": 0
+                                }
+                            ],
+                            "size": 1
+                        },
+                        "temperatureMeasures": {
+                            "temperatureMeasures": [
+                                {
+                                    "timestamp": "2024-03-18T12:28:34.971+00:00",
+                                    "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                                    "min": 0,
+                                    "max": 0
+                                }
+                            ],
+                            "size": 1
+                        }
+                    },
+                    "lastFetch": "2024-03-18T12:28:34.971+00:00",
+                    "type": "string"
+                }
+            ],
+            "size": 1
+        },
+        "transportCompanies": {
+            "transportCompanies": [
+                {
+                    "id": 0,
+                    "name": "string"
+                }
+            ],
+            "size": 1
+        },
+        "isFavorite": true,
+        "isActive": true,
+        "notes": "string",
+        "training": "string",
+        "capacity": 0
+    }
+    ```
 
 ### Contact Output Models
 
@@ -873,11 +1203,11 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "id": 0
-}
-```
+    ```json
+    {
+        "id": 0
+    }
+    ```
 
 #### Contact List Output Model
 
@@ -889,19 +1219,19 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "contacts": [
-        {
-            "id": 0,
-            "name": "string",
-            "phone": "string",
-            "type": "emergency"
-        }
-    ],
-    "size": 1
-}
-```
+    ```json
+    {
+        "contacts": [
+            {
+                "id": 0,
+                "name": "string",
+                "phone": "string",
+                "type": "emergency"
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 #### Contact Output Model
 
@@ -915,14 +1245,14 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "id": 0,
-    "name": "xpto",
-    "phone": "123456789",
-    "type": "emergency"
-}
-```
+    ```json
+    {
+        "id": 0,
+        "name": "xpto",
+        "phone": "123456789",
+        "type": "emergency"
+    }
+    ```
 
 ### DNO Output Models
 
@@ -937,13 +1267,35 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "id": 0,
-    "name": "string",
-    "region": "string"
-}
-```
+    ```json
+    {
+        "id": 0,
+        "name": "string",
+        "region": "string"
+    }
+    ```
+
+#### DNO List Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `dnos`: [DNO Output Model](#dno-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+
+    ```json
+    {
+        "dnos": [
+            {
+                "id": 0,
+                "name": "string",
+                "region": "string"
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 ### Gas Levels Output Models
 
@@ -958,13 +1310,13 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "min": 0,
-    "max": 0,
-    "critical": 0
-}
-```
+    ```json
+    {
+        "min": 0,
+        "max": 0,
+        "critical": 0
+    }
+    ```
 
 ### Location Output Models
 
@@ -979,13 +1331,13 @@ AGU Endpoint is responsible for managing AGUs in the system.
 
 - **Example:**
 
-```json
-{
-    "name": "string",
-    "latitude": 0.0,
-    "longitude": 0.0
-}
-```
+    ```json
+    {
+        "name": "string",
+        "latitude": 0.0,
+        "longitude": 0.0
+    }
+    ```
 
 ### Provider Output Models
 
@@ -998,19 +1350,19 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `size`: The size of the list.
 - **Example:**
 
-```json
-{
-    "gasMeasures": [
-        {
-            "timestamp": "2024-03-18T12:28:34.971+00:00",
-            "predictionFor": "2024-03-18T12:28:34.971+00:00",
-            "level": 0,
-            "tankNumber": 0
-        }
-    ],
-    "size": 1
-}
-```
+    ```json
+    {
+        "gasMeasures": [
+            {
+                "timestamp": "2024-03-18T12:28:34.971+00:00",
+                "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                "level": 0,
+                "tankNumber": 0
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 #### Gas Measure Output Model
 
@@ -1023,66 +1375,16 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `tankNumber`: The tank number of the gas measure.
 - **Example:**
 
-```json
-{
-    "timestamp": "2024-03-18T12:28:34.971+00:00",
-    "predictionFor": "2024-03-18T12:28:34.971+00:00",
-    "level": 0,
-    "tankNumber": 0
-}
-```
+    ```json
+    {
+        "timestamp": "2024-03-18T12:28:34.971+00:00",
+        "predictionFor": "2024-03-18T12:28:34.971+00:00",
+        "level": 0,
+        "tankNumber": 0
+    }
+    ```
 
-#### Provider List Output Model
-
-data class ProviderListOutputModel(
-val providers: List<ProviderOutputModel>,
-val size: Int
-)
-
-- **Type:** `application/json`
-- **Attributes:**
-    - **Required:**
-        - `providers`: [Provider Output Model](#provider-output-model) list.
-        - `size`: The size of the list.
-- **Example:**
-
-```json
-{
-    "providers": [
-        {
-            "id": 0,
-            "measures": {
-                "gasMeasures": {
-                    "gasMeasures": [
-                        {
-                            "id": 0,
-                            "date": "2024-03-18T12:28:34.971+00:00",
-                            "level": 0
-                        }
-                    ],
-                    "size": 1
-                },
-                "temperatureMeasures": {
-                    "temperatureMeasures": [
-                        {
-                            "timestamp": "2024-03-18T12:28:34.971+00:00",
-                            "predictionFor": "2024-03-18T12:28:34.971+00:00",
-                            "min": 0,
-                            "max": 0
-                        }
-                    ],
-                    "size": 1
-                }
-            },
-            "lastFetch": "2024-03-18T12:28:34.971+00:00",
-            "type": "string"
-        }
-    ],
-    "size": 1
-}
-```
-
-#### Provider Output Model
+#### Gas Provider Output Model
 
 - **Type:** `application/json`
 - **Attributes:**
@@ -1090,39 +1392,82 @@ val size: Int
         - `id`: The id of the provider.
         - `measures`: The measures of the provider.
         - `lastFetch`: The last fetch of the provider.
-        - `type`: The type of the provider.
 - **Example:**
 
-```json
-{
-    "id": 0,
-    "measures": {
-        "gasMeasures": {
-            "gasMeasures": [
-                {
-                    "id": 0,
-                    "date": "2024-03-18T12:28:34.971+00:00",
-                    "level": 0
-                }
-            ],
-            "size": 1
+    ```json
+    {
+        "id": 0,
+        "measures": {
+            "gasMeasures": {
+                "gasMeasures": [
+                    {
+                        "timestamp": "2024-03-18T12:28:34.971+00:00",
+                        "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                        "level": 0,
+                        "tankNumber": 0
+                    }
+                ],
+                "size": 1
+            }
         },
-        "temperatureMeasures": {
-            "temperatureMeasures": [
-                {
-                    "timestamp": "2024-03-18T12:28:34.971+00:00",
-                    "predictionFor": "2024-03-18T12:28:34.971+00:00",
-                    "min": 0,
-                    "max": 0
-                }
-            ],
-            "size": 1
-        }
-    },
-    "lastFetch": "2024-03-18T12:28:34.971+00:00",
-    "type": "string"
-}
-```
+        "lastFetch": "2024-03-18T12:28:34.971+00:00"
+    }
+    ```
+
+#### Provider List Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `gasProviders`: [Gas Provider Output Model](#gas-provider-output-model) list.
+        - `temperatureProviders`: [Temperature Provider Output Model](#temperature-provider-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+
+    ```json
+    {
+        "gasProviders": [
+            {
+                "id": 0,
+                "measures": {
+                    "gasMeasures": {
+                        "gasMeasures": [
+                            {
+                                "timestamp": "2024-03-18T12:28:34.971+00:00",
+                                "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                                "level": 0,
+                                "tankNumber": 0
+                            }
+                        ],
+                        "size": 1
+                    }
+                },
+                "lastFetch": "2024-03-18T12:28:34.971+00:00",
+                "type": "string"
+            }
+        ],
+        "temperatureProviders": [
+            {
+                "id": 0,
+                "measures": {
+                    "temperatureMeasures": {
+                        "temperatureMeasures": [
+                            {
+                                "timestamp": "2024-03-18T12:28:34.971+00:00",
+                                "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                                "min": 0,
+                                "max": 0
+                            }
+                        ],
+                        "size": 1
+                    }
+                },
+                "lastFetch": "2024-03-18T12:28:34.971+00:00"
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 #### Temperature Measure List Output Model
 
@@ -1133,19 +1478,19 @@ val size: Int
         - `size`: The size of the list.
 - **Example:**
 
-```json
-{
-    "temperatureMeasures": [
-        {
-            "timestamp": "2024-03-18T12:28:34.971+00:00",
-            "predictionFor": "2024-03-18T12:28:34.971+00:00",
-            "min": 0,
-            "max": 10
-        }
-    ],
-    "size": 1
-}
-```
+    ```json
+    {
+        "temperatureMeasures": [
+            {
+                "timestamp": "2024-03-18T12:28:34.971+00:00",
+                "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                "min": 0,
+                "max": 10
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 #### Temperature Measure Output Model
 
@@ -1158,14 +1503,44 @@ val size: Int
         - `max`: The maximum temperature of the measure.
 - **Example:**
 
-```json
-{
-    "timestamp": "2024-03-18T12:28:34.971+00:00",
-    "predictionFor": "2024-03-18T12:28:34.971+00:00",
-    "min": 0,
-    "max": 10
-}
-```
+    ```json
+    {
+        "timestamp": "2024-03-18T12:28:34.971+00:00",
+        "predictionFor": "2024-03-18T12:28:34.971+00:00",
+        "min": 0,
+        "max": 10
+    }
+    ```
+
+#### Temperature Provider Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the provider.
+        - `measures`: The measures of the provider.
+        - `lastFetch`: The last fetch of the provider.
+- **Example:**
+
+    ```json
+    {
+        "id": 0,
+        "measures": {
+            "temperatureMeasures": {
+                "temperatureMeasures": [
+                    {
+                        "timestamp": "2024-03-18T12:28:34.971+00:00",
+                        "predictionFor": "2024-03-18T12:28:34.971+00:00",
+                        "min": 0,
+                        "max": 0
+                    }
+                ],
+                "size": 1
+            }
+        },
+        "lastFetch": "2024-03-18T12:28:34.971+00:00"
+    }
+    ```
 
 ### Tank Output Models
 
@@ -1177,11 +1552,11 @@ val size: Int
         - `number`: The number of the tank.
 - **Example:**
 
-```json
-{
-    "number": 0
-}
-```
+    ```json
+    {
+        "number": 0
+    }
+    ```
 
 #### Tank List Output Model
 
@@ -1197,24 +1572,23 @@ val size: Int
         - `size`: The size of the list.
 - **Example:**
 
-```json
-{
-    "tanks": [
-        {
-            "number": 0,
-            "levels": {
-                "min": 0,
-                "max": 0,
-                "critical": 0
-            },
-            "loadVolume": 0,
-            "capacity": 0,
-            "correctionFactor": 0.0
-        }
-    ],
-    "size": 1
-}
-```
+    ```json
+    {
+        "tanks": [
+            {
+                "number": 0,
+                "levels": {
+                    "min": 0,
+                    "max": 0,
+                    "critical": 0
+                },
+                "capacity": 0,
+                "correctionFactor": 0.0
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 #### Tank Output Model
 
@@ -1223,24 +1597,75 @@ val size: Int
     - **Required:**
         - `number`: The number of the tank.
         - `levels`: [Gas Levels Output Model](#gas-levels-output-model).
-        - `loadVolume`: The load volume of the tank.
         - `capacity`: The capacity of the tank.
         - `correctionFactor`: The correction factor of the tank.
 - **Example:**
 
-```json
-{
-    "number": 0,
-    "levels": {
-        "min": 0,
-        "max": 0,
-        "critical": 0
-    },
-    "loadVolume": 0,
-    "capacity": 0,
-    "correctionFactor": 0.0
-}
-```
+    ```json
+    {
+        "number": 0,
+        "levels": {
+            "min": 0,
+            "max": 0,
+            "critical": 0
+        },
+        "capacity": 0,
+        "correctionFactor": 0.0
+    }
+    ```
+
+### Transport Company Output Models
+
+#### Transport Company Creation Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the transport company.
+- **Example:**
+
+    ```json
+    {
+        "id": 0
+    }
+    ```
+
+#### Transport Company Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the transport company.
+        - `name`: The name of the transport company.
+- **Example:**
+
+    ```json
+    {
+        "id": 0,
+        "name": "string"
+    }
+    ```
+
+#### Transport Company List Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `transportCompanies`: [Transport Company Output Model](#transport-company-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+
+    ```json
+    {
+        "transportCompanies": [
+            {
+                "id": 0,
+                "name": "string"
+            }
+        ],
+        "size": 1
+    }
+    ```
 
 ## Error Handling
 
@@ -1266,14 +1691,14 @@ The problems are returned in the following format:
         - `path` - The path of the request that caused the error.
 - **Example:**
 
-```json
-{
-    "timestamp": "2024-03-18T12:28:34.971+00:00",
-    "status": 400,
-    "error": "Bad Request",
-    "path": "/api/provider/a"
-}
-```
+    ```json
+    {
+        "timestamp": "2024-03-18T12:28:34.971+00:00",
+        "status": 400,
+        "error": "Bad Request",
+        "path": "/api/provider/a"
+    }
+    ```
 
 ### AGU Already Exists
 
@@ -1281,13 +1706,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "AGU Already Exists.",
-    "details": "The AGU already exists with the given CUI.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-already-exists"
-}
-```
+    ```json
+    {
+        "title": "AGU Already Exists.",
+        "details": "The AGU already exists with the given CUI.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-already-exists"
+    }
+    ```
 
 ### AGU Not Found
 
@@ -1295,13 +1720,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "AGU Not Found.",
-    "details": "The AGU with the given CUI was not found.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-not-found"
-}     
-```
+    ```json
+    {
+        "title": "AGU Not Found.",
+        "details": "The AGU with the given CUI was not found.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-not-found"
+    }     
+    ```
 
 ### AGU Name Already Exists
 
@@ -1309,13 +1734,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "AGU Name Already Exists.",
-    "details": "The AGU already exists with the given name.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-name-already-exists"
-}
-```
+    ```json
+    {
+        "title": "AGU Name Already Exists.",
+        "details": "The AGU already exists with the given name.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/agu-name-already-exists"
+    }
+    ```
 
 ### Contact Already Exists
 
@@ -1323,13 +1748,27 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Contact Already Exists.",
-    "details": "The contact already exists.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/contact-already-exists"
-}
-```
+    ```json
+    {
+        "title": "Contact Already Exists.",
+        "details": "The contact already exists.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/contact-already-exists"
+    }
+    ```
+
+### DNO Already Exists
+
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+    ```json
+    {
+        "title": "DNO Already Exists.",
+        "details": "The DNO already exists with the given name.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/dno-already-exists"
+    }
+    ```
 
 ### DNO Not Found
 
@@ -1337,13 +1776,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "DNO Not Found.",
-    "details": "The DNO with the given ID or name was not found.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/dno-not-found"
-}
-```
+    ```json
+    {
+        "title": "DNO Not Found.",
+        "details": "The DNO with the given ID or name was not found.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/dno-not-found"
+    }
+    ```
 
 ### Invalid Capacity
 
@@ -1351,13 +1790,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Capacity.",
-    "details": "The capacity must be positive.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-capacity"
-}
-```
+    ```json
+    {
+        "title": "Invalid Capacity.",
+        "details": "The capacity must be positive.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-capacity"
+    }
+    ```
 
 ### Invalid Contact
 
@@ -1365,13 +1804,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Contact.",
-    "details": "The contact must have a name and a phone number in the format '^PT[0-9]{16}[A-Z]{2}$'.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact"
-}
-```
+    ```json
+    {
+        "title": "Invalid Contact.",
+        "details": "The contact must have a name and a phone number in the format '^PT[0-9]{16}[A-Z]{2}$'.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact"
+    }
+    ```
 
 ### Invalid Contact Type
 
@@ -1379,13 +1818,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Contact Type.",
-    "details": "The contact type must be in the format '^(LOGISTIC|EMERGENCY)$'",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact-type"
-}
-```
+    ```json
+    {
+        "title": "Invalid Contact Type.",
+        "details": "The contact type must be in the format '^(LOGISTIC|EMERGENCY)$'",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-contact-type"
+    }
+    ```
 
 ### Invalid Coordinates
 
@@ -1393,13 +1832,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Coordinates.",
-    "details": "The coordinates must be valid.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-coordinates"
-}
-```
+    ```json
+    {
+        "title": "Invalid Coordinates.",
+        "details": "The coordinates must be valid.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-coordinates"
+    }
+    ```
 
 ### Invalid Critical Level
 
@@ -1407,13 +1846,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Critical Level.",
-    "details": "The critical level must be valid.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-critical-level"
-}
-```
+    ```json
+    {
+        "title": "Invalid Critical Level.",
+        "details": "The critical level must be valid.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-critical-level"
+    }
+    ```
 
 ### Invalid CUI
 
@@ -1421,13 +1860,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid CUI.",
-    "details": "The CUI must be in the format '^PT[0-9]{16}[A-Z]{2}$'.",
-    "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-cui"
-}
-```
+    ```json
+    {
+        "title": "Invalid CUI.",
+        "details": "The CUI must be in the format '^PT[0-9]{16}[A-Z]{2}$'.",
+        "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-cui"
+    }
+    ```
 
 ### Invalid Days
 
@@ -1435,13 +1874,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Days.",
-    "details": "The days must be positive.",
-    "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-days"
-}
-```
+    ```json
+    {
+        "title": "Invalid Days.",
+        "details": "The days must be positive.",
+        "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-days"
+    }
+    ```
 
 ### Invalid DNO
 
@@ -1449,13 +1888,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid DNO.",
-    "details": "The DNO must have a name.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-dno"
-}
-```
+    ```json
+    {
+        "title": "Invalid DNO.",
+        "details": "The DNO must have a name.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-dno"
+    }
+    ```
 
 ### Invalid EIC
 
@@ -1463,13 +1902,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid EIC.",
-    "details": "The EIC must not be blank.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-eic"
-}
-```
+    ```json
+    {
+        "title": "Invalid EIC.",
+        "details": "The EIC must not be blank.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-eic"
+    }
+    ```
 
 ### Invalid Levels
 
@@ -1477,13 +1916,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Levels.",
-    "details": "The levels must be valid.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-levels"
-}
-```
+    ```json
+    {
+        "title": "Invalid Levels.",
+        "details": "The levels must be valid.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-levels"
+    }
+    ```
 
 ### Invalid Load Volume
 
@@ -1491,13 +1930,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Load Volume.",
-    "details": "The load volume must be valid.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-load-volume"
-}
-```
+    ```json
+    {
+        "title": "Invalid Load Volume.",
+        "details": "The load volume must be valid.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-load-volume"
+    }
+    ```
 
 ### Invalid Max Level
 
@@ -1505,13 +1944,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Max Level.",
-    "details": "The max level must be valid.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-max-level"
-}
-```
+    ```json
+    {
+        "title": "Invalid Max Level.",
+        "details": "The max level must be valid.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-max-level"
+    }
+    ```
 
 ### Invalid Min Level
 
@@ -1519,13 +1958,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Min Level.",
-    "details": "The min level must be valid.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-min-level"
-}
-```
+    ```json
+    {
+        "title": "Invalid Min Level.",
+        "details": "The min level must be valid.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-min-level"
+    }
+    ```
 
 ### Invalid Name
 
@@ -1533,13 +1972,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Name.",
-    "details": "The name must have a value.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-name"
-}
-```
+    ```json
+    {
+        "title": "Invalid Name.",
+        "details": "The name must have a value.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-name"
+    }
+    ```
 
 ### Invalid Provider
 
@@ -1547,13 +1986,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Provider.",
-    "details": "Couldn't add the provider to the periodic fetcher.",
-    "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-provider"
-}
-```
+    ```json
+    {
+        "title": "Invalid Provider.",
+        "details": "Couldn't add the provider to the periodic fetcher.",
+        "type": "https:///github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-provider"
+    }
+    ```
 
 ### Invalid Tank
 
@@ -1561,13 +2000,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Tank.",
-    "details": "The tank must have a name and a volume.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-tank"
-}
-```
+    ```json
+    {
+        "title": "Invalid Tank.",
+        "details": "The tank must have a name and a volume.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-tank"
+    }
+    ```
 
 ### Invalid Tank number
 
@@ -1575,13 +2014,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Tank Number.",
-    "details": "The tank number must be positive.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-tank-number"
-}
-```
+    ```json
+    {
+        "title": "Invalid Tank Number.",
+        "details": "The tank number must be positive.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-tank-number"
+    }
+    ```
 
 ### Invalid Time
 
@@ -1589,13 +2028,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Invalid Time.",
-    "details": "The time must be between 00:00 and 23:59.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-time"
-}
-```
+    ```json
+    {
+        "title": "Invalid Time.",
+        "details": "The time must be between 00:00 and 23:59.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/invalid-time"
+    }
+    ```
 
 ### Provider Not Found
 
@@ -1603,13 +2042,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Provider Not Found.",
-    "details": "The provider with the given ID was not found.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/provider-not-found"
-}
-```
+    ```json
+    {
+        "title": "Provider Not Found.",
+        "details": "The provider with the given ID was not found.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/provider-not-found"
+    }
+    ```
 
 ### Tank Already Exists
 
@@ -1617,13 +2056,13 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Tank Already Exists.",
-    "details": "The tank already exists.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/tank-already-exists"
-}
-```
+    ```json
+    {
+        "title": "Tank Already Exists.",
+        "details": "The tank already exists.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/tank-already-exists"
+    }
+    ```
 
 ### Tank Not Found
 
@@ -1631,10 +2070,39 @@ The problems are returned in the following format:
     - [Problem Details](#problem-details)
 - **Example:**
 
-```json
-{
-    "title": "Tank Not Found.",
-    "details": "The tank with the given ID was not found.",
-    "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/tank-not-found"
-}
-```
+    ```json
+    {
+        "title": "Tank Not Found.",
+        "details": "The tank with the given ID was not found.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/tank-not-found"
+    }
+    ```
+
+### Transport Company Already Exists
+
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+    ```json
+    {
+        "title": "Transport Company Already Exists.",
+        "details": "The transport company already exists.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/transport-company-already-exists"
+  }
+    ```
+
+### Transport Company Not Found
+
+- **Structure:**
+    - [Problem Details](#problem-details)
+- **Example:**
+
+    ```json
+    {
+        "title": "Transport Company Not Found.",
+        "details": "The transport company with the given ID was not found.",
+        "type": "https://github.com/AGU-Data-System/AGU-Data-System/blob/main/docs/problems/transport-company-not-found"
+    }
+    ```
+
