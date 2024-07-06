@@ -35,6 +35,7 @@ data class AGU(
 	val name: String,
 	val levels: GasLevels,
 	val correctionFactor: Double,
+	val loadVolume: Double, // TODO change this to tanks
 	val location: Location,
 	val dno: DNO,
 	val image: ByteArray,

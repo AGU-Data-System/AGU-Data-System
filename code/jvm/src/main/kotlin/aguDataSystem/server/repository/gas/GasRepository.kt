@@ -45,4 +45,12 @@ interface GasRepository {
 	 * @param gasMeasures the gas measures to add
 	 */
 	fun addGasMeasuresToProvider(providerId: Int, gasMeasures: List<GasMeasure>)
+
+	/**
+	 * Gets the latest gas measures of an AGU
+	 * TODO change to list and therefor the javadoc turns correct
+	 * @param aguCui the CUI of the AGU
+	 * @return a list of gas the latest gas measures, single value if agu only has one tank
+	 */
+	fun getLatestLevel(aguCui: String): Double
 }

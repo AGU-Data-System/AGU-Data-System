@@ -5,6 +5,7 @@ import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.contact.JDBIContactRepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.gas.JDBIGasRepository
+import aguDataSystem.server.repository.load.JDBILoadRepository
 import aguDataSystem.server.repository.provider.JDBIProviderRepository
 import aguDataSystem.server.repository.tank.JDBITankRepository
 import aguDataSystem.server.repository.temperature.JDBITemperatureRepository
@@ -33,6 +34,8 @@ class JDBITransaction(private val handle: Handle) : Transaction {
 	override val gasRepository = JDBIGasRepository(handle)
 
 	override val transportCompanyRepository = JDBITransportCompanyRepository(handle)
+
+	override val loadRepository = JDBILoadRepository(handle)
 
 	/**
 	 * Rolls back the transaction

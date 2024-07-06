@@ -83,7 +83,7 @@ class PredictionService(
     private fun manageLoads(transaction: Transaction, agu: AGUBasicInfo, predictions: List<Double>): List<Double> {
         val fullAGU = transaction.aguRepository.getAGUByCUI(agu.cui) ?: throw Exception("No AGU found for AGU: ${agu.cui}")
         val minLevel = fullAGU.levels.min
-        val currentLevel = transaction.gasRepository.getLatestLevel(aguCui)
+        val currentLevel = transaction.gasRepository.getLatestLevel(agu.cui)
         val loadVolume = fullAGU.loadVolume //TODO: Carlos hit his head real hard.
         val predictedLevels = mutableListOf<Double>()
 
@@ -116,8 +116,8 @@ class PredictionService(
         return predictedLevels
     }
 
-    private fun getLoadAmountForDay(transaction: Transaction, aguCui: String, date: LocalDate): Int {
-        return transaction.loadRepository.getLoadForDay(aguCui, date)?.amount ?: 0
+    private fun getLoadAmountForDay(transaction: Transaction, aguCui: String, date: LocalDate): Double {
+        return transaction.loadRepository.getLoadForDay(aguCui, date)?.amount ?: 0.0
     }
 
     private fun adjustForWeekend(date: LocalDate): LocalDate {
