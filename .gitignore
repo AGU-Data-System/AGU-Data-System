@@ -114,7 +114,6 @@ dist
 *.iws
 *.iml
 *.ipr
-**/out
 **/bin
 **/build
 
