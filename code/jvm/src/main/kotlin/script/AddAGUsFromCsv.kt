@@ -84,7 +84,7 @@ object Environment {
  * Program entry point
  */
 fun main() {
-	val csvPath = Environment.getCSVPath() //"code/jvm/src/main/kotlin/script/UAGS_GL_UAG_ISEL_27.05.csv"
+	val csvPath = Environment.getCSVPath() //"code/jvm/src/main/kotlin/script/script_values.csv"
 	runBlocking {
 		val aguProcessor = AGUProcessor()
 		aguProcessor.processCSV(csvPath = csvPath)

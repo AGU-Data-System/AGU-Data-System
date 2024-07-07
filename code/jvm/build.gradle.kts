@@ -21,11 +21,10 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 	// for coroutines
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
@@ -45,13 +44,11 @@ dependencies {
 	// for JSON serialization
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-
 	// for reflection
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 	// To use WebTestClient on tests
-	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation(kotlin("test"))
 }
 

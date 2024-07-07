@@ -6,7 +6,6 @@ import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.prediction.PredictionService
-import aguDataSystem.server.service.prediction.PredictionService.Companion
 import jakarta.annotation.PostConstruct
 import java.time.Duration
 import java.time.LocalDateTime
@@ -16,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalTime
 
@@ -94,7 +92,7 @@ class ChronService(
 	 *
 	 * Still sketchy, needs to be implemented
 	 */
-	@Scheduled(cron = "0 0 0 * * SAT") // TODO: This should be a normal request with availability to train one or all AGUs
+	//@Scheduled(cron = "0 0 0 * * SAT") // TODO: This should be a normal request with availability to train one or all AGUs
 	fun scheduleTrainingChronTask(agu: AGUBasicInfo) {
 		// TODO: needs to get the training frequency or be set with an annotation
 		//  get the temperature for the past n days

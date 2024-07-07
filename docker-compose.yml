@@ -10,6 +10,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+      - TZ=Europe/Lisbon  # Timezone set here for flexibility
     ports:
       - "5431:5432"
   # Spring Application
@@ -21,15 +22,14 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile-spring
     environment:
+      - TZ=Europe/Lisbon  # Ensure the app uses the same timezone as the DB
       - DB_URL=jdbc:postgresql://system-db:5432/postgres?user=postgres&password=postgres
       - FETCHER_URL=http://fetcher:8081/api
       - PREDICTION_URL=http://prediction:8082/api
       - API_URL=http://agu-data-system:8080/api/agus/create
       - SONAR_GAS_URL=https://sonorgas.thinkdigital.pt/dashboards/ca824027-c206-44b9-af54-cba5dc6edde7/viewer
-      - CSV_PATH=./
-    entrypoint: ["/bin/sh", "-c", "apt-get update && apt-get install -y tzdata && 
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && 
-    java -jar /usr/app/AGUDataSystem-0.0.1-SNAPSHOT.jar"]
+      - CSV_PATH=/usr/app/scripts/script_values.csv
+    entrypoint: ["/bin/sh", "-c", "/usr/app/setup-back-end.sh"]
     ports:
       - "8080:8080"
 
