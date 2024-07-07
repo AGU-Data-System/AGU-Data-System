@@ -16,7 +16,7 @@ FROM agu;
 DELETE
 FROM dno;
 DELETE
-FROM loads;
+FROM scheduled_load;
 DELETE
 FROM transport_company;
 

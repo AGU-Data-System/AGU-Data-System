@@ -1,7 +1,12 @@
 package aguDataSystem.server.service.chron
 
+import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.provider.Provider
+import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
+import aguDataSystem.server.service.prediction.PredictionService
+import aguDataSystem.server.service.prediction.PredictionService.Companion
 import jakarta.annotation.PostConstruct
 import java.time.Duration
 import java.time.LocalDateTime
@@ -11,7 +16,9 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import java.time.LocalTime
 
 /**
  * Service for managing the chron tasks,
@@ -23,7 +30,8 @@ import org.springframework.stereotype.Service
 @Service
 class ChronService(
 	private val transactionManager: TransactionManager,
-	private val fetchService: FetchService
+	private val fetchService: FetchService,
+	private val predictionService: PredictionService
 ) {
 
 	private val chronPoolSize = 10
@@ -38,6 +46,7 @@ class ChronService(
 	fun initialize() {
 		logger.info("Initializing Chron Service")
 		scheduleChron()
+		schedulePredictionAndLoadChronTask()
 		logger.info("Chron Service initialized")
 	}
 
@@ -80,118 +89,74 @@ class ChronService(
 		logger.info("Scheduled chron task for provider: {}", provider)
 	}
 
-//	/**
-//	 * Schedules the training chron task.
-//	 *
-//	 * Still sketchy, needs to be implemented
-//	 */
-//	@Scheduled(cron = "0 0 0 * * SAT") // Every Saturday at midnight
-//	fun scheduleTrainingChronTask(agu: AGUBasicInfo) {
-//		// TODO: needs to get the training frequency or be set with an annotation
-//		//  get the temperature for the past n days
-//		//  get the consumption for the past n days
-//		//  train the model with the prediction module
-//		//  save the model in the DB
-//		val nrOfDays = 10
-//		var temps: List<TemperatureMeasure> = emptyList()
-//		var consumptions: List<Double> = emptyList()
-//		transactionManager.run {
-//			logger.info("Fetching providers for AGU: {}", agu.cui)
-//			val aguProviders = it.providerRepository.getProviderByAGU(agu.cui)
-//
-//			logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
-//			aguProviders.forEach { provider ->
-//				when (provider.getProviderType()) {
-//					ProviderType.TEMPERATURE -> {
-//						temps = it.temperatureRepository.getTemperatureMeasures(provider.id, nrOfDays)
-//					}
-//
-//					ProviderType.GAS -> {
-//						consumptions = it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
-//							.map { gasMeasure -> gasMeasure.level.toDouble() }
-//							.zipWithNext { a, b -> b - a } // calculate the consumption for each day
-//					}
-//				}
-//			}
-//		}
-//
-//		logger.info("Generating training model for AGU: {}", agu.cui)
-//		val training = fetchService.generateTraining(temps, consumptions.map { consumption -> consumption.toInt() })
-//
-//		if (training != null) {
-//			transactionManager.run {
-//				logger.info("Saving training model for AGU: {}", agu.cui)
-//				it.aguRepository.updateTrainingModel(agu.cui, training)
-//			}
-//		} else {
-//			logger.error("Failed to generate training model for AGU: {}", agu.cui)
-//		}
-//	}
-//
-//	// needs to be picked the polling frequency
-//	fun schedulePredictionChronTask(agu: AGUBasicInfo) {
-//		// TODO: needs to get the prediction frequency or be set with an annotation
-//		//  send the training model to the prediction module
-//		//  get the prediction for the next n days
-//		//  save the prediction in the DB
-//		val nrOfDays = 10
-//		var pastTemps: List<TemperatureMeasure> = emptyList()
-//		var futureTemps: List<TemperatureMeasure> = emptyList()
-//		var consumptions: List<Double> = emptyList()
-//		var training = ""
-//		transactionManager.run {
-//			logger.info("Fetching providers for AGU: {}", agu.cui)
-//			val aguProviders = it.providerRepository.getProviderByAGU(agu.cui)
-//
-//			logger.info("Fetching temperature past and future, and gas measures for AGU: {}", agu.cui)
-//			aguProviders.forEach { provider ->
-//				when (provider.getProviderType()) {
-//					ProviderType.TEMPERATURE -> {
-//						pastTemps = it.temperatureRepository.getPredictionTemperatureMeasures(provider.id, nrOfDays)
-//						futureTemps = it.temperatureRepository.getTemperatureMeasures(provider.id, nrOfDays)
-//					}
-//
-//					ProviderType.GAS -> {
-//						consumptions =
-//							it.gasRepository.getPredictionGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
-//								.map { gasMeasure -> gasMeasure.level.toDouble() }
-//								.zipWithNext { a, b -> b - a } // calculate the consumption for each day
-//					}
-//				}
-//			}
-//			// TODO should i throw an exception here?
-//			training =
-//				it.aguRepository.getTraining(agu.cui) ?: throw Exception("No training model found for AGU: ${agu.cui}")
-//		}
-//
-//		logger.info("Generating gas consumption predictions for AGU: {}", agu.cui)
-//		val predictions = fetchService.generatePredictions(
-//			pastTemps,
-//			futureTemps,
-//			consumptions.map { consumption -> consumption.toInt() },
-//			training
-//		)
-//
-//		if (predictions.isNotEmpty()) {
-//			transactionManager.run {
-//				logger.info("Saving gas consumption predictions for AGU: {}", agu.cui)
-//				// TODO should i throw an exception here?
-//				val aguProvider = it.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
-//					?: throw Exception("No gas provider found for AGU: ${agu.cui}")
-//				it.gasRepository.addGasMeasuresToProvider(aguProvider.id, predictions.mapIndexed { index, prediction ->
-//					GasMeasure(
-//						timestamp = LocalDateTime.now().plusDays(index.toLong()),
-//						predictionFor = LocalDateTime.now().plusDays(index.toLong()),
-//						level = prediction.toInt(),
-//						tankNumber = 1 // TODO: how to use the tank number?
-//					)
-//				})
-//			}
-//		} else {
-//			logger.error("Failed to generate gas consumption predictions for AGU: {}", agu.cui)
-//		}
-//	}
+	/**
+	 * Schedules the training chron task.
+	 *
+	 * Still sketchy, needs to be implemented
+	 */
+	@Scheduled(cron = "0 0 0 * * SAT") // TODO: This should be a normal request with availability to train one or all AGUs
+	fun scheduleTrainingChronTask(agu: AGUBasicInfo) {
+		// TODO: needs to get the training frequency or be set with an annotation
+		//  get the temperature for the past n days
+		//  get the consumption for the past n days
+		//  train the model with the prediction module
+		//  save the model in the DB
+		val nrOfDays = 10
+		var temps: List<TemperatureMeasure> = emptyList()
+		var consumptions: List<Double> = emptyList()
+		transactionManager.run {
+			logger.info("Fetching providers for AGU: {}", agu.cui)
+			val aguProviders = it.providerRepository.getProviderByAGU(agu.cui)
 
+			logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
+			aguProviders.forEach { provider ->
+				when (provider.getProviderType()) {
+					ProviderType.TEMPERATURE -> {
+						temps = it.temperatureRepository.getTemperatureMeasures(provider.id, nrOfDays)
+					}
+
+					ProviderType.GAS -> {
+						consumptions = it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
+							.map { gasMeasure -> gasMeasure.level.toDouble() }
+							.zipWithNext { a, b -> b - a } // calculate the consumption for each day
+					}
+				}
+			}
+		}
+
+		logger.info("Generating training model for AGU: {}", agu.cui)
+		val training = fetchService.generateTraining(temps, consumptions.map { consumption -> consumption.toInt() })
+
+		if (training != null) {
+			transactionManager.run {
+				logger.info("Saving training model for AGU: {}", agu.cui)
+				it.aguRepository.updateTrainingModel(agu.cui, training)
+			}
+		} else {
+			logger.error("Failed to generate training model for AGU: {}", agu.cui)
+		}
+	}
+
+	/**
+	 * Schedules the prediction chron task.
+	 *
+	 * This task will be responsible for predicting the consumption of each AGU as well as the needed loads according to the prediction levels.
+	 * This task is scheduled to run every day at 08:30.
+	 */
+	fun schedulePredictionAndLoadChronTask() {
+		chronScheduler.scheduleAtFixedRate({
+			val allAGUs = transactionManager.run {
+				it.aguRepository.getAGUsBasicInfo()
+			}
+			allAGUs.forEach { agu ->
+				predictionService.processAGU(agu)
+			}
+		},
+			Duration.between(LocalTime.now(), LocalTime.of(8, 30)).toMillis(), //TODO: Currently set to run at 08:30, could be configurable.
+			Duration.ofDays(1).toMillis(),
+			TimeUnit.MILLISECONDS
+		)
+	}
 
 	/**
 	 * Calculates the initial delay for a chron task.

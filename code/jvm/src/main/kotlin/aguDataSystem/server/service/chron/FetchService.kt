@@ -193,7 +193,7 @@ class FetchService(
 
 	/**
 	 * Generates a training model for the prediction module.
-	 * TODO ITS A DAMM SKETCH
+	 * TODO ITS A DAMN SKETCH
 	 * @param temps The temperature measures
 	 * @param consumptions The gas consumptions
 	 * @return The training model
@@ -207,7 +207,7 @@ class FetchService(
 	/**
 	 * Generates predictions for the gas consumption.
 	 *
-	 * TODO ITS A DAMM SKETCH
+	 * TODO ITS A DAMN SKETCH
 	 * @param pastTemps The past temperature measures
 	 * @param futureTemps The future temperature measures
 	 * @param map The gas consumptions
@@ -217,7 +217,7 @@ class FetchService(
 	fun generatePredictions(
 		pastTemps: List<TemperatureMeasure>,
 		futureTemps: List<TemperatureMeasure>,
-		map: List<Int>,
+		map: List<Double>,
 		training: String
 	): List<Double> {
 		val body = Json.encodeToJsonElement(

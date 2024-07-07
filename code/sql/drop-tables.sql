@@ -10,9 +10,9 @@ DROP TABLE IF EXISTS measure;
 DROP TABLE IF EXISTS provider;
 DROP TABLE IF EXISTS tank;
 DROP TABLE IF EXISTS agu_transport_company;
+DROP TABLE IF EXISTS scheduled_load;
 DROP TABLE IF EXISTS agu;
 DROP TABLE IF EXISTS dno;
-DROP TABLE IF EXISTS loads;
 DROP TABLE IF EXISTS transport_company;
 
 -- Drop domains

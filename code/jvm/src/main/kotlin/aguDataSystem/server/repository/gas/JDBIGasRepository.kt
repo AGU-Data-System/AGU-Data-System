@@ -185,6 +185,16 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 		logger.info("Added {} gas measures to provider with id {}", gasMeasures.size, providerId)
 	}
 
+	/**
+	 * Gets the latest gas measures of an AGU
+	 * TODO change to list and therefor the javadoc turns correct
+	 * @param aguCui the CUI of the AGU
+	 * @return a list of gas the latest gas measures, single value if agu only has one tank
+	 */
+	override fun getLatestLevel(aguCui: String): Double {
+		TODO("Not yet implemented")
+	}
+
 	companion object {
 		private val logger = LoggerFactory.getLogger(JDBIGasRepository::class.java)
 	}

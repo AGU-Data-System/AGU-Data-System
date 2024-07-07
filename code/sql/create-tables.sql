@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS tank;
 DROP TABLE IF EXISTS agu_transport_company;
 DROP TABLE IF EXISTS agu;
 DROP TABLE IF EXISTS dno;
-DROP TABLE IF EXISTS loads;
+DROP TABLE IF EXISTS scheduled_load;
 DROP TABLE IF EXISTS transport_company;
 
 -- Drop domains
@@ -38,18 +38,6 @@ create table if not exists transport_company
     primary key (id)
 );
 
-create table if not exists loads
-(
-    reference        varchar primary key,
-    company_name     varchar,
-    time_of_day      varchar check (time_of_day in ('morning', 'afternoon')) not null,
-    amount           numeric(6, 3)                                           not null,
-    distance         numeric(6, 3)                                           not null,
-    load_timestamp   timestamp with time zone,
-    unload_timestamp timestamp with time zone,
-
-    foreign key (company_name) references transport_company (name)
-);
 
 create table if not exists dno
 (
@@ -69,6 +57,7 @@ create table if not exists agu
     max_level         PERCENTAGE                                not null,
     critical_level    PERCENTAGE                                not null,
     correction_factor numeric(6, 3)                             not null,
+    load_volume       int check (load_volume >= 0)              not null, -- TODO change this to tank
     latitude          LATITUDE                                  not null,
     longitude         LONGITUDE                                 not null,
     location_name     varchar check (length(location_name) > 0) not null,
@@ -82,6 +71,35 @@ create table if not exists agu
     constraint min_max_critical_levels check (critical_level <= min_level and min_level <= max_level),
 
     foreign key (dno_id) references dno (id) on delete cascade
+);
+
+--
+-- create table if not exists loads
+-- (
+--     reference        varchar primary key,
+--     company_name     varchar,
+--     time_of_day      varchar check (time_of_day in ('morning', 'afternoon')) not null,
+--     amount           numeric(6, 3)                                           not null,
+--     distance         numeric(6, 3)                                           not null,
+--     load_timestamp   timestamp with time zone,
+--     unload_timestamp timestamp with time zone,
+--
+--     foreign key (company_name) references transport_company (name)
+-- );
+
+-- TODO: Create delivered_loads table
+create table if not exists scheduled_load
+(
+    id                  int generated always as identity,
+    agu_cui             CUI,
+    local_date          date,
+    time_of_day         varchar check (time_of_day in ('morning', 'afternoon')) not null,
+    amount              numeric(6, 3) default 1.0 not null,
+    is_manual           boolean default false not null,
+    is_confirmed        boolean default false not null,
+
+    foreign key (agu_cui) references agu (cui),
+    primary key (id)
 );
 
 create table if not exists agu_transport_company
