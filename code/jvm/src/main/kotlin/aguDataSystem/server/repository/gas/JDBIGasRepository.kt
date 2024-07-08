@@ -187,11 +187,11 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 
 	/**
 	 * Gets the latest gas measures of an AGU
-	 * TODO change to list and therefor the javadoc turns correct
+	 *
 	 * @param aguCui the CUI of the AGU
-	 * @return a list of gas the latest gas measures, single value if agu only has one tank
+	 * @return a list of the latest gas measures, one for each tank
 	 */
-	override fun getLatestLevel(aguCui: String): Double {
+	override fun getLatestLevels(aguCui: String): List<GasMeasure> {
 		TODO("Not yet implemented")
 	}
 

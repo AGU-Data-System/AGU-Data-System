@@ -647,6 +647,10 @@ class AGUService(
 			return failure(AGUCreationError.InvalidCoordinates)
 		}
 
+		if (!aguDomain.isLoadVolumeValid(aguDTO.loadVolume)) {
+			return failure(AGUCreationError.InvalidLoadVolume)
+		}
+
 		ensureLevels(aguDTO.levels)?.let {
 			return it
 		}

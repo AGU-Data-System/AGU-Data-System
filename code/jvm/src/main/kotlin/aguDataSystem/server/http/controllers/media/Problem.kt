@@ -94,6 +94,12 @@ class Problem(typeUri: URI, val title: String, val details: String? = null) {
 			details = "The levels must be valid."
 		)
 
+		val InvalidLoadVolume = Problem(
+			typeUri = URI(PROBLEM_BASE_URL + "invalid-load-volume"),
+			title = "Invalid Load Volume.",
+			details = "The load volume must be valid."
+		)
+
 		val InvalidMinLevel = Problem(
 			typeUri = URI(PROBLEM_BASE_URL + "invalid-min-level"),
 			title = "Invalid Min Level.",

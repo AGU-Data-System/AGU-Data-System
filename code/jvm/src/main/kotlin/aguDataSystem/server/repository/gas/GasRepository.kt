@@ -29,7 +29,7 @@ interface GasRepository {
 	fun getGasMeasures(providerId: Int, day: LocalDate): List<GasMeasure>
 
 	/**
-	 * Gets the gas measures of a provider for a set number of days
+	 * Gets the gas prediction measures of a provider for a set number of days at the closest to a specific time
 	 *
 	 * @param providerId the id of the provider
 	 * @param days the number of days to get the measures from
@@ -48,9 +48,9 @@ interface GasRepository {
 
 	/**
 	 * Gets the latest gas measures of an AGU
-	 * TODO change to list and therefor the javadoc turns correct
+	 *
 	 * @param aguCui the CUI of the AGU
-	 * @return a list of gas the latest gas measures, single value if agu only has one tank
+	 * @return a list of the latest gas measures, one for each tank
 	 */
-	fun getLatestLevel(aguCui: String): Double
+	fun getLatestLevels(aguCui: String): List<GasMeasure>
 }

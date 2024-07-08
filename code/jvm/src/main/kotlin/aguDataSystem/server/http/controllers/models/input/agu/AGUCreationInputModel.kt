@@ -15,6 +15,7 @@ import aguDataSystem.server.http.controllers.models.input.tank.TankCreationInput
  * @param minLevel the minimum level of the AGU
  * @param maxLevel the maximum level of the AGU
  * @param criticalLevel the critical level of the AGU
+ * @param loadVolume the load volume of the AGU
  * @param correctionFactor the correction factor of the AGU
  * @param latitude the latitude of the AGU
  * @param longitude the longitude of the AGU
@@ -35,6 +36,7 @@ data class AGUCreationInputModel(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
+	val loadVolume: Int,
 	val correctionFactor: Double,
 	val latitude: Double,
 	val longitude: Double,
@@ -65,6 +67,7 @@ data class AGUCreationInputModel(
 			max = this.maxLevel,
 			critical = this.criticalLevel
 		),
+		loadVolume = this.loadVolume,
 		correctionFactor = this.correctionFactor,
 		location = Location(
 			name = this.locationName,

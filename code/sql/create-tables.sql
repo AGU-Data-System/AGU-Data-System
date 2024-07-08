@@ -57,7 +57,7 @@ create table if not exists agu
     max_level         PERCENTAGE                                not null,
     critical_level    PERCENTAGE                                not null,
     correction_factor numeric(6, 3)                             not null,
-    load_volume       int check (load_volume >= 0)              not null, -- TODO change this to tank
+    load_volume       int check (load_volume >= 0)              not null,
     latitude          LATITUDE                                  not null,
     longitude         LONGITUDE                                 not null,
     location_name     varchar check (length(location_name) > 0) not null,
