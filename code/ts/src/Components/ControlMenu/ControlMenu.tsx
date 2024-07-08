@@ -35,8 +35,33 @@ export function ControlMenuLeft() {
                         Adicionar UAG
                     </Button>
                 </div>
+                <Divider orientation="horizontal" flexItem sx={{marginTop: 2, marginBottom: 2}}/>
+                <Typography variant="h5" component="div">
+                    Plano Semanal Ideal
+                </Typography>
                 <br/>
-                <Divider orientation="horizontal" flexItem/>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "flex-start",
+                    }}
+                >
+                    <Button variant="contained" sx={{
+                        margin: '8px',
+                        backgroundColor: 'rgb(255, 165, 0)',
+                        height: '100%',
+                        color: 'black',
+                        '&:hover': {
+                            backgroundColor: 'rgba(255,165,0,0.49)',
+                        },
+                    }} onClick={() => {
+                        navigate('/weekly-plan')
+                    }}>
+                        Plano Semanal
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     );

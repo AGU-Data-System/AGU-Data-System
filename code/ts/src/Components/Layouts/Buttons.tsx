@@ -103,4 +103,42 @@ function EditButton({handleClick}:{handleClick : ()=>void}){
     )
 }
 
-export { ReturnButton, ReloadButton, BackToAguDetailsButton, AddButton, EditButton }
+function ConfirmPlannedAgusButton({handleClick}:{handleClick : ()=>void}){
+    return(
+        <Button
+            size="small"
+            variant="contained"
+            sx={{
+                backgroundColor: 'rgb(255, 165, 0)',
+                color: 'black',
+                '&:hover': {
+                    backgroundColor: 'rgba(255,165,0,0.49)',
+                },
+            }}
+            onClick={handleClick}
+        >
+            Confirmar selecionados
+        </Button>
+    )
+}
+
+function ChangeActiveButton({handleClick, isActive}:{handleClick : ()=>void, isActive:boolean}){
+    return(
+        <Button
+            size="small"
+            variant="contained"
+            sx={{
+                backgroundColor: 'rgb(255, 165, 0)',
+                color: 'black',
+                '&:hover': {
+                    backgroundColor: 'rgba(255,165,0,0.49)',
+                },
+            }}
+            onClick={handleClick}
+        >
+            {isActive ? "Desativar" : "Ativar"}
+        </Button>
+    )
+}
+
+export { ReturnButton, ReloadButton, BackToAguDetailsButton, AddButton, EditButton, ConfirmPlannedAgusButton, ChangeActiveButton }

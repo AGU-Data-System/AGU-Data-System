@@ -7,7 +7,7 @@ import { Button, TextField, List, ListItem, ListItemText, IconButton, Dialog, Di
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AguDetailsOutputModel, ContactInputModel, TankInputModel } from "../../services/agu/models/aguOutputModel";
 import EditIcon from "@mui/icons-material/Edit";
-import {AddButton, BackToAguDetailsButton, EditButton} from "../Layouts/Buttons";
+import { AddButton, BackToAguDetailsButton, EditButton, ChangeActiveButton } from "../Layouts/Buttons";
 
 type AguState =
     | { type: 'loading' }
@@ -253,6 +253,30 @@ export default function AguEdit() {
         setSnackbarOpen(false);
     };
 
+    const hangleActiveChange = async () => {
+        if (aguId === undefined) {
+            return;
+        }
+        if (state.type === 'success') {
+            const updatedAgu = await aguService.updateAguActive(aguId, !state.aguDetails.isActive);
+            if (updatedAgu.value instanceof Error) {
+                setSnackbarMessage(updatedAgu.value.message);
+                setSnackbarSeverity('error');
+            } else if (updatedAgu.value instanceof Problem) {
+                setSnackbarMessage(updatedAgu.value.title);
+                setSnackbarSeverity('error');
+            } else {
+                setState({
+                    ...state,
+                    aguDetails: updatedAgu.value
+                });
+                setSnackbarMessage('AGU updated successfully');
+                setSnackbarSeverity('success');
+            }
+            setSnackbarOpen(true);
+        }
+    };
+
     return (
         <div>
             {state.type === 'loading' && <p>Loading...</p>}
@@ -260,6 +284,7 @@ export default function AguEdit() {
             {state.type === 'success' && (
                 <div>
                     <h1>Editando {state.aguDetails.name}... <BackToAguDetailsButton aguCUI={state.aguDetails.cui}/></h1>
+                    <h2 style={{color: state.aguDetails.isActive ? 'green' : 'red'}}>{state.aguDetails.isActive ? 'Ativo' : 'Inativo'} <ChangeActiveButton handleClick={hangleActiveChange} isActive={state.aguDetails.isActive} /></h2>
                     <h3>Contacts</h3>
                     <List>
                         {state.aguDetails.contacts.contacts.map(contact => (
