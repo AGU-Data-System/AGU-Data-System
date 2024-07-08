@@ -15,6 +15,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property eic EIC of the AGU
  * @property name name of the AGU
  * @property levels gas levels of the AGU
+ * @property loadVolume amount that a load fills the agu.
  * @property capacity capacity of the AGU based on the [Tank]s
  * @property correctionFactor correction factor of the AGU.
  * @property location location of the AGU
@@ -34,8 +35,8 @@ data class AGU(
 	val eic: String,
 	val name: String,
 	val levels: GasLevels,
+	val loadVolume: Int,
 	val correctionFactor: Double,
-	val loadVolume: Double, // TODO change this to tanks
 	val location: Location,
 	val dno: DNO,
 	val image: ByteArray,

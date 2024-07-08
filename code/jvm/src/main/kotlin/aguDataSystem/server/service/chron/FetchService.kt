@@ -210,27 +210,27 @@ class FetchService(
 	 * TODO ITS A DAMN SKETCH
 	 * @param pastTemps The past temperature measures
 	 * @param futureTemps The future temperature measures
-	 * @param map The gas consumptions
+	 * @param consumptions The gas consumptions
 	 * @param training The training model
 	 * @return The gas consumption predictions
 	 */
 	fun generatePredictions(
 		pastTemps: List<TemperatureMeasure>,
 		futureTemps: List<TemperatureMeasure>,
-		map: List<Double>,
+		consumptions: List<Int>,
 		training: String
-	): List<Double> {
+	): List<Int> {
 		val body = Json.encodeToJsonElement(
 			mapOf(
 				"pastTemps" to pastTemps,
 				"futureTemps" to futureTemps,
-				"consumptions" to map,
+				"consumptions" to consumptions,
 				"training" to training
 			)
 		).toString()
 		val predictions = fetch(Environment.getPredictionUrl(), body)
 		return if (predictions.statusCode == HttpStatus.OK.value()) {
-			Json.decodeFromString<List<Double>>(predictions.body)
+			Json.decodeFromString<List<Int>>(predictions.body)
 		} else emptyList()
 	}
 

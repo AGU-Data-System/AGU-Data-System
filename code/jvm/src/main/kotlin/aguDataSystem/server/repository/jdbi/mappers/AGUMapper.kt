@@ -28,7 +28,7 @@ class AGUMapper : RowMapper<AGU> {
 			eic = rs.getString("eic"),
 			name = rs.getString("name"),
 			levels = mapToGasLevels(rs),
-			loadVolume = rs.getDouble("load_volume"),
+			loadVolume = rs.getInt("load_volume"),
 			correctionFactor = rs.getDouble("correction_factor"),
 			location = mapToLocation(rs),
 			dno = mapToDNO(rs),

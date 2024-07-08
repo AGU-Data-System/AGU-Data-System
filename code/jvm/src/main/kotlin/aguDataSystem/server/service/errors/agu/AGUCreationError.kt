@@ -14,6 +14,7 @@ package aguDataSystem.server.service.errors.agu
  * @property InvalidMaxLevel The maximum level is invalid
  * @property InvalidCriticalLevel The critical level is invalid
  * @property InvalidLevels The levels are invalid
+ * @property InvalidLoadVolume The load volume is invalid
  * @property InvalidContact The contact is invalid
  * @property InvalidContactType The contact type is invalid
  * @property InvalidTank The tank is invalid
@@ -32,6 +33,7 @@ sealed class AGUCreationError {
 	data object InvalidMaxLevel : AGUCreationError()
 	data object InvalidCriticalLevel : AGUCreationError()
 	data object InvalidLevels : AGUCreationError()
+	data object InvalidLoadVolume : AGUCreationError()
 	data object InvalidContact : AGUCreationError()
 	data object InvalidContactType : AGUCreationError()
 	data object InvalidTank : AGUCreationError()

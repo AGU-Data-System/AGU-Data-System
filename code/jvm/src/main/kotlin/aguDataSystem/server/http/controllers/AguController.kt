@@ -268,6 +268,10 @@ class AguController(private val service: AGUService) {
 			)
 
 			AGUCreationError.InvalidLevels -> Problem.response(HttpStatus.BAD_REQUEST.value(), Problem.InvalidLevels)
+			AGUCreationError.InvalidLoadVolume -> Problem.response(
+				HttpStatus.BAD_REQUEST.value(),
+				Problem.InvalidLoadVolume
+			)
 
 			AGUCreationError.InvalidMaxLevel -> Problem.response(
 				HttpStatus.BAD_REQUEST.value(),

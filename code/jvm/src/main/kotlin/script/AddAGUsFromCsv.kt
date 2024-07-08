@@ -23,6 +23,7 @@ data class AddAGUInputModel(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
+	val loadVolume: Int,
 	val correctionFactor: Double,
 	val latitude: Double,
 	val longitude: Double,
@@ -109,6 +110,7 @@ class AGUProcessor {
 	private val aguMinLevel = "UAG Min Lvl"
 	private val aguMaxLevel = "UAG Max Lvl"
 	private val aguCriticalLevel = "UAG Crit Lvl min"
+	private val loadVolume = "% carga no Vol Total (cist. 20 ton)"
 	private val latitude = "Latitude"
 	private val longitude = "Longitude"
 	private val town = "Localidade"
@@ -167,6 +169,7 @@ class AGUProcessor {
 					minLevel = row[aguMinLevel]!!.toPercentageInt(),
 					maxLevel = row[aguMaxLevel]!!.toPercentageInt(),
 					criticalLevel = row[aguCriticalLevel]!!.toPercentageInt(),
+					loadVolume = row[loadVolume]!!.toInt(),
 					latitude = row[latitude]!!.toDouble(),
 					longitude = row[longitude]!!.toDouble(),
 					locationName = row[town]!!,

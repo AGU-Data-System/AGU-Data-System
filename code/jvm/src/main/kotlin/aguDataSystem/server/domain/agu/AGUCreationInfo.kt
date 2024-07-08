@@ -12,6 +12,7 @@ import aguDataSystem.server.domain.tank.Tank
  * @property eic The EIC of the AGU.
  * @property name The name of the AGU.
  * @property levels The gas levels of the AGU.
+ * @property loadVolume The load volume of the AGU.
  * @property correctionFactor The correction factor of the AGU.
  * @property location The location of the AGU.
  * @property dnoName The DNO name associated with the AGU.
@@ -30,6 +31,7 @@ data class AGUCreationInfo(
 	val eic: String,
 	val name: String,
 	val levels: GasLevels,
+	val loadVolume: Int,
 	val correctionFactor: Double,
 	val location: Location,
 	val dnoName: String,
