@@ -117,6 +117,7 @@ class ChronService(
 						consumptions = it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
 							.map { gasMeasure -> gasMeasure.level.toDouble() }
 							.zipWithNext { a, b -> b - a } // calculate the consumption for each day
+						//TODO: CARLOS DID THIS WRONG. FIX.
 					}
 				}
 			}
@@ -147,6 +148,7 @@ class ChronService(
 				it.aguRepository.getAGUsBasicInfo()
 			}
 			allAGUs.forEach { agu ->
+				//TODO: ADD TRY CATCH TO LOG ERROR MESSAGE IN SAID AGU
 				predictionService.processAGU(agu)
 			}
 		},

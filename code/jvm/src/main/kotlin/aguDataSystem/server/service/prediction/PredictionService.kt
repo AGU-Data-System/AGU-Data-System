@@ -79,19 +79,23 @@ class PredictionService(
         val fullAGU = transaction.aguRepository.getAGUByCUI(agu.cui) ?: throw Exception("AGU not found: ${agu.cui}")
         val minLevel = fullAGU.levels.min
         val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui).sumOf { it.level }
-        val predictedLevels = mutableListOf<Int>()
+        val predictedLevels = mutableListOf<Int>() // [25, 20, 15]
 
         var cumulativeConsumption = 0
-        predictions.forEachIndexed { index, prediction ->
-            val date = LocalDate.now().plusDays(index.toLong())
+        predictions.forEachIndexed { index, prediction -> //index -> quarta
+            val date = LocalDate.now().plusDays(index.toLong()) //quarta
             cumulativeConsumption += prediction
-            var totalLevel = currentLevel - cumulativeConsumption
-            val loadForDay = getLoadAmountForDay(transaction, agu.cui, date) * fullAGU.loadVolume
+            var totalLevel = currentLevel - cumulativeConsumption //55
+
+            //Chega aqui, o total já a contar com o anterior é acima do mínimo, e existe uma carga agendada para o dia, devemos remover a carga, visto que a mesma não é necessária
+
+            val loadForDay = getLoadAmountForDay(transaction, agu.cui, date) * fullAGU.loadVolume //0.0
+
 
             totalLevel += loadForDay.toInt()
             if (totalLevel < minLevel) {
                 val adjustedDate = adjustForWeekend(date)
-                transaction.loadRepository.scheduleLoad(
+                transaction.loadRepository.scheduleLoad( //Quinta, Quarta
                     ScheduledLoadCreationDTO(
                         aguCui = agu.cui,
                         date = adjustedDate,
@@ -117,16 +121,16 @@ class PredictionService(
 
         predictedLevels.forEachIndexed { index, predictedLevel ->
             tanks.forEach { tank ->
-                val tankLevel = (predictedLevel * tank.capacity / totalCapacity).toInt()
+                val tankLevel = (predictedLevel * tank.capacity / totalCapacity)
                 transaction.gasRepository.addGasMeasuresToProvider(
                     gasProviderId,
-
+                    listOf(
                     GasMeasure(
                         timestamp = LocalDateTime.now().plusDays(index.toLong()),
                         predictionFor = LocalDateTime.now().plusDays(index.toLong()),
                         level = tankLevel,
                         tankNumber = tank.number
-                    )
+                    ))
                 )
             }
         }
