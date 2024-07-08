@@ -1,12 +1,13 @@
 interface AguDetailsOutputModel {
     cui: string;
+    eic: string;
     name: string;
     levels: {
         min: number;
         max: number;
         critical: number;
     };
-    loadVolume: number;
+    correctionFactor: number;
     location: {
         name: string;
         latitude: number;
@@ -21,11 +22,15 @@ interface AguDetailsOutputModel {
     contacts: ContactListOutputModel;
     tanks: TanksListOutputModel;
     providers: any[];
+    transportCompanies: {
+        transportCompanies: TransportCompaniesOutputModel[];
+        size: number;
+    };
     isFavourite: boolean;
+    isActive: boolean;
     notes: string;
     training: any;
     capacity: number;
-    correctionFactor: number;
 }
 
 interface ContactOutputModel {

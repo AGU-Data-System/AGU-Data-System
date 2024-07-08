@@ -33,6 +33,7 @@ class AGUMapper : RowMapper<AGU> {
 			location = mapToLocation(rs),
 			dno = mapToDNO(rs),
 			isFavourite = rs.getBoolean("is_favorite"),
+			isActive = rs.getBoolean("is_active"),
 			notes = rs.getString("notes"),
 			training = rs.getString("training"),
 			image = rs.getBytes("image") ?: byteArrayOf(),

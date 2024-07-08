@@ -11,7 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
 
 export default function AguHeader(
-    { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavourite }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavourite: boolean }
+    { aguOrd, aguName, aguMetres, aguCUI, contacts, aguIsFavourite, aguIsActive }: { aguOrd: string, aguName: string, aguMetres: number, aguCUI: string, contacts: ContactOutputModel[], aguIsFavourite: boolean, aguIsActive: boolean}
 ) {
     const [isFavorite, setIsFavorite] = useState<boolean>(aguIsFavourite);
     const [waitFetch, setWaitFetch] = useState<boolean>(false);
@@ -55,6 +55,7 @@ export default function AguHeader(
                 <Typography variant="subtitle1">ORD {aguOrd}</Typography>
                 <Typography variant="h4">{aguName}</Typography>
                 <Typography variant="body2">{`CUI: ${aguCUI}`}</Typography>
+                <Typography variant="h6" sx={{color: aguIsActive ? 'green' : 'red'}}>{aguIsActive ? 'Ativo' : 'Inativo'}</Typography>
                 <Typography variant="body2" sx={{display:'flex', justifyContent:'flex-end', marginRight:'10px'}}>{aguMetres} m<sup>3</sup></Typography>
             </div>
 

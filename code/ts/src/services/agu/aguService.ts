@@ -53,18 +53,23 @@ export namespace aguService {
         return fetchFunction(url, "GET");
     }
 
+    export async function updateAguActive(aguCui: string, isActive: boolean): Promise<Either<Error | Problem, AguDetailsOutputModel>> {
+        const url = `/agus/${aguCui}/active`;
+        return fetchFunction(url, "PUT", JSON.stringify({isActive}));
+    }
+
     export async function addContact(aguCui: string, newContact: ContactInputModel): Promise<Either<Error | Problem, number>> {
-        const url = `/${aguCui}/contact`;
+        const url = `/agus//${aguCui}/contact`;
         return fetchFunction(url, "POST", JSON.stringify(newContact));
     }
 
     export async function deleteContact(aguCui: string, contactId: number): Promise<Either<Error | Problem, void>> {
-        const url = `/${aguCui}/contact/${contactId}`;
+        const url = `/agus//${aguCui}/contact/${contactId}`;
         return fetchFunction(url, "DELETE");
     }
 
     export async function addTank(aguCui: string, newTank: TankInputModel): Promise<Either<Error | Problem, TankAddOutputModel>> {
-        const url = `/${aguCui}/tank`;
+        const url = `/agus//${aguCui}/tank`;
         return fetchFunction(url, "POST", JSON.stringify(newTank));
     }
 
@@ -74,7 +79,7 @@ export namespace aguService {
     }
 
     export async function updateTank(aguCui: string, tankNumber: number, tankData: TankInputModel): Promise<Either<Error | Problem, AguDetailsOutputModel>> {
-        const url = `/${aguCui}/tank/${tankNumber}`;
+        const url = `/agus//${aguCui}/tank/${tankNumber}`;
         return fetchFunction(url, "PUT", JSON.stringify(tankData));
     }
 }
