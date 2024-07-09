@@ -1,5 +1,6 @@
 version: "3.9"
 services:
+
   # postgres database
   system-db:
     container_name: system-db
@@ -13,6 +14,7 @@ services:
       - TZ=Europe/Lisbon  # Timezone set here for flexibility
     ports:
       - "5431:5432"
+
   # Spring Application
   agu-data-system:
     container_name: agu-data-system

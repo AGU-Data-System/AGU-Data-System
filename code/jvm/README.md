@@ -1,6 +1,6 @@
-# AGU Data System - Backend Documentation
-
-## Table of Contents
+    # AGU Data System - Backend Documentation
+    
+    ## Table of Contents
 
 - [Introduction](#introduction)
 - [Modeling the Database](#modeling-the-database)
@@ -12,7 +12,6 @@
     - [Repository Layer](#repository-layer)
     - [Data Representation](#data-representation)
 - [Error Handling](#error-handling)
-- [Running the application](#running-the-application)
 
 ## Introduction
 
@@ -49,16 +48,14 @@ The [`code/sql`](../sql) folder contains all SQL script developed:
 The application is structured as follows:
 
 - [/domain](src/main/kotlin/aguDataSystem/server/domain) - Contains the domain classes of the application;
-- [/http](src/main/kotlin/aguDataSystem/server/http) - Contains the controller layer of the application
-  using Spring Web MVC;
+- [/http](src/main/kotlin/aguDataSystem/server/http) - Contains the controller layer of the application using Spring Web MVC;
 - [/service](src/main/kotlin/aguDataSystem/server/service) - Contains the service layer of the application;
-- [/repository](src/main/kotlin/aguDataSystem/server/repository) - Contains the data access layer of the
-  application using JDBI;
+- [/repository](src/main/kotlin/aguDataSystem/server/repository) - Contains the data access layer of the application using JDBI;
 - [/utils](src/main/kotlin/aguDataSystem/utils) - Contains utility classes.
 
 ### Controller Layer
 
-The controller layer is responsible for handling the HTTP requests, processing them and giving back a response; witch is
+The controller layer is responsible for handling the HTTP requests, processing them and giving back a response; which is
 annotated with the `@RestController` and `@RequestMapping`.
 The methods are annotated with `@GetMapping`, `@PostMapping` and `@DeleteMapping` depending on the request method.
 The responses are returned as a JSON object (Output Models),
@@ -68,13 +65,9 @@ The Controller Layer is organized as follows:
 
 - [config](src/main/kotlin/aguDataSystem/server/http/config) - Contains the configuration class of the application;
 - [controllers](src/main/kotlin/aguDataSystem/server/http/controllers) - Contains the controllers of the application.
-    - [/agu](src/main/kotlin/aguDataSystem/server/http/controllers/agu) - Contains the controller for the AGU classes as
-      well as the input and output models.
-        - [/models](src/main/kotlin/aguDataSystem/server/http/controllers/agu/models) - Contains the input and output
-          models
-          for data operations.
-    - [/media](src/main/kotlin/aguDataSystem/server/http/controllers/media) - Contains the Problem class for the errors
-      that are used in the application.
+    - [/models](src/main/kotlin/aguDataSystem/server/http/controllers/models) - Contains the input and output models for
+        data operations.
+    - [/media](src/main/kotlin/aguDataSystem/server/http/controllers/media) - Contains the Problem class for the errors that are used in the application.
 
 ### Service Layer
 
@@ -91,12 +84,9 @@ These responses can be one of two types:
 The Service Layer is organized as follows:
 
 - [services](src/main/kotlin/aguDataSystem/server/service) - Contains the services of the application;
-    - [/agu](src/main/kotlin/aguDataSystem/server/service/agu) - Contains the service for the AGU classes and its
-      possible results;
-    - [/chron](src/main/kotlin/aguDataSystem/server/service/chron) - Contains the service for the automatic polling of
-      data from the fetching module;
-    - [/errors](src/main/kotlin/aguDataSystem/server/service/errors) - Contains the possible errors that can occur in
-      the application on the service layer.
+    - [/agu](src/main/kotlin/aguDataSystem/server/service/agu) - Contains the service for the AGU classes and its possible results;
+    - [/chron](src/main/kotlin/aguDataSystem/server/service/chron) - Contains the service for the automatic polling of data from the fetching module;
+    - [/errors](src/main/kotlin/aguDataSystem/server/service/errors) - Contains the possible errors that can occur in the application on the service layer.
 
 ### Repository Layer
 
@@ -112,18 +102,14 @@ This layer is organized as follows:
 
 - [repositories](src/main/kotlin/aguDataSystem/server/repository) - Contains all the repositories of the application;
     - [/agu](src/main/kotlin/aguDataSystem/server/repository/agu) - Contains the repository for the AGU classes;
-    - [/contact](src/main/kotlin/aguDataSystem/server/repository/contact) - Contains the repository for the contact
-      classes;
+    - [/contact](src/main/kotlin/aguDataSystem/server/repository/contact) - Contains the repository for the contact classes;
     - [/dno](src/main/kotlin/aguDataSystem/server/repository/dno) - Contains the repository for the DNO classes;
     - [/gas](src/main/kotlin/aguDataSystem/server/repository/gas) - Contains the repository for the gas classes;
     - [/jdbi](src/main/kotlin/aguDataSystem/server/repository/jdbi) - Contains the JDBI configuration class;
-        - [/mappers](src/main/kotlin/aguDataSystem/server/repository/jdbi/mappers) - Contains the mappers for the domain
-          classes;
-    - [/provider](src/main/kotlin/aguDataSystem/server/repository/provider) - Contains the repository for the provider
-      classes;
+        - [/mappers](src/main/kotlin/aguDataSystem/server/repository/jdbi/mappers) - Contains the mappers for the domain classes;
+    - [/provider](src/main/kotlin/aguDataSystem/server/repository/provider) - Contains the repository for the provider classes;
     - [/tank](src/main/kotlin/aguDataSystem/server/repository/tank) - Contains the repository for the tank classes;
-    - [/temperature](src/main/kotlin/aguDataSystem/server/repository/temperature) - Contains the repository for the
-      temperature classes;
+    - [/temperature](src/main/kotlin/aguDataSystem/server/repository/temperature) - Contains the repository for the temperature classes;
 
 ### Data Representation
 
@@ -137,23 +123,3 @@ This layer is organized as follows:
 
 No error handling was implemented in the controller layer,
 as the Spring Boot framework handles the exceptions and returns a Bad Request response.
-
-## Running the application
-
-To run the application, you need to have the following installed:
-
-- [Gradle](https://gradle.org/)
-- [Java 17](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
-- [Docker](https://www.docker.com/)
-
-With the Gradle wrapper, you can build the application with the following command on the [jvm folder](./../jvm):
-
-```shell
-./gradlew build
-```
-
-Alternatively, it's possible to deploy the application using Docker and not Java, with the following steps:
-
-```shell
-  docker compose up -d --build --force-recreate
-```

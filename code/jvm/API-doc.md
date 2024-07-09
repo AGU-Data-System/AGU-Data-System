@@ -747,8 +747,8 @@ AGU Endpoint is responsible for managing AGUs in the system.
         - `transportCompanies`: The transport companies of the AGU.
         - `isFavourite`: The favorite status of the AGU.
         - `isActive`: The active status of the AGU.
-        - **Optional:**
-            - `notes`: The notes of the AGU.
+    - **Optional:**
+        - `notes`: The notes of the AGU.
 
 - **Example:**
 
