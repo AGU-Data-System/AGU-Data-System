@@ -1,4 +1,4 @@
-package aguDataSystem.server.service.chron.models
+package aguDataSystem.server.service.chron.models.fetcher
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

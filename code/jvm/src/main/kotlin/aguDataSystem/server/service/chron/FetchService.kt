@@ -9,9 +9,11 @@ import aguDataSystem.server.domain.measure.toTemperatureMeasures
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
-import aguDataSystem.server.service.chron.models.GasDataItem
-import aguDataSystem.server.service.chron.models.ProviderResponseModel
-import aguDataSystem.server.service.chron.models.TemperatureData
+import aguDataSystem.server.service.chron.models.fetcher.GasDataItem
+import aguDataSystem.server.service.chron.models.fetcher.ProviderResponseModel
+import aguDataSystem.server.service.chron.models.fetcher.TemperatureData
+import aguDataSystem.server.service.chron.models.prediction.PredictionRequestModel
+import aguDataSystem.server.service.chron.models.prediction.TrainingRequestModel
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -19,11 +21,15 @@ import java.net.http.HttpResponse
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
@@ -89,12 +95,23 @@ class FetchService(
 	 * @param url The URL to make the request to
 	 * @return The response body
 	 */
-	fun fetch(url: String, body: String? = null): Response {
+	fun fetch(method: HttpMethod = HttpMethod.GET, url: String, body: String? = null): Response {
 		val client = HttpClient.newHttpClient()
-		val request = HttpRequest.newBuilder()
-			.uri(URI.create(url))
-			.GET()
-			.build()
+		val request = when(method) {
+			HttpMethod.POST -> {
+				HttpRequest.newBuilder()
+					.uri(URI.create(url))
+					.header("Content-Type", "application/json")
+					.POST(HttpRequest.BodyPublishers.ofString(body))
+					.build()
+			}
+			else -> {
+				HttpRequest.newBuilder()
+					.uri(URI.create(url))
+					.GET()
+					.build()
+			}
+		}
 		try {
 			val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 			return Response(response.statusCode(), response.body())
@@ -192,22 +209,25 @@ class FetchService(
 	}
 
 	/**
-	 * Generates a training model for the prediction module.
-	 * TODO ITS A DAMN SKETCH
+	 * Makes an HTTP request to the Prediction service api to create a training model.
+	 *
 	 * @param temps The temperature measures
 	 * @param consumptions The gas consumptions
 	 * @return The training model
 	 */
 	fun generateTraining(temps: List<TemperatureMeasure>, consumptions: List<Int>): String? {
-		val body = Json.encodeToJsonElement(mapOf("temps" to temps, "consumptions" to consumptions)).toString()
-		val training = fetch(Environment.getPredictionUrl(), body)
+		val body = Json.encodeToString(TrainingRequestModel(temps, consumptions))
+		val trainingURL = Environment.getPredictionUrl() + "/train"
+
+		logger.info("Making request to: {}", trainingURL)
+		val training = fetch(method = HttpMethod.POST, url = trainingURL, body = body)
+
 		return if (training.statusCode == HttpStatus.OK.value()) training.body else null
 	}
 
 	/**
-	 * Generates predictions for the gas consumption.
+	 * Makes an HTTP request to the Prediction service api to generate gas consumption predictions.
 	 *
-	 * TODO ITS A DAMN SKETCH
 	 * @param pastTemps The past temperature measures
 	 * @param futureTemps The future temperature measures
 	 * @param consumptions The gas consumptions
@@ -220,15 +240,20 @@ class FetchService(
 		consumptions: List<Int>,
 		training: String
 	): List<Int> {
-		val body = Json.encodeToJsonElement(
-			mapOf(
-				"pastTemps" to pastTemps,
-				"futureTemps" to futureTemps,
-				"consumptions" to consumptions,
-				"training" to training
+		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
+		val trainingJsonObject = objectMapper.decodeFromString<JsonObject>(training)
+		val coefficients = trainingJsonObject["coefficients"]?.jsonArray?.map { it.jsonPrimitive.double } ?: emptyList()
+		val intercept = trainingJsonObject["intercept"]?.jsonPrimitive?.double ?: 0.0
+		val body = Json.encodeToString(
+			PredictionRequestModel(
+				temperatures = pastTemps,
+				previousConsumptions = consumptions,
+				coefficients = coefficients,
+				intercept = intercept
 			)
-		).toString()
-		val predictions = fetch(Environment.getPredictionUrl(), body)
+		)
+		val predictionURL = Environment.getPredictionUrl() + "/prediction"
+		val predictions = fetch(method = HttpMethod.POST, url = predictionURL, body = body)
 		return if (predictions.statusCode == HttpStatus.OK.value()) {
 			Json.decodeFromString<List<Int>>(predictions.body)
 		} else emptyList()

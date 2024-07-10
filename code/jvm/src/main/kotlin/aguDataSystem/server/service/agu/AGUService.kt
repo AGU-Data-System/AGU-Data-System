@@ -56,6 +56,7 @@ class AGUService(
 	 * @return List of the basic information for all AGUs
 	 */
 	fun getAGUsBasicInfo(): List<AGUBasicInfo> {
+		// scheduleTrainingChronTask() // for tests
 		return transactionManager.run {
 			logger.info("Getting all AGUs from the database")
 
