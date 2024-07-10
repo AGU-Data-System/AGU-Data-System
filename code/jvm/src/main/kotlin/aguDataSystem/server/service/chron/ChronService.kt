@@ -84,6 +84,11 @@ class ChronService(
 			transactionManager.run {
 				val latestLevel = it.gasRepository.getLatestLevels("FIX"/*TODO: We need the CUI that this provider refers too.*/).sumOf { gasMeasure -> gasMeasure.level }
 				//TODO: Rodrigo stopped here. gtg
+				/*
+				if (latestLevel < agu.levels.min){
+					TODO("Launch Alert")
+				}
+				*/
 			}
 			//TODO: GET LATEST LEVEL, CHECK IF IT'S BELOW MIN
 			//TODO: For this, we need to get the AGUService in
