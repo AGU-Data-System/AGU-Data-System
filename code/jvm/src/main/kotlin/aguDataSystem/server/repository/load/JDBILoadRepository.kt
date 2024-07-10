@@ -13,4 +13,8 @@ class JDBILoadRepository(private val handle: Handle): LoadRepository{
 	override fun scheduleLoad(scheduledLoad: ScheduledLoadCreationDTO) {
 		TODO("Not yet implemented")
 	}
+
+	override fun removeLoad(loadId: Int) {
+		TODO("Not yet implemented")
+	}
 }

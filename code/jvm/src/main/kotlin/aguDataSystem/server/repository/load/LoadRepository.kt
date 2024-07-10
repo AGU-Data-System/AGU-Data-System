@@ -9,4 +9,6 @@ interface LoadRepository {
 	fun getLoadForDay(cui: String, day: LocalDate): ScheduledLoad?
 
 	fun scheduleLoad(scheduledLoad: ScheduledLoadCreationDTO)
+
+	fun removeLoad(loadId: Int)
 }

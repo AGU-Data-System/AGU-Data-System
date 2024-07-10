@@ -1,6 +1,7 @@
 package aguDataSystem.server.service.prediction
 
 import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.domain.load.ScheduledLoad
 import aguDataSystem.server.domain.load.ScheduledLoadCreationDTO
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.provider.ProviderType
@@ -53,20 +54,42 @@ class PredictionService(
             )
 
             if (predictions.isNotEmpty()) {
-                val predictedLevels = manageLoads(transaction, agu, predictions)
+                val completeAGU = transaction.aguRepository.getAGUByCUI(agu.cui)
+                    ?: throw Exception("AGU not found: ${agu.cui}")
+
+                val predictedLevels: List<Int>
+                //TODO: We need tests for small AGU and big AGU
+                if (completeAGU.loadVolume > BIG_AGU_LIMIT_LOAD_VOLUME) {
+                    predictedLevels = manageLoads(transaction, agu, predictions)
+                } else {
+                    logger.info("AGU {} is to small to have automatic scheduling of loads", agu.cui) //predictedLevels are the consumptions and we want to save the actual level
+                    val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui).sumOf { it.level }
+                    predictedLevels = mutableListOf()
+                    predictions.forEachIndexed { index, prediction ->
+                        var totalLevel = if (index == 0) currentLevel else predictedLevels[index - 1]
+                        totalLevel -= prediction
+                        predictedLevels.add(totalLevel)
+                    }
+                }
                 savePredictions(transaction, agu, predictedLevels, gasProvider.id)
             } else {
                 logger.error("Failed to generate gas consumption predictions for AGU: {}", agu.cui)
             }
         }
-
     }
 
+    /**
+     * Fetches the gas consumptions for the AGU
+     *
+     * @param transaction the transaction to use
+     * @param providerId the ID of the gas provider
+     *
+     * @return the gas consumptions
+     */
     private fun fetchGasConsumptions(transaction: Transaction, providerId: Int): List<Int> {
         val gasMeasures = transaction.gasRepository.getGasMeasures(providerId, NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT)
         val dailyConsumptions = mutableMapOf<LocalDate, Int>()
 
-        //Multiple tanks might be used, so we need to sum the levels that are from the same day
         gasMeasures.forEach { gasMeasure ->
             val date = gasMeasure.timestamp.toLocalDate()
             dailyConsumptions[date] = dailyConsumptions.getOrDefault(date, 0) + gasMeasure.level
@@ -75,40 +98,64 @@ class PredictionService(
         return dailyConsumptions.values.toList().zipWithNext { a, b -> b - a }
     }
 
+    /**
+     * Manages the loads for the AGU
+     * Either schedules a load if the predicted level is below the minimum level or removes a load if it's not needed anymore
+     *
+     * @param transaction the transaction to use
+     * @param agu the AGU to manage the loads for
+     * @param predictions the predictions to manage the loads for
+     *
+     * @return the predicted levels after taking the loads into account
+     */
     private fun manageLoads(transaction: Transaction, agu: AGUBasicInfo, predictions: List<Int>): List<Int> {
         val fullAGU = transaction.aguRepository.getAGUByCUI(agu.cui) ?: throw Exception("AGU not found: ${agu.cui}")
         val minLevel = fullAGU.levels.min
         val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui).sumOf { it.level }
-        val predictedLevels = mutableListOf<Int>() // [25, 20, 15]
+        val predictedLevels = mutableListOf<Int>()
 
-        var cumulativeConsumption = 0
-        predictions.forEachIndexed { index, prediction -> //index -> quarta
-            val date = LocalDate.now().plusDays(index.toLong()) //quarta
-            cumulativeConsumption += prediction
-            var totalLevel = currentLevel - cumulativeConsumption //55
+        predictions.forEachIndexed { index, prediction ->
+            val date = LocalDate.now().plusDays(index.toLong())
+            var totalLevel = if (index == 0) currentLevel else predictedLevels[index - 1]
+            totalLevel -= prediction
 
-            //Chega aqui, o total já a contar com o anterior é acima do mínimo, e existe uma carga agendada para o dia, devemos remover a carga, visto que a mesma não é necessária
+            val loadForDay = transaction.loadRepository.getLoadForDay(agu.cui, date)
+            val loadAmount = loadForDay?.amount ?: 0.0
+            val percentageAmountOfLoad = (fullAGU.loadVolume * loadAmount).toInt()
 
-            val loadForDay = getLoadAmountForDay(transaction, agu.cui, date) * fullAGU.loadVolume //0.0
-
-
-            totalLevel += loadForDay.toInt()
-            if (totalLevel < minLevel) {
-                val adjustedDate = adjustForWeekend(date)
-                transaction.loadRepository.scheduleLoad( //Quinta, Quarta
-                    ScheduledLoadCreationDTO(
-                        aguCui = agu.cui,
-                        date = adjustedDate,
-                        isManual = false
+            totalLevel += percentageAmountOfLoad
+            if (totalLevel > (minLevel + LOAD_REMOVAL_MARGIN) && loadForDay != null) { //TODO: Move 5 to a constant
+                transaction.loadRepository.removeLoad(loadForDay.id)
+                totalLevel -= percentageAmountOfLoad
+            } else if (totalLevel < minLevel) {
+                if (loadForDay != null) {
+                    TODO("Call in alert because even with a load in said day the level is below the minimum")
+                } else {
+                    val adjustedDate = adjustForWeekend(date)
+                    transaction.loadRepository.scheduleLoad(
+                        ScheduledLoadCreationDTO(
+                            aguCui = agu.cui,
+                            date = adjustedDate,
+                            isManual = false
+                        )
                     )
-                )
-                totalLevel += fullAGU.loadVolume
+                    totalLevel += fullAGU.loadVolume
+                }
             }
             predictedLevels.add(totalLevel)
         }
         return predictedLevels
     }
 
+    /**
+     * Saves the predicted levels obtained in the manageLoads function to the database
+     * The obtained levels are distributed among the tanks of the AGU in proportion to their capacity
+     *
+     * @param transaction the transaction to use
+     * @param agu the AGU to save the predictions for
+     * @param predictedLevels the predicted levels to save
+     * @param gasProviderId the ID of the gas provider
+     */
     private fun savePredictions(transaction: Transaction, agu: AGUBasicInfo, predictedLevels: List<Int>, gasProviderId: Int) {
         val tanks = transaction.tankRepository.getAGUTanks(agu.cui)
 
@@ -120,38 +167,29 @@ class PredictionService(
         val totalCapacity = tanks.sumOf { it.capacity }
 
         predictedLevels.forEachIndexed { index, predictedLevel ->
+            val tankLevels = mutableListOf<GasMeasure>()
             tanks.forEach { tank ->
                 val tankLevel = (predictedLevel * tank.capacity / totalCapacity)
-                transaction.gasRepository.addGasMeasuresToProvider(
-                    gasProviderId,
-                    listOf(
+                tankLevels.add(
                     GasMeasure(
-                        timestamp = LocalDateTime.now().plusDays(index.toLong()),
+                        timestamp = LocalDateTime.now(),
                         predictionFor = LocalDateTime.now().plusDays(index.toLong()),
                         level = tankLevel,
                         tankNumber = tank.number
-                    ))
+                    )
                 )
             }
+            transaction.gasRepository.addGasMeasuresToProvider(gasProviderId, tankLevels)
         }
     }
 
-    /*private fun savePredictions(transaction: Transaction, agu: AGUBasicInfo, predictions: List<Int>, gasProviderId: Int) {
-        transaction.gasRepository.addGasMeasuresToProvider(gasProviderId, predictions.mapIndexed { index, prediction ->
-            val numberOfDay = index.toLong()
-            GasMeasure(
-                timestamp = LocalDateTime.now(),
-                predictionFor = LocalDateTime.now().plusDays(numberOfDay),
-                level = prediction,
-                tankNumber = 1 //TODO: Verify we should save to the first tank
-            )
-        })
-    }*/
-
-    private fun getLoadAmountForDay(transaction: Transaction, aguCui: String, date: LocalDate): Double {
-        return transaction.loadRepository.getLoadForDay(aguCui, date)?.amount ?: 0.0
-    }
-
+    /**
+     * Adjusts the date to the previous Friday if it's a Saturday or Sunday
+     *
+     * @param date the date to adjust
+     *
+     * @return the adjusted date
+     */
     private fun adjustForWeekend(date: LocalDate): LocalDate {
         return when (date.dayOfWeek) {
             DayOfWeek.SATURDAY -> date.minusDays(1)
@@ -163,5 +201,7 @@ class PredictionService(
     companion object {
         private val logger = LoggerFactory.getLogger(FetchService::class.java)
         const val NUMBER_OF_DAYS = 10
+        const val BIG_AGU_LIMIT_LOAD_VOLUME = 0.6
+        const val LOAD_REMOVAL_MARGIN = 5
     }
 }

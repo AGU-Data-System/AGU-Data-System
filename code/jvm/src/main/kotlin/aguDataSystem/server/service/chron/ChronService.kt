@@ -81,6 +81,13 @@ class ChronService(
 
 		val future: ScheduledFuture<*> = chronScheduler.scheduleAtFixedRate({
 			fetchService.fetchAndSave(provider, lastFetch)
+			transactionManager.run {
+				val latestLevel = it.gasRepository.getLatestLevels("FIX"/*TODO: We need the CUI that this provider refers too.*/).sumOf { gasMeasure -> gasMeasure.level }
+				//TODO: Rodrigo stopped here. gtg
+			}
+			//TODO: GET LATEST LEVEL, CHECK IF IT'S BELOW MIN
+			//TODO: For this, we need to get the AGUService in
+
 		}, delay, frequency.toMillis(), TimeUnit.MILLISECONDS)
 		scheduledChron[provider.id] = future
 
@@ -92,7 +99,6 @@ class ChronService(
 	 *
 	 * Still sketchy, needs to be implemented
 	 */
-	//@Scheduled(cron = "0 0 0 * * SAT") // TODO: This should be a normal request with availability to train one or all AGUs
 	fun scheduleTrainingChronTask(agu: AGUBasicInfo) {
 		// TODO: needs to get the training frequency or be set with an annotation
 		//  get the temperature for the past n days
