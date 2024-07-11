@@ -61,7 +61,7 @@ class JDBIDNORepository(private val handle: Handle) : DNORepository {
 		logger.info("Added DNO with name {} and it's id is {}", dnoCreation.name, id)
 
 		return getById(id)
-			?: throw IllegalStateException("DNO not found after adding") // TODO is it right to throw an exception here?
+			?: throw IllegalStateException("DNO not found after adding")
 	}
 
 	/**

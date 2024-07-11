@@ -18,7 +18,18 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	 * @return The load for the day
 	 */
 	override fun getLoadForDay(cui: String, day: LocalDate): ScheduledLoad? {
-		TODO("Not yet implemented")
+		return handle.createQuery(
+			"""
+			SELECT * FROM scheduled_loads
+			WHERE agu_cui = :cui
+			AND day = :day
+			"""
+		)
+			.bind("cui", cui)
+			.bind("day", day)
+			.mapTo(ScheduledLoad::class.java)
+			.findFirst()
+			.orElse(null)
 	}
 
 	/**
@@ -27,7 +38,18 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	 * @param scheduledLoad The load to schedule
 	 */
 	override fun scheduleLoad(scheduledLoad: ScheduledLoadCreationDTO) {
-		TODO("Not yet implemented")
+		handle.createUpdate(
+			"""
+			INSERT INTO scheduled_loads (agu_cui, local_date, time_of_day, amount, is_manual)
+			VALUES (:cui, :day, :timeOfDay, :amount, :isManual)
+			"""
+		)
+			.bind("cui", scheduledLoad.aguCui)
+			.bind("local_date", scheduledLoad.date)
+			.bind("timeOfDay", scheduledLoad.timeOfDay)
+			.bind("amount", scheduledLoad.amount)
+			.bind("isManual", scheduledLoad.isManual)
+			.execute()
 	}
 
 	/**
@@ -36,6 +58,13 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	 * @param loadId The id of the load to remove
 	 */
 	override fun removeLoad(loadId: Int) {
-		TODO("Not yet implemented")
+		handle.createUpdate(
+			"""
+			DELETE FROM scheduled_loads
+			WHERE id = :id
+			"""
+		)
+			.bind("id", loadId)
+			.execute()
 	}
 }

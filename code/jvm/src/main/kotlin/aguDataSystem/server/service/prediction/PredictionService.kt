@@ -34,7 +34,7 @@ class PredictionService(
 				transaction.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.TEMPERATURE)
 					?: throw Exception("No temperature provider found for AGU: ${agu.cui}")
 			val gasProvider = transaction.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
-				?: throw Exception("No gas provider found for AGU: ${agu.cui}") //TODO: Check for exceptions
+				?: throw Exception("No gas provider found for AGU: ${agu.cui}")
 
 			logger.info("Fetching temperature past and future, and gas consumptions for AGU: {}", agu.cui)
 			val pastTemps = transaction.temperatureRepository.getPredictionTemperatureMeasures(
@@ -69,8 +69,8 @@ class PredictionService(
 					logger.info(
 						"AGU {} is to small to have automatic scheduling of loads",
 						agu.cui
-					) //predictedLevels are the consumptions, and we want to save the actual level
-					val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui).sumOf { it.level }
+					)
+					val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui, gasProvider.id).sumOf { it.level }
 					predictedLevels = mutableListOf()
 					predictions.forEachIndexed { index, prediction ->
 						var totalLevel = if (index == 0) currentLevel else predictedLevels[index - 1]
@@ -118,7 +118,9 @@ class PredictionService(
 	private fun manageLoads(transaction: Transaction, agu: AGUBasicInfo, predictions: List<Int>): List<Int> {
 		val fullAGU = transaction.aguRepository.getAGUByCUI(agu.cui) ?: throw Exception("AGU not found: ${agu.cui}")
 		val minLevel = fullAGU.levels.min
-		val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui).sumOf { it.level }
+		val gasProvider = transaction.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
+			?: throw Exception("No gas provider found for AGU: ${agu.cui}")
+		val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui, gasProvider.id).sumOf { it.level }
 		val predictedLevels = mutableListOf<Int>()
 
 		predictions.forEachIndexed { index, prediction ->
@@ -133,6 +135,7 @@ class PredictionService(
 			totalLevel += percentageAmountOfLoad
 			if (totalLevel > (minLevel + LOAD_REMOVAL_MARGIN) && loadForDay != null) {
 				transaction.loadRepository.removeLoad(loadForDay.id)
+				//TODO: Call in alert saying we removed a load because it was not needed (we can also put the details about the AGU and the load)
 				totalLevel -= percentageAmountOfLoad
 			} else if (totalLevel < minLevel) {
 				if (loadForDay != null) {

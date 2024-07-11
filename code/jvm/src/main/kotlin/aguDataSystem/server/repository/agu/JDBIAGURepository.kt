@@ -21,7 +21,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 	/**
 	 * Get all AGUs
-	 * TODO do better
+	 *
 	 * @return List of AGUs basic info
 	 */
 	override fun getAGUsBasicInfo(): List<AGUBasicInfo> {

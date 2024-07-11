@@ -88,7 +88,7 @@ class ChronService(
 					val agu = it.aguRepository.getAGUByCUI(aguCUI) ?: throw Exception("No AGU found for CUI: $aguCUI")
 
 					val latestLevel =
-						it.gasRepository.getLatestLevels(aguCUI)
+						it.gasRepository.getLatestLevels(aguCUI, provider.id)
 							.sumOf { gasMeasure -> gasMeasure.level }
 
 					if (latestLevel < agu.levels.min){
@@ -174,8 +174,12 @@ class ChronService(
 					it.aguRepository.getAGUsBasicInfo()
 				}
 				allAGUs.forEach { agu ->
-					//TODO: ADD TRY CATCH TO LOG ERROR MESSAGE IN SAID AGU
-					predictionService.processAGU(agu)
+					try {
+						predictionService.processAGU(agu)
+					} catch (e: Exception) {
+						logger.error("Failed to process AGU: {}", agu.cui, e)
+					}
+
 				}
 			},
 			Duration.between(LocalTime.now(), LocalTime.of(8, 30))

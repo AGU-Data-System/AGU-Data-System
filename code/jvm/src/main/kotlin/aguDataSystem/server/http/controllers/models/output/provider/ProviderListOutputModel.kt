@@ -20,6 +20,6 @@ data class ProviderListOutputModel(
 			.map { provider -> GasProviderOutputModel(provider) },
 		temperatureProviders = providers.filter { provider -> provider.getProviderType() == ProviderType.TEMPERATURE }
 			.map { provider -> TemperatureProviderOutputModel(provider) },
-		size = providers.size // TODO should we use the size of the filtered lists? or the original list?
+		size = providers.size
 	)
 }

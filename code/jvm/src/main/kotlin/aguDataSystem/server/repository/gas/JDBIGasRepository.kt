@@ -189,10 +189,34 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 	 * Gets the latest gas measures of an AGU
 	 *
 	 * @param aguCui the CUI of the AGU
+	 * @param providerId the id of the provider
 	 * @return a list of the latest gas measures, one for each tank
 	 */
-	override fun getLatestLevels(aguCui: String): List<GasMeasure> {
-		TODO("Not yet implemented")
+	override fun getLatestLevels(aguCui: String, providerId: Int): List<GasMeasure> {
+		logger.info("Getting the latest gas measures for AGU with CUI {} and provider with id {}", aguCui, providerId)
+
+		val measures = handle.createQuery(
+			"""
+		SELECT DISTINCT ON (tank_number)
+			timestamp,
+			prediction_for,
+			data,
+			tank_number 
+		FROM measure
+		WHERE agu_cui = :aguCui AND 
+		prediction_for = null AND
+		provider_id = :providerId
+		ORDER BY tank_number, timestamp DESC
+		""".trimIndent()
+		)
+			.bind("aguCui", aguCui)
+			.bind("providerId", providerId)
+			.mapTo<GasMeasure>()
+			.list()
+
+		logger.info("Fetched the latest gas measures for AGU with CUI {} and provider with id {}", aguCui, providerId)
+
+		return measures
 	}
 
 	companion object {

@@ -50,7 +50,8 @@ interface GasRepository {
 	 * Gets the latest gas measures of an AGU
 	 *
 	 * @param aguCui the CUI of the AGU
+	 * @param providerId the id of the provider
 	 * @return a list of the latest gas measures, one for each tank
 	 */
-	fun getLatestLevels(aguCui: String): List<GasMeasure>
+	fun getLatestLevels(aguCui: String, providerId: Int): List<GasMeasure>
 }
