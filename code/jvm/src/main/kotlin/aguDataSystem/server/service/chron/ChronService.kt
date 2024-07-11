@@ -14,9 +14,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 /**
  * Service for managing the chron tasks,
@@ -81,19 +81,21 @@ class ChronService(
 
 		val future: ScheduledFuture<*> = chronScheduler.scheduleAtFixedRate({
 			fetchService.fetchAndSave(provider, lastFetch)
-			transactionManager.run {
-				val latestLevel =
-					it.gasRepository.getLatestLevels("FIX"/*TODO: We need the CUI that this provider refers too.*/)
-						.sumOf { gasMeasure -> gasMeasure.level }
-				//TODO: Rodrigo stopped here. gtg
-				/*
-				if (latestLevel < agu.levels.min){
-					TODO("Launch/lanche Alert")
+
+			if (provider.getProviderType() == ProviderType.GAS) {
+				transactionManager.run {
+					val aguCUI = it.providerRepository.getAGUCuiFromProviderId(provider.id) ?: throw Exception("No AGU found for provider: ${provider.id}")
+					val agu = it.aguRepository.getAGUByCUI(aguCUI) ?: throw Exception("No AGU found for CUI: $aguCUI")
+
+					val latestLevel =
+						it.gasRepository.getLatestLevels(aguCUI)
+							.sumOf { gasMeasure -> gasMeasure.level }
+
+					if (latestLevel < agu.levels.min){
+						TODO("Launch Alert")
+					}
 				}
-				*/
 			}
-			//TODO: GET LATEST LEVEL, CHECK IF IT'S BELOW MIN
-			//TODO: For this, we need to get the AGUService in
 
 		}, delay, frequency.toMillis(), TimeUnit.MILLISECONDS)
 		scheduledChron[provider.id] = future
@@ -106,7 +108,6 @@ class ChronService(
 	 *
 	 * Still sketchy, needs to be implemented
 	 */
-	//@Scheduled(cron = "0 0 0 * * SAT") // Every Saturday at midnight
 	fun scheduleTrainingChronTask() {
 		// TODO: needs to get the training frequency or be set with an annotation
 		//  get the temperature for the past n days
@@ -132,11 +133,15 @@ class ChronService(
 						}
 
 						ProviderType.GAS -> {
-							consumptions =
-								it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
-									.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
-									.zipWithNext { a, b -> b - a } // calculate the consumption for each day
-									.map { consumption -> consumption.roundToInt() }
+							val gasMeasures = it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
+							val dailyConsumptions = mutableMapOf<LocalDate, Int>()
+
+							gasMeasures.forEach { gasMeasure ->
+								val date = gasMeasure.timestamp.toLocalDate()
+								dailyConsumptions[date] = dailyConsumptions.getOrDefault(date, 0) + gasMeasure.level
+							}
+
+							consumptions = dailyConsumptions.values.toList().zipWithNext { a, b -> b - a }
 						}
 					}
 				}
