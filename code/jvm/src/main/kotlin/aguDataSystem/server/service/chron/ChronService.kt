@@ -32,7 +32,7 @@ class ChronService(
 	private val predictionService: PredictionService
 ) {
 
-	private val chronPoolSize = 10
+	private val chronPoolSize = POOL_SIZE
 	private val scheduledChron: MutableMap<Int, ScheduledFuture<*>> = ConcurrentHashMap()
 	private val chronScheduler: ScheduledExecutorService =
 		Executors.newScheduledThreadPool(chronPoolSize)
@@ -182,9 +182,8 @@ class ChronService(
 
 				}
 			},
-			Duration.between(LocalTime.now(), LocalTime.of(8, 30))
-				.toMillis(), //TODO: Currently set to run at 08:30, could be configurable.
-			Duration.ofDays(1).toMillis(),
+			Duration.between(LocalTime.now(), LocalTime.of(PREDICTION_HOUR, PREDICTION_MINUTE)).toMillis(),
+			Duration.ofDays(PREDICTION_DAY).toMillis(),
 			TimeUnit.MILLISECONDS
 		)
 	}
@@ -202,5 +201,10 @@ class ChronService(
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(ChronService::class.java)
+		private const val POOL_SIZE = 10
+		private const val PREDICTION_DAY = 1L
+		private const val PREDICTION_HOUR = 8
+		private const val PREDICTION_MINUTE = 30
 	}
+
 }

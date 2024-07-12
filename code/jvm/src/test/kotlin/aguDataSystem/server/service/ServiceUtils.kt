@@ -71,6 +71,7 @@ object ServiceUtils {
 		eic = "TEST-EIC",
 		name = "Service Test AGU",
 		levels = dummyGasLevels,
+		loadVolume = 50,
 		correctionFactor = -1.0,
 		location = dummyLocation,
 		dnoName = dummyDNODTO.name,
