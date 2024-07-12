@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Badge, Box, Typography, Paper, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { Button, Badge, Box, Typography, Paper, List, ListItem, ListItemText, IconButton, CircularProgress } from '@mui/material';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import { useEffect, useState } from 'react';
@@ -50,18 +50,6 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
         }
     };
 
-    if (alerts.type === 'loading') {
-        return null;
-    }
-
-    if (alerts.type === 'error') {
-        return (
-            <Typography variant="h6" color="error">
-                {alerts.message}
-            </Typography>
-        );
-    }
-
     return (
         <div>
             <Button
@@ -82,7 +70,7 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
                     boxShadow: '2px 2px 3px #999',
                 }}
             >
-                <Badge badgeContent={alerts.alerts.length} color="error">
+                <Badge badgeContent={alerts.type === 'success' ? alerts.alerts.length : 0} color="error">
                     <NotificationsNoneOutlinedIcon sx={{ fontSize: 40 }} />
                 </Badge>
             </Button>
@@ -97,44 +85,58 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
                         maxHeight: 400,
                         overflowY: 'auto',
                         boxShadow: '2px 2px 3px #999',
+                        backgroundColor: darkMode ? '#333' : '#fff',
                     }}
                 >
                     <Box sx={{ p: 2 }}>
                         <Typography variant="h6">Alertas</Typography>
-                        <List>
-                            {alerts.alerts.map((alert, index) => (
-                                <ListItem
-                                    key={index}
-                                    divider
-                                    sx={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '8px',
-                                        marginBottom: '8px',
-                                        backgroundColor: darkMode ? '#333' : '#fff',
-                                        '&:hover': {
-                                            backgroundColor: darkMode ? '#444' : '#f5f5f5',
-                                        },
-                                    }}
-                                >
-                                    <ListItemText
-                                        primary={
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                {alert.title}
-                                            </Typography>
-                                        }
-                                        secondary={`${alert.message} - ${new Date(alert.timestamp).toLocaleString()}`}
-                                        onClick={() => { navigate(`/uag/${alert.agu}`) }}
-                                    />
-                                    <IconButton
-                                        edge="end"
-                                        aria-label="resolve"
-                                        onClick={() => handleAlertResolve(alert)}
+                        {alerts.type === 'loading' && (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100px' }}>
+                                <CircularProgress sx={{ color: 'rgb(255, 165, 0)' }} />
+                                <Typography variant="h6" sx={{ marginTop: 1 }}>Loading...</Typography>
+                            </Box>
+                        )}
+                        {alerts.type === 'error' && (
+                            <Typography variant="h6" color="error">
+                                {alerts.message}
+                            </Typography>
+                        )}
+                        {alerts.type === 'success' && (
+                            <List>
+                                {alerts.alerts.map((alert, index) => (
+                                    <ListItem
+                                        key={index}
+                                        divider
+                                        sx={{
+                                            border: '1px solid #ddd',
+                                            borderRadius: '8px',
+                                            marginBottom: '8px',
+                                            backgroundColor: darkMode ? '#333' : '#fff',
+                                            '&:hover': {
+                                                backgroundColor: darkMode ? '#444' : '#f5f5f5',
+                                            },
+                                        }}
                                     >
-                                        <CheckIcon sx={{ color: 'rgb(255, 165, 0)' }}/>
-                                    </IconButton>
-                                </ListItem>
-                            ))}
-                        </List>
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                    {alert.title}
+                                                </Typography>
+                                            }
+                                            secondary={`${alert.message} - ${new Date(alert.timestamp).toLocaleString()}`}
+                                            onClick={() => { navigate(`/uag/${alert.agu}`) }}
+                                        />
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="resolve"
+                                            onClick={() => handleAlertResolve(alert)}
+                                        >
+                                            <CheckIcon sx={{ color: 'rgb(255, 165, 0)' }} />
+                                        </IconButton>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        )}
                     </Box>
                 </Paper>
             )}
