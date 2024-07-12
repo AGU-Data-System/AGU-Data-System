@@ -1,11 +1,13 @@
 package aguDataSystem.server.service.prediction
 
 import aguDataSystem.server.domain.agu.AGUBasicInfo
+import aguDataSystem.server.domain.alerts.AlertCreationDTO
 import aguDataSystem.server.domain.load.ScheduledLoadCreationDTO
 import aguDataSystem.server.domain.measure.GasMeasure
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.Transaction
 import aguDataSystem.server.repository.TransactionManager
+import aguDataSystem.server.service.alerts.AlertsService
 import aguDataSystem.server.service.chron.FetchService
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -17,7 +19,8 @@ import org.springframework.stereotype.Service
 @Service
 class PredictionService(
 	private val transactionManager: TransactionManager,
-	private val fetchService: FetchService
+	private val fetchService: FetchService,
+	private val alertsService: AlertsService
 ) {
 
 	/**
@@ -136,11 +139,25 @@ class PredictionService(
 			totalLevel += percentageAmountOfLoad
 			if (totalLevel > (minLevel + LOAD_REMOVAL_MARGIN) && loadForDay != null) {
 				transaction.loadRepository.removeLoad(loadForDay.id)
-				//TODO: Call in alert saying we removed a load because it was not needed (we can also put the details about the AGU and the load)
+				// Call in alert saying we removed a load because it was not needed (we can also put the details about the AGU and the load)
+				alertsService.createAlert(
+					AlertCreationDTO(
+						aguId = agu.cui,
+						title = "Load removed",
+						message = "A load was removed because it was not needed"
+					)
+				)
 				totalLevel -= percentageAmountOfLoad
 			} else if (totalLevel < minLevel) {
 				if (loadForDay != null) {
-					TODO("Call in alert because even with a load in said day the level is below the minimum")
+					// Call in alert because even with a load in said day the level is below the minimum threshold
+					alertsService.createAlert(
+						AlertCreationDTO(
+							aguId = agu.cui,
+							title = "Gas level",
+							message = "Gas level is below the minimum threshold"
+						)
+					)
 				} else {
 					val adjustedDate = adjustForWeekend(date)
 					transaction.loadRepository.scheduleLoad(

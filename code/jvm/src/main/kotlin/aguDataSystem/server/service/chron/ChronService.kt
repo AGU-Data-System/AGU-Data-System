@@ -1,8 +1,10 @@
 package aguDataSystem.server.service.chron
 
+import aguDataSystem.server.domain.alerts.AlertCreationDTO
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
+import aguDataSystem.server.service.alerts.AlertsService
 import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestModel
 import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
 import aguDataSystem.server.service.prediction.PredictionService
@@ -30,7 +32,8 @@ import org.springframework.stereotype.Service
 class ChronService(
 	private val transactionManager: TransactionManager,
 	private val fetchService: FetchService,
-	private val predictionService: PredictionService
+	private val predictionService: PredictionService,
+	private val alertsService: AlertsService
 ) {
 
 	private val chronPoolSize = POOL_SIZE
@@ -93,8 +96,14 @@ class ChronService(
 						it.gasRepository.getLatestLevels(aguCUI, provider.id)
 							.sumOf { gasMeasure -> gasMeasure.level }
 
-					if (latestLevel < agu.levels.min) {
-						TODO("Launch Alert")
+					if (latestLevel < agu.levels.min && latestLevel > 0) {
+						alertsService.createAlert(
+							AlertCreationDTO(
+								aguCUI,
+								"Nível de gás - " + agu.name,
+								"O nível de gás ($latestLevel%) está abaixo do valor mínimo da UAG (${agu.levels.min}%)",
+							)
+						)
 					}
 				}
 			}

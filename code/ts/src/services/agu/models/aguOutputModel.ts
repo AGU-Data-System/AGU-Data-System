@@ -90,6 +90,7 @@ interface AgusBasicInfoOutputModel {
         longitude: number;
     };
     transportCompanies: TransportCompaniesOutputModel[];
+    isActive: boolean;
 }
 
 interface TransportCompaniesOutputModel {

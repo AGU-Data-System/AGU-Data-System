@@ -1,34 +1,34 @@
 import * as React from 'react';
-import { Button, Badge, Box, Typography, Paper, List, ListItem, ListItemText } from '@mui/material';
+import { Button, Badge, Box, Typography, Paper, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import CheckIcon from '@mui/icons-material/Check';
 import { useEffect, useState } from 'react';
 import { AlertsOutputModel } from "../../services/agu/models/alertsOutputModel";
 import { useNavigate } from "react-router-dom";
+import { aguService } from "../../services/agu/aguService";
+import { Problem } from "../../utils/Problem";
+
+type AlertsState =
+    | { type: 'loading' }
+    | { type: 'error'; message: string }
+    | { type: 'success'; alerts: AlertsOutputModel[] };
 
 export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
-    const [alerts, setAlerts] = useState<AlertsOutputModel[]>([]);
+    const [alerts, setAlerts] = useState<AlertsState>({ type: 'loading' });
     const [showAlerts, setShowAlerts] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAlerts = async () => {
-            //TODO: fetch alerts from API
-            const alertsResponse: AlertsOutputModel[] = [
-                {
-                    aguCui: 1,
-                    type: 'Temperature',
-                    message: 'Temperature is too high',
-                    date: '2024-06-10T14:00:00',
-                },
-                {
-                    aguCui: 2,
-                    type: 'Humidity',
-                    message: 'Humidity is too low',
-                    date: '2024-06-12T14:00:00',
-                },
-            ];
+            const alerts = await aguService.getAlerts();
 
-            setAlerts(alertsResponse);
+            if (alerts.value instanceof Error) {
+                setAlerts({ type: 'error', message: alerts.value.message });
+            } else if (alerts.value instanceof Problem) {
+                setAlerts({ type: 'error', message: alerts.value.title });
+            } else {
+                setAlerts({ type: 'success', alerts: alerts.value.alerts });
+            }
         }
 
         fetchAlerts();
@@ -37,6 +37,30 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
     const toggleShowAlerts = () => {
         setShowAlerts(prev => !prev);
     };
+
+    const handleAlertResolve = async (alert: AlertsOutputModel) => {
+        const result = await aguService.updateAlertStatus(alert.id);
+
+        if (result.value instanceof Error) {
+            setAlerts({ type: 'error', message: result.value.message });
+        } else if (result.value instanceof Problem) {
+            setAlerts({ type: 'error', message: result.value.title });
+        } else {
+            setAlerts({ type: 'success', alerts: result.value.alerts });
+        }
+    };
+
+    if (alerts.type === 'loading') {
+        return null;
+    }
+
+    if (alerts.type === 'error') {
+        return (
+            <Typography variant="h6" color="error">
+                {alerts.message}
+            </Typography>
+        );
+    }
 
     return (
         <div>
@@ -58,7 +82,7 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
                     boxShadow: '2px 2px 3px #999',
                 }}
             >
-                <Badge badgeContent={alerts.length} color="error">
+                <Badge badgeContent={alerts.alerts.length} color="error">
                     <NotificationsNoneOutlinedIcon sx={{ fontSize: 40 }} />
                 </Badge>
             </Button>
@@ -78,7 +102,7 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
                     <Box sx={{ p: 2 }}>
                         <Typography variant="h6">Alertas</Typography>
                         <List>
-                            {alerts.map((alert, index) => (
+                            {alerts.alerts.map((alert, index) => (
                                 <ListItem
                                     key={index}
                                     divider
@@ -91,16 +115,23 @@ export default function FloatingAlerts({ darkMode }: { darkMode: boolean }) {
                                             backgroundColor: darkMode ? '#444' : '#f5f5f5',
                                         },
                                     }}
-                                    onClick={() => { navigate(`/uag/${alert.aguCui}`) }}
                                 >
                                     <ListItemText
                                         primary={
                                             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                {alert.type}
+                                                {alert.title}
                                             </Typography>
                                         }
-                                        secondary={`${alert.message} - ${new Date(alert.date).toLocaleString()}`}
+                                        secondary={`${alert.message} - ${new Date(alert.timestamp).toLocaleString()}`}
+                                        onClick={() => { navigate(`/uag/${alert.agu}`) }}
                                     />
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="resolve"
+                                        onClick={() => handleAlertResolve(alert)}
+                                    >
+                                        <CheckIcon sx={{ color: 'rgb(255, 165, 0)' }}/>
+                                    </IconButton>
                                 </ListItem>
                             ))}
                         </List>

@@ -1,8 +1,15 @@
 interface AlertsOutputModel {
-    aguCui: number;
-    type: string;
+    id: number;
+    agu: string;
+    timestamp: string;
+    title: string;
     message: string;
-    date: string;
+    isResolved: boolean;
 }
 
-export { AlertsOutputModel }
+interface ListAlertsOutputModel {
+    alerts: AlertsOutputModel[];
+    size: number;
+}
+
+export { AlertsOutputModel, ListAlertsOutputModel }

@@ -2,6 +2,7 @@ package aguDataSystem.server.repository
 
 import aguDataSystem.server.repository.jdbi.mappers.AGUBasicInfoMapper
 import aguDataSystem.server.repository.jdbi.mappers.AGUMapper
+import aguDataSystem.server.repository.jdbi.mappers.AlertsMapper
 import aguDataSystem.server.repository.jdbi.mappers.ContactMapper
 import aguDataSystem.server.repository.jdbi.mappers.DNOMapper
 import aguDataSystem.server.repository.jdbi.mappers.TankMapper
@@ -43,6 +44,9 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 
 	//transport company
 	registerRowMapper(TransportCompanyMapper())
+
+	//alerts
+	registerRowMapper(AlertsMapper())
 
 	return this
 }

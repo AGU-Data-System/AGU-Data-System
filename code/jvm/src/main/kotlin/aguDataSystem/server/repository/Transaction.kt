@@ -1,6 +1,7 @@
 package aguDataSystem.server.repository
 
 import aguDataSystem.server.repository.agu.AGURepository
+import aguDataSystem.server.repository.alerts.AlertsRepository
 import aguDataSystem.server.repository.contact.ContactRepository
 import aguDataSystem.server.repository.dno.DNORepository
 import aguDataSystem.server.repository.gas.GasRepository
@@ -33,6 +34,8 @@ interface Transaction {
 	val transportCompanyRepository: TransportCompanyRepository
 
 	val loadRepository: LoadRepository
+
+	val alertsRepository: AlertsRepository
 
 	/**
 	 * Rolls back the transaction

@@ -53,8 +53,11 @@ export default function LeafletMap({ filter, darkMode }: { filter: string, darkM
                     case 'dur':
                         setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.dno.name.toLowerCase() === 'dur') });
                         break;
+                    case 'inactive':
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => !uag.isActive) });
+                        break;
                     default:
-                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo });
+                        setState({ type: 'success', uagsDetails: getAGUsResponse.value.agusBasicInfo.filter(uag => uag.isActive) });
                 }
             }
         }

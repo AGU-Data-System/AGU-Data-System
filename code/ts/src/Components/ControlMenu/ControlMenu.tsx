@@ -86,7 +86,7 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                 <Typography variant="h5" component="div">
                     Menu de Acessibilidade
                 </Typography>
-                <br />
+                <br/>
                 <div
                     style={{
                         display: "flex",
@@ -195,9 +195,33 @@ export function ControlMenuRight({ setFilter } : { setFilter: (filter: string) =
                         Duriensegás
                     </Button>
                 </div>
-                <br />
-                <Divider orientation="horizontal" flexItem />
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "flex-start",
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        sx={{
+                            margin: '8px',
+                            backgroundColor: activeButton === "inactive" ? 'rgba(255,165,0,0.49)' : 'rgb(255, 165, 0)',
+                            height: '100%',
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,165,0,0.49)',
+                            },
+                        }}
+                        onClick={() => handleClick("inactive")}
+                    >
+                        UAGs Inativas
+                    </Button>
+                </div>
+                    <br/>
+                    <Divider orientation="horizontal" flexItem/>
             </CardContent>
         </Card>
-    );
+);
 }

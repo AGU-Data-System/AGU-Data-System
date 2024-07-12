@@ -20,7 +20,8 @@ data class AGUBasicInfoOutputModel(
 	val isFavourite: Boolean,
 	val dno: DNOOutputModel,
 	val location: LocationOutputModel,
-	val transportCompanies: TransportCompanyListOutputModel
+	val transportCompanies: TransportCompanyListOutputModel,
+	val isActive: Boolean
 ) {
 	constructor(agu: AGUBasicInfo) : this(
 		cui = agu.cui,
@@ -29,6 +30,7 @@ data class AGUBasicInfoOutputModel(
 		isFavourite = agu.isFavourite,
 		dno = DNOOutputModel(agu.dno),
 		location = LocationOutputModel(agu.location),
-		transportCompanies = TransportCompanyListOutputModel(agu.transportCompanies)
+		transportCompanies = TransportCompanyListOutputModel(agu.transportCompanies),
+		isActive = agu.isActive
 	)
 }

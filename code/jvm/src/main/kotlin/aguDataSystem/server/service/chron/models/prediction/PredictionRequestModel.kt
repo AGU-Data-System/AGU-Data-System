@@ -23,8 +23,8 @@ data class PredictionRequestModel(
 		coefficients: List<Double>,
 		intercept: Double
 	) : this(
-		temperatures = temperatures.toRequest(),
-		previousConsumptions = previousConsumptions.toRequest(),
+		temperatures = temperatures.toTemperatureRequest(),
+		previousConsumptions = previousConsumptions.toConsumptionRequest(),
 		coefficients = coefficients,
 		intercept = intercept
 	)

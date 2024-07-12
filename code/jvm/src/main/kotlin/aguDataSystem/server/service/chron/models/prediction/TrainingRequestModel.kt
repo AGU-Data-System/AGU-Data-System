@@ -14,8 +14,8 @@ data class TrainingRequestModel(
 	val consumptions: String
 ) {
 	constructor(temperatures: List<TemperatureRequestModel>, consumptions: List<ConsumptionRequestModel>) : this(
-		temperatures = temperatures.toRequest(),
-		consumptions = consumptions.toRequest()
+		temperatures = temperatures.toTemperatureRequest(),
+		consumptions = consumptions.toConsumptionRequest()
 	)
 
 	override fun toString(): String {
@@ -23,14 +23,14 @@ data class TrainingRequestModel(
 	}
 }
 
-fun List<TemperatureRequestModel>.toRequest(): String {
+fun List<TemperatureRequestModel>.toTemperatureRequest(): String {
 	val minTemps = this.map { it.min }
 	val maxTemps = this.map { it.max }
 	val timeStamps = this.map { it.timeStamp }.map { "\"$it\"" }
 	return "{\"date\": $timeStamps, \"minTemps\": $minTemps, \"maxTemps\": $maxTemps}"
 }
 
-fun List<ConsumptionRequestModel>.toRequest(): String {
+fun List<ConsumptionRequestModel>.toConsumptionRequest(): String {
 	val consumptions = this.map { it.level }
 	val timeStamps = this.map { it.timestamp }.map { "\"$it\"" }
 	return "{\"date\": $timeStamps, \"consumptions\": $consumptions}"

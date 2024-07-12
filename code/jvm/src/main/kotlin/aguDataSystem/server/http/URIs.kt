@@ -86,4 +86,15 @@ object URIs {
 
 		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
 	}
+
+	/**
+	 * Contains the URIs for the alerts endpoints
+	 */
+	object Alerts {
+		const val ROOT = "$PREFIX/alerts"
+		const val CREATE = "/create"
+		const val BY_ID = "/{alertId}"
+
+		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
+	}
 }

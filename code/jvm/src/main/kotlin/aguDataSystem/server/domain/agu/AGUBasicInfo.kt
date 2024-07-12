@@ -13,6 +13,7 @@ import aguDataSystem.server.domain.company.TransportCompany
  * @property dno DNO of the AGU
  * @property location location of the AGU
  * @property transportCompanies list of transport companies that are associated with the AGU
+ * @property isActive state of the AGU
  */
 data class AGUBasicInfo(
 	val cui: String,
@@ -21,5 +22,6 @@ data class AGUBasicInfo(
 	val isFavourite: Boolean,
 	val dno: DNO,
 	val location: Location,
-	val transportCompanies: MutableList<TransportCompany>
+	val transportCompanies: MutableList<TransportCompany>,
+	val isActive: Boolean
 )

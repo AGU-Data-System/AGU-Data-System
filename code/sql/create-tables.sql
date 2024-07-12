@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS agu;
 DROP TABLE IF EXISTS dno;
 DROP TABLE IF EXISTS scheduled_load;
 DROP TABLE IF EXISTS transport_company;
+DROP TABLE IF EXISTS alerts;
 
 -- Drop domains
 DROP DOMAIN IF EXISTS CUI;
@@ -86,6 +87,18 @@ create table if not exists agu
 --
 --     foreign key (company_name) references transport_company (name)
 -- );
+
+create table if not exists alerts
+(
+    id          int generated always as identity primary key,
+    agu_cui     CUI,
+    timestamp   timestamp with time zone,
+    title       varchar check (length(title) > 0) not null,
+    message     varchar check (length(message) > 0) not null,
+    is_resolved boolean default false not null,
+
+    foreign key (agu_cui) references agu (cui) on delete cascade
+);
 
 -- TODO: Create delivered_loads table
 create table if not exists scheduled_load

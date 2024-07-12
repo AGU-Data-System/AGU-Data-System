@@ -11,6 +11,7 @@ import { AguCreateInputModel } from "./models/createAguInputModel";
 import { Problem } from "../../utils/Problem";
 import { GetTemperatureListOutputModel } from "./models/temperatureOutputModel";
 import { GetGasListOutputModel, LevelsInputModel } from "./models/gasOutputModel";
+import { ListAlertsOutputModel } from "./models/alertsOutputModel";
 
 export namespace aguService {
     export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoListOutputModel>> {
@@ -79,7 +80,17 @@ export namespace aguService {
     }
 
     export async function updateTank(aguCui: string, tankNumber: number, tankData: TankInputModel): Promise<Either<Error | Problem, AguDetailsOutputModel>> {
-        const url = `/agus//${aguCui}/tank/${tankNumber}`;
+        const url = `/agus/${aguCui}/tank/${tankNumber}`;
         return fetchFunction(url, "PUT", JSON.stringify(tankData));
+    }
+
+    export async function getAlerts(): Promise<Either<Error | Problem, ListAlertsOutputModel>> {
+        const url = `/alerts`;
+        return fetchFunction(url, "GET");
+    }
+
+    export async function updateAlertStatus(alertId: number): Promise<Either<Error | Problem, ListAlertsOutputModel>> {
+        const url = `/alerts/${alertId}`;
+        return fetchFunction(url, "PUT");
     }
 }
