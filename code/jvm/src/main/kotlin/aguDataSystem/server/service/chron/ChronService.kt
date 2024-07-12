@@ -120,16 +120,12 @@ class ChronService(
 	 * Still sketchy, needs to be implemented
 	 */
 	fun scheduleTrainingChronTask() {
-		// TODO: needs to get the training frequency or be set with an annotation
-		//  get the temperature for the past n days
-		//  get the consumption for the past n days
-		//  train the model with the prediction module
-		//  save the model in the DB
 		val aguList = transactionManager.run {
 			it.aguRepository.getAGUsBasicInfo()
 		}
 		aguList.forEach { agu ->
-			val nrOfDays = 10
+			val gasNrOfDays = 9
+			val tempNrOfDays = 5
 			var temps: List<TemperatureRequestModel> = emptyList()
 			var consumptions: List<ConsumptionRequestModel> = emptyList()
 			transactionManager.run {
@@ -140,22 +136,23 @@ class ChronService(
 				aguProviders.forEach { provider ->
 					when (provider.getProviderType()) {
 						ProviderType.TEMPERATURE -> {
-							temps = it.temperatureRepository.getTemperatureMeasures(provider.id, nrOfDays).map { temp ->
-								TemperatureRequestModel(
-									min = temp.min,
-									max = temp.max,
-									timeStamp = temp.timestamp.toLocalDate()
-								)
-							}
+							temps = it.temperatureRepository.getPredictionTemperatureMeasures(provider.id, tempNrOfDays)
+								.map { temp ->
+									TemperatureRequestModel(
+										min = temp.min,
+										max = temp.max,
+										timeStamp = temp.predictionFor.toLocalDate()
+									)
+								}
 						}
 
 						ProviderType.GAS -> {
 							val consumptionList =
-								it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
-							val consumption =
-								consumptionList.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
-									.zipWithNext { a, b -> b - a } // calculate the consumption for each day
-									.map { consumption -> consumption.roundToInt() }
+								it.gasRepository.getGasMeasures(provider.id, gasNrOfDays + 1, LocalTime.MIDNIGHT)
+							val consumption = consumptionList
+								.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
+								.zipWithNext { a, b -> b - a } // calculate the consumption for each day
+								.map { consumption -> consumption.roundToInt() }
 							consumptions = consumption.mapIndexed { idx, elem ->
 								ConsumptionRequestModel(
 									elem,

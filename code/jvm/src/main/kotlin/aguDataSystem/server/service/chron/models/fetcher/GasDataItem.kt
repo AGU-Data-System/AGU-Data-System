@@ -1,5 +1,6 @@
 package aguDataSystem.server.service.chron.models.fetcher
 
+import java.text.Normalizer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -21,6 +22,12 @@ data class GasDataItem(
 	@SerialName("component_name") val componentName: String
 ) {
 	companion object {
-		const val TANK_LEVEL = "Nivel Depósito"
+		const val TANK_LEVEL = "nivel deposito"
 	}
+}
+
+fun String.toASCII(): String {
+	val regexUnaccented = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+	val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
+	return regexUnaccented.replace(temp, "")
 }

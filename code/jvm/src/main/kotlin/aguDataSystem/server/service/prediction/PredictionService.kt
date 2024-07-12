@@ -9,10 +9,13 @@ import aguDataSystem.server.repository.Transaction
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.alerts.AlertsService
 import aguDataSystem.server.service.chron.FetchService
+import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestModel
+import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.math.roundToInt
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -42,10 +45,8 @@ class PredictionService(
 			logger.info("Fetching temperature past and future, and gas consumptions for AGU: {}", agu.cui)
 			val pastTemps = transaction.temperatureRepository.getPredictionTemperatureMeasures(
 				temperatureProvider.id,
-				NUMBER_OF_DAYS
+				TEMP_NUMBER_OF_DAYS
 			)
-			val futureTemps =
-				transaction.temperatureRepository.getTemperatureMeasures(temperatureProvider.id, NUMBER_OF_DAYS)
 			val consumptions = fetchGasConsumptions(transaction, gasProvider.id)
 
 			logger.info("Fetching training model for AGU: {}", agu.cui)
@@ -54,8 +55,11 @@ class PredictionService(
 
 			logger.info("Generating gas consumption predictions for AGU: {}", agu.cui)
 			val predictions = fetchService.generatePredictions(
-				pastTemps,
-				futureTemps,
+				pastTemps.map { TemperatureRequestModel(
+					it.max,
+					it.min,
+					it.predictionFor.toLocalDate()
+				) },
 				consumptions,
 				training
 			)
@@ -97,16 +101,17 @@ class PredictionService(
 	 *
 	 * @return the gas consumptions
 	 */
-	private fun fetchGasConsumptions(transaction: Transaction, providerId: Int): List<Int> {
-		val gasMeasures = transaction.gasRepository.getGasMeasures(providerId, NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT)
-		val dailyConsumptions = mutableMapOf<LocalDate, Int>()
-
-		gasMeasures.forEach { gasMeasure ->
-			val date = gasMeasure.timestamp.toLocalDate()
-			dailyConsumptions[date] = dailyConsumptions.getOrDefault(date, 0) + gasMeasure.level
-		}
-
-		return dailyConsumptions.values.toList().zipWithNext { a, b -> b - a }
+	private fun fetchGasConsumptions(transaction: Transaction, providerId: Int): List<ConsumptionRequestModel> {
+		val consumptionList =
+			transaction.gasRepository.getGasMeasures(providerId, GAS_NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT)
+		return consumptionList.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
+			.zipWithNext { a, b -> b - a } // calculate the consumption for each day
+			.mapIndexed { idx, consumption ->
+				ConsumptionRequestModel(
+					consumption.roundToInt(),
+					consumptionList[idx].timestamp.toLocalDate()
+				)
+			}
 	}
 
 	/**
@@ -233,7 +238,8 @@ class PredictionService(
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(FetchService::class.java)
-		const val NUMBER_OF_DAYS = 10
+		const val GAS_NUMBER_OF_DAYS = 5
+		const val TEMP_NUMBER_OF_DAYS = 9
 		const val BIG_AGU_LIMIT_LOAD_VOLUME = 0.6
 		const val LOAD_REMOVAL_MARGIN = 5
 	}

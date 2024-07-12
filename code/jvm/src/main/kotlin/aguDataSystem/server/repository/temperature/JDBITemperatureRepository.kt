@@ -31,8 +31,9 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 			"""
             SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, 
 			m2.data as max 
-            FROM measure m1 join measure m2
-            ON m1.provider_id = m2.provider_id AND m1.prediction_for = m2.prediction_for 
+            FROM measure m1 
+			join measure m2 ON m1.provider_id = m2.provider_id 
+			AND m1.prediction_for = m2.prediction_for 
             AND m1.timestamp = m2.timestamp AND m1.agu_cui = m2.agu_cui
             WHERE m1.tag = :minTag AND m2.tag = :maxTag AND m1.provider_id = :providerId
             ORDER BY m1.timestamp DESC, m1.prediction_for
@@ -109,10 +110,12 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
             AND m2.tag = 'max' 
             AND m1.provider_id = :providerId
             AND m1.prediction_for >= CURRENT_DATE
-            ORDER BY prediction_for DESC
+            ORDER BY prediction_for
+			LIMIT :days
             """
 		)
 			.bind("providerId", providerId)
+			.bind("days", days)
 			.mapTo<TemperatureMeasure>()
 			.list()
 

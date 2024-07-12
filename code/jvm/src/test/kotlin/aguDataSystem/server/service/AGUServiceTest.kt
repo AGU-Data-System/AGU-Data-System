@@ -8,6 +8,7 @@ import aguDataSystem.server.service.ServiceUtils.dummyGasLevelsDTO
 import aguDataSystem.server.service.ServiceUtils.dummyTank
 import aguDataSystem.server.service.ServiceUtils.updateTankDTO
 import aguDataSystem.server.service.agu.AGUService
+import aguDataSystem.server.service.alerts.AlertsService
 import aguDataSystem.server.service.chron.ChronService
 import aguDataSystem.server.service.chron.FetchService
 import aguDataSystem.server.service.dno.DNOService
@@ -45,8 +46,9 @@ class AGUServiceTest {
 	fun `create AGU with valid data`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -65,8 +67,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -86,8 +89,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -107,8 +111,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -128,8 +133,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -148,8 +154,9 @@ class AGUServiceTest {
 	fun `create AGU twice should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -170,8 +177,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid cui`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -190,8 +198,9 @@ class AGUServiceTest {
 	fun `create AGU with empty cui`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -210,10 +219,12 @@ class AGUServiceTest {
 	fun `create AGU with already used cui should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
-		val aguService = AGUService(transactionManager, aguDomain, chronService
+		val aguService = AGUService(
+			transactionManager, aguDomain, chronService
 
 		)
 		val dnoCreation = dummyDNODTO
@@ -236,8 +247,9 @@ class AGUServiceTest {
 	fun `create AGU with empty eic should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -256,8 +268,9 @@ class AGUServiceTest {
 	fun `create AGU with already used EIC should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -280,8 +293,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -301,8 +315,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -325,8 +340,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid min level`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -345,8 +361,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid max level`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -365,8 +382,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid critical level`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -386,8 +404,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -409,8 +428,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -432,8 +452,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 
 
@@ -457,8 +478,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid latitude`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -477,8 +499,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid longitude`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -500,8 +523,9 @@ class AGUServiceTest {
 	fun `create AGU without any DNO`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val creationAgu = dummyAGUCreationDTO
 
@@ -517,8 +541,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid DNO`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -537,8 +562,9 @@ class AGUServiceTest {
 	fun `create AGU with un existing DNO`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val creationAgu = dummyAGUCreationDTO
 
@@ -554,8 +580,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid gas url`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val creationAgu = dummyAGUCreationDTO
 
@@ -571,8 +598,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid contact type`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -594,8 +622,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid contact name`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -617,8 +646,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid contact phone number`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -640,8 +670,9 @@ class AGUServiceTest {
 	fun `create AGU without any tank`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -660,8 +691,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid tank number`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val
 
@@ -683,8 +715,9 @@ class AGUServiceTest {
 	fun `create AGU with invalid tank capacity volume`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val invalidTank = dummyTank.copy(capacity = -1)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
@@ -705,8 +738,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val invalidTank = dummyTank.copy(levels = dummyGasLevels.copy(critical = dummyGasLevels.max + 1))
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
@@ -728,8 +762,9 @@ class AGUServiceTest {
 			// arrange
 			val fetchService = FetchService(transactionManager)
 			val invalidTank = dummyTank.copy(levels = dummyGasLevels.copy(min = dummyGasLevels.critical - 1))
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -750,8 +785,9 @@ class AGUServiceTest {
 			// arrange
 			val fetchService = FetchService(transactionManager)
 			val invalidTank = dummyTank.copy(levels = dummyGasLevels.copy(min = -1))
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -772,8 +808,9 @@ class AGUServiceTest {
 			// arrange
 			val fetchService = FetchService(transactionManager)
 			val invalidTank = dummyTank.copy(levels = dummyGasLevels.copy(max = -1))
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -794,8 +831,9 @@ class AGUServiceTest {
 			// arrange
 			val fetchService = FetchService(transactionManager)
 			val invalidTank = dummyTank.copy(levels = dummyGasLevels.copy(critical = -1))
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -816,8 +854,9 @@ class AGUServiceTest {
 			// arrange
 			val fetchService = FetchService(transactionManager)
 			val invalidTank = dummyTank.copy(levels = dummyGasLevels.copy(min = dummyGasLevels.max + 1))
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -837,8 +876,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val creationAgu =
@@ -858,8 +898,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoService = DNOService(transactionManager)
 			dnoService.createDNO(dummyDNODTO)
@@ -881,10 +922,9 @@ class AGUServiceTest {
 	fun `get agu by its id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService =
-
-			PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -905,8 +945,9 @@ class AGUServiceTest {
 	fun `get agu by its id with invalid id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -927,8 +968,9 @@ class AGUServiceTest {
 	fun `get agu by its id with empty id`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 		// act
@@ -943,8 +985,9 @@ class AGUServiceTest {
 	fun `get temperature measures by agu id and days`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -966,8 +1009,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val days = 2
 
@@ -984,8 +1028,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val days = 2
 
@@ -1002,8 +1047,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val days = 2
 
@@ -1020,8 +1066,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1046,8 +1093,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1070,8 +1118,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val hour = LocalTime.of(12, 0)
 			val days = 2
@@ -1089,8 +1138,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val hour = LocalTime.of(12, 0)
 			val days = 2
@@ -1108,8 +1158,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val hour = LocalTime.of(12, 0)
 			val days = 2
@@ -1127,8 +1178,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1180,8 +1232,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1204,8 +1257,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val day = LocalDate.now()
 
@@ -1222,8 +1276,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val day = LocalDate.now()
 
@@ -1240,8 +1295,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val day = LocalDate.now()
 
@@ -1258,8 +1314,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1282,8 +1339,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val days = 2
 			val time = LocalTime.of(12, 0)
@@ -1301,8 +1359,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val days = 2
 			val time = LocalTime.of(12, 0)
@@ -1320,8 +1379,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val days = 2
 			val time = LocalTime.of(12, 0)
@@ -1340,8 +1400,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1392,8 +1453,9 @@ class AGUServiceTest {
 	fun `update agu's favorite state correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -1416,8 +1478,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -1433,8 +1496,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -1450,8 +1514,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -1466,8 +1531,9 @@ class AGUServiceTest {
 	fun `update Active state in AGU correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -1495,8 +1561,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -1512,8 +1579,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -1529,8 +1597,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -1545,8 +1614,9 @@ class AGUServiceTest {
 	fun `add contact to AGU correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -1571,10 +1641,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService
-
-				, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val contact = ServiceUtils.dummyLogisticContact
 
@@ -1591,8 +1660,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val contact = ServiceUtils.dummyLogisticContact
 
@@ -1609,8 +1679,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val contact = ServiceUtils.dummyLogisticContact
 
@@ -1627,8 +1698,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoService = DNOService(transactionManager)
 			val contact = ServiceUtils.dummyLogisticContact.copy(type = "invalid")
@@ -1648,8 +1720,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoService = DNOService(transactionManager)
 			val contact = ServiceUtils.dummyLogisticContact.copy(name = "")
@@ -1669,8 +1742,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoService = DNOService(transactionManager)
 			val contact = ServiceUtils.dummyLogisticContact.copy(phone = "")
@@ -1690,8 +1764,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoService = DNOService(transactionManager)
 			val contact = ServiceUtils.dummyLogisticContact.copy(phone = "invalid")
@@ -1712,8 +1787,9 @@ class AGUServiceTest {
 	fun `add same contact twice should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -1737,8 +1813,9 @@ class AGUServiceTest {
 	fun `remove contact from AGU correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -1764,8 +1841,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val contactId = Int.MIN_VALUE
 
@@ -1782,8 +1860,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1804,8 +1883,9 @@ class AGUServiceTest {
 	fun `add tank to agu correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -1829,8 +1909,9 @@ class AGUServiceTest {
 	fun `add tank to agu with invalid id should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val tank = dummyTank
 
@@ -1847,8 +1928,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1871,8 +1953,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1895,8 +1978,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1919,8 +2003,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1942,8 +2027,9 @@ class AGUServiceTest {
 	fun `add tank with negative min level should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -1966,8 +2052,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -1989,8 +2076,9 @@ class AGUServiceTest {
 	fun `add tank with negative max level should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoCreation = dummyDNODTO
@@ -2012,8 +2100,9 @@ class AGUServiceTest {
 	fun `add tank with invalid capacity should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 
 
@@ -2037,8 +2126,9 @@ class AGUServiceTest {
 	fun `add tank twice should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2062,8 +2152,9 @@ class AGUServiceTest {
 	fun `update tank correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val dnoService = DNOService(transactionManager)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2088,8 +2179,9 @@ class AGUServiceTest {
 	fun `update tank with invalid id should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 		// act
@@ -2104,8 +2196,9 @@ class AGUServiceTest {
 	fun `update tank with empty agu id should fail`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 		// act
@@ -2121,8 +2214,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2150,8 +2244,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2179,8 +2274,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2208,8 +2304,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2233,8 +2330,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2259,8 +2357,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2284,8 +2383,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2307,8 +2407,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoCreation = dummyDNODTO
@@ -2329,8 +2430,9 @@ class AGUServiceTest {
 	fun `update AGU Gas Levels correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoService = DNOService(transactionManager)
 
@@ -2355,8 +2457,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -2372,8 +2475,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -2389,8 +2493,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2416,8 +2521,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2443,8 +2549,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2466,14 +2573,14 @@ class AGUServiceTest {
 		}
 
 
-
 	@Test
 	fun `update AGU gas levels with negative min level should fail`() =
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2496,8 +2603,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2520,8 +2628,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val dnoService = DNOService(transactionManager)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
@@ -2543,8 +2652,9 @@ class AGUServiceTest {
 	fun `update AGU notes correctly`() = testWithTransactionManagerAndRollback { transactionManager ->
 		// arrange
 		val fetchService = FetchService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService)
+		val alertsService = AlertsService(transactionManager)
+		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 		val aguService = AGUService(transactionManager, aguDomain, chronService)
 		val dnoService = DNOService(transactionManager)
 
@@ -2567,8 +2677,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -2584,8 +2695,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 
 			// act
@@ -2601,8 +2713,9 @@ class AGUServiceTest {
 		testWithTransactionManagerAndRollback { transactionManager ->
 			// arrange
 			val fetchService = FetchService(transactionManager)
-			val predictionService = PredictionService(transactionManager, fetchService)
-			val chronService = ChronService(transactionManager, fetchService, predictionService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
 			val aguService = AGUService(transactionManager, aguDomain, chronService)
 			val dnoService = DNOService(transactionManager)
 

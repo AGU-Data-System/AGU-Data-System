@@ -12,7 +12,9 @@ import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.chron.models.fetcher.GasDataItem
 import aguDataSystem.server.service.chron.models.fetcher.ProviderResponseModel
 import aguDataSystem.server.service.chron.models.fetcher.TemperatureData
+import aguDataSystem.server.service.chron.models.fetcher.toASCII
 import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestModel
+import aguDataSystem.server.service.chron.models.prediction.PredictionRequestModel
 import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
 import aguDataSystem.server.service.chron.models.prediction.TrainingRequestModel
 import java.net.URI
@@ -25,7 +27,10 @@ import kotlin.math.roundToInt
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -191,7 +196,8 @@ class FetchService(
 
 			objectMapper.parseToJsonElement(item.data).jsonArray.forEach { elem ->
 				val gasData = objectMapper.decodeFromJsonElement<GasDataItem>(elem)
-				if (gasData.name.startsWith(GasDataItem.TANK_LEVEL)) {
+				val gasDataName = gasData.name.lowercase().toASCII()
+				if (gasDataName.startsWith(GasDataItem.TANK_LEVEL)) {
 					if (gasData.value == null) return@forEach
 					gasMeasures.add(
 						GasMeasure(
@@ -227,25 +233,28 @@ class FetchService(
 	/**
 	 * Makes an HTTP request to the Prediction service api to generate gas consumption predictions.
 	 *
-	 * @param pastTemps The past temperature measures
 	 * @param futureTemps The future temperature measures
 	 * @param consumptions The gas consumptions
 	 * @param training The training model
 	 * @return The gas consumption predictions
 	 */
 	fun generatePredictions(
-		pastTemps: List<TemperatureMeasure>,
-		futureTemps: List<TemperatureMeasure>,
-		consumptions: List<Int>,
+		futureTemps: List<TemperatureRequestModel>,
+		consumptions: List<ConsumptionRequestModel>,
 		training: String
 	): List<Int> {
-		val body = Json.encodeToString("TODO") // TODO: Implement this
-//			PredictionRequestModel(
-//				temperatures = pastTemps,
-//				previousConsumptions = consumptions,
-//				coefficients = coefficients,
-//				intercept = intercept
-//			)
+		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
+		val coefficients = objectMapper.parseToJsonElement(training).jsonObject["coefficients"]?.jsonArray
+			?.map { it.jsonPrimitive.doubleOrNull }?.mapNotNull { it } ?: emptyList()
+		val intercept = objectMapper.parseToJsonElement(training).jsonObject["intercept"]?.jsonPrimitive?.doubleOrNull
+			?: 0.0
+		val body = Json.encodeToString(
+			PredictionRequestModel(
+				temperatures = futureTemps,
+				previousConsumptions = consumptions,
+				coefficients = coefficients,
+				intercept = intercept
+			))
 		val predictionURL = Environment.getPredictionUrl() + "/prediction"
 		val predictions = fetch(method = HttpMethod.POST, url = predictionURL, body = body)
 		return if (predictions.statusCode == HttpStatus.OK.value()) {
