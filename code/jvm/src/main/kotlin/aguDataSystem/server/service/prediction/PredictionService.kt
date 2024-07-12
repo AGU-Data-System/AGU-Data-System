@@ -70,7 +70,8 @@ class PredictionService(
 						"AGU {} is to small to have automatic scheduling of loads",
 						agu.cui
 					)
-					val currentLevel = transaction.gasRepository.getLatestLevels(agu.cui, gasProvider.id).sumOf { it.level }
+					val currentLevel =
+						transaction.gasRepository.getLatestLevels(agu.cui, gasProvider.id).sumOf { it.level }
 					predictedLevels = mutableListOf()
 					predictions.forEachIndexed { index, prediction ->
 						var totalLevel = if (index == 0) currentLevel else predictedLevels[index - 1]
