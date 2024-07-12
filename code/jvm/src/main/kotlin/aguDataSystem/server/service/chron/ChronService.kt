@@ -1,9 +1,10 @@
 package aguDataSystem.server.service.chron
 
-import aguDataSystem.server.domain.measure.TemperatureMeasure
 import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
+import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestModel
+import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
 import aguDataSystem.server.service.prediction.PredictionService
 import jakarta.annotation.PostConstruct
 import java.time.Duration
@@ -14,9 +15,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 /**
  * Service for managing the chron tasks,
@@ -84,14 +85,15 @@ class ChronService(
 
 			if (provider.getProviderType() == ProviderType.GAS) {
 				transactionManager.run {
-					val aguCUI = it.providerRepository.getAGUCuiFromProviderId(provider.id) ?: throw Exception("No AGU found for provider: ${provider.id}")
+					val aguCUI = it.providerRepository.getAGUCuiFromProviderId(provider.id)
+						?: throw Exception("No AGU found for provider: ${provider.id}")
 					val agu = it.aguRepository.getAGUByCUI(aguCUI) ?: throw Exception("No AGU found for CUI: $aguCUI")
 
 					val latestLevel =
 						it.gasRepository.getLatestLevels(aguCUI, provider.id)
 							.sumOf { gasMeasure -> gasMeasure.level }
 
-					if (latestLevel < agu.levels.min){
+					if (latestLevel < agu.levels.min) {
 						TODO("Launch Alert")
 					}
 				}
@@ -119,8 +121,8 @@ class ChronService(
 		}
 		aguList.forEach { agu ->
 			val nrOfDays = 10
-			var temps: List<TemperatureMeasure> = emptyList()
-			var consumptions: List<Int> = emptyList()
+			var temps: List<TemperatureRequestModel> = emptyList()
+			var consumptions: List<ConsumptionRequestModel> = emptyList()
 			transactionManager.run {
 				logger.info("Fetching providers for AGU: {}", agu.cui)
 				val aguProviders = it.providerRepository.getProviderByAGU(agu.cui)
@@ -129,19 +131,29 @@ class ChronService(
 				aguProviders.forEach { provider ->
 					when (provider.getProviderType()) {
 						ProviderType.TEMPERATURE -> {
-							temps = it.temperatureRepository.getTemperatureMeasures(provider.id, nrOfDays)
+							temps = it.temperatureRepository.getTemperatureMeasures(provider.id, nrOfDays).map { temp ->
+								TemperatureRequestModel(
+									min = temp.min,
+									max = temp.max,
+									timeStamp = temp.timestamp.toLocalDate()
+								)
+							}
 						}
 
 						ProviderType.GAS -> {
-							val gasMeasures = it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
-							val dailyConsumptions = mutableMapOf<LocalDate, Int>()
-
-							gasMeasures.forEach { gasMeasure ->
-								val date = gasMeasure.timestamp.toLocalDate()
-								dailyConsumptions[date] = dailyConsumptions.getOrDefault(date, 0) + gasMeasure.level
+							val consumptionList =
+								it.gasRepository.getGasMeasures(provider.id, nrOfDays + 1, LocalTime.MIDNIGHT)
+							val consumption =
+								consumptionList.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
+									.zipWithNext { a, b -> b - a } // calculate the consumption for each day
+									.map { consumption -> consumption.roundToInt() }
+							consumptions = consumption.mapIndexed { idx, elem ->
+								ConsumptionRequestModel(
+									elem,
+									consumptionList[idx].timestamp.toLocalDate()
+								)
 							}
 
-							consumptions = dailyConsumptions.values.toList().zipWithNext { a, b -> b - a }
 						}
 					}
 				}

@@ -1,6 +1,5 @@
 package aguDataSystem.server.service.chron.models.prediction
 
-import aguDataSystem.server.domain.measure.TemperatureMeasure
 import kotlinx.serialization.Serializable
 
 /**
@@ -18,9 +17,14 @@ data class PredictionRequestModel(
 	val coefficients: List<Double>,
 	val intercept: Double
 ) {
-	constructor(temperatures: List<TemperatureMeasure>, previousConsumptions: List<Int>, coefficients: List<Double>, intercept: Double) : this(
-		temperatures = temperatures.joinToString(",") { "${it.min},${it.max}" },
-		previousConsumptions = previousConsumptions.joinToString(","),
+	constructor(
+		temperatures: List<TemperatureRequestModel>,
+		previousConsumptions: List<ConsumptionRequestModel>,
+		coefficients: List<Double>,
+		intercept: Double
+	) : this(
+		temperatures = temperatures.toRequest(),
+		previousConsumptions = previousConsumptions.toRequest(),
 		coefficients = coefficients,
 		intercept = intercept
 	)
