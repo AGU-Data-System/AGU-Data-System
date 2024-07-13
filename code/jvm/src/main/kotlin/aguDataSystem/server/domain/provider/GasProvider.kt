@@ -8,6 +8,7 @@ import java.time.LocalDateTime
  *
  * @property id the id of the Gas Provider
  * @property measures the readings of the Gas Provider
+ * @property lastFetch the last time the Gas Provider was fetched
  */
 data class GasProvider(
 	override val id: Int,

@@ -28,6 +28,7 @@ object URIs {
 		const val ACTIVE_AGU = "/{aguCui}/active"
 		const val LEVELS = "/{aguCui}/levels"
 		const val NOTES = "/{aguCui}/notes"
+		const val TRAIN = "/train"
 
 		fun byID(id: String) = UriTemplate(ROOT + BY_ID).expand(id)
 		fun register() = URI(CREATE)
@@ -88,7 +89,7 @@ object URIs {
 	}
 
 	/**
-	 * Contains the URIs for the alerts endpoints
+	 * Contains the URIs for the alerts' endpoints
 	 */
 	object Alerts {
 		const val ROOT = "$PREFIX/alerts"

@@ -27,6 +27,7 @@ import aguDataSystem.server.service.errors.measure.GetMeasuresError
 import aguDataSystem.server.service.errors.tank.AddTankError
 import aguDataSystem.server.service.errors.tank.DeleteTankError
 import aguDataSystem.server.service.errors.tank.UpdateTankError
+import aguDataSystem.server.service.prediction.PredictionService
 import aguDataSystem.utils.failure
 import aguDataSystem.utils.getSuccessOrThrow
 import aguDataSystem.utils.isFailure
@@ -47,8 +48,18 @@ import org.springframework.stereotype.Service
 class AGUService(
 	private val transactionManager: TransactionManager,
 	private val aguDomain: AGUDomain,
-	private val scheduleChron: ChronService
+	private val scheduleChron: ChronService,
+	private val predictionService: PredictionService
 ) {
+
+	/**
+	 * TODO
+	 */
+	fun trainAGUs() {
+		logger.info("Training AGUs")
+		predictionService.trainAGUs()
+		logger.info("AGUs trained")
+	}
 
 	/**
 	 * Get all AGUs
@@ -608,7 +619,7 @@ class AGUService(
 
 	/**
 	 * Private function to be used by the other service functions,
-	 * in order to get the full AGU details by its CUI
+	 * to get the full AGU details by its CUI
 	 *
 	 * @param cui the CUI of the AGU
 	 *

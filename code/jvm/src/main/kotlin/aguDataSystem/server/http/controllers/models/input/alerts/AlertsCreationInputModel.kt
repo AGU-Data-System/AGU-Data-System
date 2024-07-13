@@ -10,19 +10,19 @@ import aguDataSystem.server.domain.alerts.AlertCreationDTO
  * @param message the message of the alert
  */
 data class AlertsCreationInputModel(
-    val agu: String,
-    val title: String,
-    val message: String,
+	val agu: String,
+	val title: String,
+	val message: String,
 ) {
-    /**
-     * Converts the input model to a data transfer object
-     *
-     * @receiver the alert creation input model
-     * @return the alert creation data transfer object
-     */
-    fun toDTO() = AlertCreationDTO(
-        aguId = this.agu,
-        title = this.title,
-        message = this.message,
-    )
+	/**
+	 * Converts the input model to a data transfer object
+	 *
+	 * @receiver the alert creation input model
+	 * @return the alert creation data transfer object
+	 */
+	fun toDTO() = AlertCreationDTO(
+		aguId = this.agu,
+		title = this.title,
+		message = this.message,
+	)
 }

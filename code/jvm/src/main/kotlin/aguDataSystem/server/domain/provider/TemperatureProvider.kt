@@ -8,6 +8,7 @@ import java.time.LocalDateTime
  *
  * @property id the id of the temperature Provider
  * @property measures the readings of the temperature Provider
+ * @property lastFetch the last time the temperature Provider was fetched
  */
 data class TemperatureProvider(
 	override val id: Int,

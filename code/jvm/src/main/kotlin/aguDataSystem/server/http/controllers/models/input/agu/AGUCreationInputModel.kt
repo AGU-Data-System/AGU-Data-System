@@ -25,6 +25,7 @@ import aguDataSystem.server.http.controllers.models.input.tank.TankCreationInput
  * @param image the image of the AGU
  * @param tanks the tanks of the AGU
  * @param contacts the contacts of the AGU
+ * @param transportCompanies the transport companies of the AGU
  * @param isFavourite the favorite status of the AGU
  * @param isActive the active status of the AGU
  * @param notes the notes of the AGU

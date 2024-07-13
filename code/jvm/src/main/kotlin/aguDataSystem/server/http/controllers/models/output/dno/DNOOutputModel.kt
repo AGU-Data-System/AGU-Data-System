@@ -7,6 +7,7 @@ import aguDataSystem.server.domain.company.DNO
  *
  * @param id The id of the DNO
  * @param name The name of the DNO
+ * @param region The region of the DNO
  */
 data class DNOOutputModel(
 	val id: Int,

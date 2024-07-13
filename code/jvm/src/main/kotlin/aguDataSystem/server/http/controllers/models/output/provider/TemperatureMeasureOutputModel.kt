@@ -19,7 +19,7 @@ class TemperatureMeasureOutputModel(
 ) {
 	constructor(measure: TemperatureMeasure) : this(
 		timestamp = measure.timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-		predictionFor = measure.predictionFor?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+		predictionFor = measure.predictionFor.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
 		min = measure.min,
 		max = measure.max
 	)

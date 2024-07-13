@@ -1,17 +1,17 @@
 package aguDataSystem.server.repository
 
-import aguDataSystem.server.repository.jdbi.mappers.AGUBasicInfoMapper
-import aguDataSystem.server.repository.jdbi.mappers.AGUMapper
-import aguDataSystem.server.repository.jdbi.mappers.AlertsMapper
-import aguDataSystem.server.repository.jdbi.mappers.ContactMapper
-import aguDataSystem.server.repository.jdbi.mappers.DNOMapper
-import aguDataSystem.server.repository.jdbi.mappers.TankMapper
-import aguDataSystem.server.repository.jdbi.mappers.TransportCompanyMapper
+import aguDataSystem.server.repository.jdbi.mappers.agu.AGUBasicInfoMapper
+import aguDataSystem.server.repository.jdbi.mappers.agu.AGUMapper
+import aguDataSystem.server.repository.jdbi.mappers.alerts.AlertsMapper
+import aguDataSystem.server.repository.jdbi.mappers.contact.ContactMapper
+import aguDataSystem.server.repository.jdbi.mappers.dno.DNOMapper
 import aguDataSystem.server.repository.jdbi.mappers.measures.GasMeasureMapper
 import aguDataSystem.server.repository.jdbi.mappers.measures.TemperatureMeasureMapper
 import aguDataSystem.server.repository.jdbi.mappers.provider.GasProviderMapper
 import aguDataSystem.server.repository.jdbi.mappers.provider.ProviderMapper
 import aguDataSystem.server.repository.jdbi.mappers.provider.TemperatureProviderMapper
+import aguDataSystem.server.repository.jdbi.mappers.tank.TankMapper
+import aguDataSystem.server.repository.jdbi.mappers.transportCompany.TransportCompanyMapper
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin

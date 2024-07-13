@@ -1,4 +1,4 @@
-package aguDataSystem.server.repository.jdbi.mappers
+package aguDataSystem.server.repository.jdbi.mappers.tank
 
 import aguDataSystem.server.domain.tank.Tank
 import aguDataSystem.server.repository.jdbi.mappers.MapperUtils.mapToGasLevels

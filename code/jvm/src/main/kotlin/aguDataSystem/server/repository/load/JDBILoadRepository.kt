@@ -20,9 +20,9 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	override fun getLoadForDay(cui: String, day: LocalDate): ScheduledLoad? {
 		return handle.createQuery(
 			"""
-			SELECT * FROM scheduled_loads
+			SELECT * FROM scheduled_load
 			WHERE agu_cui = :cui
-			AND day = :day
+			AND local_date = :day
 			"""
 		)
 			.bind("cui", cui)
@@ -40,7 +40,7 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	override fun scheduleLoad(scheduledLoad: ScheduledLoadCreationDTO) {
 		handle.createUpdate(
 			"""
-			INSERT INTO scheduled_loads (agu_cui, local_date, time_of_day, amount, is_manual)
+			INSERT INTO scheduled_load (agu_cui, local_date, time_of_day, amount, is_manual)
 			VALUES (:cui, :day, :timeOfDay, :amount, :isManual)
 			"""
 		)
@@ -60,7 +60,7 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	override fun removeLoad(loadId: Int) {
 		handle.createUpdate(
 			"""
-			DELETE FROM scheduled_loads
+			DELETE FROM scheduled_load
 			WHERE id = :id
 			"""
 		)

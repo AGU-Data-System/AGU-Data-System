@@ -1,4 +1,4 @@
-package aguDataSystem.server.repository.jdbi.mappers
+package aguDataSystem.server.repository.jdbi.mappers.agu
 
 import aguDataSystem.server.domain.agu.AGUBasicInfo
 import aguDataSystem.server.domain.company.TransportCompany

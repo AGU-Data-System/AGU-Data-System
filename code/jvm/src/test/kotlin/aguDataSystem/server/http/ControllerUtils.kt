@@ -39,7 +39,7 @@ object ControllerUtils {
 		critical = 10
 	)
 
-	val dummyTankCreationRequestModel = TankCreationRequestModel(
+	private val dummyTankCreationRequestModel = TankCreationRequestModel(
 		number = 1,
 		minLevel = dummyGasLevelsRequestModel.min,
 		maxLevel = dummyGasLevelsRequestModel.max,

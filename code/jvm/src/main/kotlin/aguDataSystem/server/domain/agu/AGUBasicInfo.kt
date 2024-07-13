@@ -14,6 +14,7 @@ import aguDataSystem.server.domain.company.TransportCompany
  * @property location location of the AGU
  * @property transportCompanies list of transport companies that are associated with the AGU
  * @property isActive state of the AGU
+ * @property isFavourite whether the AGU is a favorite
  */
 data class AGUBasicInfo(
 	val cui: String,

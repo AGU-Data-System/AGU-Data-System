@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+/**
+ * Controller for the tank operations
+ */
 @RestController("AGUs Tanks")
 @RequestMapping(URIs.Tank.ROOT)
 class TankController(private val service: AGUService) {

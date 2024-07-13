@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 /**
  * Represents a Scheduled Load.
- * A scheduled load is a load that was scheduled manually or automatically.
+ * A scheduled load is a load scheduled manually or automatically.
  *
  * @property id The id of the load
  * @property aguCui The AGU cui

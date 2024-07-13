@@ -65,7 +65,7 @@ object SchemaManagementExtension : BeforeAllCallback, AfterAllCallback {
 			}
 			block(transactionManager)
 
-			// finally, we roll back everything
+			// finally, we roll everything back
 			handle.rollback()
 		}
 

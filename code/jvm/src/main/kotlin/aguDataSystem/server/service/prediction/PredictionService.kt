@@ -19,12 +19,54 @@ import kotlin.math.roundToInt
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
+/**
+ * Service for the prediction of gas consumption of the AGUs.
+ */
 @Service
 class PredictionService(
 	private val transactionManager: TransactionManager,
 	private val fetchService: FetchService,
 	private val alertsService: AlertsService
 ) {
+
+	/**
+	 * Schedules the training chron task.
+	 *
+	 * Still sketchy, needs to be implemented
+	 */
+	fun trainAGUs() {
+		val aguList = transactionManager.run {
+			it.aguRepository.getAGUsBasicInfo()
+		}
+		aguList.forEach { agu ->
+			var temps: List<TemperatureRequestModel> = emptyList()
+			var consumptions: List<ConsumptionRequestModel> = emptyList()
+			transactionManager.run { tm ->
+				logger.info("Fetching providers for AGU for training model: {}", agu.cui)
+				val aguProviders = tm.providerRepository.getProviderByAGU(agu.cui)
+
+				logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
+				aguProviders.forEach { provider ->
+					when (provider.getProviderType()) {
+						ProviderType.TEMPERATURE -> temps = getTemperaturePredictions(tm, provider.id)
+						ProviderType.GAS -> consumptions = fetchGasConsumptions(tm, provider.id)
+					}
+				}
+			}
+
+			logger.info("Generating training model for AGU: {}", agu.cui)
+			val training = fetchService.generateTraining(temps, consumptions)
+
+			if (training != null) {
+				transactionManager.run {
+					logger.info("Saving training model for AGU: {}", agu.cui)
+					it.aguRepository.updateTrainingModel(agu.cui, training)
+				}
+			} else {
+				logger.error("Failed to generate training model for AGU: {}", agu.cui)
+			}
+		}
+	}
 
 	/**
 	 * Receives an AGU and gets/stores the predictions for the next n days and calculate when loads are needed for this AGU
@@ -42,11 +84,8 @@ class PredictionService(
 			val gasProvider = transaction.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
 				?: throw Exception("No gas provider found for AGU: ${agu.cui}")
 
-			logger.info("Fetching temperature past and future, and gas consumptions for AGU: {}", agu.cui)
-			val pastTemps = transaction.temperatureRepository.getPredictionTemperatureMeasures(
-				temperatureProvider.id,
-				TEMP_NUMBER_OF_DAYS
-			)
+			logger.info("Fetching temperature, and gas consumptions for AGU: {}", agu.cui)
+			val temps = getTemperaturePredictions(transaction, temperatureProvider.id)
 			val consumptions = fetchGasConsumptions(transaction, gasProvider.id)
 
 			logger.info("Fetching training model for AGU: {}", agu.cui)
@@ -55,28 +94,19 @@ class PredictionService(
 
 			logger.info("Generating gas consumption predictions for AGU: {}", agu.cui)
 			val predictions = fetchService.generatePredictions(
-				pastTemps.map { TemperatureRequestModel(
-					it.max,
-					it.min,
-					it.predictionFor.toLocalDate()
-				) },
-				consumptions,
-				training
+				futureTemps = temps, consumptions = consumptions, training = training
 			)
 
 			if (predictions.isNotEmpty()) {
-				val completeAGU = transaction.aguRepository.getAGUByCUI(agu.cui)
-					?: throw Exception("AGU not found: ${agu.cui}")
+				val completeAGU =
+					transaction.aguRepository.getAGUByCUI(agu.cui) ?: throw Exception("AGU not found: ${agu.cui}")
 
 				val predictedLevels: List<Int>
 				//TODO: We need tests for small AGU and big AGU
 				if (completeAGU.loadVolume > BIG_AGU_LIMIT_LOAD_VOLUME) {
 					predictedLevels = manageLoads(transaction, agu, predictions)
 				} else {
-					logger.info(
-						"AGU {} is to small to have automatic scheduling of loads",
-						agu.cui
-					)
+					logger.info("AGU {} is to small to have automatic scheduling of loads", agu.cui)
 					val currentLevel =
 						transaction.gasRepository.getLatestLevels(agu.cui, gasProvider.id).sumOf { it.level }
 					predictedLevels = mutableListOf()
@@ -108,10 +138,24 @@ class PredictionService(
 			.zipWithNext { a, b -> b - a } // calculate the consumption for each day
 			.mapIndexed { idx, consumption ->
 				ConsumptionRequestModel(
-					consumption.roundToInt(),
-					consumptionList[idx].timestamp.toLocalDate()
+					consumption.roundToInt(), consumptionList[idx].timestamp.toLocalDate()
 				)
 			}
+	}
+
+	/**
+	 * Gets the temperature predictions for a provider needed for the prediction microservice.
+	 *
+	 * @param tm The transaction manager
+	 * @param providerId The provider id
+	 * @return The temperature predictions
+	 */
+	private fun getTemperaturePredictions(tm: Transaction, providerId: Int): List<TemperatureRequestModel> {
+		return tm.temperatureRepository.getPredictionTemperatureMeasures(providerId, TEMP_NUMBER_OF_DAYS).map { temp ->
+			TemperatureRequestModel(
+				min = temp.min, max = temp.max, timeStamp = temp.predictionFor.toLocalDate()
+			)
+		}
 	}
 
 	/**
@@ -158,18 +202,14 @@ class PredictionService(
 					// Call in alert because even with a load in said day the level is below the minimum threshold
 					alertsService.createAlert(
 						AlertCreationDTO(
-							aguId = agu.cui,
-							title = "Gas level",
-							message = "Gas level is below the minimum threshold"
+							aguId = agu.cui, title = "Gas level", message = "Gas level is below the minimum threshold"
 						)
 					)
 				} else {
 					val adjustedDate = adjustForWeekend(date)
 					transaction.loadRepository.scheduleLoad(
 						ScheduledLoadCreationDTO(
-							aguCui = agu.cui,
-							date = adjustedDate,
-							isManual = false
+							aguCui = agu.cui, date = adjustedDate, isManual = false
 						)
 					)
 					totalLevel += fullAGU.loadVolume
@@ -190,10 +230,7 @@ class PredictionService(
 	 * @param gasProviderId the ID of the gas provider
 	 */
 	private fun savePredictions(
-		transaction: Transaction,
-		agu: AGUBasicInfo,
-		predictedLevels: List<Int>,
-		gasProviderId: Int
+		transaction: Transaction, agu: AGUBasicInfo, predictedLevels: List<Int>, gasProviderId: Int
 	) {
 		val tanks = transaction.tankRepository.getAGUTanks(agu.cui)
 

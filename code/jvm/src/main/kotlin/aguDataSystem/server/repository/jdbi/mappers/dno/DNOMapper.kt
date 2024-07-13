@@ -1,4 +1,4 @@
-package aguDataSystem.server.repository.jdbi.mappers
+package aguDataSystem.server.repository.jdbi.mappers.dno
 
 import aguDataSystem.server.domain.company.DNO
 import java.sql.ResultSet

@@ -8,6 +8,7 @@ import java.time.LocalDateTime
  *
  * @property id the id of the Provider
  * @property measures the readings of the Provider
+ * @property lastFetch the last time the Provider was fetched
  */
 sealed class Provider {
 	abstract val id: Int

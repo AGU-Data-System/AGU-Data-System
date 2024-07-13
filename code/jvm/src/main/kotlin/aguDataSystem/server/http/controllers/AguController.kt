@@ -243,6 +243,15 @@ class AguController(private val service: AGUService) {
 	}
 
 	/**
+	 * Train all AGUs
+	 * TODO
+	 */
+	@PostMapping(URIs.Agu.TRAIN)
+	fun trainAllAGUs() {
+		service.trainAGUs()
+	}
+
+	/**
 	 * Resolve the problem of creating an AGU
 	 *
 	 * @receiver the error to resolve

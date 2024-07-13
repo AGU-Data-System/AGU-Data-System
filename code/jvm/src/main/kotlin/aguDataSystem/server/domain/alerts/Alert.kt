@@ -13,10 +13,10 @@ import java.time.Instant
  * @property isResolved whether the Alert is resolved
  */
 data class Alert(
-    val id: Int,
-    val agu: String,
-    val timestamp: Instant,
-    val title: String,
-    val message: String,
-    val isResolved: Boolean
+	val id: Int,
+	val agu: String,
+	val timestamp: Instant,
+	val title: String,
+	val message: String,
+	val isResolved: Boolean
 )

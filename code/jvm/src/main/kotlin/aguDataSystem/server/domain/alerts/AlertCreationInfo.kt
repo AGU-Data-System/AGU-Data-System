@@ -7,8 +7,8 @@ package aguDataSystem.server.domain.alerts
  * @property title The title of the Alert
  * @property message The message of the Alert
  */
-data class AlertCreationInfo (
-    val aguId: String,
-    val title: String,
-    val message: String,
+data class AlertCreationInfo(
+	val aguId: String,
+	val title: String,
+	val message: String,
 )

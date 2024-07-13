@@ -39,7 +39,7 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
             ORDER BY agu.cui, transport_company.id
         """.trimIndent()
 
-		val agubasicInfoMap = mutableMapOf<String, AGUBasicInfo>()
+		val aguBasicInfoMap = mutableMapOf<String, AGUBasicInfo>()
 
 		handle.inTransaction<Any, Exception> { conn ->
 			val stmt = conn.connection.createStatement(
@@ -62,9 +62,9 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 				val tcName = rs.getString("tc_name")
 				val transportCompany = if (tcName != null) TransportCompany(id = tcId, name = tcName) else null
 
-				if (agubasicInfoMap.containsKey(cui)) {
+				if (aguBasicInfoMap.containsKey(cui)) {
 					transportCompany?.let {
-						agubasicInfoMap[cui]?.transportCompanies?.add(it)
+						aguBasicInfoMap[cui]?.transportCompanies?.add(it)
 					}
 				} else {
 					val transportCompanies = mutableListOf<TransportCompany>()
@@ -81,16 +81,16 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 						transportCompanies = transportCompanies,
 						isActive = isActive
 					)
-					agubasicInfoMap[cui] = aguBasicInfo
+					aguBasicInfoMap[cui] = aguBasicInfo
 				}
 			}
 
 			rs.close()
 			stmt.close()
 
-			return@inTransaction agubasicInfoMap.values.toList()
+			return@inTransaction aguBasicInfoMap.values.toList()
 		}
-		return agubasicInfoMap.values.toList()
+		return aguBasicInfoMap.values.toList()
 	}
 
 	/**
@@ -390,7 +390,6 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		return training
 	}
-
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(JDBIAGURepository::class.java)

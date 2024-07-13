@@ -29,6 +29,7 @@ import aguDataSystem.server.http.controllers.models.output.transportCompany.Tran
  * @param isActive The active status of the AGU
  * @param notes The notes of the AGU
  * @param training The training of the AGU
+ * @param capacity The capacity of the AGU
  */
 data class AGUOutputModel(
 	val cui: String,

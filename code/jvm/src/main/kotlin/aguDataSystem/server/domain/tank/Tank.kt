@@ -8,6 +8,7 @@ import aguDataSystem.server.domain.gasLevels.GasLevels
  * @property number The number of the tank
  * @property levels The gas levels of the tank
  * @property capacity The capacity of the tank
+ * @property correctionFactor The correction factor of the tank
  */
 data class Tank(
 	val number: Int,

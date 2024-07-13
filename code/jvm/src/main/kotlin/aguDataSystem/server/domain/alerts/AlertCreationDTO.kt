@@ -8,15 +8,15 @@ package aguDataSystem.server.domain.alerts
  * @property message The message of the Alert
  */
 data class AlertCreationDTO(
-    val aguId: String,
-    val title: String,
-    val message: String,
+	val aguId: String,
+	val title: String,
+	val message: String,
 ) {
-    fun toAlertCreationInfo(): AlertCreationInfo {
-        return AlertCreationInfo(
-            aguId = aguId,
-            title = title,
-            message = message
-        )
-    }
+	fun toAlertCreationInfo(): AlertCreationInfo {
+		return AlertCreationInfo(
+			aguId = aguId,
+			title = title,
+			message = message
+		)
+	}
 }

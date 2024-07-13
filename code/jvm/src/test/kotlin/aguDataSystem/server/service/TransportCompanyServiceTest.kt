@@ -68,7 +68,7 @@ class TransportCompanyServiceTest {
 		val alertsService = AlertsService(transactionManager)
 		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
 		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService, predictionService)
 		val transportCompanyService = TransportCompanyService(transactionManager)
 		val dno = dummyDNODTO
 		val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
@@ -98,7 +98,7 @@ class TransportCompanyServiceTest {
 			val alertsService = AlertsService(transactionManager)
 			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
 			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
-			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val aguService = AGUService(transactionManager, aguDomain, chronService, predictionService)
 			val transportCompanyService = TransportCompanyService(transactionManager)
 			val dno = dummyDNODTO
 			val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
@@ -121,7 +121,7 @@ class TransportCompanyServiceTest {
 			val transportCompanyService = TransportCompanyService(transactionManager)
 
 			// act
-			val transportCompanies = transportCompanyService.getTransportCompaniesOfAGU("unexisting")
+			val transportCompanies = transportCompanyService.getTransportCompaniesOfAGU("un-existing")
 
 			// assert
 			assertTrue(transportCompanies.isFailure())
@@ -251,10 +251,10 @@ class TransportCompanyServiceTest {
 		// arrange
 		val dnoService = DNOService(transactionManager)
 		val fetchService = FetchService(transactionManager)
-				val alertsService = AlertsService(transactionManager)
+		val alertsService = AlertsService(transactionManager)
 		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
 		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService, predictionService)
 		val transportCompanyService = TransportCompanyService(transactionManager)
 		val dno = dummyDNODTO
 		val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
@@ -278,10 +278,10 @@ class TransportCompanyServiceTest {
 		// arrange
 		val dnoService = DNOService(transactionManager)
 		val fetchService = FetchService(transactionManager)
-				val alertsService = AlertsService(transactionManager)
+		val alertsService = AlertsService(transactionManager)
 		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
 		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
-		val aguService = AGUService(transactionManager, aguDomain, chronService)
+		val aguService = AGUService(transactionManager, aguDomain, chronService, predictionService)
 		val transportCompanyService = TransportCompanyService(transactionManager)
 		val dno = dummyDNODTO
 		val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))
@@ -339,10 +339,10 @@ class TransportCompanyServiceTest {
 			// arrange
 			val dnoService = DNOService(transactionManager)
 			val fetchService = FetchService(transactionManager)
-					val alertsService = AlertsService(transactionManager)
-		val predictionService = PredictionService(transactionManager, fetchService, alertsService)
-		val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
-			val aguService = AGUService(transactionManager, aguDomain, chronService)
+			val alertsService = AlertsService(transactionManager)
+			val predictionService = PredictionService(transactionManager, fetchService, alertsService)
+			val chronService = ChronService(transactionManager, fetchService, predictionService, alertsService)
+			val aguService = AGUService(transactionManager, aguDomain, chronService, predictionService)
 			val transportCompanyService = TransportCompanyService(transactionManager)
 			val dno = dummyDNODTO
 			val agu = dummyAGUCreationDTO.copy(tanks = listOf(dummyTank))

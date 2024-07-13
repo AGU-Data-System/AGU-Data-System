@@ -9,9 +9,13 @@ import aguDataSystem.server.http.controllers.models.output.transportCompany.Tran
  * Output model for AGU basic info
  *
  * @param cui The CUI of the AGU
+ * @param eic The EIC of the AGU
  * @param name The name of the AGU
+ * @param isFavourite The favourite status of the AGU
  * @param dno The DNO of the AGU
  * @param location The location of the AGU
+ * @param transportCompanies The transport companies of the AGU
+ * @param isActive The active status of the AGU
  */
 data class AGUBasicInfoOutputModel(
 	val cui: String,

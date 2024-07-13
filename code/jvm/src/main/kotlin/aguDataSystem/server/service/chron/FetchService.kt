@@ -254,7 +254,8 @@ class FetchService(
 				previousConsumptions = consumptions,
 				coefficients = coefficients,
 				intercept = intercept
-			))
+			)
+		)
 		val predictionURL = Environment.getPredictionUrl() + "/prediction"
 		val predictions = fetch(method = HttpMethod.POST, url = predictionURL, body = body)
 		return if (predictions.statusCode == HttpStatus.OK.value()) {

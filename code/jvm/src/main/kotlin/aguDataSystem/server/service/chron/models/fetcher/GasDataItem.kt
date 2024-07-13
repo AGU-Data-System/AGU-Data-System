@@ -26,6 +26,12 @@ data class GasDataItem(
 	}
 }
 
+/**
+ * Extension function to convert a string to ASCII string by
+ * converting the dashed letters to their ASCII format.
+ *
+ * @return The ASCII string
+ */
 fun String.toASCII(): String {
 	val regexUnaccented = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 	val temp = Normalizer.normalize(this, Normalizer.Form.NFD)

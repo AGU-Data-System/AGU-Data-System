@@ -1,4 +1,4 @@
-package aguDataSystem.server.repository.jdbi.mappers
+package aguDataSystem.server.repository.jdbi.mappers.contact
 
 import aguDataSystem.server.domain.contact.Contact
 import aguDataSystem.server.domain.contact.toContactType

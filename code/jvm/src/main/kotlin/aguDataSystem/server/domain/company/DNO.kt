@@ -5,6 +5,7 @@ package aguDataSystem.server.domain.company
  *
  * @property id the id of the Operator
  * @property name the name of the Operator
+ * @property region the region of the Operator
  */
 data class DNO(
 	override val id: Int,

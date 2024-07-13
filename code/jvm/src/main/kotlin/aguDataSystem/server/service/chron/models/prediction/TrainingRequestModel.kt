@@ -23,6 +23,12 @@ data class TrainingRequestModel(
 	}
 }
 
+/**
+ * Converts a list of temperature request models to a temperature request json string.
+ *
+ * @receiver The list of temperature request models
+ * @return The temperature request json string
+ */
 fun List<TemperatureRequestModel>.toTemperatureRequest(): String {
 	val minTemps = this.map { it.min }
 	val maxTemps = this.map { it.max }
@@ -30,6 +36,12 @@ fun List<TemperatureRequestModel>.toTemperatureRequest(): String {
 	return "{\"date\": $timeStamps, \"minTemps\": $minTemps, \"maxTemps\": $maxTemps}"
 }
 
+/**
+ * Converts a list of consumption request models to a consumption request json string.
+ *
+ * @receiver The list of consumption request models
+ * @return The consumption request json string
+ */
 fun List<ConsumptionRequestModel>.toConsumptionRequest(): String {
 	val consumptions = this.map { it.level }
 	val timeStamps = this.map { it.timestamp }.map { "\"$it\"" }

@@ -191,7 +191,7 @@ class JDBITemperatureRepositoryTest {
 		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
-		val date = temperatureMeasures.last().predictionFor?.toLocalDate()
+		val date = temperatureMeasures.last().predictionFor.toLocalDate()
 		requireNotNull(date)
 
 		val dnoId = dnoRepository.addDNO(dno).id
@@ -217,7 +217,7 @@ class JDBITemperatureRepositoryTest {
 		val dno = dummyDNO
 		val providerId = 1
 		val temperatureMeasures = dummyTemperatureMeasures
-		val date = temperatureMeasures.first().predictionFor?.toLocalDate()?.plusDays(1)
+		val date = temperatureMeasures.first().predictionFor.toLocalDate()?.plusDays(1)
 		requireNotNull(date)
 
 		val dnoId = dnoRepository.addDNO(dno).id
@@ -238,7 +238,7 @@ class JDBITemperatureRepositoryTest {
 			// arrange
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val providerId = 1
-			val date = dummyTemperatureMeasures.last().predictionFor?.toLocalDate()
+			val date = dummyTemperatureMeasures.last().predictionFor.toLocalDate()
 			requireNotNull(date)
 
 			// act

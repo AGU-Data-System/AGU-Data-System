@@ -5,8 +5,6 @@ import aguDataSystem.server.domain.provider.Provider
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.TransactionManager
 import aguDataSystem.server.service.alerts.AlertsService
-import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestModel
-import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
 import aguDataSystem.server.service.prediction.PredictionService
 import jakarta.annotation.PostConstruct
 import java.time.Duration
@@ -17,7 +15,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -38,8 +35,7 @@ class ChronService(
 
 	private val chronPoolSize = POOL_SIZE
 	private val scheduledChron: MutableMap<Int, ScheduledFuture<*>> = ConcurrentHashMap()
-	private val chronScheduler: ScheduledExecutorService =
-		Executors.newScheduledThreadPool(chronPoolSize)
+	private val chronScheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(chronPoolSize)
 
 	/**
 	 * Initializes the chron service.
@@ -93,15 +89,14 @@ class ChronService(
 					val agu = it.aguRepository.getAGUByCUI(aguCUI) ?: throw Exception("No AGU found for CUI: $aguCUI")
 
 					val latestLevel =
-						it.gasRepository.getLatestLevels(aguCUI, provider.id)
-							.sumOf { gasMeasure -> gasMeasure.level }
+						it.gasRepository.getLatestLevels(aguCUI, provider.id).sumOf { gasMeasure -> gasMeasure.level }
 
 					if (latestLevel < agu.levels.min && latestLevel > 0) {
 						alertsService.createAlert(
 							AlertCreationDTO(
-								aguCUI,
-								"Nível de gás - " + agu.name,
-								"O nível de gás ($latestLevel%) está abaixo do valor mínimo da UAG (${agu.levels.min}%)",
+								aguId = aguCUI,
+								title = "Gas Level - ${agu.name}",
+								message = " Gas level ($latestLevel%) is below the AGU's minimum value (${agu.levels.min}%)"
 							)
 						)
 					}
@@ -112,71 +107,6 @@ class ChronService(
 		scheduledChron[provider.id] = future
 
 		logger.info("Scheduled chron task for provider: {}", provider)
-	}
-
-	/**
-	 * Schedules the training chron task.
-	 *
-	 * Still sketchy, needs to be implemented
-	 */
-	fun scheduleTrainingChronTask() {
-		val aguList = transactionManager.run {
-			it.aguRepository.getAGUsBasicInfo()
-		}
-		aguList.forEach { agu ->
-			val gasNrOfDays = 9
-			val tempNrOfDays = 5
-			var temps: List<TemperatureRequestModel> = emptyList()
-			var consumptions: List<ConsumptionRequestModel> = emptyList()
-			transactionManager.run {
-				logger.info("Fetching providers for AGU: {}", agu.cui)
-				val aguProviders = it.providerRepository.getProviderByAGU(agu.cui)
-
-				logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
-				aguProviders.forEach { provider ->
-					when (provider.getProviderType()) {
-						ProviderType.TEMPERATURE -> {
-							temps = it.temperatureRepository.getPredictionTemperatureMeasures(provider.id, tempNrOfDays)
-								.map { temp ->
-									TemperatureRequestModel(
-										min = temp.min,
-										max = temp.max,
-										timeStamp = temp.predictionFor.toLocalDate()
-									)
-								}
-						}
-
-						ProviderType.GAS -> {
-							val consumptionList =
-								it.gasRepository.getGasMeasures(provider.id, gasNrOfDays + 1, LocalTime.MIDNIGHT)
-							val consumption = consumptionList
-								.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
-								.zipWithNext { a, b -> b - a } // calculate the consumption for each day
-								.map { consumption -> consumption.roundToInt() }
-							consumptions = consumption.mapIndexed { idx, elem ->
-								ConsumptionRequestModel(
-									elem,
-									consumptionList[idx].timestamp.toLocalDate()
-								)
-							}
-
-						}
-					}
-				}
-			}
-
-			logger.info("Generating training model for AGU: {}", agu.cui)
-			val training = fetchService.generateTraining(temps, consumptions)
-
-			if (training != null) {
-				transactionManager.run {
-					logger.info("Saving training model for AGU: {}", agu.cui)
-					it.aguRepository.updateTrainingModel(agu.cui, training)
-				}
-			} else {
-				logger.error("Failed to generate training model for AGU: {}", agu.cui)
-			}
-		}
 	}
 
 	/**
@@ -224,5 +154,4 @@ class ChronService(
 		private const val PREDICTION_HOUR = 8
 		private const val PREDICTION_MINUTE = 30
 	}
-
 }
