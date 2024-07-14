@@ -13,6 +13,7 @@ import { GetTemperatureListOutputModel } from "./models/temperatureOutputModel";
 import { GetGasListOutputModel, LevelsInputModel } from "./models/gasOutputModel";
 import { ListAlertsOutputModel } from "./models/alertsOutputModel";
 import {
+    BooleanLoadOutputModel,
     CreatePlannedLoadInputModel,
     CreatePlannedLoadOutputModel,
     WeeklyPlanListOutputModel
@@ -107,5 +108,20 @@ export namespace aguService {
     export async function createLoad(load: CreatePlannedLoadInputModel): Promise<Either<Error | Problem, CreatePlannedLoadOutputModel>> {
         const url = `/agus/loads`;
         return fetchFunction(url, "POST", JSON.stringify(load));
+    }
+
+    export async function changeLoadDay(loadId: number, newDay: string): Promise<Either<Error | Problem, BooleanLoadOutputModel>> {
+        const url = `/agus/loads/${loadId}`;
+        return fetchFunction(url, "PUT", JSON.stringify({newDay}));
+    }
+
+    export async function confirmLoads(loadId: number): Promise<Either<Error | Problem, BooleanLoadOutputModel>> {
+        const url = `/agus/loads/${loadId}/confirm`;
+        return fetchFunction(url, "PUT");
+    }
+
+    export async function deleteLoad(loadId: number): Promise<Either<Error | Problem, BooleanLoadOutputModel>> {
+        const url = `/agus/loads/${loadId}`;
+        return fetchFunction(url, "DELETE");
     }
 }

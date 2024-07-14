@@ -2,6 +2,7 @@ package aguDataSystem.server.http.controllers
 
 import aguDataSystem.server.http.URIs
 import aguDataSystem.server.http.controllers.models.input.loads.GetLoadsInputModel
+import aguDataSystem.server.http.controllers.models.input.loads.NewLoadDayInputModel
 import aguDataSystem.server.http.controllers.models.input.loads.ScheduledLoadCreationModel
 import aguDataSystem.server.http.controllers.models.output.loads.BooleanLoadOutputModel
 import aguDataSystem.server.http.controllers.models.output.loads.GetLoadOutputModel
@@ -41,18 +42,18 @@ class LoadsController(private val service: LoadsService) {
     }
 
     @DeleteMapping(URIs.Loads.BY_ID)
-    fun removeLoad(@PathVariable loadId: Int): ResponseEntity<*> {
-        return ResponseEntity.ok(BooleanLoadOutputModel(service.removeLoad(loadId)))
+    fun removeLoad(@PathVariable loadId: String): ResponseEntity<*> {
+        return ResponseEntity.ok(BooleanLoadOutputModel(service.removeLoad(loadId.toInt())))
     }
 
     @PutMapping(URIs.Loads.BY_ID)
-    fun changeLoadDay(@PathVariable loadId: Int, @RequestBody newDay: String): ResponseEntity<*> {
-        return ResponseEntity.ok(BooleanLoadOutputModel(service.changeLoadDay(loadId, LocalDate.parse(newDay))))
+    fun changeLoadDay(@PathVariable loadId: String, @RequestBody newDay: NewLoadDayInputModel): ResponseEntity<*> {
+        return ResponseEntity.ok(BooleanLoadOutputModel(service.changeLoadDay(loadId.toInt(), LocalDate.parse(newDay.newDay))))
     }
 
     @PutMapping(URIs.Loads.BY_ID + URIs.Loads.CONFIRM)
-    fun confirmLoad(@PathVariable loadId: Int): ResponseEntity<*> {
-        return ResponseEntity.ok(BooleanLoadOutputModel(service.confirmLoad(loadId)))
+    fun confirmLoad(@PathVariable loadId: String): ResponseEntity<*> {
+        return ResponseEntity.ok(BooleanLoadOutputModel(service.confirmLoad(loadId.toInt())))
     }
 
     @GetMapping(URIs.Loads.WEEK)

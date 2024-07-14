@@ -10,20 +10,43 @@ import {
 } from "../../services/agu/models/weeklyPlanOutputModel";
 import { aguService } from "../../services/agu/aguService";
 import { Problem } from "../../utils/Problem";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Snackbar, Alert } from '@mui/material';
 
 type WeekState =
     | { type: 'loading' }
     | { type: 'error'; message: string }
     | { type: 'success'; loads: WeeklyPlanListOutputModel };
 
-function DayCard({ day, date, plans, onCheckChange, checkedPlans, onDayChangeClick, onAddNewAguClick } : { day: string, date: string, plans: PlannedLoadOutputModel[], onCheckChange: (aguCui: string, checked: boolean) => void, checkedPlans: Set<string>, onDayChangeClick: (aguCui: string) => void, onAddNewAguClick: () => void }) {
+function DayCard({
+                     day,
+                     date,
+                     plans,
+                     onCheckChange,
+                     checkedPlans,
+                     onDayChangeClick,
+                     onAddNewAguClick,
+                     onDeleteLoadClick
+                 } : {
+    day: string,
+    date: string,
+    plans: PlannedLoadOutputModel[],
+    onCheckChange: (loadId: number, checked: boolean) => void,
+    checkedPlans: Set<number>,
+    onDayChangeClick: (loadId: number) => void,
+    onAddNewAguClick: () => void,
+    onDeleteLoadClick: (loadId: number) => void
+}) {
     const [open, setOpen] = useState(false);
 
     return (
         <Paper elevation={3} sx={{ marginBottom: 2, padding: 2 }}>
             <Box display="flex" alignItems="center">
                 <Typography variant="h6" sx={{ flex: 1 }}>{day}</Typography>
-                <Typography variant="h6" sx={{ flex: 1, textAlign: 'center' }}>{date}</Typography>
+                <Typography variant="h6" sx={{ flex: 1, textAlign: 'center' }}>Dia: {date}</Typography>
+                <Typography variant="body1" sx={{ flex: 1, textAlign: 'right' }}>
+                    Loads planeadas: {plans.length}
+                </Typography>
                 <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
                     <IconButton onClick={() => setOpen(!open)}>
                         {plans.length > 0 ? (open ? <ExpandLess /> : <ExpandMore />) : ""}
@@ -39,13 +62,18 @@ function DayCard({ day, date, plans, onCheckChange, checkedPlans, onDayChangeCli
                         {plans.map((plan, index) => (
                             <Box key={index} sx={{ marginBottom: 2 }}>
                                 <FormControlLabel
-                                    control={<Checkbox checked={checkedPlans.has(plan.aguCui)} onChange={(e) => onCheckChange(plan.aguCui, e.target.checked)} />}
+                                    control={<Checkbox checked={checkedPlans.has(plan.loadId) || plan.isConfirmed === 'true'} onChange={(e) => onCheckChange(plan.loadId, e.target.checked)} />}
                                     label={<Typography variant="h6">{plan.aguCui}</Typography>}
                                 />
-                                {!checkedPlans.has(plan.aguCui) && (
-                                    <IconButton onClick={() => onDayChangeClick(plan.aguCui)}>
-                                        <Edit />
-                                    </IconButton>
+                                {!checkedPlans.has(plan.loadId) && plan.isConfirmed === 'false' && (
+                                    <>
+                                        <IconButton onClick={() => onDayChangeClick(plan.loadId)}>
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton onClick={() => onDeleteLoadClick(plan.loadId)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </>
                                 )}
                                 <Typography variant="body1">Parte do dia: {plan.timeOfDay == 'MORNING' ? 'Manhã' : 'Tarde'}</Typography>
                                 <Typography variant="body1">Quantidade da carga: {plan.amount}</Typography>
@@ -95,31 +123,32 @@ function WeeklyPlanHeader({ weekDate } : { weekDate: string }){
 
 export default function WeeklyPlan() {
     const [weekState, setWeekState] = useState<WeekState>({ type: 'loading' });
-    const [checkedPlans, setCheckedPlans] = useState<Set<string>>(new Set());
-    const [newLoad, setNewLoad] = useState<CreatePlannedLoadInputModel>(
-        {
-            aguCui: '',
-            date: '',
-            timeOfDay: 'Morning',
-            amount: '',
-            isManual: 'true'
-        }
-    );
+    const [checkedPlans, setCheckedPlans] = useState<Set<number>>(new Set());
+    const [newLoad, setNewLoad] = useState<CreatePlannedLoadInputModel>({
+        aguCui: '',
+        date: '',
+        timeOfDay: 'Morning',
+        amount: '',
+        isManual: 'true'
+    });
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
-    const [selectedAgu, setSelectedAgu] = useState<string | null>(null);
+    const [selectedLoadId, setSelectedLoadId] = useState<number | null>(null);
     const [isDayChangeDialogOpen, setDayChangeDialogOpen] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [isDeleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
 
     const getWeekDates = () => {
         const today = new Date();
         const startWeekDay = new Date(today.setDate(today.getDate() - today.getDay() + 1));
         const endWeekDay = new Date(today.setDate(today.getDate() + 4));
-        // values must have the format YYYY-MM-DD
         return {
             startWeekDay: startWeekDay.toISOString().split('T')[0],
             endWeekDay: endWeekDay.toISOString().split('T')[0]
         };
-    }
+    };
 
     useEffect(() => {
         const fetchWeeklyPlan = async () => {
@@ -137,49 +166,31 @@ export default function WeeklyPlan() {
         fetchWeeklyPlan();
     }, []);
 
-    const handleCheckChange = (aguCui: string, checked: boolean) => {
+    const handleCheckChange = (loadId: number, checked: boolean) => {
         setCheckedPlans(prev => {
             const newChecked = new Set(prev);
             if (checked) {
-                newChecked.add(aguCui);
+                newChecked.add(loadId);
             } else {
-                newChecked.delete(aguCui);
+                newChecked.delete(loadId);
             }
             return newChecked;
         });
     };
 
-    const handleDayChange = (newDay: string) => {
-        if (selectedAgu === null) return;
-        setWeekState(prev => {
-            if (prev.type !== 'success') return prev;
-            const newLoads = prev.loads.loads.map(agu =>
-                agu.aguCui === selectedAgu ? { ...agu, dayOfThePlaning: newDay } : agu
-            );
-            return { ...prev, loads: { ...prev.loads, loads: newLoads } };
-        });
-        setDayChangeDialogOpen(false);
-    };
-
-    const handleAddNewAgu = async() => {
-        if (selectedDay === null) return;
+    const handleDayChange = async (newDay: string) => {
+        if (selectedLoadId === null) return;
         const { startWeekDay, endWeekDay } = getWeekDates();
-        const newLoadWithDate = {
-            ...newLoad,
-            date: `${startWeekDay.split("-")[0]}-${startWeekDay.split("-")[1]}-${parseInt(startWeekDay.split("-")[2]) + selectedDay - 1}`
-        };
-        console.log('New Load:', newLoadWithDate);
-        const addLoadResponse = await aguService.createLoad(newLoadWithDate);
-
-        if (addLoadResponse.value instanceof Error) {
-            // Show error message
-            console.log('Error:', addLoadResponse.value);
-        } else if (addLoadResponse.value instanceof Problem) {
-            // Show error message
-            console.log('Error Problem:', addLoadResponse.value);
+        const newDate = `${startWeekDay.split("-")[0]}-${startWeekDay.split("-")[1]}-${parseInt(startWeekDay.split("-")[2]) + parseInt(newDay) - 1}`;
+        const changeDayResponse = await aguService.changeLoadDay(selectedLoadId, newDate);
+        if (changeDayResponse.value instanceof Error) {
+            setSnackbarMessage(changeDayResponse.value.message);
+            setSnackbarSeverity('error');
+        } else if (changeDayResponse.value instanceof Problem) {
+            setSnackbarMessage(changeDayResponse.value.title);
+            setSnackbarSeverity('error');
         } else {
             const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(startWeekDay, endWeekDay);
-
             if (getLoadsWeeklyResponse.value instanceof Error) {
                 setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
             } else if (getLoadsWeeklyResponse.value instanceof Problem) {
@@ -187,6 +198,39 @@ export default function WeeklyPlan() {
             } else {
                 setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
             }
+            setSnackbarMessage('Day changed successfully');
+            setSnackbarSeverity('success');
+        }
+        setDayChangeDialogOpen(false);
+        setSnackbarOpen(true);
+    };
+
+    const handleAddNewAgu = async () => {
+        if (selectedDay === null) return;
+        const { startWeekDay, endWeekDay } = getWeekDates();
+        const newLoadWithDate = {
+            ...newLoad,
+            date: `${startWeekDay.split("-")[0]}-${startWeekDay.split("-")[1]}-${parseInt(startWeekDay.split("-")[2]) + selectedDay - 1}`
+        };
+        const addLoadResponse = await aguService.createLoad(newLoadWithDate);
+
+        if (addLoadResponse.value instanceof Error) {
+            setSnackbarMessage(addLoadResponse.value.message);
+            setSnackbarSeverity('error');
+        } else if (addLoadResponse.value instanceof Problem) {
+            setSnackbarMessage(addLoadResponse.value.title);
+            setSnackbarSeverity('error');
+        } else {
+            const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(startWeekDay, endWeekDay);
+            if (getLoadsWeeklyResponse.value instanceof Error) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
+            } else if (getLoadsWeeklyResponse.value instanceof Problem) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.title });
+            } else {
+                setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
+            }
+            setSnackbarMessage('Load added successfully');
+            setSnackbarSeverity('success');
         }
         setNewLoad({
             aguCui: '',
@@ -196,13 +240,63 @@ export default function WeeklyPlan() {
             isManual: 'true'
         });
         setDialogOpen(false);
+        setSnackbarOpen(true);
+    };
+
+    const handleDeleteLoad = async () => {
+        if (selectedLoadId === null) return;
+        const deleteResponse = await aguService.deleteLoad(selectedLoadId);
+        const { startWeekDay, endWeekDay } = getWeekDates();
+
+        if (deleteResponse.value instanceof Error) {
+            setSnackbarMessage(deleteResponse.value.message);
+            setSnackbarSeverity('error');
+        } else if (deleteResponse.value instanceof Problem) {
+            setSnackbarMessage(deleteResponse.value.title);
+            setSnackbarSeverity('error');
+        } else {
+            const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(startWeekDay, endWeekDay);
+            if (getLoadsWeeklyResponse.value instanceof Error) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
+            } else if (getLoadsWeeklyResponse.value instanceof Problem) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.title });
+            } else {
+                setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
+            }
+            setSnackbarMessage('Load deleted successfully');
+            setSnackbarSeverity('success');
+        }
+        setDeleteConfirmDialogOpen(false);
+        setSnackbarOpen(true);
     };
 
     const handleConfirm = () => {
         if (weekState.type !== 'success') return;
-        const confirmedAgus = weekState.loads.loads.filter(agu => checkedPlans.has(agu.aguCui));
-        // send confirmedAgus to the backend
-        console.log('Confirmed AGUs:', confirmedAgus);
+        const confirmedAgus = weekState.loads.loads.filter(agu => checkedPlans.has(agu.loadId));
+        confirmedAgus.forEach(async agu => {
+            const confirmResponse = await aguService.confirmLoads(agu.loadId);
+            const { startWeekDay, endWeekDay } = getWeekDates();
+
+            if (confirmResponse.value instanceof Error) {
+                setSnackbarMessage(confirmResponse.value.message);
+                setSnackbarSeverity('error');
+            } else if (confirmResponse.value instanceof Problem) {
+                setSnackbarMessage(confirmResponse.value.title);
+                setSnackbarSeverity('error');
+            } else {
+                const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(startWeekDay, endWeekDay);
+                if (getLoadsWeeklyResponse.value instanceof Error) {
+                    setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
+                } else if (getLoadsWeeklyResponse.value instanceof Problem) {
+                    setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.title });
+                } else {
+                    setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
+                }
+                setSnackbarMessage('Loads confirmed successfully');
+                setSnackbarSeverity('success');
+            }
+            setSnackbarOpen(true);
+        });
     };
 
     const handleOpenDialog = (day: number) => {
@@ -214,13 +308,26 @@ export default function WeeklyPlan() {
         setDialogOpen(false);
     };
 
-    const handleOpenDayChangeDialog = (aguCui: string) => {
-        setSelectedAgu(aguCui);
+    const handleOpenDayChangeDialog = (loadId: number) => {
+        setSelectedLoadId(loadId);
         setDayChangeDialogOpen(true);
     };
 
     const handleCloseDayChangeDialog = () => {
         setDayChangeDialogOpen(false);
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
+    const handleOpenDeleteConfirmDialog = (loadId: number) => {
+        setSelectedLoadId(loadId);
+        setDeleteConfirmDialogOpen(true);
+    };
+
+    const handleCloseDeleteConfirmDialog = () => {
+        setDeleteConfirmDialogOpen(false);
     };
 
     const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
@@ -258,6 +365,7 @@ export default function WeeklyPlan() {
                         checkedPlans={checkedPlans}
                         onDayChangeClick={handleOpenDayChangeDialog}
                         onAddNewAguClick={() => handleOpenDialog(index + 1)}
+                        onDeleteLoadClick={handleOpenDeleteConfirmDialog} // Change here
                     />
                 );
             })}
@@ -269,7 +377,7 @@ export default function WeeklyPlan() {
                         value={newLoad.aguCui}
                         onChange={(e) => setNewLoad({ ...newLoad, aguCui: e.target.value })}
                         fullWidth
-                        sx={{ marginBottom: 2 }}
+                        sx={{ marginBottom: 2, marginTop: 2}}
                     />
                     <TextField
                         label="Parte do dia"
@@ -300,33 +408,49 @@ export default function WeeklyPlan() {
             <Dialog open={isDayChangeDialogOpen} onClose={handleCloseDayChangeDialog}>
                 <DialogTitle>Mudar o dia do plano da UAG</DialogTitle>
                 <DialogContent>
-                    <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                        <InputLabel>Day of the Planning</InputLabel>
+                    <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
+                        <InputLabel>Dia do planeamento</InputLabel>
                         <Select
                             value={newLoad.date}
                             onChange={(e) => setNewLoad({ ...newLoad, date: e.target.value })}
                         >
                             {daysOfWeek.map((day, idx) => (
-                                <MenuItem key={idx} value={(idx + 1).toString()}>{day}</MenuItem>  // Use string value
+                                <MenuItem key={idx} value={(idx + 1).toString()}>{day}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDayChangeDialog} color="secondary">
-                        Cancel
+                        Cancelar
                     </Button>
                     <Button onClick={() => handleDayChange(newLoad.date)} color="primary">
-                        Confirm
+                        Confirmar
                     </Button>
                 </DialogActions>
             </Dialog>
-            <div style={{
-                display: "grid",
-                placeItems: "center"
-            }}>
+            <Dialog open={isDeleteConfirmDialogOpen} onClose={handleCloseDeleteConfirmDialog}>
+                <DialogTitle>Confirmar remoção</DialogTitle>
+                <DialogContent>
+                    <Typography>Tem a certeza que pretende remover esta load?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteConfirmDialog} color="secondary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={handleDeleteLoad} color="primary">
+                        Apagar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <div style={{ display: "grid", placeItems: "center" }}>
                 <ConfirmPlannedAgusButton handleClick={handleConfirm} />
             </div>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

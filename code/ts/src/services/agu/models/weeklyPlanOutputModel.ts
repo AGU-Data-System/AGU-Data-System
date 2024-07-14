@@ -6,6 +6,7 @@ interface WeeklyPlanListOutputModel {
 }
 
 interface PlannedLoadOutputModel {
+    loadId: number;
     aguCui: string;
     date: string;
     timeOfDay: string;
@@ -26,4 +27,8 @@ interface CreatePlannedLoadOutputModel {
     id: number;
 }
 
-export { WeeklyPlanListOutputModel, PlannedLoadOutputModel, CreatePlannedLoadInputModel, CreatePlannedLoadOutputModel }
+interface BooleanLoadOutputModel {
+    value: boolean;
+}
+
+export { WeeklyPlanListOutputModel, PlannedLoadOutputModel, CreatePlannedLoadInputModel, CreatePlannedLoadOutputModel, BooleanLoadOutputModel }
