@@ -31,6 +31,7 @@ data class AGUCreateRequestModel(
 	val minLevel: Int,
 	val maxLevel: Int,
 	val criticalLevel: Int,
+	val loadVolume: Int,
 	val correctionFactor: Double,
 	val latitude: Double,
 	val longitude: Double,

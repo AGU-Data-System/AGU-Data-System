@@ -3,10 +3,12 @@ package aguDataSystem.server.repository
 import aguDataSystem.server.domain.provider.ProviderType
 import aguDataSystem.server.repository.RepositoryUtils.dummyAGU
 import aguDataSystem.server.repository.RepositoryUtils.dummyDNO
+import aguDataSystem.server.repository.RepositoryUtils.dummyTank
 import aguDataSystem.server.repository.RepositoryUtils.dummyTemperatureMeasures
 import aguDataSystem.server.repository.agu.JDBIAGURepository
 import aguDataSystem.server.repository.dno.JDBIDNORepository
 import aguDataSystem.server.repository.provider.JDBIProviderRepository
+import aguDataSystem.server.repository.tank.JDBITankRepository
 import aguDataSystem.server.repository.temperature.JDBITemperatureRepository
 import aguDataSystem.server.testUtils.SchemaManagementExtension
 import aguDataSystem.server.testUtils.SchemaManagementExtension.testWithHandleAndRollback
@@ -24,6 +26,7 @@ class JDBITemperatureRepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
+		val tankRepository = JDBITankRepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
@@ -33,6 +36,7 @@ class JDBITemperatureRepositoryTest {
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
+		tankRepository.addTank(agu.cui, dummyTank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 
 		// act
@@ -97,6 +101,7 @@ class JDBITemperatureRepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
+		val tankRepository = JDBITankRepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
@@ -107,6 +112,7 @@ class JDBITemperatureRepositoryTest {
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
+		tankRepository.addTank(agu.cui, dummyTank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
@@ -145,6 +151,7 @@ class JDBITemperatureRepositoryTest {
 			// arrange
 			val dnoRepository = JDBIDNORepository(handle)
 			val aguRepository = JDBIAGURepository(handle)
+			val tankRepository = JDBITankRepository(handle)
 			val providerRepository = JDBIProviderRepository(handle)
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val agu = dummyAGU
@@ -155,6 +162,7 @@ class JDBITemperatureRepositoryTest {
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
+			tankRepository.addTank(agu.cui, dummyTank)
 			providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 			temperatureRepository.addTemperatureMeasuresToProvider(providerId, dummyTemperatureMeasures)
 
@@ -185,6 +193,7 @@ class JDBITemperatureRepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
+		val tankRepository = JDBITankRepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
@@ -196,6 +205,7 @@ class JDBITemperatureRepositoryTest {
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
+		tankRepository.addTank(agu.cui, dummyTank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
@@ -211,6 +221,7 @@ class JDBITemperatureRepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
+		val tankRepository = JDBITankRepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
@@ -222,6 +233,7 @@ class JDBITemperatureRepositoryTest {
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
+		tankRepository.addTank(agu.cui, dummyTank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
@@ -253,6 +265,7 @@ class JDBITemperatureRepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
+		val tankRepository = JDBITankRepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
@@ -263,6 +276,7 @@ class JDBITemperatureRepositoryTest {
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
+		tankRepository.addTank(agu.cui, dummyTank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 
@@ -279,6 +293,7 @@ class JDBITemperatureRepositoryTest {
 			// arrange
 			val dnoRepository = JDBIDNORepository(handle)
 			val aguRepository = JDBIAGURepository(handle)
+			val tankRepository = JDBITankRepository(handle)
 			val providerRepository = JDBIProviderRepository(handle)
 			val temperatureRepository = JDBITemperatureRepository(handle)
 			val agu = dummyAGU
@@ -289,6 +304,7 @@ class JDBITemperatureRepositoryTest {
 
 			val dnoId = dnoRepository.addDNO(dno).id
 			aguRepository.addAGU(agu, dnoId)
+			tankRepository.addTank(agu.cui, dummyTank)
 			providerRepository.addProvider(agu.cui, 1, ProviderType.TEMPERATURE)
 			temperatureRepository.addTemperatureMeasuresToProvider(providerId, dummyTemperatureMeasures)
 
@@ -304,6 +320,7 @@ class JDBITemperatureRepositoryTest {
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)
+		val tankRepository = JDBITankRepository(handle)
 		val temperatureRepository = JDBITemperatureRepository(handle)
 		val providerRepository = JDBIProviderRepository(handle)
 		val agu = dummyAGU
@@ -314,6 +331,7 @@ class JDBITemperatureRepositoryTest {
 
 		val dnoId = dnoRepository.addDNO(dno).id
 		aguRepository.addAGU(agu, dnoId)
+		tankRepository.addTank(agu.cui, dummyTank)
 		providerRepository.addProvider(agu.cui, providerId, ProviderType.TEMPERATURE)
 		temperatureRepository.addTemperatureMeasuresToProvider(providerId, temperatureMeasures)
 

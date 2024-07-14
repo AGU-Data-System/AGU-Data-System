@@ -159,16 +159,16 @@ create table if not exists measure
     provider_id    int,
     tag            varchar check (tag ~* '^(level|min|max)$'),
     data           int                      not null,
-    prediction_for timestamp with time zone,
-    tank_number    int not null,
+    prediction_for timestamp with time zone not null,
+    tank_number    int                      not null,
 
     constraint prediction_in_future check (prediction_for::date >= timestamp::date),
 
     foreign key (agu_cui) references agu (cui),
     foreign key (provider_id) references provider (id) on delete cascade,
-    foreign key (agu_cui, tank_number) references tank (agu_cui, number),
+    foreign key (agu_cui, tank_number) references tank (agu_cui, number) on delete cascade,
 
-    primary key (timestamp, agu_cui, provider_id, tag, prediction_for)
+    primary key (timestamp, agu_cui, provider_id, tag, prediction_for, tank_number)
 );
 
 create table if not exists contacts

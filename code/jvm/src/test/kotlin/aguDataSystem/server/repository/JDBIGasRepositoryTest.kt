@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class JDBIGasRepositoryTest {
 
 	@Test
-	fun `add gas measures to provider`() = testWithHandleAndRollback { handle ->
+	fun `add gas measures to provider`() = testWithHandleAndRollback { handle -> // TODO fix this test
 		// arrange
 		val dnoRepository = JDBIDNORepository(handle)
 		val aguRepository = JDBIAGURepository(handle)

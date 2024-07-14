@@ -42,4 +42,12 @@ interface TemperatureRepository {
 	 * @param temperatureMeasures the temperature measures to add
 	 */
 	fun addTemperatureMeasuresToProvider(providerId: Int, temperatureMeasures: List<TemperatureMeasure>)
+
+	/**
+	 * Deletes all temperature measures of an AGU tank
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param number the number of the tank
+	 */
+	fun deleteTemperatureMeasuresByTank(cui: String, number: Int)
 }

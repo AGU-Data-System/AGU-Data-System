@@ -67,6 +67,7 @@ object ControllerUtils {
 		minLevel = dummyGasLevelsRequestModel.min,
 		maxLevel = dummyGasLevelsRequestModel.max,
 		criticalLevel = dummyGasLevelsRequestModel.critical,
+		loadVolume = 50,
 		correctionFactor = -1.0,
 		latitude = 0.0,
 		longitude = 0.0,

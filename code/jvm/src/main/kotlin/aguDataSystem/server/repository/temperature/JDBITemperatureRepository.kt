@@ -147,6 +147,26 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 	}
 
 	/**
+	 * Deletes all temperature measures of an AGU tank
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param number the number of the tank
+	 */
+	override fun deleteTemperatureMeasuresByTank(cui: String, number: Int) {
+		logger.info("Deleting temperature measures for AGU with CUI {} and tank number {}", cui, number)
+		handle.createUpdate(
+			"""
+			DELETE FROM measure
+			WHERE agu_cui = :cui AND tank_number = :number AND tag IN ('min', 'max')
+			"""
+		)
+			.bind("cui", cui)
+			.bind("number", number)
+			.execute()
+		logger.info("Deleted temperature measures for AGU with CUI {} and tank number {}", cui, number)
+	}
+
+	/**
 	 * Adds a temperature measure to a provider by its tag
 	 *
 	 * @param providerId the id of the provider

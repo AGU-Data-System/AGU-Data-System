@@ -224,6 +224,8 @@ class AGUService(
 			logger.info("Deleting AGU tanks from the database")
 			val tanks = it.tankRepository.getAGUTanks(cui)
 			tanks.forEach { tank ->
+				it.gasRepository.deleteGasMeasuresByTank(cui, tank.number)
+				it.temperatureRepository.deleteTemperatureMeasuresByTank(cui, tank.number)
 				it.tankRepository.deleteTank(cui, tank.number)
 			}
 

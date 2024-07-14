@@ -1219,7 +1219,7 @@ class AGUControllerTests {
 		cleanTest(
 			client = client,
 			idAGU = createdAGU1.cui,
-			idsTransportCompany = allAgu.agusBasicInfo.flatMap { it.transportCompanies.map { company -> company.id } }
+			idsTransportCompany = allAgu.agusBasicInfo.flatMap { it.transportCompanies.transportCompanies.map { company -> company.id } }
 		)
 
 		cleanTest(client = client, idAGU = createdAGU2.cui, idDNO = dnoId)

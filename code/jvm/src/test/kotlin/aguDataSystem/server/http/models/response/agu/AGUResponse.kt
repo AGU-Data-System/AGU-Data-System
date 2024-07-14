@@ -37,6 +37,7 @@ data class AGUResponse(
 	val eic: String,
 	val name: String,
 	val levels: GasLevelsResponse,
+	val loadVolume: Int,
 	val correctionFactor: Double,
 	val location: LocationResponse,
 	val dno: DNOResponse,

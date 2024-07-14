@@ -3,7 +3,7 @@ package aguDataSystem.server.http.models.response.agu
 
 import aguDataSystem.server.http.models.response.dno.DNOResponse
 import aguDataSystem.server.http.models.response.location.LocationResponse
-import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyResponse
+import aguDataSystem.server.http.models.response.transportCompany.TransportCompanyListResponse
 import kotlinx.serialization.Serializable
 
 /**
@@ -25,5 +25,6 @@ data class AGUBasicInfoResponse(
 	val isFavourite: Boolean,
 	val dno: DNOResponse,
 	val location: LocationResponse,
-	val transportCompanies: List<TransportCompanyResponse>
+	val transportCompanies: TransportCompanyListResponse,
+	val isActive: Boolean
 )

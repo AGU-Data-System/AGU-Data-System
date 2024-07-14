@@ -204,7 +204,6 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 			tank_number 
 		FROM measure
 		WHERE agu_cui = :aguCui AND 
-		prediction_for = null AND
 		provider_id = :providerId
 		ORDER BY tank_number, timestamp DESC
 		""".trimIndent()
@@ -217,6 +216,29 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
 		logger.info("Fetched the latest gas measures for AGU with CUI {} and provider with id {}", aguCui, providerId)
 
 		return measures
+	}
+
+	/**
+	 * Deletes all gas measures of an AGU tank
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param number the number of the tank
+	 * @return a list of gas measures
+	 */
+	override fun deleteGasMeasuresByTank(cui: String, number: Int) {
+		logger.info("Deleting gas measures for AGU with CUI {} and tank number {}", cui, number)
+
+		val measures = handle.createUpdate(
+			"""
+		DELETE FROM measure
+		WHERE agu_cui = :cui AND tank_number = :number AND tag = 'level'
+		""".trimIndent()
+		)
+			.bind("cui", cui)
+			.bind("number", number)
+			.execute()
+
+		logger.info("Deleted {} gas measures for AGU with CUI {} and tank number {}", measures, cui, number)
 	}
 
 	companion object {

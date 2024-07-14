@@ -54,4 +54,13 @@ interface GasRepository {
 	 * @return a list of the latest gas measures, one for each tank
 	 */
 	fun getLatestLevels(aguCui: String, providerId: Int): List<GasMeasure>
+
+	/**
+	 * Deletes all gas measures of an AGU tank
+	 *
+	 * @param cui the CUI of the AGU
+	 * @param number the number of the tank
+	 * @return a list of gas measures
+	 */
+	fun deleteGasMeasuresByTank(cui: String, number: Int)
 }
