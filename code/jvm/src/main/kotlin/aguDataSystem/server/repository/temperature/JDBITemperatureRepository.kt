@@ -160,9 +160,9 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 	) {
 		handle.createUpdate(
 			"""
-            INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data)
+            INSERT INTO measure (agu_cui, provider_id, tag, timestamp, prediction_for, data, tank_number)
             VALUES ((SELECT provider.agu_cui FROM provider WHERE provider.id = :providerId), 
-				:providerId, :tag, :timestamp, :predictionFor, :data)
+				:providerId, :tag, :timestamp, :predictionFor, :data, :tankNumber)
             """
 		)
 			.bind("providerId", providerId)
@@ -176,10 +176,12 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 					else -> throw IllegalArgumentException("Invalid tag")
 				}
 			)
+			.bind("tankNumber", TEMPERATURE_TANK_NUMBER)
 			.execute()
 	}
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(JDBITemperatureRepository::class.java)
+		private const val TEMPERATURE_TANK_NUMBER = 1
 	}
 }

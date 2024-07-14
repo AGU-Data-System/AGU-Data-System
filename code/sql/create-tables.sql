@@ -160,8 +160,7 @@ create table if not exists measure
     tag            varchar check (tag ~* '^(level|min|max)$'),
     data           int                      not null,
     prediction_for timestamp with time zone,
-    tank_number    int check ((tag ~* '(level)$' and tank_number IS NOT NULL) or
-                              (tank_number is null and tag ~* '^(min|max)$')),
+    tank_number    int not null,
 
     constraint prediction_in_future check (prediction_for::date >= timestamp::date),
 

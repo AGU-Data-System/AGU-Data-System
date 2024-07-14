@@ -40,32 +40,45 @@ class PredictionService(
 			it.aguRepository.getAGUsBasicInfo()
 		}
 		aguList.forEach { agu ->
-			var temps: List<TemperatureRequestModel> = emptyList()
-			var consumptions: List<ConsumptionRequestModel> = emptyList()
-			transactionManager.run { tm ->
-				logger.info("Fetching providers for AGU for training model: {}", agu.cui)
-				val aguProviders = tm.providerRepository.getProviderByAGU(agu.cui)
+			trainAGU(agu)
+		}
+	}
 
-				logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
-				aguProviders.forEach { provider ->
-					when (provider.getProviderType()) {
-						ProviderType.TEMPERATURE -> temps = getTemperaturePredictions(tm, provider.id, false)
-						ProviderType.GAS -> consumptions = fetchGasConsumptions(tm, provider.id)
-					}
+	/**
+	 * Trains the model for an AGU
+	 *
+	 * @param agu The AGU to train the model for
+	 */
+	private fun trainAGU(agu: AGUBasicInfo) {
+		var temps: List<TemperatureRequestModel> = emptyList()
+		var consumptions: List<ConsumptionRequestModel> = emptyList()
+		transactionManager.run { tm ->
+			logger.info("Fetching providers for AGU for training model: {}", agu.cui)
+			val aguProviders = tm.providerRepository.getProviderByAGU(agu.cui)
+
+			logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
+			aguProviders.forEach { provider ->
+				when (provider.getProviderType()) {
+					ProviderType.TEMPERATURE -> temps = getTemperaturePredictions(tm, provider.id, false)
+					ProviderType.GAS -> consumptions = fetchGasConsumptions(tm, provider.id)
 				}
 			}
+		}
+		if (temps.size < NUMBER_OF_DAYS || consumptions.size < NUMBER_OF_DAYS) {
+			logger.error("Not enough data to train AGU: {}", agu.cui)
+			return
+		}
 
-			logger.info("Generating training model for AGU: {}", agu.cui)
-			val training = fetchService.generateTraining(temps, consumptions)
+		logger.info("Generating training model for AGU: {}", agu.cui)
+		val training = fetchService.generateTraining(temps, consumptions)
 
-			if (training != null) {
-				transactionManager.run {
-					logger.info("Saving training model for AGU: {}", agu.cui)
-					it.aguRepository.updateTrainingModel(agu.cui, training)
-				}
-			} else {
-				logger.error("Failed to generate training model for AGU: {}", agu.cui)
+		if (training != null) {
+			transactionManager.run {
+				logger.info("Saving training model for AGU: {}", agu.cui)
+				it.aguRepository.updateTrainingModel(agu.cui, training)
 			}
+		} else {
+			logger.error("Failed to generate training model for AGU: {}", agu.cui)
 		}
 	}
 
@@ -89,9 +102,18 @@ class PredictionService(
 			val temps = getTemperaturePredictions(transaction, temperatureProvider.id, true)
 			val consumptions = fetchGasConsumptions(transaction, gasProvider.id)
 
+			if (temps.size < (NUMBER_OF_DAYS + TEMP_NUMBER_OF_DAYS) || consumptions.size < NUMBER_OF_DAYS) {
+				logger.warn("Not enough data to predict consumption for AGU: {}", agu.cui)
+				return@run
+			}
+
 			logger.info("Fetching training model for AGU: {}", agu.cui)
 			val training = transaction.aguRepository.getTraining(agu.cui)
-				?: throw Exception("No training model found for AGU: ${agu.cui}")
+
+			if (training == null) {
+				logger.warn("No training model found for AGU: {}", agu.cui)
+				return@run
+			}
 
 			logger.info("Generating gas consumption predictions for AGU: {}", agu.cui)
 			val predictions = fetchService.generatePredictions(
@@ -134,7 +156,7 @@ class PredictionService(
 	 */
 	private fun fetchGasConsumptions(transaction: Transaction, providerId: Int): List<ConsumptionRequestModel> {
 		val consumptionList =
-			transaction.gasRepository.getGasMeasures(providerId, GAS_NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT)
+			transaction.gasRepository.getGasMeasures(providerId, NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT)
 		return consumptionList.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
 			.zipWithNext { a, b -> b - a } // calculate the consumption for each day
 			.mapIndexed { idx, consumption ->
@@ -156,7 +178,7 @@ class PredictionService(
 		providerId: Int,
 		prediction: Boolean
 	): List<TemperatureRequestModel> {
-		val previousTemps = tm.temperatureRepository.getTemperatureMeasures(providerId, TEMP_NUMBER_OF_DAYS).filter {
+		val previousTemps = tm.temperatureRepository.getTemperatureMeasures(providerId, NUMBER_OF_DAYS).filter {
 			it.timestamp.toLocalDate() == it.predictionFor.toLocalDate()
 		}.map { temp ->
 			TemperatureRequestModel(
@@ -296,8 +318,8 @@ class PredictionService(
 
 	companion object {
 		private val logger = LoggerFactory.getLogger(FetchService::class.java)
-		const val GAS_NUMBER_OF_DAYS = 5
-		const val TEMP_NUMBER_OF_DAYS = 9
+		const val NUMBER_OF_DAYS = 9
+		const val TEMP_NUMBER_OF_DAYS = 5
 		const val BIG_AGU_LIMIT_LOAD_VOLUME = 0.6
 		const val LOAD_REMOVAL_MARGIN = 5
 	}
