@@ -1,15 +1,29 @@
-interface WeeklyPlanOutputModel {
-    weekStartDay: string;
-    weekEndDay: string;
-    plannedAgus: AguPlannedOutputModel[];
+interface WeeklyPlanListOutputModel {
+    startWeekDay: string;
+    endWeekDay: string;
+    loads: PlannedLoadOutputModel[];
+    size: number;
 }
 
-interface AguPlannedOutputModel {
-    aguCui: number;
-    aguName: string;
-    dayOfThePlaning: number;
-    currentGasLevel: number;
-    plannedGasLevel: number;
+interface PlannedLoadOutputModel {
+    aguCui: string;
+    date: string;
+    timeOfDay: string;
+    amount: string;
+    isManual: string;
+    isConfirmed: string;
 }
 
-export { WeeklyPlanOutputModel }
+interface CreatePlannedLoadInputModel {
+    aguCui: string;
+    date: string;
+    timeOfDay: string;
+    amount: string;
+    isManual: string;
+}
+
+interface CreatePlannedLoadOutputModel {
+    id: number;
+}
+
+export { WeeklyPlanListOutputModel, PlannedLoadOutputModel, CreatePlannedLoadInputModel, CreatePlannedLoadOutputModel }

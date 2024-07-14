@@ -68,7 +68,7 @@ object URIs {
 	 * Contains the URIs for the transport company endpoints
 	 */
 	object TransportCompany {
-		const val ROOT = "$PREFIX/transport-companies"
+		const val ROOT = "${Agu.ROOT}/transport-companies"
 		const val BY_ID = "/{transportCompanyId}"
 		const val ALL_BY_CUI = "/agu/{aguCui}"
 		const val BY_ID_AND_CUI = "/{transportCompanyId}/agu/{aguCui}"
@@ -82,7 +82,7 @@ object URIs {
 	 * Contains the URIs for the DNO endpoints
 	 */
 	object Dno {
-		const val ROOT = "$PREFIX/dnos"
+		const val ROOT = "${Agu.ROOT}/dnos"
 		const val BY_ID = "/{dnoId}"
 
 		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
@@ -92,9 +92,21 @@ object URIs {
 	 * Contains the URIs for the alerts' endpoints
 	 */
 	object Alerts {
-		const val ROOT = "$PREFIX/alerts"
+		const val ROOT = "${Agu.ROOT}/alerts"
 		const val CREATE = "/create"
 		const val BY_ID = "/{alertId}"
+
+		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
+	}
+
+	/**
+	 * Contains the URIs for the loads' endpoints
+	 */
+	object Loads {
+		const val ROOT = "${Agu.ROOT}/loads"
+		const val BY_ID = "/{loadId}"
+		const val CONFIRM = "/confirm"
+		const val WEEK = "/week"
 
 		fun byID(id: Int) = UriTemplate(ROOT + BY_ID).expand(id)
 	}

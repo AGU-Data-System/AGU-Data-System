@@ -2,10 +2,21 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Box, Paper, Typography, IconButton, Collapse, Button, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox, FormControlLabel, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { ExpandMore, ExpandLess, Add, Edit } from '@mui/icons-material';
-import {ConfirmPlannedAgusButton, ReturnButton} from "../Layouts/Buttons";
-import { WeeklyPlanOutputModel } from "../../services/agu/models/weeklyPlanOutputModel";
+import { ConfirmPlannedAgusButton, ReturnButton } from "../Layouts/Buttons";
+import {
+    WeeklyPlanListOutputModel,
+    PlannedLoadOutputModel,
+    CreatePlannedLoadInputModel
+} from "../../services/agu/models/weeklyPlanOutputModel";
+import { aguService } from "../../services/agu/aguService";
+import { Problem } from "../../utils/Problem";
 
-function DayCard({ day, date, plans, onCheckChange, checkedPlans, onDayChangeClick, onAddNewAguClick } : { day: string, date: string, plans: Array<{aguCui: number, aguName: string, currentGasLevel: number, plannedGasLevel: number}>, onCheckChange: (aguCui: number, checked: boolean) => void, checkedPlans: Set<number>, onDayChangeClick: (aguCui: number) => void, onAddNewAguClick: () => void }) {
+type WeekState =
+    | { type: 'loading' }
+    | { type: 'error'; message: string }
+    | { type: 'success'; loads: WeeklyPlanListOutputModel };
+
+function DayCard({ day, date, plans, onCheckChange, checkedPlans, onDayChangeClick, onAddNewAguClick } : { day: string, date: string, plans: PlannedLoadOutputModel[], onCheckChange: (aguCui: string, checked: boolean) => void, checkedPlans: Set<string>, onDayChangeClick: (aguCui: string) => void, onAddNewAguClick: () => void }) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -29,15 +40,16 @@ function DayCard({ day, date, plans, onCheckChange, checkedPlans, onDayChangeCli
                             <Box key={index} sx={{ marginBottom: 2 }}>
                                 <FormControlLabel
                                     control={<Checkbox checked={checkedPlans.has(plan.aguCui)} onChange={(e) => onCheckChange(plan.aguCui, e.target.checked)} />}
-                                    label={<Typography variant="h6">{plan.aguName}</Typography>}
+                                    label={<Typography variant="h6">{plan.aguCui}</Typography>}
                                 />
                                 {!checkedPlans.has(plan.aguCui) && (
                                     <IconButton onClick={() => onDayChangeClick(plan.aguCui)}>
                                         <Edit />
                                     </IconButton>
                                 )}
-                                <Typography>Current Gas Level: {plan.currentGasLevel}</Typography>
-                                <Typography>Planned Gas Level: {plan.plannedGasLevel}</Typography>
+                                <Typography variant="body1">Parte do dia: {plan.timeOfDay == 'MORNING' ? 'Manhã' : 'Tarde'}</Typography>
+                                <Typography variant="body1">Quantidade da carga: {plan.amount}</Typography>
+                                <Typography variant="body1">{plan.isManual ? 'Manual' : 'Automática'}</Typography>
                             </Box>
                         ))}
                     </Box>
@@ -82,48 +94,50 @@ function WeeklyPlanHeader({ weekDate } : { weekDate: string }){
 }
 
 export default function WeeklyPlan() {
-    const [aguList, setAguList] = useState<WeeklyPlanOutputModel | null>(null);
-    const [checkedPlans, setCheckedPlans] = useState<Set<number>>(new Set());
-    const [newAgu, setNewAgu] = useState({ aguName: '', currentGasLevel: 0, plannedGasLevel: 0, dayOfThePlaning: 1 });
+    const [weekState, setWeekState] = useState<WeekState>({ type: 'loading' });
+    const [checkedPlans, setCheckedPlans] = useState<Set<string>>(new Set());
+    const [newLoad, setNewLoad] = useState<CreatePlannedLoadInputModel>(
+        {
+            aguCui: '',
+            date: '',
+            timeOfDay: 'Morning',
+            amount: '',
+            isManual: 'true'
+        }
+    );
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
-    const [selectedAgu, setSelectedAgu] = useState<number | null>(null);
+    const [selectedAgu, setSelectedAgu] = useState<string | null>(null);
     const [isDayChangeDialogOpen, setDayChangeDialogOpen] = useState(false);
+
+    const getWeekDates = () => {
+        const today = new Date();
+        const startWeekDay = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+        const endWeekDay = new Date(today.setDate(today.getDate() + 4));
+        // values must have the format YYYY-MM-DD
+        return {
+            startWeekDay: startWeekDay.toISOString().split('T')[0],
+            endWeekDay: endWeekDay.toISOString().split('T')[0]
+        };
+    }
 
     useEffect(() => {
         const fetchWeeklyPlan = async () => {
-            setAguList({
-                weekStartDay: "24/06/2024",
-                weekEndDay: "28/06/2024",
-                plannedAgus: [
-                    {
-                        aguCui: 1,
-                        aguName: "AGU 1",
-                        dayOfThePlaning: 1,
-                        currentGasLevel: 25,
-                        plannedGasLevel: 75
-                    },
-                    {
-                        aguCui: 2,
-                        aguName: "AGU 2",
-                        dayOfThePlaning: 1,
-                        currentGasLevel: 20,
-                        plannedGasLevel: 80
-                    },
-                    {
-                        aguCui: 3,
-                        aguName: "AGU 3",
-                        dayOfThePlaning: 2,
-                        currentGasLevel: 20,
-                        plannedGasLevel: 80
-                    },
-                ]
-            });
-        }
+            const { startWeekDay, endWeekDay } = getWeekDates();
+            const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(startWeekDay, endWeekDay);
+
+            if (getLoadsWeeklyResponse.value instanceof Error) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
+            } else if (getLoadsWeeklyResponse.value instanceof Problem) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.title });
+            } else {
+                setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
+            }
+        };
         fetchWeeklyPlan();
     }, []);
 
-    const handleCheckChange = (aguCui: number, checked: boolean) => {
+    const handleCheckChange = (aguCui: string, checked: boolean) => {
         setCheckedPlans(prev => {
             const newChecked = new Set(prev);
             if (checked) {
@@ -135,32 +149,58 @@ export default function WeeklyPlan() {
         });
     };
 
-    const handleDayChange = (newDay: number) => {
+    const handleDayChange = (newDay: string) => {
         if (selectedAgu === null) return;
-        setAguList(prev => {
-            if (!prev) return prev;
-            const newAgus = prev.plannedAgus.map(agu =>
+        setWeekState(prev => {
+            if (prev.type !== 'success') return prev;
+            const newLoads = prev.loads.loads.map(agu =>
                 agu.aguCui === selectedAgu ? { ...agu, dayOfThePlaning: newDay } : agu
             );
-            return { ...prev, plannedAgus: newAgus };
+            return { ...prev, loads: { ...prev.loads, loads: newLoads } };
         });
         setDayChangeDialogOpen(false);
     };
 
-    const handleAddNewAgu = () => {
+    const handleAddNewAgu = async() => {
         if (selectedDay === null) return;
-        setAguList(prev => {
-            if (!prev) return prev;
-            const newAguCui = prev.plannedAgus.length ? Math.max(...prev.plannedAgus.map(agu => agu.aguCui)) + 1 : 1;
-            const newAgus = [...prev.plannedAgus, { ...newAgu, aguCui: newAguCui, dayOfThePlaning: selectedDay }];
-            return { ...prev, plannedAgus: newAgus };
+        const { startWeekDay, endWeekDay } = getWeekDates();
+        const newLoadWithDate = {
+            ...newLoad,
+            date: `${startWeekDay.split("-")[0]}-${startWeekDay.split("-")[1]}-${parseInt(startWeekDay.split("-")[2]) + selectedDay - 1}`
+        };
+        console.log('New Load:', newLoadWithDate);
+        const addLoadResponse = await aguService.createLoad(newLoadWithDate);
+
+        if (addLoadResponse.value instanceof Error) {
+            // Show error message
+            console.log('Error:', addLoadResponse.value);
+        } else if (addLoadResponse.value instanceof Problem) {
+            // Show error message
+            console.log('Error Problem:', addLoadResponse.value);
+        } else {
+            const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(startWeekDay, endWeekDay);
+
+            if (getLoadsWeeklyResponse.value instanceof Error) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
+            } else if (getLoadsWeeklyResponse.value instanceof Problem) {
+                setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.title });
+            } else {
+                setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
+            }
+        }
+        setNewLoad({
+            aguCui: '',
+            date: '',
+            timeOfDay: 'Morning',
+            amount: '',
+            isManual: 'true'
         });
-        setNewAgu({ aguName: '', currentGasLevel: 0, plannedGasLevel: 0, dayOfThePlaning: 1 });
         setDialogOpen(false);
     };
 
     const handleConfirm = () => {
-        const confirmedAgus = aguList?.plannedAgus.filter(agu => checkedPlans.has(agu.aguCui));
+        if (weekState.type !== 'success') return;
+        const confirmedAgus = weekState.loads.loads.filter(agu => checkedPlans.has(agu.aguCui));
         // send confirmedAgus to the backend
         console.log('Confirmed AGUs:', confirmedAgus);
     };
@@ -174,7 +214,7 @@ export default function WeeklyPlan() {
         setDialogOpen(false);
     };
 
-    const handleOpenDayChangeDialog = (aguCui: number) => {
+    const handleOpenDayChangeDialog = (aguCui: string) => {
         setSelectedAgu(aguCui);
         setDayChangeDialogOpen(true);
     };
@@ -185,18 +225,29 @@ export default function WeeklyPlan() {
 
     const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
 
-    if (!aguList) return (
+    if (weekState.type === 'loading') return (
         <div>
             <WeeklyPlanHeader weekDate="Loading..." />
         </div>
     );
 
+    if (weekState.type === 'error') return (
+        <div>
+            <WeeklyPlanHeader weekDate="Error" />
+            <Typography variant="h6" color="error">
+                {weekState.message}
+            </Typography>
+        </div>
+    );
+
+    const { startWeekDay, endWeekDay, loads } = weekState.loads;
+
     return (
         <div>
-            <WeeklyPlanHeader weekDate={`${aguList.weekStartDay} - ${aguList.weekEndDay}`} />
+            <WeeklyPlanHeader weekDate={`${startWeekDay} - ${endWeekDay}`} />
             {daysOfWeek.map((day, index) => {
-                const dayPlans = aguList.plannedAgus.filter(plan => plan.dayOfThePlaning === index + 1) || [];
-                const dayOfWeek = aguList.weekStartDay.split("/").map(Number)[0] + index;
+                const dayPlans = loads.filter(plan => parseInt(plan.date.split("-")[2]) === parseInt(startWeekDay.split("-")[2]) + index) || [];
+                const dayOfWeek = parseInt(startWeekDay.split("-")[2]) + index;
                 return (
                     <DayCard
                         key={index}
@@ -211,28 +262,28 @@ export default function WeeklyPlan() {
                 );
             })}
             <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-                <DialogTitle>Add New Planned AGU</DialogTitle>
+                <DialogTitle>Adicionar nova load</DialogTitle>
                 <DialogContent>
                     <TextField
-                        label="AGU Name"
-                        value={newAgu.aguName}
-                        onChange={(e) => setNewAgu({ ...newAgu, aguName: e.target.value })}
+                        label="UAG CUI"
+                        value={newLoad.aguCui}
+                        onChange={(e) => setNewLoad({ ...newLoad, aguCui: e.target.value })}
                         fullWidth
                         sx={{ marginBottom: 2 }}
                     />
                     <TextField
-                        label="Current Gas Level"
-                        type="number"
-                        value={newAgu.currentGasLevel}
-                        onChange={(e) => setNewAgu({ ...newAgu, currentGasLevel: parseInt(e.target.value) })}
+                        label="Parte do dia"
+                        type="string"
+                        value={newLoad?.timeOfDay}
+                        onChange={(e) => setNewLoad({ ...newLoad, timeOfDay: e.target.value })}
                         fullWidth
                         sx={{ marginBottom: 2 }}
                     />
                     <TextField
-                        label="Planned Gas Level"
+                        label="Quantidade da carga"
                         type="number"
-                        value={newAgu.plannedGasLevel}
-                        onChange={(e) => setNewAgu({ ...newAgu, plannedGasLevel: parseInt(e.target.value) })}
+                        value={newLoad?.amount}
+                        onChange={(e) => setNewLoad({ ...newLoad, amount: e.target.value })}
                         fullWidth
                         sx={{ marginBottom: 2 }}
                     />
@@ -247,13 +298,13 @@ export default function WeeklyPlan() {
                 </DialogActions>
             </Dialog>
             <Dialog open={isDayChangeDialogOpen} onClose={handleCloseDayChangeDialog}>
-                <DialogTitle>Change Day of Planned AGU</DialogTitle>
+                <DialogTitle>Mudar o dia do plano da UAG</DialogTitle>
                 <DialogContent>
                     <FormControl fullWidth sx={{ marginBottom: 2 }}>
                         <InputLabel>Day of the Planning</InputLabel>
                         <Select
-                            value={newAgu.dayOfThePlaning.toString()}  // Convert number to string
-                            onChange={(e) => setNewAgu({ ...newAgu, dayOfThePlaning: parseInt(e.target.value as string) })}
+                            value={newLoad.date}
+                            onChange={(e) => setNewLoad({ ...newLoad, date: e.target.value })}
                         >
                             {daysOfWeek.map((day, idx) => (
                                 <MenuItem key={idx} value={(idx + 1).toString()}>{day}</MenuItem>  // Use string value
@@ -265,7 +316,7 @@ export default function WeeklyPlan() {
                     <Button onClick={handleCloseDayChangeDialog} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={() => handleDayChange(newAgu.dayOfThePlaning)} color="primary">
+                    <Button onClick={() => handleDayChange(newLoad.date)} color="primary">
                         Confirm
                     </Button>
                 </DialogActions>

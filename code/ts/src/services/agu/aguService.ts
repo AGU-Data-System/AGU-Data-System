@@ -12,6 +12,11 @@ import { Problem } from "../../utils/Problem";
 import { GetTemperatureListOutputModel } from "./models/temperatureOutputModel";
 import { GetGasListOutputModel, LevelsInputModel } from "./models/gasOutputModel";
 import { ListAlertsOutputModel } from "./models/alertsOutputModel";
+import {
+    CreatePlannedLoadInputModel,
+    CreatePlannedLoadOutputModel,
+    WeeklyPlanListOutputModel
+} from "./models/weeklyPlanOutputModel";
 
 export namespace aguService {
     export async function getAGUs(): Promise<Either<Error | Problem, AgusBasicInfoListOutputModel>> {
@@ -85,12 +90,22 @@ export namespace aguService {
     }
 
     export async function getAlerts(): Promise<Either<Error | Problem, ListAlertsOutputModel>> {
-        const url = `/alerts`;
+        const url = `/agus/alerts`;
         return fetchFunction(url, "GET");
     }
 
     export async function updateAlertStatus(alertId: number): Promise<Either<Error | Problem, ListAlertsOutputModel>> {
-        const url = `/alerts/${alertId}`;
+        const url = `/agus/alerts/${alertId}`;
         return fetchFunction(url, "PUT");
+    }
+
+    export async function getLoadsWeekly(startDay: string, endDay: string): Promise<Either<Error | Problem, WeeklyPlanListOutputModel>> {
+        const url = `/agus/loads/week?startDay=${startDay}&endDay=${endDay}`;
+        return fetchFunction(url, "GET");
+    }
+
+    export async function createLoad(load: CreatePlannedLoadInputModel): Promise<Either<Error | Problem, CreatePlannedLoadOutputModel>> {
+        const url = `/agus/loads`;
+        return fetchFunction(url, "POST", JSON.stringify(load));
     }
 }

@@ -22,13 +22,41 @@ interface LoadRepository {
 	 * Schedules a load.
 	 *
 	 * @param scheduledLoad The load to schedule
+	 * @return The id of the scheduled load
 	 */
-	fun scheduleLoad(scheduledLoad: ScheduledLoadCreationDTO)
+	fun scheduleLoad(scheduledLoad: ScheduledLoadCreationDTO): Int
 
 	/**
 	 * Removes a load.
 	 *
 	 * @param loadId The id of the load to remove
+	 * @return Whether the load was removed or not
 	 */
-	fun removeLoad(loadId: Int)
+	fun removeLoad(loadId: Int): Boolean
+
+	/**
+	 * Changes the day of a load.
+	 *
+	 * @param loadId The id of the load to change the day of
+	 * @param newDay The new day of the load
+	 * @return Whether the day was changed or not
+	 */
+	fun changeLoadDay(loadId: Int, newDay: LocalDate): Boolean
+
+	/**
+	 * Confirms a load.
+	 *
+	 * @param loadId The id of the load to confirm
+	 * @return Whether the load was confirmed or not
+	 */
+	fun confirmLoad(loadId: Int): Boolean
+
+	/**
+	 * Gets the loads for the week.
+	 *
+	 * @param startDay The start day of the week
+	 * @param endDay The end day of the week
+	 * @return The loads for the week
+	 */
+	fun getLoadsForWeek(startDay: LocalDate, endDay: LocalDate): List<ScheduledLoad>
 }
