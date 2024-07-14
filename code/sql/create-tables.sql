@@ -93,9 +93,9 @@ create table if not exists alerts
     id          int generated always as identity primary key,
     agu_cui     CUI,
     timestamp   timestamp with time zone,
-    title       varchar check (length(title) > 0) not null,
+    title       varchar check (length(title) > 0)   not null,
     message     varchar check (length(message) > 0) not null,
-    is_resolved boolean default false not null,
+    is_resolved boolean default false               not null,
 
     foreign key (agu_cui) references agu (cui) on delete cascade
 );
@@ -103,13 +103,13 @@ create table if not exists alerts
 -- TODO: Create delivered_loads table
 create table if not exists scheduled_load
 (
-    id                  int generated always as identity,
-    agu_cui             CUI,
-    local_date          date,
-    time_of_day         varchar check (time_of_day in ('morning', 'afternoon')) not null,
-    amount              numeric(6, 3) default 1.0 not null,
-    is_manual           boolean default false not null,
-    is_confirmed        boolean default false not null,
+    id           int generated always as identity,
+    agu_cui      CUI,
+    local_date   date,
+    time_of_day  varchar check (time_of_day in ('morning', 'afternoon')) not null,
+    amount       numeric(6, 3) default 1.0                               not null,
+    is_manual    boolean       default false                             not null,
+    is_confirmed boolean       default false                             not null,
 
     foreign key (agu_cui) references agu (cui),
     primary key (id)

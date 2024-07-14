@@ -16,27 +16,27 @@ import java.time.LocalDate
  * @property isConfirmed Whether the load was confirmed or not by the client
  */
 data class GetLoadOutputModel(
-    val id: Int,
-    val aguCui: String,
-    val date: LocalDate,
-    val timeOfDay: TimeOfDay,
-    val amount: Double,
-    val isManual: Boolean,
-    val isConfirmed: Boolean,
+	val id: Int,
+	val aguCui: String,
+	val date: LocalDate,
+	val timeOfDay: TimeOfDay,
+	val amount: Double,
+	val isManual: Boolean,
+	val isConfirmed: Boolean,
 ) {
-    companion object {
-        fun fromScheduledLoad(scheduledLoad: ScheduledLoad): GetLoadOutputModel {
-            return GetLoadOutputModel(
-                id = scheduledLoad.id,
-                aguCui = scheduledLoad.aguCui,
-                date = scheduledLoad.date,
-                timeOfDay = scheduledLoad.timeOfDay,
-                amount = scheduledLoad.amount,
-                isManual = scheduledLoad.isManual,
-                isConfirmed = scheduledLoad.isConfirmed
-            )
-        }
+	companion object {
+		fun fromScheduledLoad(scheduledLoad: ScheduledLoad): GetLoadOutputModel {
+			return GetLoadOutputModel(
+				id = scheduledLoad.id,
+				aguCui = scheduledLoad.aguCui,
+				date = scheduledLoad.date,
+				timeOfDay = scheduledLoad.timeOfDay,
+				amount = scheduledLoad.amount,
+				isManual = scheduledLoad.isManual,
+				isConfirmed = scheduledLoad.isConfirmed
+			)
+		}
 
 
-    }
+	}
 }

@@ -11,6 +11,7 @@ import aguDataSystem.server.service.alerts.AlertsService
 import aguDataSystem.server.service.chron.FetchService
 import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestModel
 import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
+import aguDataSystem.server.service.prediction.models.PredictionResponseModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -48,7 +49,7 @@ class PredictionService(
 				logger.info("Fetching temperature and gas measures for AGU: {}", agu.cui)
 				aguProviders.forEach { provider ->
 					when (provider.getProviderType()) {
-						ProviderType.TEMPERATURE -> temps = getTemperaturePredictions(tm, provider.id)
+						ProviderType.TEMPERATURE -> temps = getTemperaturePredictions(tm, provider.id, false)
 						ProviderType.GAS -> consumptions = fetchGasConsumptions(tm, provider.id)
 					}
 				}
@@ -85,7 +86,7 @@ class PredictionService(
 				?: throw Exception("No gas provider found for AGU: ${agu.cui}")
 
 			logger.info("Fetching temperature, and gas consumptions for AGU: {}", agu.cui)
-			val temps = getTemperaturePredictions(transaction, temperatureProvider.id)
+			val temps = getTemperaturePredictions(transaction, temperatureProvider.id, true)
 			val consumptions = fetchGasConsumptions(transaction, gasProvider.id)
 
 			logger.info("Fetching training model for AGU: {}", agu.cui)
@@ -112,7 +113,7 @@ class PredictionService(
 					predictedLevels = mutableListOf()
 					predictions.forEachIndexed { index, prediction ->
 						var totalLevel = if (index == 0) currentLevel else predictedLevels[index - 1]
-						totalLevel -= prediction
+						totalLevel = (totalLevel - prediction.consumption).roundToInt()
 						predictedLevels.add(totalLevel)
 					}
 				}
@@ -150,12 +151,28 @@ class PredictionService(
 	 * @param providerId The provider id
 	 * @return The temperature predictions
 	 */
-	private fun getTemperaturePredictions(tm: Transaction, providerId: Int): List<TemperatureRequestModel> {
-		return tm.temperatureRepository.getPredictionTemperatureMeasures(providerId, TEMP_NUMBER_OF_DAYS).map { temp ->
+	private fun getTemperaturePredictions(
+		tm: Transaction,
+		providerId: Int,
+		prediction: Boolean
+	): List<TemperatureRequestModel> {
+		val previousTemps = tm.temperatureRepository.getTemperatureMeasures(providerId, TEMP_NUMBER_OF_DAYS).filter {
+			it.timestamp.toLocalDate() == it.predictionFor.toLocalDate()
+		}.map { temp ->
 			TemperatureRequestModel(
-				min = temp.min, max = temp.max, timeStamp = temp.predictionFor.toLocalDate()
+				min = temp.min, max = temp.max, timeStamp = temp.timestamp.toLocalDate()
 			)
 		}
+		if (!prediction) {
+			return previousTemps
+		}
+		val futureTemps =
+			tm.temperatureRepository.getPredictionTemperatureMeasures(providerId, TEMP_NUMBER_OF_DAYS).map { temp ->
+				TemperatureRequestModel(
+					min = temp.min, max = temp.max, timeStamp = temp.predictionFor.toLocalDate()
+				)
+			}
+		return previousTemps + futureTemps
 	}
 
 	/**
@@ -168,7 +185,11 @@ class PredictionService(
 	 *
 	 * @return the predicted levels after taking the loads into account
 	 */
-	private fun manageLoads(transaction: Transaction, agu: AGUBasicInfo, predictions: List<Int>): List<Int> {
+	private fun manageLoads(
+		transaction: Transaction,
+		agu: AGUBasicInfo,
+		predictions: List<PredictionResponseModel>
+	): List<Int> {
 		val fullAGU = transaction.aguRepository.getAGUByCUI(agu.cui) ?: throw Exception("AGU not found: ${agu.cui}")
 		val minLevel = fullAGU.levels.min
 		val gasProvider = transaction.providerRepository.getProviderByAGUAndType(agu.cui, ProviderType.GAS)
@@ -179,7 +200,7 @@ class PredictionService(
 		predictions.forEachIndexed { index, prediction ->
 			val date = LocalDate.now().plusDays(index.toLong())
 			var totalLevel = if (index == 0) currentLevel else predictedLevels[index - 1]
-			totalLevel -= prediction
+			totalLevel = (totalLevel - prediction.consumption).roundToInt()
 
 			val loadForDay = transaction.loadRepository.getLoadForDay(agu.cui, date)
 			val loadAmount = loadForDay?.amount ?: 0.0

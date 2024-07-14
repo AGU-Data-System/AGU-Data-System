@@ -17,6 +17,8 @@ import aguDataSystem.server.service.chron.models.prediction.ConsumptionRequestMo
 import aguDataSystem.server.service.chron.models.prediction.PredictionRequestModel
 import aguDataSystem.server.service.chron.models.prediction.TemperatureRequestModel
 import aguDataSystem.server.service.chron.models.prediction.TrainingRequestModel
+import aguDataSystem.server.service.prediction.models.PredictionListResponseModel
+import aguDataSystem.server.service.prediction.models.PredictionResponseModel
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -242,7 +244,7 @@ class FetchService(
 		futureTemps: List<TemperatureRequestModel>,
 		consumptions: List<ConsumptionRequestModel>,
 		training: String
-	): List<Int> {
+	): List<PredictionResponseModel> {
 		val objectMapper = Json { ignoreUnknownKeys = true; prettyPrint = true }
 		val coefficients = objectMapper.parseToJsonElement(training).jsonObject["coefficients"]?.jsonArray
 			?.map { it.jsonPrimitive.doubleOrNull }?.mapNotNull { it } ?: emptyList()
@@ -256,10 +258,10 @@ class FetchService(
 				intercept = intercept
 			)
 		)
-		val predictionURL = Environment.getPredictionUrl() + "/prediction"
+		val predictionURL = Environment.getPredictionUrl() + "/predict"
 		val predictions = fetch(method = HttpMethod.POST, url = predictionURL, body = body)
 		return if (predictions.statusCode == HttpStatus.OK.value()) {
-			Json.decodeFromString<List<Int>>(predictions.body)
+			Json.decodeFromString<PredictionListResponseModel>(predictions.body).predictionList
 		} else emptyList()
 	}
 

@@ -580,7 +580,11 @@ object HTTPUtils {
 	 * @param status the expected status
 	 * @return the response body
 	 */
-	private fun getTransportCompaniesOfAGURequestWithStatusCode(client: WebTestClient, aguId: String, status: HttpStatusCode) =
+	private fun getTransportCompaniesOfAGURequestWithStatusCode(
+		client: WebTestClient,
+		aguId: String,
+		status: HttpStatusCode
+	) =
 		client.get()
 			.uri("$BASE_TRANSPORT_COMPANY_PATH/agu/$aguId")
 			.exchange()
