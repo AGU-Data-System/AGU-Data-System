@@ -1532,16 +1532,13 @@ class AGUServiceTest {
 		val agu = aguService.createAGU(creationAgu.copy(dnoName = dnoCreation.name))
 
 		// act
-		// TODO check if the change occurs inside the transaction
-		//  or if we need another transaction to fetch the latest data,
-		//		dark magic somehow does not want to update
-		val result = aguService.updateActiveState(agu.getSuccessOrThrow(), false).also(::println)
-		val dbAGU = aguService.getAGUById(agu.getSuccessOrThrow()).also(::println)
+		val result = aguService.updateActiveState(agu.getSuccessOrThrow(), false)
+		val dbAGU = aguService.getAGUById(agu.getSuccessOrThrow())
 		// assert
 		assert(result.isSuccess())
 		assert(dbAGU.isSuccess())
 		assertFalse(dbAGU.getSuccessOrThrow().isActive)
-		assert(result.getSuccessOrThrow().isActive)
+		assertFalse(result.getSuccessOrThrow().isActive)
 	}
 
 	@Test
