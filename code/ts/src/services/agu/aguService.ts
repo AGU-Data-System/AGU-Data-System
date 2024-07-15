@@ -124,4 +124,9 @@ export namespace aguService {
         const url = `/agus/loads/${loadId}`;
         return fetchFunction(url, "DELETE");
     }
+
+    export async function trainAgus(): Promise<Either<Error | Problem, any>> {
+        const url = `/agus/train`;
+        return fetchFunction(url, "POST");
+    }
 }

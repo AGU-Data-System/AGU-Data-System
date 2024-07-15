@@ -8,6 +8,7 @@ interface WeeklyPlanListOutputModel {
 interface PlannedLoadOutputModel {
     loadId: number;
     aguCui: string;
+    locationName: string;
     date: string;
     timeOfDay: string;
     amount: string;

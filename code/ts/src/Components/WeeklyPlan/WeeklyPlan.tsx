@@ -12,6 +12,7 @@ import { aguService } from "../../services/agu/aguService";
 import { Problem } from "../../utils/Problem";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Snackbar, Alert } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 
 type WeekState =
     | { type: 'loading' }
@@ -63,7 +64,7 @@ function DayCard({
                             <Box key={index} sx={{ marginBottom: 2 }}>
                                 <FormControlLabel
                                     control={<Checkbox checked={checkedPlans.has(plan.loadId) || plan.isConfirmed === 'true'} onChange={(e) => onCheckChange(plan.loadId, e.target.checked)} />}
-                                    label={<Typography variant="h6">{plan.aguCui}</Typography>}
+                                    label={<Typography variant="h6">{plan.locationName} ({plan.aguCui}) </Typography>}
                                 />
                                 {!checkedPlans.has(plan.loadId) && plan.isConfirmed === 'false' && (
                                     <>
@@ -87,37 +88,92 @@ function DayCard({
     );
 }
 
-function WeeklyPlanHeader({ weekDate } : { weekDate: string }){
+function WeeklyPlanHeader({ weekDate, onWeekChange }: { weekDate: string, onWeekChange: (start: string, end: string) => void }) {
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 4)));
+    const [isDialogOpen, setDialogOpen] = useState(false);
+
+    const handleClickWeekChange = () => {
+        setDialogOpen(true);
+    };
+
+    const handleConfirmWeekChange = () => {
+        onWeekChange(startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]);
+        setDialogOpen(false);
+    };
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
+    };
+
+    const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newStartDate = new Date(e.target.value);
+        setStartDate(newStartDate);
+        setEndDate(new Date(newStartDate.getTime() + 4 * 24 * 60 * 60 * 1000));
+    };
+
     return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px',
-            borderBottom: '1px solid #000000',
-        }}>
+        <>
             <div style={{
-                flex: 1,
-                textAlign: 'center',
-                margin: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '16px',
+                borderBottom: '1px solid #000000',
             }}>
-                <Typography variant="h4">Plano Semanal</Typography>
-                <Typography variant="body2" sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    marginRight: '10px'
+                <div style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    margin: '8px',
                 }}>
-                    {weekDate}
-                </Typography>
+                    <Typography variant="h4">Plano Semanal</Typography>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <Typography variant="body2">{weekDate}</Typography>
+                        <EditIcon onClick={handleClickWeekChange} sx={{ marginLeft: 1 }}/>
+                    </div>
+                </div>
+                <div style={{
+                    textAlign: 'center',
+                    margin: '8px',
+                }}>
+                    <ReturnButton />
+                </div>
             </div>
 
-            <div style={{
-                textAlign: 'center',
-                margin: '8px',
-            }}>
-                <ReturnButton />
-            </div>
-        </div>
+            <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+                <DialogTitle>Alterar Semana</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        label="Início da Semana"
+                        type="date"
+                        value={startDate.toISOString().split('T')[0]}
+                        onChange={handleStartDateChange}
+                        fullWidth
+                        sx={{ marginBottom: 2, marginTop: 2 }}
+                    />
+                    <TextField
+                        label="Fim da Semana"
+                        type="date"
+                        value={endDate.toISOString().split('T')[0]}
+                        disabled={true}
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="secondary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={handleConfirmWeekChange} color="primary">
+                        Confirmar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 }
 
@@ -142,11 +198,27 @@ export default function WeeklyPlan() {
 
     const getWeekDates = () => {
         const today = new Date();
-        const startWeekDay = new Date(today.setDate(today.getDate() - today.getDay() + 1));
-        const endWeekDay = new Date(today.setDate(today.getDate() + 4));
+        const dayOfWeek = today.getDay();
+        let startOfWeek;
+
+        if (dayOfWeek === 6 || dayOfWeek === 0) { // If today is Saturday (6) or Sunday (0)
+            // Calculate days until next Monday
+            const daysUntilNextMonday = ((7 - dayOfWeek + 1) % 7) + 1;
+            startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() + daysUntilNextMonday);
+        } else {
+            // Calculate the start of this week (Monday)
+            startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - dayOfWeek + 1);
+        }
+
+        // Calculate the end of the week (Friday)
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 4);
+
         return {
-            startWeekDay: startWeekDay.toISOString().split('T')[0],
-            endWeekDay: endWeekDay.toISOString().split('T')[0]
+            startWeekDay: startOfWeek.toISOString().split('T')[0],
+            endWeekDay: endOfWeek.toISOString().split('T')[0]
         };
     };
 
@@ -205,13 +277,14 @@ export default function WeeklyPlan() {
         setSnackbarOpen(true);
     };
 
-    const handleAddNewAgu = async () => {
+    const handleAddNewAgu = async (startWeekDay: string) => {
         if (selectedDay === null) return;
-        const { startWeekDay, endWeekDay } = getWeekDates();
+
         const newLoadWithDate = {
             ...newLoad,
             date: `${startWeekDay.split("-")[0]}-${startWeekDay.split("-")[1]}-${parseInt(startWeekDay.split("-")[2]) + selectedDay - 1}`
         };
+
         const addLoadResponse = await aguService.createLoad(newLoadWithDate);
 
         if (addLoadResponse.value instanceof Error) {
@@ -330,17 +403,46 @@ export default function WeeklyPlan() {
         setDeleteConfirmDialogOpen(false);
     };
 
+    const handleWeekChange = async(start: string, end: string) => {
+        const getLoadsWeeklyResponse = await aguService.getLoadsWeekly(start, end);
+
+        if (getLoadsWeeklyResponse.value instanceof Error) {
+            setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.message });
+        } else if (getLoadsWeeklyResponse.value instanceof Problem) {
+            setWeekState({ type: 'error', message: getLoadsWeeklyResponse.value.title ?? 'Error' });
+        } else {
+            setWeekState({ type: 'success', loads: getLoadsWeeklyResponse.value });
+        }
+    };
+
+    const dayOfWeek = (startDate: string, index: number) => {
+        const dateParts = startDate.split("-");
+        const year = parseInt(dateParts[0], 10);
+        const month = parseInt(dateParts[1], 10);
+        let day = parseInt(dateParts[2], 10) + index;
+
+        // Get the number of days in the current month
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        // Adjust the day if it exceeds the days in the month
+        if (day > daysInMonth) {
+            day -= daysInMonth;
+        }
+
+        return day;
+    }
+
     const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
 
     if (weekState.type === 'loading') return (
         <div>
-            <WeeklyPlanHeader weekDate="Loading..." />
+            <WeeklyPlanHeader weekDate="Loading..." onWeekChange={()=>{}}/>
         </div>
     );
 
     if (weekState.type === 'error') return (
         <div>
-            <WeeklyPlanHeader weekDate="Error" />
+            <WeeklyPlanHeader weekDate="Error" onWeekChange={()=>{}}/>
             <Typography variant="h6" color="error">
                 {weekState.message}
             </Typography>
@@ -351,15 +453,14 @@ export default function WeeklyPlan() {
 
     return (
         <div>
-            <WeeklyPlanHeader weekDate={`${startWeekDay} - ${endWeekDay}`} />
+            <WeeklyPlanHeader weekDate={`${startWeekDay} - ${endWeekDay}`} onWeekChange={handleWeekChange} />
             {daysOfWeek.map((day, index) => {
                 const dayPlans = loads.filter(plan => parseInt(plan.date.split("-")[2]) === parseInt(startWeekDay.split("-")[2]) + index) || [];
-                const dayOfWeek = parseInt(startWeekDay.split("-")[2]) + index;
                 return (
                     <DayCard
                         key={index}
                         day={day}
-                        date={dayOfWeek.toString()}
+                        date={dayOfWeek(startWeekDay, index).toString()}
                         plans={dayPlans}
                         onCheckChange={handleCheckChange}
                         checkedPlans={checkedPlans}
@@ -400,7 +501,7 @@ export default function WeeklyPlan() {
                     <Button onClick={handleCloseDialog} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={handleAddNewAgu} color="primary">
+                    <Button onClick={() => handleAddNewAgu(startWeekDay)} color="primary">
                         Add
                     </Button>
                 </DialogActions>

@@ -24,6 +24,7 @@ class ScheduledLoadMapper : RowMapper<ScheduledLoad> {
 		return ScheduledLoad(
 			id = rs.getInt("id"),
 			aguCui = rs.getString("agu_cui"),
+			locationName = rs.getString("location_name"),
 			date = rs.getDate("local_date").toLocalDate(),
 			timeOfDay = TimeOfDay.valueOf(rs.getString("time_of_day").uppercase()),
 			amount = rs.getDouble("amount"),

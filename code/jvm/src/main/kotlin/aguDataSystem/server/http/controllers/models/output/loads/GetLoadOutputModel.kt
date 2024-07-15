@@ -18,6 +18,7 @@ import java.time.LocalDate
 data class GetLoadOutputModel(
 	val id: Int,
 	val aguCui: String,
+	val locationName: String,
 	val date: LocalDate,
 	val timeOfDay: TimeOfDay,
 	val amount: Double,
@@ -29,6 +30,7 @@ data class GetLoadOutputModel(
 			return GetLoadOutputModel(
 				id = scheduledLoad.id,
 				aguCui = scheduledLoad.aguCui,
+				locationName = scheduledLoad.locationName,
 				date = scheduledLoad.date,
 				timeOfDay = scheduledLoad.timeOfDay,
 				amount = scheduledLoad.amount,

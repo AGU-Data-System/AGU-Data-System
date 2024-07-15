@@ -14,6 +14,7 @@ import java.time.LocalDate
 sealed class Load {
 	abstract val id: Int
 	abstract val aguCui: String
+	abstract val locationName: String
 	abstract val date: LocalDate
 	abstract val timeOfDay: TimeOfDay
 	abstract val amount: Double

@@ -17,6 +17,7 @@ import java.time.LocalDate
 data class ScheduledLoad(
 	override val id: Int,
 	override val aguCui: String,
+	override val locationName: String,
 	override val date: LocalDate,
 	override val timeOfDay: TimeOfDay,
 	override val amount: Double,

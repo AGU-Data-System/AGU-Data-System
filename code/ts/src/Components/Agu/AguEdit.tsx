@@ -282,7 +282,7 @@ export default function AguEdit() {
             {state.type === 'loading' && <p>Loading...</p>}
             {state.type === 'error' && <p>Error: {state.message}</p>}
             {state.type === 'success' && (
-                <div>
+                <div style={{ marginLeft: 30 }}>
                     <h1>Editando {state.aguDetails.name}... <BackToAguDetailsButton aguCUI={state.aguDetails.cui}/></h1>
                     <h2 style={{color: state.aguDetails.isActive ? 'green' : 'red'}}>{state.aguDetails.isActive ? 'Ativo' : 'Inativo'} <ChangeActiveButton handleClick={hangleActiveChange} isActive={state.aguDetails.isActive} /></h2>
                     <h3>Contacts</h3>

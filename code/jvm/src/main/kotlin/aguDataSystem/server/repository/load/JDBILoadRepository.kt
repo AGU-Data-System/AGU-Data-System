@@ -121,7 +121,10 @@ class JDBILoadRepository(private val handle: Handle) : LoadRepository {
 	override fun getLoadsForWeek(startDay: LocalDate, endDay: LocalDate): List<ScheduledLoad> {
 		return handle.createQuery(
 			"""
-			SELECT * FROM scheduled_load
+			SELECT scheduled_load.*, 
+			agu.location_name
+			FROM scheduled_load JOIN agu 
+			ON scheduled_load.agu_cui = agu.cui
 			WHERE local_date >= :startDay
 			AND local_date <= :endDay
 			"""
