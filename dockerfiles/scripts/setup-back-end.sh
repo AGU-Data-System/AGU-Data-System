@@ -15,7 +15,7 @@ java -jar $APP_HOME/$ARTIFACT_NAME &
 # Wait until the application is up and ready
 until check_app_ready; do
   echo "Waiting for the application to be ready..."
-  sleep 60 # TODO
+  sleep 30 # TODO
 done
 
 # Run the script if the flag file does not exist
