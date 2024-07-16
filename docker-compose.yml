@@ -41,6 +41,9 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-web
+    environment:
+      - TZ=Europe/Lisbon  # Ensure the app uses the same timezone as the DB
+      - REACT_APP_API_URL=http://agu-data-system:8080/api
     ports:
       - "8000:80"
     volumes:

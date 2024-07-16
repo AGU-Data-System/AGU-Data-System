@@ -74,7 +74,7 @@ class FetchService(
 
 		transactionManager.run {
 			val lastFetched = data.maxOf { data -> data.timestamp }
-			it.providerRepository.updateLastFetch(provider.id, lastFetched)
+			it.providerRepository.updateLastFetch(provider.id, lastFetched) // TODO KBADABOM HERE
 			logger.info("Provider: {} - last fetch TimeStamp updated: {} to database", provider.id, lastFetched)
 
 			logger.info("Saving data from provider: {} to database", provider.id)

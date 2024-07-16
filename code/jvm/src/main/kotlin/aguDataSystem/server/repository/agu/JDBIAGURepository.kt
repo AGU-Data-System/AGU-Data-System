@@ -41,13 +41,18 @@ class JDBIAGURepository(private val handle: Handle) : AGURepository {
 
 		val aguBasicInfoMap = mutableMapOf<String, AGUBasicInfo>()
 
-		handle.inTransaction<Any, Exception> { conn ->
+		handle.inTransaction<List<AGUBasicInfo>, Exception> { conn ->
 			val stmt = conn.connection.createStatement(
 				ResultSet.TYPE_SCROLL_INSENSITIVE,
 				ResultSet.CONCUR_READ_ONLY
 			)
 
 			val rs = stmt.executeQuery(sql)
+
+			if (rs.fetchSize <= 0) {
+				logger.info("No AGU present in the DB")
+				return@inTransaction emptyList<AGUBasicInfo>()
+			}
 
 			while (rs.next()) {
 				val cui = rs.getString("cui")

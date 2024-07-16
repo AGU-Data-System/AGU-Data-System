@@ -121,13 +121,18 @@ class ChronService(
 				val allAGUs = transactionManager.run {
 					it.aguRepository.getAGUsBasicInfo()
 				}
-				allAGUs.forEach { agu ->
-					try {
-						predictionService.processAGU(agu)
-					} catch (e: Exception) {
-						logger.error("Failed to process AGU: {}", agu.cui, e)
-					}
+				if (allAGUs.isEmpty()) {
+					logger.info("No AGUs found to predict")
+					return@scheduleAtFixedRate
+				} else {
+					allAGUs.forEach { agu ->
+						try {
+							predictionService.processAGU(agu)
+						} catch (e: Exception) {
+							logger.error("Failed to process AGU: {}", agu.cui, e)
+						}
 
+					}
 				}
 			},
 			Duration.between(LocalTime.now(), LocalTime.of(PREDICTION_HOUR, PREDICTION_MINUTE)).toMillis(),
