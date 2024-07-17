@@ -323,7 +323,7 @@ class PredictionService(
                 alertsService.createAlert(
                     AlertCreationDTO(
                         aguId = agu.cui,
-                        title = "Load removed",
+                        title = "Scheduled Load removed for AGU: ${agu.name}",
                         message = "A load was removed because it was not needed"
                     )
                 )
@@ -333,7 +333,7 @@ class PredictionService(
                     // Call in alert because even with a load in said day the level is below the minimum threshold
                     alertsService.createAlert(
                         AlertCreationDTO(
-                            aguId = agu.cui, title = "Gas level", message = "Gas level is below the minimum threshold"
+                            aguId = agu.cui, title = "Predicted Gas level for AGU: ${agu.name} ", message = "Predicted Gas level is below the minimum threshold"
                         )
                     )
                 } else {
@@ -379,7 +379,7 @@ class PredictionService(
                 tankLevels.add(
                     GasMeasure(
                         timestamp = LocalDateTime.now(),
-                        predictionFor = LocalDateTime.now().plusDays(index.toLong()),
+                        predictionFor = LocalDateTime.of(LocalDate.now().plusDays(index.toLong()), END_OF_DAY),
                         level = tankLevel,
                         tankNumber = tank.number
                     )
@@ -432,6 +432,7 @@ class PredictionService(
 
     companion object {
         private val logger = LoggerFactory.getLogger(FetchService::class.java)
+        private val END_OF_DAY = LocalTime.of(23, 59, 59)
         const val NUMBER_OF_DAYS = 9
         const val TEMP_NUMBER_OF_DAYS = 5
         const val BIG_AGU_LIMIT_LOAD_VOLUME = 60

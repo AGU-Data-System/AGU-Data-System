@@ -112,7 +112,11 @@ class ChronService(
                 }
             }
 
-        }, delay, frequency.toMillis(), TimeUnit.MILLISECONDS)
+        },
+            delay,
+            frequency.toMillis(),
+            TimeUnit.MILLISECONDS
+        )
         scheduledChron[provider.id] = future
 
         logger.info("Scheduled chron task for provider: {}", provider)
