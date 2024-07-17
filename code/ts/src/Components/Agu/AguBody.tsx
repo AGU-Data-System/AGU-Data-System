@@ -18,7 +18,7 @@ type TempGraphState =
 type GasGraphState =
     | { type: 'loading' }
     | { type: 'error'; message: string }
-    | { type: 'success'; gasData: GetGasListOutputModel };
+    | { type: 'success'; gasData: GetGasListOutputModel; gasPredictions: GetGasListOutputModel };
 
 export default function AguBody(
     { aguCui, aguNotes, lvlMin, lvlMax, lvlCrit, latitude, longitude }: { aguCui: string, aguNotes: string; lvlMin: number; lvlMax: number; lvlCrit: number; latitude: number; longitude: number}
@@ -69,13 +69,18 @@ export default function AguBody(
             setGasState({ type: 'loading' });
 
             const gasData = await aguService.getGasData(aguCui);
+            const gasPredictions = await aguService.getPredictionsGasMeasures(aguCui);
 
             if (gasData.value instanceof Error) {
                 setGasState({ type: 'error', message: gasData.value.message });
             } else if (gasData.value instanceof Problem) {
                 setGasState({ type: 'error', message: gasData.value.title });
+            } else if (gasPredictions.value instanceof Error) {
+                setGasState({ type: 'error', message: gasPredictions.value.message });
+            } else if (gasPredictions.value instanceof Problem) {
+                setGasState({ type: 'error', message: gasPredictions.value.title });
             } else {
-                setGasState({type: 'success', gasData: gasData.value});
+                setGasState({type: 'success', gasData: gasData.value, gasPredictions: gasPredictions.value});
             }
         }
 
@@ -145,7 +150,7 @@ export default function AguBody(
                                 <LineGraph data={tempState.tempData.temperatureMeasures} />
                             )}
                             {gasState.type === 'success' && gasState.gasData.size > 0 && (
-                                <BarGraph data={gasState.gasData.gasMeasures} aguCui={aguCui} aguMin={lvlMin} aguMax={lvlMax} aguCrit={lvlCrit}/>
+                                <BarGraph gasData={gasState.gasData.gasMeasures} gasPredData={gasState.gasPredictions.gasMeasures} aguCui={aguCui} aguMin={lvlMin} aguMax={lvlMax} aguCrit={lvlCrit}/>
                             )}
                             {tempState.type === 'success' && tempState.tempData.size === 0 && (
                                 <Typography variant="h5" gutterBottom>Sem data de temperatura</Typography>

@@ -29,16 +29,44 @@ class JDBITemperatureRepository(private val handle: Handle) : TemperatureReposit
 		logger.info("Getting temperature measures for provider {}, for {} days", providerId, days)
 		val tempMeasures = handle.createQuery(
 			"""
-            SELECT m1.provider_id, m1.agu_cui, m1.timestamp, m1.prediction_for, m1.data as min, 
-			m2.data as max 
-            FROM measure m1 
-			join measure m2 ON m1.provider_id = m2.provider_id 
-			AND m1.prediction_for = m2.prediction_for 
-            AND m1.timestamp = m2.timestamp AND m1.agu_cui = m2.agu_cui
-            WHERE m1.tag = :minTag AND m2.tag = :maxTag AND m1.provider_id = :providerId
-            ORDER BY m1.timestamp DESC, m1.prediction_for
-            LIMIT :days
-            """
+        WITH latest_measures AS (
+            SELECT 
+                m.provider_id,
+                m.agu_cui,
+                m.timestamp,
+                m.prediction_for::date as prediction_date,
+                m.data,
+                m.tag,
+                ROW_NUMBER() OVER (PARTITION BY m.provider_id, m.prediction_for::date, m.tag ORDER BY m.timestamp DESC) as rn
+            FROM measure m
+            WHERE 
+                m.provider_id = :providerId AND 
+                m.prediction_for::date >= CURRENT_DATE AND 
+                m.prediction_for::date < CURRENT_DATE + :days
+        )
+        SELECT 
+            min_measures.provider_id, 
+            min_measures.agu_cui, 
+            min_measures.timestamp, 
+            min_measures.prediction_date as prediction_for, 
+            min_measures.data as min, 
+            max_measures.data as max
+        FROM 
+            latest_measures min_measures
+        JOIN 
+            latest_measures max_measures 
+        ON 
+            min_measures.provider_id = max_measures.provider_id AND 
+            min_measures.prediction_date = max_measures.prediction_date AND 
+            min_measures.agu_cui = max_measures.agu_cui
+        WHERE 
+            min_measures.tag = :minTag AND 
+            max_measures.tag = :maxTag AND 
+            min_measures.rn = 1 AND 
+            max_measures.rn = 1
+        ORDER BY 
+            min_measures.prediction_date DESC
+        """
 		)
 			.bind("providerId", providerId)
 			.bind("minTag", TemperatureMeasure::min.name)

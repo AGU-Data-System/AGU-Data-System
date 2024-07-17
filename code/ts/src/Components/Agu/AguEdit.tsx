@@ -332,9 +332,11 @@ export default function AguEdit() {
                                 )}>
                                     <EditIcon fontSize='large' sx={{color: 'rgb(255, 165, 0)'}}/>
                                 </IconButton>
-                                <IconButton onClick={() => openConfirmDialog('tank', tank.number)}>
-                                    <DeleteIcon fontSize='large' sx={{color: 'rgb(255, 165, 0)'}}/>
-                                </IconButton>
+                                {
+                                // <IconButton onClick={() => openConfirmDialog('tank', tank.number)}>
+                                //     <DeleteIcon fontSize='large' sx={{color: 'rgb(255, 165, 0)'}}/>
+                                // </IconButton>
+                                }
                                 {editTankNumber === tank.number && (
                                     <div>
                                         <TextField

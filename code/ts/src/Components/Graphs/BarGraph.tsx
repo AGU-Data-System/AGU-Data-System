@@ -19,7 +19,7 @@ const formatDate = (dateString: string) => {
     return { hour, minutes, day, month, year };
 };
 
-export default function BarsDataset({ data, aguCui, aguMin, aguMax, aguCrit }: { data: GasOutputModel[], aguCui: string, aguMin: number, aguMax: number, aguCrit: number }) {
+export default function BarsDataset({ gasData, gasPredData, aguCui, aguMin, aguMax, aguCrit }: { gasData: GasOutputModel[], gasPredData: GasOutputModel[], aguCui: string, aguMin: number, aguMax: number, aguCrit: number }) {
     const [dayData, setDayData] = useState<GasOutputModel[]>([]);
 
     const handleAxisClick = (event: any, d: any) => {
@@ -47,18 +47,39 @@ export default function BarsDataset({ data, aguCui, aguMin, aguMax, aguCrit }: {
         return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() };
     };
 
-    const formattedData = data.map((item) => {
+    const formattedData = [...gasData, ...gasPredData].map((item) => {
         const { day, month, year } = formatDate(item.predictionFor);
         return {
             ...item,
             day,
             month,
             year,
+            actualLevel: gasData.includes(item) ? item.level : null,
+            predictedLevel: gasPredData.includes(item) ? item.level : null,
         };
     }).sort((a, b) => a.predictionFor.localeCompare(b.predictionFor));
 
+    // Combine data with the same day, month, and year
+    const combinedDataMap = new Map();
+
+    formattedData.forEach(item => {
+        const key = `${item.day}-${item.month}-${item.year}`;
+        if (!combinedDataMap.has(key)) {
+            combinedDataMap.set(key, { ...item });
+        } else {
+            const existingItem = combinedDataMap.get(key);
+            combinedDataMap.set(key, {
+                ...existingItem,
+                actualLevel: item.actualLevel !== null ? item.actualLevel : existingItem.actualLevel,
+                predictedLevel: item.predictedLevel !== null ? item.predictedLevel : existingItem.predictedLevel,
+            });
+        }
+    });
+
+    const combinedData = Array.from(combinedDataMap.values());
+
     const formattedDayData = dayData.map((item) => {
-        const { hour, minutes, day, month, year } = formatDate(item.timestamp);
+        const { hour, minutes, day, month, year } = formatDate(item.predictionFor);
         return {
             ...item,
             hour,
@@ -94,18 +115,19 @@ export default function BarsDataset({ data, aguCui, aguMin, aguMax, aguCrit }: {
         <Box>
             <div style={{ width: '100%', height: '100%' }}>
                 <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-                    {formattedData.length > 0 && (
+                    {combinedData.length > 0 && (
                         <div>
-                            <span>{formattedData[0].month} {formattedData[0].year}</span>
+                            <span>{combinedData[0].month} {combinedData[0].year}</span>
                         </div>
                     )}
                 </div>
                 <div style={{ width: '100%', height: 'calc(100% - 40px)' }}>
                     <BarChart
-                        dataset={formattedData}
+                        dataset={combinedData}
                         xAxis={[{scaleType: 'band', dataKey: 'day', label: 'Dia'}]}
                         series={[
-                            {dataKey: 'level', label: 'Level', valueFormatter, color: 'orange'},
+                            {dataKey: 'actualLevel', label: 'Gás atual', valueFormatter, color: 'orange'},
+                            {dataKey: 'predictedLevel', label: 'Gás previsto', valueFormatter, color: 'grey'},
                         ]}
                         onAxisClick={(event, d) => handleAxisClick(event, d)}
                         width={500}
@@ -118,7 +140,7 @@ export default function BarsDataset({ data, aguCui, aguMin, aguMax, aguCrit }: {
 
                         <text x="91%" y={maxY} fill="green">Max</text>
                         <text x="91%" y={minY} fill="blue">Min{critYOffset != 0 ? ' &' : ''}</text>
-                        <text x="91%" y={critY + critYOffset} fill="red">Crítico</text>
+                        <text x="91%" y={critY + critYOffset} fill="red">Crít</text>
                     </BarChart>
                 </div>
             </div>

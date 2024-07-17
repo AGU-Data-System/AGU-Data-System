@@ -36,7 +36,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
             measure.timestamp, measure.prediction_for, measure.data, measure.tank_number 
         FROM measure
         WHERE measure.provider_id = :providerId AND 
-        measure.timestamp::date >= now()::date - :days AND
+        measure.timestamp::date >= now()::date - :days + 1 AND
         measure.prediction_for = measure.timestamp
         ORDER BY date_trunc('day', measure.timestamp), 
                  abs(extract(epoch from measure.timestamp::time) - extract(epoch from :timestamp::time))
@@ -81,7 +81,8 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
             FROM measure
             WHERE 
                 measure.provider_id = :providerId AND 
-                measure.prediction_for >= :day 
+                measure.prediction_for = measure.timestamp AND
+				measure.timestamp::date = :day
         ),
         ranked_measures AS (
             SELECT 
@@ -132,6 +133,7 @@ class JDBIGasRepository(private val handle: Handle) : GasRepository {
         FROM measure
         WHERE measure.provider_id = :providerId AND 
         measure.prediction_for::date <= now()::date + :days AND
+		measure.prediction_for::date >= now()::date AND
         measure.prediction_for <> measure.timestamp
         ORDER BY date_trunc('day', measure.prediction_for), 
                  abs(extract(epoch from measure.prediction_for::time) - extract(epoch from :timestamp::time))

@@ -111,7 +111,6 @@ interface ContactListOutputModel {
 interface TanksListOutputModel {
     tanks: TankOutputModel[];
     size: number;
-
 }
 
 export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankAddOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel, AgusBasicInfoListOutputModel };

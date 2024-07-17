@@ -36,6 +36,17 @@
         - [Get transport companies of AGU](#get-transport-companies-of-agu)
         - [Add transport company to AGU](#add-transport-company-to-agu)
         - [Delete transport company from AGU](#delete-transport-company-from-agu)
+    - [Alerts](#alerts)
+        - [Get alerts](#get-alerts)
+        - [Get alerts by id](#get-alerts-by-id)
+        - [Update alert status](#update-alert-status)
+    - [Loads](#loads)
+        - [Get load for day](#get-load-for-day)
+        - [Schedule a load](#schedule-a-load)
+        - [Remove a load](#remove-a-load)
+        - [Change load day](#change-load-day)
+        - [Confirm Load](#confirm-load)
+        - [Get loads for the week](#get-loads-for-the-week)
 - [Input Models](#input-models)
     - [AGU Input Models](#agu-input-models)
         - [AGU Creation Input Model](#agu-creation-input-model)
@@ -54,6 +65,10 @@
         - [Update Tank Input Model](#update-tank-input-model)
     - [Transport Company Input Models](#transport-company-input-models)
         - [Transport Company Creation Input Model](#transport-company-creation-input-model)
+    - [Loads Input Models](#loads-input-models)
+        - [Get Loads Input Model](#get-loads-input-model)
+        - [Scheduled Load Creation Model](#scheduled-load-creation-model)
+        - [New Load Day Input Model](#new-load-day-input-model)
 - [Output Models](#output-models)
     - [AGU Output Models](#agu-output-models)
         - [AGU Basic Info Output Model](#agu-basic-info-output-model)
@@ -87,6 +102,15 @@
         - [Transport Company Creation Output Model](#transport-company-creation-output-model)
         - [Transport Company Output Model](#transport-company-output-model)
         - [Transport Company List Output Model](#transport-company-list-output-model)
+    - [Alerts Output Models](#alerts-output-models)
+        - [Alert Details Output Model](#alert-details-output-model)
+        - [Get Alerts Output Model](#get-alerts-output-model)
+    - [Loads Output Models](#loads-output-models)
+        - [Get Load Output Model](#get-load-output-model)
+        - [Get Loads For Week List Output Model](#get-loads-for-week-list-output-model)
+        - [Get Loads For Week Output Model](#get-loads-for-week-output-model)
+        - [Scheduled Load Output Model](#scheduled-load-output-model)
+        - [Boolean Load Output Model](#boolean-load-output-model)
 - [Error Handling](#error-handling)
     - [Problem Details](#problem-details)
     - [Bad Request](#bad-request)
@@ -719,6 +743,152 @@ AGU Endpoint is responsible for managing AGUs in the system.
     ```shell
     curl -X DELETE "http://localhost:8080/api/transport-companies/1/agu/PT1234567890123456XX" -H "accept: application/json"
     ```
+  
+### Alerts
+
+#### Get alerts
+
+- **URL:** `/api/alerts`
+- **Method:** `GET`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Get Alerts Output Model](#get-alerts-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X GET "http://localhost:8080/api/alerts" -H "accept: application/json"
+  ```
+  
+#### Get alerts by id
+
+- **URL:** `/api/alerts/{alertId}`
+- **Method:** `GET`
+- **Path Variables:**
+    - `alertId` - The unique id of the Alert.
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Alert Details Output Model](#alert-details-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X GET "http://localhost:8080/api/alerts/1" -H "accept: application/json"
+  ```
+  
+#### Update alert status
+
+- **URL:** `/api/alerts/{alertId}`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `alertId` - The unique id of the Alert.
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Get Alerts Output Model](#get-alerts-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X PUT "http://localhost:8080/api/alerts/1" -H "accept: application/json"
+  ```
+  
+### Loads
+
+#### Get loads for the week
+
+- **URL:** `/api/loads/week`
+- **Method:** `GET`
+- **Success Response:**
+    - **Content:**
+        - `application/json`
+            - [Get Loads For Week List Output Model](#get-loads-for-week-list-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X GET "http://localhost:8080/api/loads/week" -H "accept: application/json"
+  ```
+  
+#### Get load for day
+
+- **URL:** `/api/loads`
+- **Method:** `GET`
+- **Request Body:**
+    - `application/json`
+        - [Get Loads Input Model](#get-loads-input-model)
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Get Load Output Model](#get-load-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X GET "http://localhost:8080/api/loads" -H "accept: application/json"
+  ```
+  
+#### Confirm Load
+
+- **URL:** `/api/loads/{loadId}/confirm`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `loadId` - The unique id of the Load.
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Boolean Load Output Model](#boolean-load-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X PUT "http://localhost:8080/api/loads/1/confirm" -H "accept: application/json"
+  ```
+  
+#### Change load day
+
+- **URL:** `/api/loads/{loadId}`
+- **Method:** `PUT`
+- **Path Variables:**
+    - `loadId` - The unique id of the Load.
+- **Request Body:**
+    - `application/json`
+        - [New Load Day Input Model](#new-load-day-input-model)
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Boolean Load Output Model](#boolean-load-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X PUT "http://localhost:8080/api/loads/1" -H "accept: application/json"
+  ```
+  
+#### Schedule a load
+
+- **URL:** `/api/loads/schedule`
+- **Method:** `POST`
+- **Request Body:**
+    - `application/json`
+        - [Schedule Load Creation Model](#scheduled-load-creation-model)
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Schedule Load Output Model](#scheduled-load-output-model)
+- **Error Response:**
+- **Content:**
+    - `application/json`
+        - [Invalid Load Volume](#invalid-load-volume)
+        - [Invalid CUI](#invalid-cui)
+        - [Invalid Provider](#invalid-provider)
+- **Sample Call:**
+- ```shell
+  curl -X POST "http://localhost:8080/api/loads/schedule" -H "accept: application/json"
+  ```
+  
+#### Remove a load
+
+- **URL:** `/api/loads/{loadId}`
+- **Method:** `DELETE`
+- **Path Variables:**
+    - `loadId` - The unique id of the Load.
+- **Success Response:**
+- **Content:**
+    - `application/json`
+        - [Boolean Load Output Model](#boolean-load-output-model)
+- **Sample Call:**
+- ```shell
+  curl -X DELETE "http://localhost:8080/api/loads/1" -H "accept: application/json"
+  ```
 
 ## Input Models
 
@@ -965,6 +1135,57 @@ AGU Endpoint is responsible for managing AGUs in the system.
         "name": "string"
     }
     ```
+  
+### Loads Input Models
+  
+#### New Load Day Input Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `newDay`: The new day of the load.
+- **Example:**
+- ```json
+  {
+      "newDay": "2024-07-01"
+  }
+  ```
+  
+#### Scheduled Load Creation Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `aguCui`: The CUI of the AGU.
+        - `date`: The date of the load.
+        - `timeOfDay`: The time of the load.
+        - `amount`: The amount of the load.
+        - `isManual`: The manual status of the load.
+- **Example:**
+- ```json
+  {
+      "aguCui": "string",
+      "date": "2024-07-01",
+      "timeOfDay": "string",
+      "amount": "string",
+      "isManual": "string"
+  }
+  ```
+  
+#### Get Loads Input Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `cui`: The CUI of the AGU.
+        - `day`: The day of the load.
+- **Example:**
+- ```json
+  {
+      "cui": "string",
+      "day": "2024-07-01"
+  }
+  ```
 
 ## Output Models
 
@@ -1666,6 +1887,171 @@ val size: Int
         "size": 1
     }
     ```
+
+### Alerts Output Models
+
+#### Alert Details Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the alert.
+        - `agu`: The CUI of the AGU.
+        - `timestamp`: The timestamp of the alert.
+        - `title`: The title of the alert.
+        - `message`: The message of the alert.
+        - `isResolved`: The resolved status of the alert.
+- **Example:**
+- ```json
+  {
+      "id": 0,
+      "agu": "string",
+      "timestamp": "2024-07-01T00:00:00Z",
+      "title": "string",
+      "message": "string",
+      "isResolved": false
+  }
+  ```
+
+#### Get Alerts Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `alerts`: [Alert Details Output Model](#alert-details-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+- ```json
+  {
+      "alerts": [
+          {
+              "id": 0,
+              "agu": "string",
+              "timestamp": "2024-07-01T00:00:00Z",
+              "title": "string",
+              "message": "string",
+              "isResolved": false
+          }
+      ],
+      "size": 1
+  }
+  ```
+  
+### Loads Output Models
+
+#### Boolean Load Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `value`: The boolean value of the load.
+- **Example:**
+- ```json
+  {
+      "value": true
+  }
+  ```
+  
+#### Get Load Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the load.
+        - `aguCui`: The CUI of the AGU.
+        - `locationName`: The name of the location.
+        - `date`: The date of the load.
+        - `timeOfDay`: The time of the load.
+        - `amount`: The amount of the load.
+        - `isManual`: The manual status of the load.
+        - `isConfirmed`: The confirmed status of the load.
+- **Example:**
+- ```json
+  {
+      "id": 0,
+      "aguCui": "string",
+      "locationName": "string",
+      "date": "2024-07-01",
+      "timeOfDay": "string",
+      "amount": 40.0,
+      "isManual": false,
+      "isConfirmed": false
+  }
+  ```
+  
+#### Get Loads For Week Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `loadId`: The id of the load.
+        - `aguCui`: The CUI of the AGU.
+        - `locationName`: The name of the location.
+        - `date`: The date of the load.
+        - `timeOfDay`: The time of the load.
+        - `amount`: The amount of the load.
+        - `isManual`: The manual status of the load.
+        - `isConfirmed`: The confirmed status of the load.
+- **Example:**
+- ```json
+  {
+      "loadId": 0,
+      "aguCui": "string",
+      "locationName": "string",
+      "date": "2024-07-01",
+      "timeOfDay": "string",
+      "amount": "string",
+      "isManual": "string",
+      "isConfirmed": "string"
+  }
+  ```
+
+#### Get Loads For Week List Output Model
+	val startWeekDay: String,
+	val endWeekDay: String,
+	val loads: List<GetLoadsForWeekOutputModel>,
+	val size: Int
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `startWeekDay`: The start day of the week.
+        - `endWeekDay`: The end day of the week.
+        - `loads`: [Get Loads For Week Output Model](#get-loads-for-week-output-model) list.
+        - `size`: The size of the list.
+- **Example:**
+- ```json
+  {
+      "startWeekDay": "2024-07-01",
+      "endWeekDay": "2024-07-07",
+      "loads": [
+          {
+              "loadId": 0,
+              "aguCui": "string",
+              "locationName": "string",
+              "date": "2024-07-01",
+              "timeOfDay": "string",
+              "amount": "string",
+              "isManual": "string",
+              "isConfirmed": "string"
+          }
+      ],
+      "size": 1
+  }
+  ```
+  
+#### Scheduled Load Output Model
+
+- **Type:** `application/json`
+- **Attributes:**
+    - **Required:**
+        - `id`: The id of the load.
+- **Example:**
+- ```json
+  {
+      "id": 1
+  }
+  ```
 
 ## Error Handling
 
