@@ -38,7 +38,7 @@ export function ControlMenuLeft() {
             setSnackbarMessage(getLoadsWeeklyResponse.value.title);
             setSnackbarSeverity('error');
         } else {
-            setSnackbarMessage('Treinamento realizado com sucesso');
+            setSnackbarMessage('Treinamento realizado.');
             setSnackbarSeverity('success');
         }
         setSnackbarOpen(true);

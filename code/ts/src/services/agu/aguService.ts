@@ -5,7 +5,7 @@ import {
     AguOutputModel,
     AgusBasicInfoListOutputModel,
     ContactInputModel, TankAddOutputModel,
-    TankInputModel
+    TankInputModel, TrainAGUOutputModel
 } from "./models/aguOutputModel";
 import { AguCreateInputModel } from "./models/createAguInputModel";
 import { Problem } from "../../utils/Problem";
@@ -125,7 +125,7 @@ export namespace aguService {
         return fetchFunction(url, "DELETE");
     }
 
-    export async function trainAgus(): Promise<Either<Error | Problem, any>> {
+    export async function trainAgus(): Promise<Either<Error | Problem, TrainAGUOutputModel>> {
         const url = `/agus/train`;
         return fetchFunction(url, "POST");
     }

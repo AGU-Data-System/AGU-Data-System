@@ -10,6 +10,7 @@ import aguDataSystem.server.http.controllers.models.input.notes.NotesInputModel
 import aguDataSystem.server.http.controllers.models.output.agu.AGUBasicInfoListOutputModel
 import aguDataSystem.server.http.controllers.models.output.agu.AGUCreationOutputModel
 import aguDataSystem.server.http.controllers.models.output.agu.AGUOutputModel
+import aguDataSystem.server.http.controllers.models.output.agu.TrainAGUOutputModel
 import aguDataSystem.server.http.controllers.models.output.provider.GasMeasureListOutputModel
 import aguDataSystem.server.http.controllers.models.output.provider.TemperatureMeasureListOutputModel
 import aguDataSystem.server.service.agu.AGUService
@@ -236,10 +237,13 @@ class AguController(private val service: AGUService) {
 
     /**
      * Train all AGUs
+     *
+     * @return saying that the AGUs are trained
      */
     @PostMapping(URIs.Agu.TRAIN)
-    fun trainAllAGUs() {
+    fun trainAllAGUs(): ResponseEntity<*> {
         service.trainAGUs()
+        return ResponseEntity.ok(TrainAGUOutputModel("AGUs trained"))
     }
 
     /**
