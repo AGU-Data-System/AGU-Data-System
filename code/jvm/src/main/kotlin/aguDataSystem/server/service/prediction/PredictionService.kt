@@ -155,15 +155,38 @@ class PredictionService(
 	 * @return the gas consumptions
 	 */
 	private fun fetchGasConsumptions(transaction: Transaction, providerId: Int): List<ConsumptionRequestModel> {
-		val consumptionList =
-			transaction.gasRepository.getGasMeasures(providerId, NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT)
+		val consumptionList = transaction.gasRepository.getGasMeasures(providerId, NUMBER_OF_DAYS + 1, LocalTime.MIDNIGHT).toMutableList()
+
+		if (consumptionList.size < NUMBER_OF_DAYS + 1) {
+			val lastGasMeasure = consumptionList.lastOrNull()
+			if (lastGasMeasure != null) {
+				var lastLevel = lastGasMeasure.level
+				var daysToFill = (NUMBER_OF_DAYS + 1) - consumptionList.size
+				while (daysToFill > 0) {
+					lastLevel = (lastLevel * 0.95).toInt()
+					consumptionList.add(
+						GasMeasure(
+							timestamp = lastGasMeasure.timestamp.plusDays(consumptionList.size.toLong() - lastGasMeasure.timestamp.toLocalDate().toEpochDay()),
+							level = lastLevel,
+							predictionFor = lastGasMeasure.predictionFor.plusDays(consumptionList.size.toLong() - lastGasMeasure.timestamp.toLocalDate().toEpochDay()),
+							tankNumber = lastGasMeasure.tankNumber,
+						)
+					)
+					daysToFill--
+				}
+			} else {
+				logger.error("No gas measures found for provider: {}", providerId)
+				return emptyList()
+			}
+		}
+
 		return consumptionList.map { gasMeasure -> gasMeasure.level.toDouble() } // reduce the error
 			.zipWithNext { a, b -> b - a } // calculate the consumption for each day
 			.mapIndexed { idx, consumption ->
 				ConsumptionRequestModel(
-					consumption.roundToInt(), consumptionList[idx].timestamp.toLocalDate().minusDays(idx.toLong())//TODO: MARTELADO
+					consumption.roundToInt(), consumptionList[idx].timestamp.toLocalDate().minusDays(idx.toLong())
 				)
-			}
+			}.also { logger.info("Gas Consumptions: {}", it) }
 	}
 
 	/**
@@ -184,7 +207,30 @@ class PredictionService(
 			TemperatureRequestModel(
 				min = temp.min, max = temp.max, timeStamp = temp.timestamp.toLocalDate().minusDays(idx.toLong())//TODO: MARTELADO À CARA PODRE
 			)
+		}.toMutableList()
+
+		if (previousTemps.size < NUMBER_OF_DAYS) {
+			val lastTemp = previousTemps.lastOrNull()
+			if (lastTemp != null) {
+				var daysToFill = NUMBER_OF_DAYS - previousTemps.size
+				var decrement = 1L
+				while (daysToFill > 0) {
+					previousTemps.add(
+						TemperatureRequestModel(
+							min = lastTemp.min,
+							max = lastTemp.max,
+							timeStamp = LocalDate.parse(lastTemp.timeStamp).minusDays(decrement)
+						)
+					)
+					daysToFill--
+					decrement++
+				}
+			} else {
+				logger.error("No temperature measures found for provider: {}", providerId)
+				return emptyList()
+			}
 		}
+
 		if (!prediction) {
 			return previousTemps
 		}
@@ -193,7 +239,30 @@ class PredictionService(
 				TemperatureRequestModel(
 					min = temp.min, max = temp.max, timeStamp = temp.predictionFor.toLocalDate()
 				)
+			}.toMutableList()
+
+		if (futureTemps.size < TEMP_NUMBER_OF_DAYS) {
+			val lastTemp = futureTemps.lastOrNull()
+			if (lastTemp != null) {
+				var daysToFill = TEMP_NUMBER_OF_DAYS - futureTemps.size
+				var increment = 1L
+				while (daysToFill > 0) {
+					futureTemps.add(
+						TemperatureRequestModel(
+							min = lastTemp.min,
+							max = lastTemp.max,
+							timeStamp = LocalDate.parse(lastTemp.timeStamp).plusDays(increment)
+						)
+					)
+					daysToFill--
+					increment++
+				}
+			} else {
+				logger.error("No temperature predictions found for provider: {}", providerId)
+				return previousTemps
 			}
+		}
+
 		return previousTemps + futureTemps
 	}
 
