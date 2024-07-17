@@ -35,10 +35,10 @@ To deploy the application using Docker, with the following steps:
     ```shell
       docker compose up -d --build --force-recreate
     ```
-4. Run the following commands withing 50 seconds of the AGU-Data-System is up:
+4. Run the following commands withing 20 seconds of the AGU-Data-System is up:
     ```shell 
       docker network create agu-fetcher-prediction
-      docker network connect agu-fetcher-prediction agu-data-system
       docker network connect agu-fetcher-prediction fetcher
       docker network connect agu-fetcher-prediction agu-prediction-system
+      docker network connect agu-fetcher-prediction agu-data-system
     ```
