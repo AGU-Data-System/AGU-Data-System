@@ -161,7 +161,7 @@ class PredictionService(
 			.zipWithNext { a, b -> b - a } // calculate the consumption for each day
 			.mapIndexed { idx, consumption ->
 				ConsumptionRequestModel(
-					consumption.roundToInt(), consumptionList[idx].timestamp.toLocalDate()
+					consumption.roundToInt(), consumptionList[idx].timestamp.toLocalDate().minusDays(idx.toLong())//TODO: MARTELADO
 				)
 			}
 	}
@@ -180,9 +180,9 @@ class PredictionService(
 	): List<TemperatureRequestModel> {
 		val previousTemps = tm.temperatureRepository.getTemperatureMeasures(providerId, NUMBER_OF_DAYS).filter {
 			it.timestamp.toLocalDate() == it.predictionFor.toLocalDate()
-		}.map { temp ->
+		}.mapIndexed{ idx, temp ->
 			TemperatureRequestModel(
-				min = temp.min, max = temp.max, timeStamp = temp.timestamp.toLocalDate()
+				min = temp.min, max = temp.max, timeStamp = temp.timestamp.toLocalDate().minusDays(idx.toLong())//TODO: MARTELADO À CARA PODRE
 			)
 		}
 		if (!prediction) {
