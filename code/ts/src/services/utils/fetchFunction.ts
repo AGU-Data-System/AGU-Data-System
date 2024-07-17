@@ -1,7 +1,7 @@
 import { Either, failure, Failure, success } from '../../utils/Either';
 import { Problem, problemMediaType } from '../../utils/Problem';
 
-const API_ENDPOINT = 'http://192.168.40.242:8080/api';
+const API_ENDPOINT = 'http://localhost:8080/api'//'http://192.168.40.242:8080/api';
 /**
  * An error that occurs if there is a network error.
  */

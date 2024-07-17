@@ -17,12 +17,11 @@ import java.time.LocalDateTime
  * @property unloadTimestamp The timestamp when the load was delivered
  */
 data class DeliveredLoad(
-	override val id: Int,
-	override val aguCui: String,
-	override val locationName: String,
-	override val date: LocalDate,
-	override val timeOfDay: TimeOfDay,
-	override val amount: Double,
-	val company: TransportCompany,
-	val unloadTimestamp: LocalDateTime
+    override val id: Int,
+    override val aguCui: String,
+    override val date: LocalDate,
+    override val timeOfDay: TimeOfDay,
+    override val amount: Double,
+    val company: TransportCompany,
+    val unloadTimestamp: LocalDateTime
 ) : Load()

@@ -10,17 +10,17 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class TrainingRequestModel(
-	val temperatures: String,
-	val consumptions: String
+    val temperatures: String,
+    val consumptions: String
 ) {
-	constructor(temperatures: List<TemperatureRequestModel>, consumptions: List<ConsumptionRequestModel>) : this(
-		temperatures = temperatures.toTemperatureRequest(),
-		consumptions = consumptions.toConsumptionRequest()
-	)
+    constructor(temperatures: List<TemperatureRequestModel>, consumptions: List<ConsumptionRequestModel>) : this(
+        temperatures = temperatures.toTemperatureRequest(),
+        consumptions = consumptions.toConsumptionRequest()
+    )
 
-	override fun toString(): String {
-		return "{\"temperatures\":$temperatures, \"consumptions\":$consumptions}"
-	}
+    override fun toString(): String {
+        return "{\"temperatures\":$temperatures, \"consumptions\":$consumptions}"
+    }
 }
 
 /**
@@ -30,10 +30,10 @@ data class TrainingRequestModel(
  * @return The temperature request json string
  */
 fun List<TemperatureRequestModel>.toTemperatureRequest(): String {
-	val minTemps = this.map { it.min }
-	val maxTemps = this.map { it.max }
-	val timeStamps = this.map { it.timeStamp }.map { "\"$it\"" }
-	return "{\"date\": $timeStamps, \"minTemps\": $minTemps, \"maxTemps\": $maxTemps}"
+    val minTemps = this.map { it.min }
+    val maxTemps = this.map { it.max }
+    val timeStamps = this.map { it.timeStamp }.map { "\"$it\"" }
+    return "{\"date\": $timeStamps, \"minTemps\": $minTemps, \"maxTemps\": $maxTemps}"
 }
 
 /**
@@ -43,7 +43,7 @@ fun List<TemperatureRequestModel>.toTemperatureRequest(): String {
  * @return The consumption request json string
  */
 fun List<ConsumptionRequestModel>.toConsumptionRequest(): String {
-	val consumptions = this.map { it.level }
-	val timeStamps = this.map { it.timestamp }.map { "\"$it\"" }
-	return "{\"date\": $timeStamps, \"consumptions\": $consumptions}"
+    val consumptions = this.map { it.level }
+    val timeStamps = this.map { it.timestamp }.map { "\"$it\"" }
+    return "{\"date\": $timeStamps, \"consumption\": $consumptions}"
 }

@@ -13,23 +13,21 @@ import aguDataSystem.server.domain.load.ScheduledLoad
  * @property isConfirmed If the load is confirmed.
  */
 data class GetLoadsForWeekOutputModel(
-	val loadId: Int,
-	val aguCui: String,
-	val locationName: String,
-	val date: String,
-	val timeOfDay: String,
-	val amount: String,
-	val isManual: String,
-	val isConfirmed: String
+    val loadId: Int,
+    val aguCui: String,
+    val date: String,
+    val timeOfDay: String,
+    val amount: String,
+    val isManual: String,
+    val isConfirmed: String
 ) {
-	constructor(load: ScheduledLoad) : this(
-		loadId = load.id,
-		aguCui = load.aguCui,
-		locationName = load.locationName,
-		date = load.date.toString(),
-		timeOfDay = load.timeOfDay.toString(),
-		amount = load.amount.toString(),
-		isManual = load.isManual.toString(),
-		isConfirmed = load.isConfirmed.toString()
-	)
+    constructor(load: ScheduledLoad) : this(
+        loadId = load.id,
+        aguCui = load.aguCui,
+        date = load.date.toString(),
+        timeOfDay = load.timeOfDay.toString(),
+        amount = load.amount.toString(),
+        isManual = load.isManual.toString(),
+        isConfirmed = load.isConfirmed.toString()
+    )
 }
