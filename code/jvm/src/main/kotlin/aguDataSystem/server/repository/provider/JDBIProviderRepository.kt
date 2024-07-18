@@ -196,7 +196,7 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 			.bind("lastFetch", lastFetch)
 			.execute()
 
-		logger.info("last fetch time updated to {} in provider with id {}", updates, id)
+		logger.info("last fetch time updated to {} in provider with id {}", lastFetch, id)
 
 		if (updates == 0) {
 			logger.info("Provider with id {} not found, didn't update last fetch", id)

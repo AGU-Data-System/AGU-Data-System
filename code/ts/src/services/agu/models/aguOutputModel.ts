@@ -111,7 +111,10 @@ interface ContactListOutputModel {
 interface TanksListOutputModel {
     tanks: TankOutputModel[];
     size: number;
-
 }
 
-export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankAddOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel, AgusBasicInfoListOutputModel };
+interface TrainAGUOutputModel {
+    message: string;
+}
+
+export { AguDetailsOutputModel, ContactOutputModel, ContactInputModel, TankOutputModel, TankAddOutputModel, TankInputModel, AguOutputModel, AgusBasicInfoOutputModel, AgusBasicInfoListOutputModel, TrainAGUOutputModel };

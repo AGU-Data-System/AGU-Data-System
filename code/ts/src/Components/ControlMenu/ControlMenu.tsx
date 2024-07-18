@@ -38,7 +38,7 @@ export function ControlMenuLeft() {
             setSnackbarMessage(getLoadsWeeklyResponse.value.title);
             setSnackbarSeverity('error');
         } else {
-            setSnackbarMessage('Treino realizado com sucesso');
+            setSnackbarMessage('Treinamento realizado.');
             setSnackbarSeverity('success');
         }
         setSnackbarOpen(true);
@@ -81,7 +81,7 @@ export function ControlMenuLeft() {
                             backgroundColor: 'rgba(255,165,0,0.49)',
                         },
                     }} onClick={handleTreinarClick}>
-                        Treinar UAG
+                        Treinar UAGs
                     </Button>
                 </div>
                 <Divider orientation="horizontal" flexItem sx={{ marginTop: 2, marginBottom: 2 }} />

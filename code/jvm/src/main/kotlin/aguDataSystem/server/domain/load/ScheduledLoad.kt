@@ -15,12 +15,11 @@ import java.time.LocalDate
  * @property isConfirmed Whether the load was confirmed or not by the client
  */
 data class ScheduledLoad(
-	override val id: Int,
-	override val aguCui: String,
-	override val locationName: String,
-	override val date: LocalDate,
-	override val timeOfDay: TimeOfDay,
-	override val amount: Double,
-	val isManual: Boolean,
-	val isConfirmed: Boolean,
+    override val id: Int,
+    override val aguCui: String,
+    override val date: LocalDate,
+    override val timeOfDay: TimeOfDay,
+    override val amount: Double,
+    val isManual: Boolean,
+    val isConfirmed: Boolean,
 ) : Load()
