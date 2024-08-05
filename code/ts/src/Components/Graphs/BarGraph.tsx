@@ -169,7 +169,7 @@ export default function BarsDataset({ gasData, gasPredData, aguCui, aguMin, aguM
 
                         <text x="91%" y={maxY} fill="green">Max</text>
                         <text x="91%" y={minY} fill="blue">Min{critYOffset!=0 ? ' &' : ''}</text>
-                        <text x="91%" y={critY - critYOffset} fill="red">Crítico</text>
+                        <text x="91%" y={critY - critYOffset} fill="red">Crit</text>
                     </BarChart>
                 </div>
             </div>

@@ -76,43 +76,48 @@ class ChronService(
 
         logger.info("Scheduling chron task for provider: {} with delay: {}", provider, delay)
 
-        val future: ScheduledFuture<*> = chronScheduler.scheduleAtFixedRate({
-            fetchService.fetchAndSave(provider, lastFetch)
+        val future: ScheduledFuture<*> = chronScheduler.scheduleAtFixedRate(
+            {
+                val currentLastFetch = transactionManager.run {
+                    it.providerRepository.getLastFetch(provider.id) ?: LocalDateTime.MIN
+                }
+                fetchService.fetchAndSave(provider, currentLastFetch)
 
-            if (provider.getProviderType() == ProviderType.GAS) {
-                transactionManager.run {
-                    val aguCUI = it.providerRepository.getAGUCuiFromProviderId(provider.id)
-                        ?: throw Exception("No AGU found for provider: ${provider.id}")
-                    val agu = it.aguRepository.getAGUByCUI(aguCUI) ?: throw Exception("No AGU found for CUI: $aguCUI")
+                if (provider.getProviderType() == ProviderType.GAS) {
+                    transactionManager.run {
+                        val aguCUI = it.providerRepository.getAGUCuiFromProviderId(provider.id)
+                            ?: throw Exception("No AGU found for provider: ${provider.id}")
+                        val agu =
+                            it.aguRepository.getAGUByCUI(aguCUI) ?: throw Exception("No AGU found for CUI: $aguCUI")
 
-                    val tanks = it.tankRepository.getAGUTanks(agu.cui)
+                        val tanks = it.tankRepository.getAGUTanks(agu.cui)
 
-                    if (tanks.isEmpty()) {
-                        logger.error("No tanks found for AGU: {}", agu.cui)
-                    }
+                        if (tanks.isEmpty()) {
+                            logger.error("No tanks found for AGU: {}", agu.cui)
+                        }
 
-                    val tankLevels = it.gasRepository.getLatestMeasures(agu.cui, provider.id)
+                        val tankLevels = it.gasRepository.getLatestMeasures(agu.cui, provider.id)
 
-                    // Calculate the weighted sum of levels
-                    val totalCapacity = tanks.sumOf { tank -> tank.capacity }
-                    val weightedSum =
-                        tankLevels.sumOf { tankLevel -> tankLevel.level * tanks.first { tank -> tank.number == tankLevel.tankNumber }.capacity }
+                        // Calculate the weighted sum of levels
+                        val totalCapacity = tanks.sumOf { tank -> tank.capacity }
+                        val weightedSum =
+                            tankLevels.sumOf { tankLevel -> tankLevel.level * tanks.first { tank -> tank.number == tankLevel.tankNumber }.capacity }
 
-                    val latestLevel = weightedSum / totalCapacity
+                        val latestLevel = weightedSum / totalCapacity
 
-                    if (latestLevel < agu.levels.min && latestLevel > 0) {
-                        alertsService.createAlert(
-                            AlertCreationDTO(
-                                aguId = aguCUI,
-                                title = "Gas Level - ${agu.name}",
-                                message = " Gas level ($latestLevel%) is below the AGU's minimum value (${agu.levels.min}%)"
+                        if (latestLevel < agu.levels.min && latestLevel > 0) {
+                            alertsService.createAlert(
+                                AlertCreationDTO(
+                                    aguId = aguCUI,
+                                    title = "Gas Level - ${agu.name}",
+                                    message = " Gas level ($latestLevel%) is below the AGU's minimum value (${agu.levels.min}%)"
+                                )
                             )
-                        )
+                        }
                     }
                 }
-            }
 
-        },
+            },
             delay,
             frequency.toMillis(),
             TimeUnit.MILLISECONDS

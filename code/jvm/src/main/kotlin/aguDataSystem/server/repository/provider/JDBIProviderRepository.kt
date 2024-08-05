@@ -179,6 +179,32 @@ class JDBIProviderRepository(private val handle: Handle) : ProviderRepository {
 	}
 
 	/**
+	 * Gets the last fetch time of a provider
+	 *
+	 * @param id the id of the provider
+	 * @return the last fetch time
+	 */
+	override fun getLastFetch(id: Int): LocalDateTime? {
+		logger.info("Getting last fetch time of provider with id {}", id)
+
+		val lastFetch = handle.createQuery(
+			"""
+			SELECT last_fetch FROM provider WHERE id = :id
+			""".trimIndent()
+		)
+			.bind("id", id)
+			.map { rs, _ -> rs.getTimestamp("last_fetch")?.toLocalDateTime() }
+			.singleOrNull()
+
+		if (lastFetch != null) {
+			logger.info("Fetched last fetch time of provider with id {}: {}", id, lastFetch)
+		} else {
+			logger.info("Provider with id {} not found, could not find last fetch time", id)
+		}
+		return lastFetch
+	}
+
+	/**
 	 * Updates the last fetch time of a provider
 	 *
 	 * @param id the id of the provider

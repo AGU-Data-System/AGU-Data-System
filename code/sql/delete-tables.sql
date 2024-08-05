@@ -1,35 +1,15 @@
 begin transaction;
 
--- DELETE tables
-DELETE
-FROM contacts
-WHERE true;
-DELETE
-FROM measure
-WHERE true;
-DELETE
-FROM provider
-WHERE true;
-DELETE
-FROM tank
-WHERE true;
-DELETE
-FROM agu_transport_company
-WHERE true;
-DELETE
-FROM scheduled_load
-WHERE true;
-DELETE
-FROM alerts
-WHERE true;
-DELETE
-FROM agu
-WHERE true;
-DELETE
-FROM dno
-WHERE true;
-DELETE
-FROM transport_company
-WHERE true;
+--Delete tables
+DELETE FROM alerts;
+DELETE FROM scheduled_load;
+DELETE FROM agu_transport_company;
+DELETE FROM transport_company;
+DELETE FROM measure;
+DELETE FROM tank;
+DELETE FROM provider;
+DELETE FROM contacts;
+DELETE FROM agu;
+DELETE FROM dno;
 
 commit;

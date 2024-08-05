@@ -59,6 +59,14 @@ interface ProviderRepository {
 	fun deleteProviderById(id: Int, cui: String)
 
 	/**
+	 * Gets the last fetch time of a provider
+	 *
+	 * @param id the id of the provider
+	 * @return the last fetch time
+	 */
+	fun getLastFetch(id: Int): LocalDateTime?
+
+	/**
 	 * Updates the last fetch time of a provider
 	 *
 	 * @param id the id of the provider

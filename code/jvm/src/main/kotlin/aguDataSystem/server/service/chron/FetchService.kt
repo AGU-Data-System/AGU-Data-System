@@ -50,7 +50,7 @@ class FetchService(
      */
     fun fetchAndSave(provider: Provider, since: LocalDateTime) {
         val providerURL =
-            Environment.getFetcherUrl() + "/provider/${provider.id}?beginDate=${since.plusSeconds(1)}&size=$pageSize"
+            Environment.getFetcherUrl() + "/provider/${provider.id}?beginDate=$since&size=$pageSize"
         logger.info("Fetching data from provider: {}", provider.id)
 
         val response = fetch(url = providerURL)

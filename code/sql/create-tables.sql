@@ -1,20 +1,16 @@
 begin transaction;
 
--- Drop views
-DROP VIEW IF EXISTS temperature_measures;
-DROP VIEW IF EXISTS gas_measures;
-
 -- Drop tables
-DROP TABLE IF EXISTS contacts;
-DROP TABLE IF EXISTS measure;
-DROP TABLE IF EXISTS provider;
-DROP TABLE IF EXISTS tank;
-DROP TABLE IF EXISTS agu_transport_company;
-DROP TABLE IF EXISTS scheduled_load;
-DROP TABLE IF EXISTS transport_company;
-DROP TABLE IF EXISTS alerts;
-DROP TABLE IF EXISTS agu;
-DROP TABLE IF EXISTS dno;
+DROP TABLE IF EXISTS alerts CASCADE;
+DROP TABLE IF EXISTS scheduled_load CASCADE;
+DROP TABLE IF EXISTS agu_transport_company CASCADE;
+DROP TABLE IF EXISTS transport_company CASCADE;
+DROP TABLE IF EXISTS measure CASCADE;
+DROP TABLE IF EXISTS tank CASCADE;
+DROP TABLE IF EXISTS provider CASCADE;
+DROP TABLE IF EXISTS contacts CASCADE;
+DROP TABLE IF EXISTS agu CASCADE;
+DROP TABLE IF EXISTS dno CASCADE;
 
 -- Drop domains
 DROP DOMAIN IF EXISTS CUI;
@@ -184,32 +180,5 @@ create table if not exists contacts
 
 );
 
--- Views
-create or replace view temperature_measures as
-select provider.id,
-       provider.agu_cui,
-       measure1.timestamp                             as fetch_timestamp,
-       measure1.prediction_for,
-       measure1.data                                  as min,
-       measure2.data                                  as max,
-       (measure1.timestamp - measure1.prediction_for) as days_ahead
-from provider
-         left join measure measure1 on measure1.provider_id = provider.id and measure1.tag = 'min'
-         left join measure measure2 on measure2.provider_id = measure1.provider_id and measure2.tag = 'max'
-    and measure2.timestamp = measure1.timestamp and measure2.prediction_for = measure1.prediction_for
-where provider.provider_type = 'temperature';
-
--- view for gas readings
-create or replace view gas_measures as
-select measure.agu_cui,
-       measure.provider_id,
-       measure.timestamp                            as fetch_timestamp,
-       measure.prediction_for                       as date,
-       measure.data                                 as level,
-       tank.number                                  as tank_number,
-       (measure.timestamp - measure.prediction_for) as days_ahead
-from measure
-         left join provider on measure.provider_id = provider.id
-         left join tank on measure.agu_cui = tank.agu_cui
-where provider.provider_type = 'gas';
 commit;
+
